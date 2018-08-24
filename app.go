@@ -32,7 +32,6 @@ func New() *App {
 	return app
 }
 
-//Add text, html or whatever!
 func (app *App) ID() string {
 	return fmt.Sprint(app.id)
 }
@@ -47,7 +46,6 @@ func (app *App) SetContent(data string) {
 	app.content = []byte(data)
 }
 
-//Add text, html or whatever!
 func (app *App) OnClick(f func(*Script)) {
 	var script = new(Script)
 	f(script)
@@ -55,7 +53,6 @@ func (app *App) OnClick(f func(*Script)) {
 	app.onclick = script.script.Bytes()
 }
 
-//Add text, html or whatever!
 func (app *App) SetPage(page *App) {
 	for _, child := range app.children {
 		if child.page {
@@ -68,7 +65,6 @@ func (app *App) SetPage(page *App) {
 	}
 }
 
-//TODO optimise?
 func (app *App) Render() ([]byte) {
 	var html bytes.Buffer
 	
@@ -111,7 +107,6 @@ func (app *App) Render() ([]byte) {
 	return html.Bytes()
 }
 
-//TODO prebuild HTML, it ain't gonna change bro!
 func (app *App) Host(hostport string) error {
 	
 	var html = app.Render()
