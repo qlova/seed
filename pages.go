@@ -1,6 +1,6 @@
 package app
 
-func NewPage() *App {
+func NewPage() *Web {
 	app := New()
 	
 	app.page = true

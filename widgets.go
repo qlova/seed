@@ -1,6 +1,6 @@
 package app
 
-func NewToolBar() *App {
+func NewToolBar() *Web {
 	app := New()
 	app.SetLayout("flex")
 	app.SetSticky()

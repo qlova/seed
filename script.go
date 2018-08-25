@@ -1,51 +1,61 @@
 package app
 
 import "bytes"
-import "fmt"
+
+type ScriptApp struct {
+	script *Script
+
+	Web
+}
+
+func (app *ScriptApp) GetParent() App {
+	return app.script.Get(app.Web.GetParent())
+}
+
+func (app *ScriptApp) GetChildren() []App {
+	var children = app.Web.GetChildren()
+	var result = make([]App, len(children))
+	for i := range children {
+		result[i] = app.script.Get(children[i])
+	}
+	return result
+}
+
 
 type Script struct {
-	element *App
-	script bytes.Buffer
+	data bytes.Buffer
 }
 
-func (script *Script) Get(app *App) *Script {
-	script.element = app
-	return script
+func (script *Script) Bytes() []byte {
+	return script.data.Bytes()
 }
 
-func (script *Script) Set(property, value string) {
-	script.script.WriteString(`document.getElementById("`)
-	script.script.WriteString(fmt.Sprint(script.element.id))
-	script.script.WriteString(`").`)
-	script.script.WriteString(property)
-	script.script.WriteByte('=')
-	script.script.WriteString(value)
-	script.script.WriteByte(';')
+func (script *Script) Get(app App) *ScriptApp {
+	if app == nil {
+		return nil
+	}
+	
+	if sa, ok := app.(*ScriptApp); ok {
+		return sa
+	}
+	
+	sa := new(ScriptApp)
+	sa.script = script
+	
+	sa.Web = Web{}
+	
+	sa.Web.id = app.ID()
+	sa.Web.Style.css = &ScriptCss{script:script, app:sa}
+	
+	sa.Web.parent = app.GetParent()
+	sa.Web.children = app.GetChildren()
+	sa.Web.page = app.Page()
+
+	return sa
 }
 
 func (script *Script) LogString(msg string) {
-	script.script.WriteString(`console.log("`)
-	script.script.WriteString(msg)
-	script.script.WriteString(`"`)
-}
-
-func (script *Script) SetHidden() {
-	script.Set("style.display", `"none"`)	
-}
-
-func (script *Script) SetVisible() {
-	script.Set("style.display", `"initial"`)
-}
-
-//Add text, html or whatever!
-func (script *Script) SetPage(page *App) {
-	for _, child := range script.element.children {
-		if child.page {
-			if child == page {
-				script.Get(child).SetVisible()
-			} else {
-				script.Get(child).SetHidden()
-			}
-		}
-	}
+	script.data.WriteString(`console.log("`)
+	script.data.WriteString(msg)
+	script.data.WriteString(`"`)
 }

@@ -10,62 +10,106 @@ import (
 var id = 0;
 
 //Everything is an app.
-type App struct {
+type App interface {
+	ID() string
+	
+	GetStyle() *Style
+	
+	Add(App)
+	GetParent() App 
+	SetParent(App)
+	GetChildren() []App
+	
+	Page() bool
+	
+	SetContent(content string)
+	
+	OnClick(func(*Script))
+
+	Render() []byte
+}
+
+type Web struct {
 	Style
 	
-	id int
+	id string
 	tag, attr string
-	children []*App
+	children []App
 	
 	content []byte
 	page bool
 	
 	onclick []byte
+	
+	parent App
 }
 
 //Create a new qlapp, an amazing progressive web app.
-func New() *App {
-	app := new(App)
-	app.id = id
+func New() *Web {
+	app := new(Web)
+	app.Style.css = new(StaticCss)
+	app.id = fmt.Sprint(id)
 	app.tag = "div"
 	id++
 	return app
 }
 
-func (app *App) ID() string {
+func (app *Web) ID() string {
 	return fmt.Sprint(app.id)
 }
 
+func (app *Web) GetStyle() *Style {
+	return &app.Style
+}
+
+func (app *Web) Page() bool {
+	return app.page
+}
+
 //Add a child app to the app. Remember, everything is an app!
-func (app *App) Add(child *App) {
+func (app *Web) Add(child App) {
 	app.children = append(app.children, child)
+	child.SetParent(app)
+}
+
+func (app *Web) GetParent() App {
+	return app.parent
+}
+
+
+func (app *Web) SetParent(parent App) {
+	app.parent = parent
+}
+
+func (app *Web) GetChildren() []App {
+	return app.children
 }
 
 //Add text, html or whatever!
-func (app *App) SetContent(data string) {
+func (app *Web) SetContent(data string) {
 	app.content = []byte(data)
 }
 
-func (app *App) OnClick(f func(*Script)) {
+func (app *Web) OnClick(f func(*Script)) {
 	var script = new(Script)
 	f(script)
 	
-	app.onclick = script.script.Bytes()
+	app.onclick = script.Bytes()
 }
 
-func (app *App) SetPage(page *App) {
-	for _, child := range app.children {
-		if child.page {
-			if child == page {
-				child.SetVisible()
+func SetPage(page App) {
+	for _, child := range page.GetParent().GetChildren() {
+		if child.Page() {
+			if child.ID() == page.ID() {
+				child.GetStyle().SetVisible()
 			} else {
-				child.SetHidden()
+				child.GetStyle().SetHidden()
 			}
 		}
 	}
 }
 
-func (app *App) Render() ([]byte) {
+func (app *Web) Render() ([]byte) {
 	var html bytes.Buffer
 	
 	html.WriteByte('<')
@@ -79,9 +123,9 @@ func (app *App) Render() ([]byte) {
 	html.WriteString(fmt.Sprint(app.id))
 	html.WriteByte('\'')
 	
-	if app.Style.css.Bytes() != nil {
+	if app.Style.css.(*StaticCss).data.Bytes() != nil {
 		html.WriteString(" style='")
-		html.Write(app.Style.css.Bytes())
+		html.Write(app.Style.css.(*StaticCss).data.Bytes())
 		html.WriteByte('\'')
 	}
 	
@@ -107,7 +151,7 @@ func (app *App) Render() ([]byte) {
 	return html.Bytes()
 }
 
-func (app *App) Host(hostport string) error {
+func (app *Web) Host(hostport string) error {
 	
 	var html = app.Render()
 	
@@ -154,15 +198,6 @@ func (app *App) Host(hostport string) error {
 			
 			 html, body {margin: 0; height: 100%}
 		</style>
-			
-			<script>
-				window.addEventListener("load",function() {
-					setTimeout(function(){
-						// This hides the address bar:
-						window.scrollTo(0, 1);
-					}, 0);
-				});
-			</script>
 		</head><body>`))
 			w.Write(html)
 		w.Write([]byte(`</body></html>`))
