@@ -154,8 +154,17 @@ func (app *Web) Render() ([]byte) {
 func (app *Web) Host(hostport string) error {
 	
 	var html = app.Render()
+	var worker = DefaultWorker.Render()
 	
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request)  {
+		
+		fmt.Println(r.URL.Path)
+		
+		if r.URL.Path == "/index.js" {
+			w.Header().Set("content-type", "text/javascript")
+			w.Write(worker)
+			return
+		}
 		
 		if path.Ext(r.URL.Path) != "" {
 			http.ServeFile(w, r, "assets/"+r.URL.Path)
@@ -168,6 +177,17 @@ func (app *Web) Host(hostport string) error {
                       minimum-scale=1.0, maximum-scale=1.0, 
                       user-scalable=no, target-densitydpi=device-dpi">
 			
+			<script>
+				if ('serviceWorker' in navigator) {
+					window.addEventListener('load', function() {
+						navigator.serviceWorker.register('/index.js').then(function(registration) {
+							console.log('ServiceWorker registration successful with scope: ', registration.scope);
+						}, function(err) {
+							console.log('ServiceWorker registration failed: ', err);
+						});
+					});
+				}
+			</script>
 			
 		<style>
 			video {
