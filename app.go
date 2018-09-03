@@ -224,6 +224,7 @@ func (app *Web) Host(hostport string) error {
 						});
 					});
 				}
+				window.addEventListener("touchmove", function(event) {event.preventDefault();}, {passive: false} );
 			</script>
 			
 		<style>
