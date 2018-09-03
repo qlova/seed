@@ -4,7 +4,10 @@ import (
 	"net/http"
 	"fmt"
 	"path"
+	"path/filepath"
 	"bytes"
+	"os"
+	"log"
 )
 
 var id = 0;
@@ -153,12 +156,15 @@ func (app *Web) Render() ([]byte) {
 
 func (app *Web) Host(hostport string) error {
 	
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+    if err != nil {
+            log.Fatal(err)
+    }
+	
 	var html = app.Render()
 	var worker = DefaultWorker.Render()
 	
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request)  {
-		
-		fmt.Println(r.URL.Path)
 		
 		if r.URL.Path == "/index.js" {
 			w.Header().Set("content-type", "text/javascript")
@@ -167,7 +173,7 @@ func (app *Web) Host(hostport string) error {
 		}
 		
 		if path.Ext(r.URL.Path) != "" {
-			http.ServeFile(w, r, "assets/"+r.URL.Path)
+			http.ServeFile(w, r, dir+"/assets"+r.URL.Path)
 			return
 		}
 		
