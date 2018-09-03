@@ -253,7 +253,7 @@ func (app *Web) Host(hostport string) error {
 				background: red;
 			}
 			
-			 html, body {margin: 0; height: 100%}
+			 html, body {cursor: pointer; margin: 0; height: 100%}
 		</style>
 		</head><body>`))
 			w.Write(html)
