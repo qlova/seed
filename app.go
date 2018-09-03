@@ -16,6 +16,10 @@ var id = 0;
 type App interface {
 	ID() string
 	
+	SetName(name string)
+	SetDescription(description string)
+	SetIcon(path string)
+	
 	GetStyle() *Style
 	
 	Add(App)
@@ -45,6 +49,8 @@ type Web struct {
 	onclick []byte
 	
 	parent App
+	
+	manifest Manifest
 }
 
 //Create a new qlapp, an amazing progressive web app.
@@ -53,6 +59,9 @@ func New() *Web {
 	app.Style.css = new(StaticCss)
 	app.id = fmt.Sprint(id)
 	app.tag = "div"
+	
+	app.manifest = NewManifest()
+	
 	id++
 	return app
 }
@@ -60,6 +69,19 @@ func New() *Web {
 func (app *Web) ID() string {
 	return fmt.Sprint(app.id)
 }
+
+
+func (app *Web) SetName(name string) {
+	app.manifest.Name = name
+}
+func (app *Web) SetDescription(description string) {
+	app.manifest.Description = description
+}
+func (app *Web) SetIcon(path string) {
+	
+}
+
+
 
 func (app *Web) GetStyle() *Style {
 	return &app.Style
@@ -163,12 +185,19 @@ func (app *Web) Host(hostport string) error {
 	
 	var html = app.Render()
 	var worker = DefaultWorker.Render()
+	var manifest = app.manifest.Render()
 	
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request)  {
 		
 		if r.URL.Path == "/index.js" {
 			w.Header().Set("content-type", "text/javascript")
 			w.Write(worker)
+			return
+		}
+		
+		if r.URL.Path == "/app.webmanifest" {
+			w.Header().Set("content-type", "application/json")
+			w.Write(manifest)
 			return
 		}
 		
@@ -182,6 +211,8 @@ func (app *Web) Host(hostport string) error {
                       width=device-width, initial-scale=1.0, 
                       minimum-scale=1.0, maximum-scale=1.0, 
                       user-scalable=no, target-densitydpi=device-dpi">
+
+			<link rel="manifest" href="/app.webmanifest">
 			
 			<script>
 				if ('serviceWorker' in navigator) {
