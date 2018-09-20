@@ -23,3 +23,10 @@ func Header() *Web {
 	app.tag = "h1"
 	return app
 }
+
+func FilePicker(types string) *Web {
+	app := New()
+	app.tag = "input"
+	app.attr = `type="file" accept="`+types+`"`
+	return app
+}
