@@ -1,5 +1,11 @@
 package app
 
+import "github.com/qlova/app/worker"
+import "github.com/qlova/app/manifest"
+import "github.com/qlova/app/style"
+import "github.com/qlova/app/script"
+import "github.com/qlova/app/interfaces"
+
 import (
 	"net/http"
 	"fmt"
@@ -10,57 +16,46 @@ import (
 	"log"
 )
 
+
+var ServiceWorker worker.Service
+
+func RegisterAsset(path string) {
+	ServiceWorker.Assets = append(ServiceWorker.Assets, path)
+}
+
 var id = 0;
 
-//Everything is an app.
-type App interface {
-	ID() string
-	
-	SetName(name string)
-	SetDescription(description string)
-	SetIcon(path string)
-	
-	GetStyle() *Style
-	
-	Add(App)
-	GetParent() App 
-	SetParent(App)
-	GetChildren() []App
-	
-	Page() bool
-	
-	SetContent(content string)
-	
-	OnClick(func(*Script))
-
-	Render() []byte
+func App() *Web {
+	return New()
 }
 
 type Web struct {
-	Style
+	style.Style
 	
 	id string
 	tag, attr string
-	children []App
+	children []interfaces.App
 	
 	content []byte
 	page bool
 	
 	onclick []byte
 	
-	parent App
+	parent interfaces.App
 	
-	manifest Manifest
+	manifest manifest.Manifest
+	handlers []func(w http.ResponseWriter, r *http.Request)
 }
 
 //Create a new qlapp, an amazing progressive web app.
 func New() *Web {
 	app := new(Web)
-	app.Style.css = new(StaticCss)
+	app.Style = style.New()
 	app.id = fmt.Sprint(id)
 	app.tag = "div"
 	
-	app.manifest = NewManifest()
+	app.manifest = manifest.New()
+	
 	
 	id++
 	return app
@@ -83,7 +78,7 @@ func (app *Web) SetIcon(path string) {
 
 
 
-func (app *Web) GetStyle() *Style {
+func (app *Web) GetStyle() *style.Style {
 	return &app.Style
 }
 
@@ -92,21 +87,27 @@ func (app *Web) Page() bool {
 }
 
 //Add a child app to the app. Remember, everything is an app!
-func (app *Web) Add(child App) {
+func (app *Web) Add(child interfaces.App) {
 	app.children = append(app.children, child)
 	child.SetParent(app)
 }
 
-func (app *Web) GetParent() App {
+//Add a child app to the app. Remember, everything is an app!
+func (app *Web) AddHandler(handler func(w http.ResponseWriter, r *http.Request)) {
+	app.handlers = append(app.handlers, handler)
+}
+
+
+func (app *Web) GetParent() interfaces.App {
 	return app.parent
 }
 
 
-func (app *Web) SetParent(parent App) {
+func (app *Web) SetParent(parent interfaces.App) {
 	app.parent = parent
 }
 
-func (app *Web) GetChildren() []App {
+func (app *Web) GetChildren() []interfaces.App {
 	return app.children
 }
 
@@ -115,14 +116,14 @@ func (app *Web) SetContent(data string) {
 	app.content = []byte(data)
 }
 
-func (app *Web) OnClick(f func(*Script)) {
-	var script = new(Script)
+func (app *Web) OnClick(f func(*script.Script)) {
+	var script = new(script.Script)
 	f(script)
 	
 	app.onclick = script.Bytes()
 }
 
-func SetPage(page App) {
+func SetPage(page interfaces.App) {
 	for _, child := range page.GetParent().GetChildren() {
 		if child.Page() {
 			if child.ID() == page.ID() {
@@ -148,9 +149,9 @@ func (app *Web) Render() ([]byte) {
 	html.WriteString(fmt.Sprint(app.id))
 	html.WriteByte('\'')
 	
-	if app.Style.css.(*StaticCss).data.Bytes() != nil {
+	if app.Style.Css.(*style.StaticCss).Data.Bytes() != nil {
 		html.WriteString(" style='")
-		html.Write(app.Style.css.(*StaticCss).data.Bytes())
+		html.Write(app.Style.Css.(*style.StaticCss).Data.Bytes())
 		html.WriteByte('\'')
 	}
 	
@@ -184,10 +185,12 @@ func (app *Web) Host(hostport string) error {
     }
 	
 	var html = app.Render()
-	var worker = DefaultWorker.Render()
+	var worker = ServiceWorker.Render()
 	var manifest = app.manifest.Render()
 	
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request)  {
+		
+		fmt.Println(r.URL.Path)
 		
 		if r.URL.Path == "/index.js" {
 			w.Header().Set("content-type", "text/javascript")
@@ -203,6 +206,13 @@ func (app *Web) Host(hostport string) error {
 		
 		if path.Ext(r.URL.Path) != "" {
 			http.ServeFile(w, r, dir+"/assets"+r.URL.Path)
+			return
+		}
+		
+		if r.URL.Path != "/" {
+			for _, handler := range app.handlers {
+				handler(w, r)
+			}
 			return
 		}
 		

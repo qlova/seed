@@ -1,18 +1,12 @@
-package app
+package worker
 
 import "bytes"
 
-var DefaultWorker Worker
-
-func RegisterAsset(path string) {
-	DefaultWorker.Assets = append(DefaultWorker.Assets, path)
-}
-
-type Worker struct {
+type Service struct {
 	Assets []string
 }
 
-func (worker Worker) Render() []byte {
+func (worker Service) Render() []byte {
 	var b bytes.Buffer
 	
 	b.WriteString(`self.addEventListener('install', function(event) {

@@ -1,4 +1,4 @@
-package app
+package manifest
 
 import "encoding/json"
 
@@ -19,7 +19,7 @@ type Manifest struct {
 	Icons []Icon			`json:"icons"`
 }
 
-func NewManifest() Manifest {
+func New() Manifest {
 	var manifest Manifest
 	manifest.StartUrl = "."
 	manifest.Display = "standalone"

@@ -1,5 +1,9 @@
 package app
 
+func Image(path string) *Web {
+	return NewImage(path)
+}
+
 func NewImage(path string) *Web {
 	app := New()
 	app.tag = "img"

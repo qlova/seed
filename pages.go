@@ -1,5 +1,9 @@
 package app
 
+func Page() *Web {
+	return NewPage()
+}
+
 func NewPage() *Web {
 	app := New()
 	
