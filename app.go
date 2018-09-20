@@ -39,7 +39,7 @@ type Web struct {
 	content []byte
 	page bool
 	
-	onclick []byte
+	onclick func(*script.Script)
 	
 	parent interfaces.App
 	
@@ -117,10 +117,7 @@ func (app *Web) SetContent(data string) {
 }
 
 func (app *Web) OnClick(f func(*script.Script)) {
-	var script = new(script.Script)
-	f(script)
-	
-	app.onclick = script.Bytes()
+	app.onclick = f
 }
 
 func SetPage(page interfaces.App) {
@@ -156,8 +153,11 @@ func (app *Web) Render() ([]byte) {
 	}
 	
 	if app.onclick != nil {
+		var script = new(script.Script)
+		app.onclick(script)
+		
 		html.WriteString(" onclick='")
-		html.Write(app.onclick)
+		html.Write(script.Bytes())
 		html.WriteByte('\'')
 	}
 	html.WriteByte('>')

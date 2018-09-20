@@ -25,6 +25,13 @@ func (app *App) GetChildren() []interfaces.App {
 	return result
 }
 
+func (app *App) Click() {
+	app.script.data.WriteString(`document.getElementById("`)
+	app.script.data.WriteString(app.ID())
+	app.script.data.WriteString(`").click();`)
+}
+
+
 func (app *App) GetStyle() *style.Style {
 	return app.style
 }
@@ -38,7 +45,7 @@ func (script *Script) Bytes() []byte {
 	return script.data.Bytes()
 }
 
-func (script *Script) Get(app interfaces.App) interfaces.App {
+func (script *Script) Get(app interfaces.App) *App {
 	if app == nil {
 		return nil
 	}
