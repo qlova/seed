@@ -267,9 +267,17 @@ func (app *Web) Host(hostport string) error {
 				overscroll-behavior: none; 
 				cursor: pointer; 
 				margin: 0; 
-				height: 100%
+				height: 100%;
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+				-webkit-tap-highlight-color: transparent;
 			}
 		</style>
+		
 		</head><body>`))
 			w.Write(html)
 		w.Write([]byte(`</body></html>`))
