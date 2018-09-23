@@ -5,8 +5,17 @@ import "github.com/qlova/app/interfaces"
 import "github.com/qlova/app/style"
 import "strings"
 
+type CssWrapper struct {
+	app interfaces.App
+}
+
+func (c CssWrapper) Set(a, b string) {
+	c.app.GetStyle().Css.Set(a, b)
+}
+
 type App struct {
 	interfaces.App
+	style.Style
 	
 	script *Script
 	style *style.Style
@@ -56,6 +65,7 @@ func (script *Script) Get(app interfaces.App) *App {
 	
 	sa := new(App)
 	sa.script = script
+	sa.Style = style.Style{Css: CssWrapper{app: sa}}
 	sa.App = app
 	sa.style = &style.Style{Css: &scriptCss{script:script, app:sa}}
 
