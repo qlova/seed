@@ -238,7 +238,6 @@ func (app *Web) Host(hostport string) error {
 			
 		<style>
 			video {
-				position: absolute;
 				top: 100px;
 				left: 0;
 				width: 100vw;
