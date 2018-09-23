@@ -16,6 +16,10 @@ func (style *Style) SetPadding(padding string) {
 	style.Css.Set("padding", padding)
 }
 
+func (style *Style) SetFilter(filter string) {
+	style.Css.Set("filter", filter)
+}
+
 func (style *Style) SetPaddingBottom(padding string) {
 	style.Css.Set("padding-bottom", padding)
 }
