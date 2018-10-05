@@ -237,13 +237,6 @@ func (app *Web) Host(hostport string) error {
 			</script>
 			
 		<style>
-			video {
-				top: 100px;
-				left: 0;
-				width: 100vw;
-				height: calc(100vh - 100px);
-				z-index: -100;
-			}
 			
 			input {
 				position: absolute;
