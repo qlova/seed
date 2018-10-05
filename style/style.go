@@ -50,6 +50,10 @@ func (style *Style) SetMaxHeight(height string) {
 	 style.Css.Set("max-height", height)
 }
 
+func (style *Style) SetDepth(depth string) {
+	 style.Css.Set("z-index", depth)
+}
+
 func (style *Style) SetHeight(height string) {
 	 style.Css.Set("height", height)
 }
@@ -68,6 +72,14 @@ func (style *Style) SetHidden() {
 
 func (style *Style) SetVisible() {
 	 style.Css.Set("display", "initial")
+}
+
+func (style *Style) Flex() {
+	 style.Css.Set("display", "flex")
+}
+
+func (style *Style) Contain() {
+	 style.Css.Set("object-fit", "contain")
 }
 
 func (style *Style) AttachLeft() {
