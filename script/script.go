@@ -19,6 +19,8 @@ type App struct {
 	
 	script *Script
 	style *style.Style
+	
+	query string
 }
 
 func (app *App) GetParent() interfaces.App {
@@ -35,11 +37,23 @@ func (app *App) GetChildren() []interfaces.App {
 }
 
 func (app *App) Click() {
-	app.script.data.WriteString(`document.getElementById("`)
-	app.script.data.WriteString(app.ID())
-	app.script.data.WriteString(`").click();`)
+	app.Run("click");
 }
 
+func (app *App) Run(method string) {
+	if app.query != "" {
+		app.script.data.WriteString(app.query)
+		app.script.data.WriteString(".")
+		app.script.data.WriteString(method)
+		app.script.data.WriteString("();")
+		return
+	}
+	app.script.data.WriteString(`document.getElementById("`)
+	app.script.data.WriteString(app.ID())
+	app.script.data.WriteString(`").`)
+	app.script.data.WriteString(method)
+	app.script.data.WriteString(`();`)
+}
 
 func (app *App) GetStyle() *style.Style {
 	return app.style
@@ -52,6 +66,20 @@ type Script struct {
 
 func (script *Script) Bytes() []byte {
 	return script.data.Bytes()
+}
+
+func (script *Script) Run(f string) {
+	script.data.WriteString(f)
+	script.data.WriteString(`();`)
+}
+
+func (script *Script) Query(q string) *App {
+	sa := new(App)
+	sa.query = `document.querySelector("`+q+`")`
+	sa.script = script
+	sa.style = &style.Style{Css: &scriptCss{script:script, app:sa}}
+	
+	return sa
 }
 
 func (script *Script) Get(app interfaces.App) *App {
