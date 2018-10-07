@@ -18,6 +18,14 @@ func Text() *Web {
 	return app
 }
 
+
+func Script(content string) *Web {
+	app := New()
+	app.tag = "script"
+	app.content = []byte(content)
+	return app
+}
+
 func Header() *Web {
 	app := New()
 	app.tag = "h1"
