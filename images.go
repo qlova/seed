@@ -21,7 +21,7 @@ func Video(path string) *Web {
 func NewVideo(path string) *Web {
 	app := New()
 	app.tag = "video"
-	app.attr = "src='"+path+"'"
+	app.attr = "src='"+path+"' playsinline"
 
 	RegisterAsset(path)
 	return app
