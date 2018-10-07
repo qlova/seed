@@ -62,7 +62,7 @@ func New() *Web {
 }
 
 func (app *Web) ID() string {
-	return fmt.Sprint(app.id)
+	return app.id
 }
 
 
@@ -237,14 +237,6 @@ func (app *Web) Host(hostport string) error {
 			</script>
 			
 		<style>
-			
-			input {
-				position: absolute;
-				top:0;
-				left:0;
-				width: 100vw;
-				height: 100px;
-			}
 			
 			 .circle {
 				width: 50px;
