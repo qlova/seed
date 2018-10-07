@@ -4,6 +4,12 @@ type Style struct {
 	Css Css
 }
 
+func (style *Style) AnimatePosition(time, mode string) {
+	style.Css.Set("transition", "top "+time+" ")
+	style.Css.Set("transition", "left "+time+" ")
+}
+
+
 func (style *Style) SetBackgroundColor(color string) {
 	style.Css.Set("background-color", color)
 }
@@ -14,6 +20,10 @@ func (style *Style) SetLayout(layout string) {
 
 func (style *Style) SetPadding(padding string) {
 	style.Css.Set("padding", padding)
+}
+
+func (style *Style) SetPaddingLeft(padding string) {
+	style.Css.Set("padding-left", padding)
 }
 
 func (style *Style) SetFilter(filter string) {
@@ -80,6 +90,10 @@ func (style *Style) Flex() {
 
 func (style *Style) Contain() {
 	 style.Css.Set("object-fit", "contain")
+}
+
+func (style *Style) AttachTop() {
+	 style.Css.Set("top", "0")
 }
 
 func (style *Style) AttachLeft() {
