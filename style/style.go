@@ -81,7 +81,7 @@ func (style *Style) SetHidden() {
 }
 
 func (style *Style) SetVisible() {
-	 style.Css.Set("display", "initial")
+	 style.Css.Set("display", "block")
 }
 
 func (style *Style) Flex() {
@@ -98,6 +98,10 @@ func (style *Style) AttachTop() {
 
 func (style *Style) AttachLeft() {
 	 style.Css.Set("left", "0")
+}
+
+func (style *Style) AttachRight() {
+	 style.Css.Set("right", "0")
 }
 
 func (style *Style) AttachBottom() {
