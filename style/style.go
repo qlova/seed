@@ -41,9 +41,12 @@ func (style *Style) CenterX() {
 	style.Css.Set("text-align", "center")
 }
 
-
 func (style *Style) AutoExpand() {
 	style.Css.Set("flex-grow", "1")
+}
+
+func (style *Style) Absolute() {
+	style.Css.Set("position", "absolute")
 }
 
 func (style *Style) SetPosition(x, y string) {
