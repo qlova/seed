@@ -14,6 +14,8 @@ import (
 	"bytes"
 	"os"
 	"log"
+	"html"
+	"strings"
 )
 
 
@@ -35,6 +37,8 @@ type Web struct {
 	id string
 	tag, attr string
 	children []interfaces.App
+	
+	fonts bytes.Buffer
 	
 	content []byte
 	page bool
@@ -76,7 +80,30 @@ func (app *Web) SetIcon(path string) {
 	
 }
 
-
+func (app *Web) AddFont(name, file, weight string) {
+	
+	switch weight {
+		case "black":
+			weight = "900"
+		case "semi-bold":
+			weight = "600"
+		case "regular":
+			weight = "400"
+		case "light":
+			weight = "300"
+		case "extra-light":
+			weight = "200"
+	}
+	
+	RegisterAsset(file)
+	
+	app.fonts.Write([]byte(`@font-face {
+	font-family: '`+name+`';
+	src: url('`+file+`');
+	font-weight: `+weight+`;
+}
+`))
+}
 
 func (app *Web) GetStyle() *style.Style {
 	return &app.Style
@@ -115,6 +142,14 @@ func (app *Web) GetChildren() []interfaces.App {
 func (app *Web) SetContent(data string) {
 	app.content = []byte(data)
 }
+
+//Add text, html or whatever!
+func (app *Web) SetText(data string) {
+	data = html.EscapeString(data)
+	data = strings.Replace(data, "\n", "<br>", -1)
+	app.content = []byte(data)
+}
+
 
 func (app *Web) OnClick(f func(*script.Script)) {
 	app.onclick = f
@@ -235,6 +270,15 @@ func (app *Web) Host(hostport string) error {
 					});
 				}
 			</script>
+			
+			
+			<style>
+				`))
+		
+		w.Write(app.fonts.Bytes())
+		
+		w.Write([]byte(`
+			</style>
 			
 		<style>
 			

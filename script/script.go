@@ -4,6 +4,7 @@ import "bytes"
 import "github.com/qlova/app/interfaces"
 import "github.com/qlova/app/style"
 import "strings"
+import "fmt"
 
 type CssWrapper struct {
 	app interfaces.App
@@ -21,6 +22,10 @@ type App struct {
 	style *style.Style
 	
 	query string
+}
+
+func (app *App) String() string {
+	return fmt.Sprint("document.getElementById(", app.ID(), ")")
 }
 
 func (app *App) GetParent() interfaces.App {
@@ -66,6 +71,10 @@ type Script struct {
 
 func (script *Script) Bytes() []byte {
 	return script.data.Bytes()
+}
+
+func (script *Script) Write(data []byte) (int, error) {
+	return script.data.Write(data)
 }
 
 func (script *Script) Run(f string) {
