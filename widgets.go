@@ -38,3 +38,21 @@ func FilePicker(types string) *Web {
 	app.attr = `type="file" accept="`+types+`"`
 	return app
 }
+
+func TextBox() *Web {
+	app := New()
+	app.tag = "input"
+	return app
+}
+
+func TextArea() *Web {
+	app := New()
+	app.tag = "textarea"
+	return app
+}
+
+func Button() *Web {
+	app := New()
+	app.tag = "button"
+	return app
+}
