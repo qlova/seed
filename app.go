@@ -16,8 +16,24 @@ import (
 	"log"
 	"html"
 	"strings"
+	
+	"regexp"
+	
+	"math/big"
+	"encoding/base64"
 )
 
+import (
+	"github.com/tdewolff/minify"
+	"github.com/tdewolff/minify/css"
+	mini_html "github.com/tdewolff/minify/html"
+	"github.com/tdewolff/minify/js"
+	"github.com/tdewolff/minify/json"
+	"github.com/tdewolff/minify/svg"
+	"github.com/tdewolff/minify/xml"
+)
+
+import "github.com/NYTimes/gziphandler"
 
 var ServiceWorker worker.Service
 
@@ -25,7 +41,7 @@ func RegisterAsset(path string) {
 	ServiceWorker.Assets = append(ServiceWorker.Assets, path)
 }
 
-var id = 0;
+var id int64 = 0;
 
 func App() *Web {
 	return New()
@@ -35,8 +51,10 @@ type Web struct {
 	style.Style
 	
 	id string
-	tag, attr string
+	tag, attr, class string
 	children []interfaces.App
+	
+	styled bool
 	
 	fonts bytes.Buffer
 	
@@ -55,7 +73,7 @@ type Web struct {
 func New() *Web {
 	app := new(Web)
 	app.Style = style.New()
-	app.id = fmt.Sprint(id)
+	app.id = base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
 	app.tag = "div"
 	
 	app.manifest = manifest.New()
@@ -167,6 +185,22 @@ func SetPage(page interfaces.App) {
 	}
 }
 
+func (app *Web) buildStyleSheet(sheet *style.Sheet) {
+	if app.Style.Css.(*style.StaticCss).Data.Bytes() != nil {
+		app.styled = true
+		app.class = sheet.CreateAndReturnClassesFor(app.id, string(app.Style.Css.(*style.StaticCss).Data.Bytes()))
+	}
+	for _, child := range app.children {
+		child.(*Web).buildStyleSheet(sheet)
+	}
+}
+
+func (app *Web) BuildStyleSheet() *style.Sheet {
+	var stylesheet style.Sheet
+	app.buildStyleSheet(&stylesheet)
+	return &stylesheet
+}
+
 func (app *Web) Render() ([]byte) {
 	var html bytes.Buffer
 	
@@ -181,7 +215,13 @@ func (app *Web) Render() ([]byte) {
 	html.WriteString(fmt.Sprint(app.id))
 	html.WriteByte('\'')
 	
-	if app.Style.Css.(*style.StaticCss).Data.Bytes() != nil {
+	if app.attr != "" {
+		html.WriteString("class='")
+		html.WriteString(app.class)
+		html.WriteByte('\'')
+	}
+	
+	if !app.styled && app.Style.Css.(*style.StaticCss).Data.Bytes() != nil {
 		html.WriteString(" style='")
 		html.Write(app.Style.Css.(*style.StaticCss).Data.Bytes())
 		html.WriteByte('\'')
@@ -218,67 +258,42 @@ func (app *Web) Host(hostport string) error {
     if err != nil {
             log.Fatal(err)
     }
+    
+	var style = app.BuildStyleSheet().Render()
 	
 	var html = app.Render()
 	var worker = ServiceWorker.Render()
 	var manifest = app.manifest.Render()
 	
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request)  {
-		
-		fmt.Println(r.URL.Path)
-		
-		if r.URL.Path == "/index.js" {
-			w.Header().Set("content-type", "text/javascript")
-			w.Write(worker)
-			return
-		}
-		
-		if r.URL.Path == "/app.webmanifest" {
-			w.Header().Set("content-type", "application/json")
-			w.Write(manifest)
-			return
-		}
-		
-		if path.Ext(r.URL.Path) != "" {
-			http.ServeFile(w, r, dir+"/assets"+r.URL.Path)
-			return
-		}
-		
-		if r.URL.Path != "/" {
-			for _, handler := range app.handlers {
-				handler(w, r)
-			}
-			return
-		}
-		
-		w.Write([]byte(`<html><head>
-			<meta name="viewport" content="height=device-height, 
-                      width=device-width, initial-scale=1.0, 
-                      minimum-scale=1.0, maximum-scale=1.0, 
-                      user-scalable=no, target-densitydpi=device-dpi">
+	var buffer bytes.Buffer
+	buffer.Write([]byte(`<html><head>
+		<meta name="viewport" content="height=device-height, 
+					width=device-width, initial-scale=1.0, 
+					minimum-scale=1.0, maximum-scale=1.0, 
+					user-scalable=no, target-densitydpi=device-dpi">
 
-			<link rel="manifest" href="/app.webmanifest">
-			
-			<script>
-				if ('serviceWorker' in navigator) {
-					window.addEventListener('load', function() {
-						navigator.serviceWorker.register('/index.js').then(function(registration) {
-							console.log('ServiceWorker registration successful with scope: ', registration.scope);
-						}, function(err) {
-							console.log('ServiceWorker registration failed: ', err);
-						});
+		<link rel="manifest" href="/app.webmanifest">
+		
+		<script>
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', function() {
+					navigator.serviceWorker.register('/index.js').then(function(registration) {
+						console.log('ServiceWorker registration successful with scope: ', registration.scope);
+					}, function(err) {
+						console.log('ServiceWorker registration failed: ', err);
 					});
-				}
-			</script>
-			
-			
-			<style>
-				`))
+				});
+			}
+		</script>
 		
-		w.Write(app.fonts.Bytes())
 		
-		w.Write([]byte(`
-			</style>
+		<style>
+	`))
+	
+	buffer.Write(app.fonts.Bytes())
+	buffer.Write(style.Bytes())
+	buffer.Write([]byte(`
+		</style>
 			
 		<style>
 			
@@ -306,10 +321,65 @@ func (app *Web) Host(hostport string) error {
 			}
 		</style>
 		
-		</head><body>`))
-			w.Write(html)
-		w.Write([]byte(`</body></html>`))
+		</head><body>
+	`))
+	buffer.Write(html)
+	buffer.Write([]byte(`</body></html>`))
+		
+	
+	//Minify
+	minifier := minify.New()
+	minifier.Add("text/html", &mini_html.Minifier{
+		KeepDocumentTags: true,
 	})
+	
+	minifier.AddFunc("text/css", css.Minify)
+	//minifier.AddFunc("text/html", html.Minify)
+	minifier.AddFunc("image/svg+xml", svg.Minify)
+	minifier.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
+	minifier.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
+	minifier.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
+	
+	minified, err := minifier.Bytes("text/html", buffer.Bytes())
+	if err != nil {
+		return err
+	}
+	
+	
+	withoutGz := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)  {
+		
+		fmt.Println(r.URL.Path)
+		
+		if r.URL.Path == "/index.js" {
+			w.Header().Set("content-type", "text/javascript")
+			w.Write(worker)
+			return
+		}
+		
+		if r.URL.Path == "/app.webmanifest" {
+			w.Header().Set("content-type", "application/json")
+			w.Write(manifest)
+			return
+		}
+		
+		if path.Ext(r.URL.Path) != "" {
+			http.ServeFile(w, r, dir+"/assets"+r.URL.Path)
+			return
+		}
+		
+		if r.URL.Path != "/" {
+			for _, handler := range app.handlers {
+				handler(w, r)
+			}
+			return
+		}
+		
+		w.Write(minified)
+	})
+	
+	withGz := gziphandler.GzipHandler(withoutGz)
+	
+	http.Handle("/", withGz)
 	
 	return http.ListenAndServe(hostport, nil)
 }

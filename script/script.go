@@ -25,7 +25,7 @@ type App struct {
 }
 
 func (app *App) String() string {
-	return fmt.Sprint("document.getElementById(", app.ID(), ")")
+	return fmt.Sprint("document.getElementById(\"", app.ID(), "\")")
 }
 
 func (app *App) GetParent() interfaces.App {
