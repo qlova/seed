@@ -267,10 +267,11 @@ func (app *Web) Host(hostport string) error {
 	
 	var buffer bytes.Buffer
 	buffer.Write([]byte(`<html><head>
-		<meta name="viewport" content="height=device-height, 
-					width=device-width, initial-scale=1.0, 
-					minimum-scale=1.0, maximum-scale=1.0, 
-					user-scalable=no, target-densitydpi=device-dpi">
+		<meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="theme-color" content="#ffffff00">
 
 		<link rel="manifest" href="/app.webmanifest">
 		
