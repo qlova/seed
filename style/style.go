@@ -5,8 +5,10 @@ type Style struct {
 }
 
 func (style *Style) AnimatePosition(time, mode string) {
-	style.Css.Set("transition", "top "+time+" ")
-	style.Css.Set("transition", "left "+time+" ")
+	//style.Css.Set("transition", "top "+time)
+	style.Css.Set("transition", "left "+time)
+	//style.Css.Set("-webkit-transition", "top "+time)
+	//style.Css.Set("-webkit-transition", "left "+time)
 }
 
 func (style *Style) SetFont(name, weight string) {
