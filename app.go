@@ -321,6 +321,12 @@ func (app *Web) Host(hostport string) error {
 			}
 		</style>
 		
+		<script>
+			var get = function(id) {
+				return document.getElementById(id)
+			}
+		</script>
+		
 		</head><body>
 	`))
 	buffer.Write(html)

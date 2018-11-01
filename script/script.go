@@ -25,7 +25,7 @@ type App struct {
 }
 
 func (app *App) String() string {
-	return fmt.Sprint("document.getElementById(\"", app.ID(), "\")")
+	return fmt.Sprint("get(\"", app.ID(), "\")")
 }
 
 func (app *App) GetParent() interfaces.App {
@@ -53,7 +53,7 @@ func (app *App) Run(method string) {
 		app.script.data.WriteString("();")
 		return
 	}
-	app.script.data.WriteString(`document.getElementById("`)
+	app.script.data.WriteString(`get("`)
 	app.script.data.WriteString(app.ID())
 	app.script.data.WriteString(`").`)
 	app.script.data.WriteString(method)
@@ -128,7 +128,7 @@ func (css *scriptCss) Set(property, value string) {
 		property = splits[0] + strings.Title(splits[1])
 	}
 	
-	css.script.data.WriteString(`document.getElementById("`)
+	css.script.data.WriteString(`get("`)
 	css.script.data.WriteString(css.app.ID())
 	css.script.data.WriteString(`").style.`)
 	css.script.data.WriteString(property)
