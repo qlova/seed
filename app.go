@@ -41,7 +41,7 @@ func RegisterAsset(path string) {
 	ServiceWorker.Assets = append(ServiceWorker.Assets, path)
 }
 
-var id int64 = 0;
+var id int64 = 1;
 
 func App() *Web {
 	return New()
