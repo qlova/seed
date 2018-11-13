@@ -98,6 +98,19 @@ func (app *Web) SetIcon(path string) {
 	
 }
 
+
+func (app *Web) SetTag(tag string) {
+	app.tag = tag
+}
+
+func (app *Web) SetAttributes(attr string) {
+	app.attr = attr
+}
+
+func (app *Web) Attributes() string {
+	return app.attr
+}
+
 func (app *Web) AddFont(name, file, weight string) {
 	
 	switch weight {
