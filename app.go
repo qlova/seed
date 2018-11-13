@@ -357,6 +357,13 @@ func (app *Web) Host(hostport string) error {
 		
 		fmt.Println(r.URL.Path)
 		
+		if r.URL.Path != "/" {
+			for _, handler := range app.handlers {
+				handler(w, r)
+			}
+			return
+		}
+		
 		if r.URL.Path == "/index.js" {
 			w.Header().Set("content-type", "text/javascript")
 			w.Write(worker)
@@ -369,18 +376,12 @@ func (app *Web) Host(hostport string) error {
 			return
 		}
 		
+		
 		if path.Ext(r.URL.Path) != "" {
 			http.ServeFile(w, r, dir+"/assets"+r.URL.Path)
 			return
 		}
-		
-		if r.URL.Path != "/" {
-			for _, handler := range app.handlers {
-				handler(w, r)
-			}
-			return
-		}
-		
+
 		w.Write(minified)
 	})
 	
