@@ -374,7 +374,6 @@ func (app *Web) Host(hostport string) error {
 			for _, handler := range app.handlers {
 				handler(w, r)
 			}
-			return
 		}
 		
 		if r.URL.Path == "/index.js" {
