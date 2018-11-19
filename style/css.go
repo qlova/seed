@@ -9,17 +9,27 @@ type Css interface {
 }
 
 type StaticCss struct {
-	Data bytes.Buffer
+	styles map[string]string
 }
 
 func (css *StaticCss) Set(property, value string) {
-	css.Data.WriteString(property)
-	css.Data.WriteByte(':')
-	css.Data.WriteString(value)
-	css.Data.WriteByte(';')
+	css.styles[property] = value
 }
 
 
 func New() Style {
-	return Style{Css: &StaticCss{}}
+	return Style{Css: &StaticCss{styles: make(map[string]string)}}
+}
+
+func (style Style) Render() []byte {
+	var data bytes.Buffer
+	
+	for property, value := range style.Css.(*StaticCss).styles {
+		data.WriteString(property)
+		data.WriteByte(':')
+		data.WriteString(value)
+		data.WriteByte(';')
+	}
+	
+	return data.Bytes()
 }

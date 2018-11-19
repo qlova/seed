@@ -18,14 +18,6 @@ func Text() Seed {
 	return seed
 }
 
-
-func LolScript(content string) Seed {
-	seed := New()
-	seed.tag = "script"
-	seed.content = []byte(content)
-	return seed
-}
-
 func Header() Seed {
 	seed := New()
 	seed.tag = "h1"

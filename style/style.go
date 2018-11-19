@@ -47,8 +47,13 @@ func (style *Style) Underline() {
 	style.Css.Set("text-decoration", "underline")
 }
 
+func (style *Style) ScrollBars() {
+	style.Css.Set("overflow", "auto")
+}
+
 func (style *Style) RemoveBorders() {
 	style.Css.Set("border", "none")
+	style.Css.Set("border-style", "none")
 }
 
 func (style *Style) SetRoundedCorners(radius string) {
@@ -136,6 +141,10 @@ func (style *Style) SetRight(x string) {
 
 func (style *Style) SetBottom(y string) {
 	 style.Css.Set("bottom", y)
+}
+
+func (style *Style) SetTop(y string) {
+	 style.Css.Set("top", y)
 }
 
 func (style *Style) SetPosition(x, y string) {

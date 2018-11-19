@@ -274,9 +274,9 @@ func SetPage(page interfaces.App) {
 }
 
 func (seed Seed) buildStyleSheet(sheet *style.Sheet) {
-	if seed.Style.Css.(*style.StaticCss).Data.Bytes() != nil {
+	if data := seed.Style.Render(); data != nil {
 		seed.styled = true
-		seed.class = sheet.CreateAndReturnClassesFor(seed.id, string(seed.Style.Css.(*style.StaticCss).Data.Bytes()))
+		seed.class = sheet.CreateAndReturnClassesFor(seed.id, string(data))
 	}
 	for _, child := range seed.children {
 		child.(Seed).buildStyleSheet(sheet)
@@ -351,9 +351,9 @@ func (seed Seed) Render() ([]byte) {
 		html.WriteByte('\'')
 	}
 	
-	if !seed.styled && seed.Style.Css.(*style.StaticCss).Data.Bytes() != nil {
+	if data := seed.Style.Render(); !seed.styled && data != nil {
 		html.WriteString(" style='")
-		html.Write(seed.Style.Css.(*style.StaticCss).Data.Bytes())
+		html.Write(data)
 		html.WriteByte('\'')
 	}
 	
@@ -424,9 +424,15 @@ func (seed Seed) Host(hostport string) error {
 		
 		<title>`+seed.manifest.Name+`</title>
 
-		<link rel="manifest" href="/app.webmanifest">
+		<link rel="manifest" href="/app.webmanifest">`))
 		
-		<script>
+	if UsingMap {
+		buffer.Write([]byte(`	<link rel="stylesheet" href="leaflet.css" />
+								<script src="leaflet.js"></script>
+		`))
+	}
+		
+	buffer.Write([]byte(`<script>
 			if ('serviceWorker' in navigator) {
 				window.addEventListener('load', function() {
 					navigator.serviceWorker.register('/index.js').then(function(registration) {
@@ -457,6 +463,10 @@ func (seed Seed) Host(hostport string) error {
 			
 		<style>
 			
+			::-webkit-scrollbar { 
+				display: none; 
+			}
+			
 			 html, body {
 				overscroll-behavior: none; 
 				cursor: pointer; 
@@ -485,12 +495,6 @@ func (seed Seed) Host(hostport string) error {
 			var goto = function(page) {
 				` + gotoBody + `
 			}
-			setTimeout(function () {
-				let viewheight = window.innerHeight;
-				let viewwidth = window.innerWidth;
-				let viewport = document.querySelector("meta[name=viewport]");
-				viewport.setAttribute("content", "height=" + viewheight + "px, width=" + viewwidth + "px, initial-scale=1.0");
-			}, 300);
 		`))
 	
 	if dynamic != nil {
