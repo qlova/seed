@@ -1,58 +1,58 @@
-package app
+package seed
 
-func ToolBar() *Web {
+func ToolBar() Seed {
 	return NewToolBar()
 }
 
-func NewToolBar() *Web {
-	app := New()
-	app.SetLayout("flex")
-	app.SetSticky()
-	return app
+func NewToolBar() Seed {
+	seed := New()
+	seed.SetLayout("flex")
+	seed.SetSticky()
+	return seed
 }
 
 
-func Text() *Web {
-	app := New()
-	app.tag = "p"
-	return app
+func Text() Seed {
+	seed := New()
+	seed.tag = "p"
+	return seed
 }
 
 
-func Script(content string) *Web {
-	app := New()
-	app.tag = "script"
-	app.content = []byte(content)
-	return app
+func LolScript(content string) Seed {
+	seed := New()
+	seed.tag = "script"
+	seed.content = []byte(content)
+	return seed
 }
 
-func Header() *Web {
-	app := New()
-	app.tag = "h1"
-	return app
+func Header() Seed {
+	seed := New()
+	seed.tag = "h1"
+	return seed
 }
 
-func FilePicker(types string) *Web {
-	app := New()
-	app.tag = "input"
-	app.attr = `type="file" accept="`+types+`"`
-	return app
+func FilePicker(types string) Seed {
+	seed := New()
+	seed.tag = "input"
+	seed.attr = `type="file" accept="`+types+`"`
+	return seed
 }
 
-func TextBox() *Web {
-	app := New()
-	app.tag = "input"
-	return app
+func TextBox() Seed {
+	seed := New()
+	seed.tag = "input"
+	return seed
 }
 
-func TextArea() *Web {
-	app := New()
-	app.tag = "textarea"
-	return app
+func TextArea() Seed {
+	seed := New()
+	seed.tag = "textarea"
+	return seed
 }
 
-func Button() *Web {
-	app := New()
-	app.tag = "button"
-	return app
+func Button() Seed {
+	seed := New()
+	seed.tag = "button"
+	return seed
 }

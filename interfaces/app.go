@@ -1,6 +1,6 @@
 package interfaces 
 
-import "github.com/qlova/app/style"
+import "github.com/qlova/seed/style"
 
 //Everything is an app.
 type App interface {

@@ -1,8 +1,8 @@
 package script
 
 import "bytes"
-import "github.com/qlova/app/interfaces"
-import "github.com/qlova/app/style"
+import "github.com/qlova/seed/interfaces"
+import "github.com/qlova/seed/style"
 import "strings"
 import "fmt"
 
@@ -18,10 +18,16 @@ type App struct {
 	interfaces.App
 	style.Style
 	
-	script *Script
+	q *script
 	style *style.Style
 	
 	query string
+}
+
+func (app *App) SetText(text string) interfaces.App {
+	data = html.EscapeString(data)
+	data = strings.Replace(data, "\n", "<br>", -1)
+	seed.content = []byte(data)
 }
 
 func (app *App) String() string {
@@ -29,14 +35,14 @@ func (app *App) String() string {
 }
 
 func (app *App) GetParent() interfaces.App {
-	return app.script.Get(app.App.GetParent())
+	return app.q.Get(app.App.GetParent())
 }
 
 func (app *App) GetChildren() []interfaces.App {
 	var children = app.App.GetChildren()
 	var result = make([]interfaces.App, len(children))
 	for i := range children {
-		result[i] = app.script.Get(children[i])
+		result[i] = app.q.Get(children[i])
 	}
 	return result
 }
@@ -47,51 +53,54 @@ func (app *App) Click() {
 
 func (app *App) Run(method string) {
 	if app.query != "" {
-		app.script.data.WriteString(app.query)
-		app.script.data.WriteString(".")
-		app.script.data.WriteString(method)
-		app.script.data.WriteString("();")
+		app.q.data.WriteString(app.query)
+		app.q.data.WriteString(".")
+		app.q.data.WriteString(method)
+		app.q.data.WriteString("();")
 		return
 	}
-	app.script.data.WriteString(`get("`)
-	app.script.data.WriteString(app.ID())
-	app.script.data.WriteString(`").`)
-	app.script.data.WriteString(method)
-	app.script.data.WriteString(`();`)
+	app.q.data.WriteString(`get("`)
+	app.q.data.WriteString(app.ID())
+	app.q.data.WriteString(`").`)
+	app.q.data.WriteString(method)
+	app.q.data.WriteString(`();`)
 }
 
 func (app *App) GetStyle() *style.Style {
 	return app.style
 }
 
-
 type Script struct {
+	*script
+}
+
+type script struct {
 	data bytes.Buffer
 }
 
-func (script *Script) Bytes() []byte {
-	return script.data.Bytes()
+func (q *script) Bytes() []byte {
+	return q.data.Bytes()
 }
 
-func (script *Script) Write(data []byte) (int, error) {
-	return script.data.Write(data)
+func (q *script) Write(data []byte) (int, error) {
+	return q.data.Write(data)
 }
 
-func (script *Script) Run(f string) {
-	script.data.WriteString(f)
-	script.data.WriteString(`();`)
+func (q *script) Run(f string) {
+	q.data.WriteString(f)
+	q.data.WriteString(`();`)
 }
 
-func (script *Script) Query(q string) *App {
+func (q *script) Query(query string) *App {
 	sa := new(App)
-	sa.query = `document.querySelector("`+q+`")`
-	sa.script = script
-	sa.style = &style.Style{Css: &scriptCss{script:script, app:sa}}
+	sa.query = `document.querySelector("`+query+`")`
+	sa.q = q
+	sa.style = &style.Style{Css: &scriptCss{q:q, app:sa}}
 	
 	return sa
 }
 
-func (script *Script) Get(app interfaces.App) *App {
+func (q *script) Get(app interfaces.App) *App {
 	if app == nil {
 		return nil
 	}
@@ -101,22 +110,22 @@ func (script *Script) Get(app interfaces.App) *App {
 	}
 	
 	sa := new(App)
-	sa.script = script
+	sa.q = q
 	sa.Style = style.Style{Css: CssWrapper{app: sa}}
 	sa.App = app
-	sa.style = &style.Style{Css: &scriptCss{script:script, app:sa}}
+	sa.style = &style.Style{Css: &scriptCss{q:q, app:sa}}
 
 	return sa
 }
 
-func (script *Script) LogString(msg string) {
-	script.data.WriteString(`console.log("`)
-	script.data.WriteString(msg)
-	script.data.WriteString(`"`)
+func (q *script) LogString(msg string) {
+	q.data.WriteString(`console.log("`)
+	q.data.WriteString(msg)
+	q.data.WriteString(`"`)
 }
 
 type scriptCss struct {
-	script *Script
+	q *script
 	app *App
 }
 
@@ -128,13 +137,13 @@ func (css *scriptCss) Set(property, value string) {
 		property = splits[0] + strings.Title(splits[1])
 	}
 	
-	css.script.data.WriteString(`get("`)
-	css.script.data.WriteString(css.app.ID())
-	css.script.data.WriteString(`").style.`)
-	css.script.data.WriteString(property)
-	css.script.data.WriteByte('=')
-	css.script.data.WriteByte('"')
-	css.script.data.WriteString(value)
-	css.script.data.WriteByte('"')
-	css.script.data.WriteByte(';')
+	css.q.data.WriteString(`get("`)
+	css.q.data.WriteString(css.app.ID())
+	css.q.data.WriteString(`").style.`)
+	css.q.data.WriteString(property)
+	css.q.data.WriteByte('=')
+	css.q.data.WriteByte('"')
+	css.q.data.WriteString(value)
+	css.q.data.WriteByte('"')
+	css.q.data.WriteByte(';')
 }

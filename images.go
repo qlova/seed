@@ -1,28 +1,28 @@
-package app
+package seed
 
-func Image(path string) *Web {
+func Image(path string) Seed {
 	return NewImage(path)
 }
 
-func NewImage(path string) *Web {
-	app := New()
-	app.tag = "img"
-	app.attr = "src='"+path+"'"
+func NewImage(path string) Seed {
+	seed := New()
+	seed.tag = "img"
+	seed.attr = "src='"+path+"'"
 
 	RegisterAsset(path)
-	return app
+	return seed
 }
 
 
-func Video(path string) *Web {
+func Video(path string) Seed {
 	return NewVideo(path)
 }
 
-func NewVideo(path string) *Web {
-	app := New()
-	app.tag = "video"
-	app.attr = "src='"+path+"' playsinline preload='auto'"
+func NewVideo(path string) Seed {
+	seed := New()
+	seed.tag = "video"
+	seed.attr = "src='"+path+"' playsinline preload='auto'"
 
 	RegisterAsset(path)
-	return app
+	return seed
 }

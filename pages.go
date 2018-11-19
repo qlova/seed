@@ -1,13 +1,17 @@
-package app
+package seed
 
-func Page() *Web {
+var pages []Seed
+
+func Page() Seed {
 	return NewPage()
 }
 
-func NewPage() *Web {
-	app := New()
+func NewPage() Seed {
+	seed := New()
 	
-	app.page = true
+	seed.page = true
 	
-	return app
+	pages = append(pages, seed)
+	
+	return seed
 }
