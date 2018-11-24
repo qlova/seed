@@ -1,6 +1,7 @@
 # ![logo](media/logo.png) Qlovaseed 
 
-An eco-friendly, cross-platform application framework for Go.
+Qlovaseed allows cross-platform progressive web applications to be written in pure Go, without touching Html, Css or Javascript.
+Currently very unstable and in Heavy Development.
 
 Hello World:
 ```
