@@ -18,12 +18,7 @@
 
 package seed
 
-//Internal packages.
-import "github.com/qlova/script"
-import "github.com/qlova/script/language/javascript"
-
 import "github.com/qlova/seed/worker"
-import "github.com/qlova/seed/manifest"
 import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/interfaces"
 
@@ -36,10 +31,7 @@ import (
 	"os"
 	"log"
 	"html"
-	"strings"
-	
-	"math/big"
-	"encoding/base64"
+	//"strings"
 )
 
 import "github.com/NYTimes/gziphandler"
@@ -50,56 +42,6 @@ var ServiceWorker worker.Service
 //TODO cleanup
 func RegisterAsset(path string) {
 	ServiceWorker.Assets = append(ServiceWorker.Assets, path)
-}
-
-//All seeds have a unique id.
-var id int64 = 1;
-
-//#seedsafe
-type Slice []*seed
-type Seed struct {
-	*seed
-}
-
-type seed struct {
-	style.Style
-	
-	id string
-	tag, attr, class string
-	children []interfaces.App
-	
-	styled bool
-	
-	fonts bytes.Buffer
-	
-	content []byte
-	page bool
-	
-	onclick func(Script)
-	
-	parent interfaces.App
-	
-	manifest manifest.Manifest
-	handlers []func(w http.ResponseWriter, r *http.Request)
-	
-	dynamicText func(Client)
-}
-
-//Create and return a new seed.
-func New() Seed {
-	seed := new(seed)
-	
-	//Seed identification is compressed to base64.
-	seed.id = base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
-	id++
-
-	seed.Style = style.New()	
-	seed.tag = "div"
-	
-	//All seeds have the potential to be the root seed, so they all need a minimal viable manifest.
-	seed.manifest = manifest.New()
-
-	return Seed{seed:seed}
 }
 
 //DEPRECIATED
@@ -201,6 +143,10 @@ func (seed Seed) Page() bool {
 	return seed.page
 }
 
+func (seed Seed) Require(script string) {
+	seed.scripts = append(seed.scripts, script)
+}
+
 //Add a child seed to this seed.
 func (seed Seed) Add(child interfaces.App) {
 	seed.children = append(seed.children, child)
@@ -234,7 +180,7 @@ func (seed Seed) SetContent(data string) {
 //Set the text content of the seed.
 func (seed Seed) SetText(data string) {
 	data = html.EscapeString(data)
-	data = strings.Replace(data, "\n", "<br>", -1)
+	//data = strings.Replace(data, "\n", "<br>", -1)
 	seed.content = []byte(data)
 }
 
@@ -258,7 +204,40 @@ func (seed Seed) SetDynamicText(f func(Client)) {
 
 
 func (seed Seed) OnClick(f func(Script)) {
-	seed.onclick = f
+	if seed.onclick == nil {
+		seed.onclick = f
+	} else {
+		var old = seed.onclick
+		seed.onclick = func(q Script) {
+			old(q)
+			f(q)
+		}
+	}
+}
+
+func (seed Seed) OnReady(f func(Script)) {
+	if seed.onready == nil {
+		seed.onready = f
+	} else {
+		var old = seed.onready
+		seed.onready = func(q Script) {
+			old(q)
+			f(q)
+		}
+	}
+}
+
+
+func (seed Seed) OnChange(f func(Script)) {
+	if seed.onchange == nil {
+		seed.onchange = f
+	} else {
+		var old = seed.onchange
+		seed.onchange = func(q Script) {
+			old(q)
+			f(q)
+		}
+	}
 }
 
 func SetPage(page interfaces.App) {
@@ -359,23 +338,16 @@ func (seed Seed) Render() ([]byte) {
 	
 	if seed.onclick != nil {
 		html.WriteString(" onclick='")
-		
-		var program = script.NewProgram(func(q script.Script) {
-			var s = Script{seedScript: &seedScript{ Script:q }}
-			seed.onclick(s)
-			for i := 0; i < s.promises; i++ {
-				q.Raw("Javascript", "}; request.send();")
-			}
-			s.promises = 0
-		})
-		source, err := program.Source(Javascript.Language())
-		if err != nil {
-			panic(err)
-		}
-		
-		html.Write([]byte(source))
+		html.Write(toJavascript(seed.onclick))
 		html.WriteByte('\'')
 	}
+	
+	if seed.onchange != nil {
+		html.WriteString(" onchange='")
+		html.Write(toJavascript(seed.onchange))
+		html.WriteByte('\'')
+	}
+	
 	html.WriteByte('>')
 	
 	if seed.content != nil {
@@ -395,6 +367,10 @@ func (seed Seed) Render() ([]byte) {
 
 //TODO random port, can be set with enviromental variables.
 func (seed Seed) Launch() error {
+	
+	seed.SetWidth("100vw")
+	seed.SetHeight("100vh")
+	
 	return seed.Host(":1234")
 }
 
@@ -414,6 +390,9 @@ func (seed Seed) Host(hostport string) error {
 	
 	var dynamic = seed.BuildDynamicHandler()
 	
+	var scripts = seed.Scripts()
+	var onready = seed.BuildOnReady()
+	
 	var buffer bytes.Buffer
 	buffer.Write([]byte(`<html><head>
 		<meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi">
@@ -423,6 +402,8 @@ func (seed Seed) Host(hostport string) error {
 		<meta name="theme-color" content="#ffffff00">
 		
 		<title>`+seed.manifest.Name+`</title>
+		
+		
 
 		<link rel="manifest" href="/app.webmanifest">`))
 		
@@ -430,6 +411,10 @@ func (seed Seed) Host(hostport string) error {
 		buffer.Write([]byte(`	<link rel="stylesheet" href="leaflet.css" />
 								<script src="leaflet.js"></script>
 		`))
+	}
+	
+	for script := range scripts {
+		buffer.Write([]byte(`<script src="`+script+`"></script>`))
 	}
 		
 	buffer.Write([]byte(`<script>
@@ -495,7 +480,11 @@ func (seed Seed) Host(hostport string) error {
 			var goto = function(page) {
 				` + gotoBody + `
 			}
+			
+			
 		`))
+	
+	buffer.Write(onready)
 	
 	if dynamic != nil {
 		buffer.WriteString(`
@@ -535,6 +524,10 @@ func (seed Seed) Host(hostport string) error {
 			w.Write([]byte("{"))
 			dynamic(w, r)
 			w.Write([]byte("}"))
+			return
+		}
+
+		if embedded(w, r) {
 			return
 		}
 		

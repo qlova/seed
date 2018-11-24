@@ -1,10 +1,13 @@
 package seed
 
-import "fmt"
-import "reflect"
-import "net/http"
+import (
+	"fmt"
+	"reflect"
+	"net/http"
+)
 
-import "github.com/qlova/script"
+import "github.com/qlova/seed/script"
+import qlova "github.com/qlova/script"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/language/javascript"
 
@@ -13,16 +16,34 @@ type Script struct {
 }
 
 type seedScript struct {
-	script.Script
+	qlova.Script
 	promises int
 }
 
-func (q Script) Get(seed Seed) DynamicSeed {
-	return DynamicSeed{
-		id: seed.id,
-		q: q.Script,
+func (q Script) Get(seed Seed) script.Seed {
+	return script.Seed{
+		ID: seed.id,
+		Qlovascript: q.Script,
 	}
 }
+
+func toJavascript(f func(q Script)) []byte {
+	var program = qlova.NewProgram(func(q qlova.Script) {
+		var s = Script{seedScript: &seedScript{ Script:q }}
+		f(s)
+		for i := 0; i < s.promises; i++ {
+			q.Raw("Javascript", "}; request.send();")
+		}
+		s.promises = 0
+	})
+	source, err := program.Source(Javascript.Language())
+	if err != nil {
+		panic(err)
+	}
+	
+	return []byte(source)
+}
+		
 
 func (q Script) Javascript(js string) {
 	q.Raw("Javascript", language.Statement(js))
@@ -37,12 +58,16 @@ type Element struct {
 	q Script
 }
 
-func (q Script) Query(query script.String) Element {
-	return Element{ query:dynamicString(query), q:q }
+func (q Script) Query(query qlova.String) Element {
+	return Element{ query:query.Raw(), q:q }
 }
 
 func (element Element) Run(method string) {
 	element.q.Raw("Javascript", language.Statement(`document.querySelector(`+element.query+`).`+method+`();`))
+}
+
+func (q Script) Alert(message script.String) {
+	q.Raw("Javascript", language.Statement(`alert(`+message.Raw()+`);`))
 }
 
 type ExportedFunction struct {
@@ -61,7 +86,7 @@ func (q Script) Run(f interface{}) {
 }
 
 //Export a Go function to Javascript. Don't use this for non-local apps! TODO enforce this
-func (q Script) Call(f interface{}) script.Type {
+func (q Script) Call(f interface{}) qlova.Type {
 	if _, ok := f.(string); ok {
 		panic("script.Run(string): Unimplemented")
 		return nil
@@ -110,50 +135,9 @@ func callHandler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 }
 
-type DynamicSeed struct {
-	id string
-	q script.Script
-}
+type DynamicEditor script.Seed
 
-//Convert a Qlovascript string into a Javascript string.
-func dynamicString(s script.String) string {
-	var text string
-	if s.Literal == nil {
-		text = string(s.String.(Javascript.String))
-	} else {
-		text = `"`+*s.Literal+`"`
-	}
-	return text
-}
-
-func (seed DynamicSeed) SetText(s script.String) {
-	seed.q.Raw("Javascript", language.Statement(`get("`+seed.id+`").textContent = `+dynamicString(s)+`;`))
-}
-
-func (seed DynamicSeed) SetLeft(s script.String) {
-	seed.q.Raw("Javascript", language.Statement(`get("`+seed.id+`").style.left = `+dynamicString(s)+`;`))
-}
-
-func (seed DynamicSeed) SetDisplay(s script.String) {
-	seed.q.Raw("Javascript", language.Statement(`get("`+seed.id+`").style.display = `+dynamicString(s)+`;`))
-}
-
-func (seed DynamicSeed) SetVisible() {
-	seed.q.Raw("Javascript", language.Statement(`get("`+seed.id+`").style.display = "block";`))
-}
-
-func (seed DynamicSeed) SetHidden() {
-	seed.q.Raw("Javascript", language.Statement(`get("`+seed.id+`").style.display = "none";`))
-}
-
-func (seed DynamicSeed) Click() {
-	seed.q.Raw("Javascript", language.Statement(`get("`+seed.id+`").click();`))
-}
-
-func (seed DynamicSeed) Left() script.String {
-	return seed.q.Wrap(Javascript.String(`get("`+seed.id+`").style.left`)).(script.String)
-}
-
-func (seed DynamicSeed) Width() script.String {
-	return seed.q.Wrap(Javascript.String(`getComputedStyle(get("`+seed.id+`")).width`)).(script.String)
+//Open a File object.
+func (editor DynamicEditor) Open() {
+	
 }
