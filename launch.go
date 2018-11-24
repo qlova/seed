@@ -1,20 +1,47 @@
 package seed
 
-import "os/exec"
+import (
+	"os"
+	"os/exec"
+	"runtime"
+	"strings"
+)
 
 var browsers = []string {
 	"google-chrome",
 	"chromium",
-	"google-chrome-stable",	
+	"google-chrome-stable",
+	"/usr/bin/google-chrome-stable",
+	"/usr/bin/google-chrome",
+	"/usr/bin/chromium",
+	"/usr/bin/chromium-browser",
+	"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+	"/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
+	"/Applications/Chromium.app/Contents/MacOS/Chromium",
+	"C:/Users/" + os.Getenv("USERNAME") + "/AppData/Local/Google/Chrome/Application/chrome.exe",
+	"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
 }
 
 func launch(hostport string) {
 	var err error
 	
+	url := "http://localhost"+hostport
+	
 	for _, browser := range browsers {
-		err = exec.Command(browser, "--app=http://localhost"+hostport).Run()
+		err = exec.Command(browser, "--app="+url).Run()
 		if err == nil {
 			return
 		}
+	}
+	
+		
+	switch runtime.GOOS {
+	case "linux":
+		exec.Command("xdg-open", url).Run()
+	case "darwin":
+		exec.Command("open", url).Run()
+	case "windows":
+		r := strings.NewReplacer("&", "^&")
+		exec.Command("cmd", "/c", "start", r.Replace(url)).Run()
 	}
 }
