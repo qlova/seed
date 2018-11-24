@@ -5,6 +5,8 @@ import "io/ioutil"
 import "github.com/qlova/seed" 
 import "github.com/qlova/seed/widgets/editor"
 
+
+//A basic text editor without the ability to save files.
 func main() {
 	var Editor = editor.New()
 	Editor.SetName("Text Editor")
