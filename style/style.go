@@ -60,6 +60,10 @@ func (style *Style) SetRoundedCorners(radius string) {
 	style.Css.Set("border-radius", radius)
 }
 
+func (style *Style) SetMargin(margin string) {
+	style.Css.Set("margin", margin)
+}
+
 func (style *Style) SetMarginLeft(margin string) {
 	style.Css.Set("margin-left", margin)
 }
