@@ -11,6 +11,23 @@ func NewToolBar() Seed {
 	return seed
 }
 
+func Row() Seed {
+	seed := New()
+	seed.tag = "div"
+	seed.Style.Css.Set("display", "flex")
+	seed.Style.Css.Set("flex-direction", "row")
+	seed.Style.Css.Set("align-items", "center")
+	return seed
+}
+
+func Col() Seed {
+	seed := New()
+	seed.tag = "div"
+	seed.Style.Css.Set("display", "flex")
+	seed.Style.Css.Set("flex-direction", "column")
+	seed.Style.Css.Set("align-items", "center")
+	return seed
+}
 
 func Text() Seed {
 	seed := New()
