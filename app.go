@@ -31,7 +31,7 @@ import (
 	"os"
 	"log"
 	"html"
-	//"strings"
+	"strings"
 )
 
 import "github.com/NYTimes/gziphandler"
@@ -481,6 +481,31 @@ func (seed Seed) Host(hostport string) error {
 				` + gotoBody + `
 			}
 			
+			if (window.location.hostname.includes("localhost")) {
+				let url = new URL('/socket', window.location.href);
+				url.protocol = url.protocol.replace('http', 'ws');
+				let Socket = new WebSocket(url.href);
+				Socket.onclose = function() {
+					close();
+				}
+				Socket.onerror = function() {
+					close();
+				}
+				document.onkeydown = function() {    
+					switch (event.keyCode) { 
+						case 116 : //F5 button
+							event.returnValue = false;
+							event.keyCode = 0;
+							return false; 
+						case 82 : //R button
+							if (event.ctrlKey) { 
+								event.returnValue = false; 
+								event.keyCode = 0;  
+								return false; 
+							} 
+					}
+				}
+			}
 			
 		`))
 	
@@ -520,6 +545,11 @@ func (seed Seed) Host(hostport string) error {
 		
 		fmt.Println(r.URL.Path)
 		
+		if r.URL.Path == "/socket" && strings.Contains(r.RemoteAddr, "[::1]") {
+			socket(w, r)
+			return
+		}
+		
 		if r.URL.Path == "/dynamic" && dynamic != nil {
 			w.Write([]byte("{"))
 			dynamic(w, r)
@@ -547,8 +577,15 @@ func (seed Seed) Host(hostport string) error {
 		}
 		
 		if r.URL.Path == "/index.js" {
-			w.Header().Set("content-type", "text/javascript")
-			w.Write(worker)
+			if strings.Contains(r.RemoteAddr, "[::1]") {
+				//Don't use a web worker if we are running locally.
+				w.Header().Set("content-type", "text/javascript")
+				w.Write([]byte(`self.addEventListener('install', () => {self.skipWaiting();});`))
+				
+			} else {
+				w.Header().Set("content-type", "text/javascript")
+				w.Write(worker)
+			}
 			return
 		}
 		
