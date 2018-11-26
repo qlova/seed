@@ -8,8 +8,10 @@ func Map() Seed {
 	UsingMap = true
 	
 	var RealMap = New()
-	RealMap.SetWidth("100%")
-	RealMap.SetHeight("100%")
+	
+	RealMap.Stylable.Set("width", "100vw")
+	RealMap.Stylable.Set("height", "100vh")
+
 	m.Add(RealMap)
 	
 	var Script = New()

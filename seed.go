@@ -11,6 +11,27 @@ import (
 	"encoding/base64"
 )
 
+const Em = style.Em
+const Px = style.Px
+const Top = style.Top
+const Bottom = style.Bottom
+const Left = style.Left
+const Right = style.Right
+const Auto = style.Auto
+const Center = style.Center
+
+func Font(path string) style.Font {
+	RegisterAsset(path)
+	
+	return style.NewFont(path)
+}
+
+func (seed Seed) SetFont(font style.Font) {
+	seed.font = font
+	seed.Style.SetFont(font)
+}
+
+
 //#seedsafe
 type Slice []*seed
 type Seed struct {
@@ -26,7 +47,7 @@ type seed struct {
 	
 	styled bool
 	
-	fonts bytes.Buffer
+	font style.Font
 	
 	content []byte
 	page bool
@@ -63,10 +84,6 @@ func New() Seed {
 	
 	//All seeds have the potential to be the root seed, so they all need a minimal viable manifest.
 	seed.manifest = manifest.New()
-	
-	seed.SetMargin("0")
-	seed.SetWidth("100%")
-	seed.SetHeight("100%")
 
 	return Seed{seed:seed}
 }

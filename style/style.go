@@ -1,218 +1,197 @@
 package style
 
+import "image/color"
+import "github.com/qlova/seed/style/css"
+import "math"
+import "math/big"
+import "encoding/base64"
+
+const Em = css.Em
+const Px = css.Px
+
+const Top = -1i
+const Bottom = 1i
+const Left = -1
+const Right = 1
+
+const Auto = 0
+const Center = 0
+
 type Style struct {
-	Css Css
+	css.Style
 }
 
-func (style *Style) AnimatePosition(time, mode string) {
-	//style.Css.Set("transition", "top "+time)
-	style.Css.Set("transition", "left "+time)
-	style.Css.Set("will-change", "left")
-	//style.Css.Set("-webkit-transition", "top "+time)
-	//style.Css.Set("-webkit-transition", "left "+time)
-}
-
-func (style *Style) SetFont(name, weight string) {
-	
-	switch weight {
-		case "black":
-			weight = "900"
-		case "semi-bold":
-			weight = "600"
-		case "regular":
-			weight = "400"
-		case "light":
-			weight = "300"
-		case "extra-light":
-			weight = "200"
+func New() Style {
+	return Style{
+		Style: css.NewStyle(),
 	}
+}
+
+type Font struct {
+	name string
+	css.FontFace
+}
+
+var font_id int64 = 1;
+func NewFont(path string) Font {
 	
-	style.Css.Set("font-family", `"`+name+`"`)
-	style.Css.Set("font-weight", weight)
+	var id = base64.RawURLEncoding.EncodeToString(big.NewInt(font_id).Bytes())
+	font_id++
+	
+	return Font{
+		name: id,
+		FontFace: css.NewFontFace(id, path),
+	}
 }
 
-func (style *Style) SetLineHeight(height string) {
-	style.Css.Set("line-height", height)
+//Set the symetrical spacing within this.
+func (style Style) SetFont(font Font) {
+	style.SetFontFamily(font.FontFace)
 }
 
-func (style *Style) SetTextColor(color string) {
-	style.Css.Set("color", color)
+//Set the Text Size, a multiple of the default text size.
+func (style Style) SetTextSize(size complex128) {
+	style.SetFontSize(css.Decode(size))
 }
 
-func (style *Style) SetTextSize(size string) {
-	style.Css.Set("font-size", size)
+//Set this to be hidden.
+func (style Style) SetHidden() {
+	style.SetDisplay(css.None)
 }
 
-func (style *Style) Underline() {
-	style.Css.Set("text-decoration", "underline")
+//Set this to be visible.
+func (style Style) SetVisible() {
+	style.SetDisplay(css.Initial)
 }
 
-func (style *Style) ScrollBars() {
-	style.Css.Set("overflow", "auto")
+//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+func (style Style) SetSize(width, height complex128) {
+	style.SetWidth(css.Decode(width))
+	style.SetHeight(css.Decode(height))
 }
 
-func (style *Style) RemoveBorders() {
-	style.Css.Set("border", "none")
-	style.Css.Set("border-style", "none")
+//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+func (style Style) SetMaxSize(width, height complex128) {
+	style.SetMaxWidth(css.Decode(width))
+	style.SetMaxHeight(css.Decode(height))
 }
 
-func (style *Style) SetRoundedCorners(radius string) {
-	style.Css.Set("border-radius", radius)
+//Set the text alignment, -1 is left, 0 is center and 1 is right
+func (style Style) SetAlignment(align float64) {
+	switch align {
+		case 0:
+			style.SetTextAlign(css.Center)
+		case -1:
+			style.SetTextAlign(css.Left)
+		case 1:
+			style.SetTextAlign(css.Right)
+	}
 }
 
-func (style *Style) SetMargin(margin string) {
-	style.Css.Set("margin", margin)
+//Set the text alignment, -1 is left, 0 is center and 1 is right
+func (style Style) SetColor(color color.Color) {
+	style.SetBackgroundColor(css.Colour(color))
 }
 
-func (style *Style) SetMarginLeft(margin string) {
-	style.Css.Set("margin-left", margin)
+//Set the text alignment, -1 is left, 0 is center and 1 is right
+func (style Style) SetTextColor(color color.Color) {
+	style.Style.SetColor(css.Colour(color))
 }
 
-func (style *Style) SetMarginRight(margin string) {
-	style.Css.Set("margin-right", margin)
+//Set the text alignment, -1 is left, 0 is center and 1 is right
+func (style Style) SetGradient(direction complex128, start, end color.Color) {
+	style.SetBackgroundImage(css.LinearGradient(math.Atan(real(direction)/imag(direction))+math.Pi, css.Colour(start), css.Colour(end)))
 }
 
-func (style *Style) SetMarginTop(margin string) {
-	style.Css.Set("margin-top", margin)
+//Set the rendering layer, this is the order that this will be rendered in.
+func (style Style) SetLayer(layer int) {
+	style.SetZIndex(css.Integer(layer))
 }
 
-func (style *Style) SetMarginBottom(margin string) {
-	style.Css.Set("margin-bottom", margin)
+//Set where this attaches to, 0 0 is unattached, -1, 0 is attached to left, 1 1 is attached to bottom right etc.
+func (style Style) SetAttach(attach complex64) {
+	switch real(attach) {
+		case -1:
+			style.SetLeft(css.Zero)
+			style.SetPosition(css.Fixed)
+		case 0:
+			style.SetLeft(css.Initial)
+			style.SetRight(css.Initial)
+		case 1:
+			style.SetRight(css.Zero)
+			style.SetPosition(css.Fixed)
+	}
+	switch imag(attach) {
+		case -1:
+			style.SetTop(css.Zero)
+			style.SetPosition(css.Fixed)
+		case 0:
+			style.SetTop(css.Initial)
+			style.SetBottom(css.Initial)
+		case 1:
+			style.SetBottom(css.Zero)
+			style.SetPosition(css.Fixed)
+	}
 }
 
-func (style *Style) SetBackgroundColor(color string) {
-	style.Css.Set("background-color", color)
+//Set the rendering layer, this is the order that this will be rendered in.
+func (style Style) SetExpand(expand float64) {
+	style.SetFlexGrow(css.Number(expand))
 }
 
-func (style *Style) SetBackgroundGradient(a, b string) {
-	style.Css.Set("background-image", "linear-gradient("+a+", "+b+")")
+//Set the rendering layer, this is the order that this will be rendered in.
+func (style Style) SetScrollable() {
+	style.SetOverflow(css.Scroll)
 }
 
-func (style *Style) SetLayout(layout string) {
-	style.Css.Set("display", layout)
+//Set the symetrical spacing within this.
+func (style Style) SetInnerSpacing(x, y complex128) {
+	style.SetPaddingLeft(css.Decode(x))
+	style.SetPaddingRight(css.Decode(x))
+	
+	style.SetPaddingTop(css.Decode(y))
+	style.SetPaddingBottom(css.Decode(y))
 }
 
-func (style *Style) SetPadding(padding string) {
-	style.Css.Set("padding", padding)
+//Set the symetrical spacing within this.
+func (style Style) SetOuterSpacing(x, y complex128) {
+	style.SetMarginLeft(css.Decode(x))
+	style.SetMarginRight(css.Decode(x))
+	
+	style.SetMarginTop(css.Decode(y))
+	style.SetMarginBottom(css.Decode(y))
 }
 
-func (style *Style) SetPaddingRight(padding string) {
-	style.Css.Set("padding-right", padding)
+//Set the offset from an attached side, call this after style.Attach().
+func (style Style) SetOffset(side complex128, offset complex128) {
+	switch side {
+		case Left:
+			style.SetLeft(css.Decode(offset))
+		case Right:
+			style.SetRight(css.Decode(offset))
+		case Top:
+			style.SetTop(css.Decode(offset))
+		case Bottom:
+			style.SetBottom(css.Decode(offset))
+	}
 }
 
-func (style *Style) SetPaddingLeft(padding string) {
-	style.Css.Set("padding-left", padding)
+//Set the symetrical spacing within this.
+func (style Style) SetBorderless() {
+	style.SetBorderLeftWidth(css.Zero)
+	style.SetBorderRightWidth(css.Zero)
+	
+	style.SetBorderTopWidth(css.Zero)
+	style.SetBorderBottomWidth(css.Zero)
 }
 
-func (style *Style) SetPaddingTop(padding string) {
-	style.Css.Set("padding-top", padding)
-}
-
-func (style *Style) SetFilter(filter string) {
-	style.Css.Set("filter", filter)
-}
-
-func (style *Style) SetPaddingBottom(padding string) {
-	style.Css.Set("padding-bottom", padding)
-}
-
-func (style *Style) CenterX() {
-	style.Css.Set("display", "block")
-	style.Css.Set("margin-right", "auto")
-	style.Css.Set("margin-left", "auto")
-	style.Css.Set("text-align", "center")
-}
-
-func (style *Style) AutoExpand() {
-	style.Css.Set("flex-grow", "1")
-}
-
-func (style *Style) Flip() {
-	style.Css.Set("transform", "scaleX(-1)")
-}
-
-func (style *Style) Absolute() {
-	style.Css.Set("position", "absolute")
-}
-
-func (style *Style) SetLeft(x string) {
-	 style.Css.Set("left", x)
-}
-
-func (style *Style) SetRight(x string) {
-	 style.Css.Set("right", x)
-}
-
-func (style *Style) SetBottom(y string) {
-	 style.Css.Set("bottom", y)
-}
-
-func (style *Style) SetTop(y string) {
-	 style.Css.Set("top", y)
-}
-
-func (style *Style) SetPosition(x, y string) {
-	 style.Css.Set("top", y)
-	 style.Css.Set("left", x)
-}
-
-func (style *Style) SetSize(width, height string) {
-	 style.Css.Set("width", width)
-	 style.Css.Set("height", height)
-}
-
-func (style *Style) SetMaxHeight(height string) {
-	 style.Css.Set("max-height", height)
-}
-
-func (style *Style) SetDepth(depth string) {
-	 style.Css.Set("z-index", depth)
-}
-
-func (style *Style) SetOpacity(opacity string) {
-	 style.Css.Set("opacity", opacity)
-}
-
-func (style *Style) SetHeight(height string) {
-	 style.Css.Set("height", height)
-}
-
-func (style *Style) SetWidth(width string) {
-	 style.Css.Set("width", width)
-}
-
-func (style *Style) SetSticky() {
-	 style.Css.Set("position", "fixed")
-}
-
-func (style *Style) SetHidden() {
-	 style.Css.Set("display", "none")
-}
-
-func (style *Style) SetVisible() {
-	 style.Css.Set("display", "block")
-}
-
-func (style *Style) Flex() {
-	 style.Css.Set("display", "flex")
-}
-
-func (style *Style) Contain() {
-	 style.Css.Set("object-fit", "contain")
-}
-
-func (style *Style) AttachTop() {
-	 style.Css.Set("top", "0")
-}
-
-func (style *Style) AttachLeft() {
-	 style.Css.Set("left", "0")
-}
-
-func (style *Style) AttachRight() {
-	 style.Css.Set("right", "0")
-}
-
-func (style *Style) AttachBottom() {
-	 style.Css.Set("bottom", "0")
+//Set the symetrical spacing within this.
+func (style Style) SetRoundedCorners(radius complex128) {
+	var value = css.Decode(radius)
+	
+	style.SetBorderBottomLeftRadius(value)
+	style.SetBorderBottomRightRadius(value)
+	
+	style.SetBorderTopRightRadius(value)
+	style.SetBorderTopLeftRadius(value)
 }

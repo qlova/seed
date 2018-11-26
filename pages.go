@@ -11,6 +11,8 @@ func NewPage() Seed {
 	
 	seed.page = true
 	
+	seed.SetHidden()
+	
 	pages = append(pages, seed)
 	
 	return seed

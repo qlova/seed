@@ -109,7 +109,7 @@ func (seed Seed) Attributes() string {
 
 //Add a font to the seed.
 //TODO merge with style?
-func (seed Seed) AddFont(name, file, weight string) {
+/*func (seed Seed) AddFont(name, file, weight string) {
 	
 	switch weight {
 		case "black":
@@ -132,7 +132,7 @@ func (seed Seed) AddFont(name, file, weight string) {
 	font-weight: `+weight+`;
 }
 `))
-}
+}*/
 
 //Does this need to be here?
 func (seed Seed) GetStyle() *style.Style {
@@ -180,7 +180,9 @@ func (seed Seed) SetContent(data string) {
 //Set the text content of the seed.
 func (seed Seed) SetText(data string) {
 	data = html.EscapeString(data)
-	//data = strings.Replace(data, "\n", "<br>", -1)
+	data = strings.Replace(data, "\n", "<br>", -1)
+	data = strings.Replace(data, "  ", "&nbsp;", -1)
+	data = strings.Replace(data, "\t", "&emsp;", -1)
 	seed.content = []byte(data)
 }
 
@@ -240,32 +242,50 @@ func (seed Seed) OnChange(f func(Script)) {
 	}
 }
 
-func SetPage(page interfaces.App) {
-	for _, child := range page.GetParent().GetChildren() {
-		if child.Page() {
-			if child.ID() == page.ID() {
-				child.GetStyle().SetVisible()
-			} else {
-				child.GetStyle().SetHidden()
-			}
-		}
-	}
-}
-
 func (seed Seed) buildStyleSheet(sheet *style.Sheet) {
-	if data := seed.Style.Render(); data != nil {
+	if data := seed.Style.Bytes(); data != nil {
 		seed.styled = true
-		seed.class = sheet.CreateAndReturnClassesFor(seed.id, string(data))
+		sheet.Add("#"+seed.id, seed.Style)
 	}
 	for _, child := range seed.children {
 		child.(Seed).buildStyleSheet(sheet)
 	}
 }
 
-func (seed Seed) BuildStyleSheet() *style.Sheet {
-	var stylesheet style.Sheet
+func (seed Seed) BuildStyleSheet() style.Sheet {
+	var stylesheet = make(style.Sheet)
 	seed.buildStyleSheet(&stylesheet)
-	return &stylesheet
+	return stylesheet
+}
+
+func (seed Seed) buildFonts() map[style.Font]struct{} {
+	
+	var fonts = make(map[style.Font]struct{})
+	if seed.font.FontFace.FontFamily != "" {
+		fonts[seed.font] = struct{}{}
+	}
+
+	for _, child := range seed.children {
+		for font := range child.(Seed).buildFonts() {
+			fonts[font] = struct{}{}
+		}
+	}
+	
+	return fonts
+}
+
+func (seed Seed) BuildFonts() []byte {
+	var buffer bytes.Buffer
+	
+	var fonts = seed.buildFonts()
+
+	for font := range fonts {
+		buffer.WriteString("@font-face {")
+		buffer.Write(font.Bytes())
+		buffer.WriteByte('}')
+	}
+
+	return buffer.Bytes()
 }
 
 type dynamicHandler struct {
@@ -330,7 +350,7 @@ func (seed Seed) Render() ([]byte) {
 		html.WriteByte('\'')
 	}
 	
-	if data := seed.Style.Render(); !seed.styled && data != nil {
+	if data := seed.Style.Bytes(); !seed.styled && data != nil {
 		html.WriteString(" style='")
 		html.Write(data)
 		html.WriteByte('\'')
@@ -367,10 +387,6 @@ func (seed Seed) Render() ([]byte) {
 
 //TODO random port, can be set with enviromental variables.
 func (seed Seed) Launch() error {
-	
-	seed.SetWidth("100vw")
-	seed.SetHeight("100vh")
-	
 	return seed.Host(":1234")
 }
 
@@ -382,9 +398,10 @@ func (seed Seed) Host(hostport string) error {
             log.Fatal(err)
     }
     
-	var style = seed.BuildStyleSheet().Render()
+	var style = seed.BuildStyleSheet().Bytes()
 	
 	var html = seed.Render()
+	var fonts = seed.BuildFonts()
 	var worker = ServiceWorker.Render()
 	var manifest = seed.manifest.Render()
 	
@@ -433,8 +450,8 @@ func (seed Seed) Host(hostport string) error {
 		<style>
 	`))
 	
-	buffer.Write(seed.fonts.Bytes())
-	buffer.Write(style.Bytes())
+	buffer.Write(fonts)
+	buffer.Write(style)
 	
 	
 	var gotoBody string
@@ -456,7 +473,8 @@ func (seed Seed) Host(hostport string) error {
 				overscroll-behavior: none; 
 				cursor: pointer; 
 				margin: 0; 
-				height: 100%;
+				height: 100vh;
+				width: 100vw;
 				-webkit-touch-callout: none;
 				-webkit-user-select: none;
 				-khtml-user-select: none;
@@ -491,6 +509,7 @@ func (seed Seed) Host(hostport string) error {
 				Socket.onerror = function() {
 					close();
 				}
+				//Disable refresh on chrome because otherwise the app will close.
 				document.onkeydown = function() {    
 					switch (event.keyCode) { 
 						case 116 : //F5 button

@@ -6,26 +6,26 @@ func ToolBar() Seed {
 
 func NewToolBar() Seed {
 	seed := New()
-	seed.SetLayout("flex")
-	seed.SetSticky()
+	seed.Stylable.Set("display", "flex")
+	seed.Stylable.Set("position", "fixed")
 	return seed
 }
 
 func Row() Seed {
 	seed := New()
 	seed.tag = "div"
-	seed.Style.Css.Set("display", "flex")
-	seed.Style.Css.Set("flex-direction", "row")
-	seed.Style.Css.Set("align-items", "center")
+	seed.Stylable.Set("display", "flex")
+	seed.Stylable.Set("flex-direction", "row")
+	seed.Stylable.Set("align-items", "center")
 	return seed
 }
 
 func Col() Seed {
 	seed := New()
 	seed.tag = "div"
-	seed.Style.Css.Set("display", "flex")
-	seed.Style.Css.Set("flex-direction", "column")
-	seed.Style.Css.Set("align-items", "center")
+	seed.Stylable.Set("display", "flex")
+	seed.Stylable.Set("flex-direction", "column")
+	seed.Stylable.Set("align-items", "center")
 	return seed
 }
 
