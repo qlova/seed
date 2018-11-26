@@ -423,15 +423,13 @@ func (seed Seed) Host(hostport string) error {
 		
 
 		<link rel="manifest" href="/app.webmanifest">`))
-		
-	if UsingMap {
-		buffer.Write([]byte(`	<link rel="stylesheet" href="leaflet.css" />
-								<script src="leaflet.js"></script>
-		`))
-	}
 	
 	for script := range scripts {
-		buffer.Write([]byte(`<script src="`+script+`"></script>`))
+		if path.Ext(script) == ".js" { 
+			buffer.Write([]byte(`<script src="`+script+`"></script>`))
+		} else if path.Ext(script) == ".css" {
+			buffer.Write([]byte(`<link rel="stylesheet" href="`+script+`" />`))
+		}
 	}
 		
 	buffer.Write([]byte(`<script>
