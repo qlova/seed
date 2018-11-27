@@ -7,11 +7,13 @@ func Page() Seed {
 }
 
 func NewPage() Seed {
-	seed := New()
+	seed := Col()
 	
 	seed.page = true
 	
 	seed.SetHidden()
+	
+	seed.Set("will-change", "display")
 	
 	pages = append(pages, seed)
 	

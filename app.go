@@ -456,7 +456,7 @@ func (seed Seed) Host(hostport string) error {
 	for _, page := range pages {
 		gotoBody += "document.getElementById('"+page.ID()+"').style.display = 'none';"
 	}
-	gotoBody += "document.getElementById(page).style.display = 'block';"
+	gotoBody += "document.getElementById(page).style.display = 'inline-flex';"
 	
 	buffer.Write([]byte(`
 		</style>
