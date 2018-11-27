@@ -57,6 +57,7 @@ func TextBox() Seed {
 func TextArea() Seed {
 	seed := New()
 	seed.tag = "textarea"
+	seed.attr = "data-gramm_editor=false"
 	return seed
 }
 
