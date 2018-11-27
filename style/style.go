@@ -61,7 +61,7 @@ func (style Style) SetHidden() {
 
 //Set this to be visible.
 func (style Style) SetVisible() {
-	style.SetDisplay(css.Initial)
+	style.SetDisplay(css.Flex)
 }
 
 //Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
@@ -81,10 +81,16 @@ func (style Style) SetAlignment(align float64) {
 	switch align {
 		case 0:
 			style.SetTextAlign(css.Center)
+			style.SetAlignItems(css.Center)
+			style.SetJustifyContent(css.Center)
 		case -1:
 			style.SetTextAlign(css.Left)
+			style.SetAlignSelf(css.FlexStart)
+			style.SetAlignItems(css.FlexStart)
 		case 1:
 			style.SetTextAlign(css.Right)
+			style.SetAlignSelf(css.FlexEnd)
+			style.SetAlignItems(css.FlexEnd)
 	}
 }
 
@@ -141,7 +147,7 @@ func (style Style) SetExpand(expand float64) {
 
 //Set the rendering layer, this is the order that this will be rendered in.
 func (style Style) SetScrollable() {
-	style.SetOverflow(css.Scroll)
+	style.SetOverflow(css.Auto)
 }
 
 //Set the symetrical spacing within this.

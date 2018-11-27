@@ -23,7 +23,7 @@ func Row() Seed {
 func Col() Seed {
 	seed := New()
 	seed.tag = "div"
-	seed.Stylable.Set("display", "flex")
+	seed.Stylable.Set("display", "inline-flex")
 	seed.Stylable.Set("flex-direction", "column")
 	seed.Stylable.Set("align-items", "center")
 	return seed
