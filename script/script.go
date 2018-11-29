@@ -49,3 +49,7 @@ func (seed Seed) Left() qlova.String {
 func (seed Seed) Width() qlova.String {
 	return seed.Qlovascript.Wrap(Javascript.String(`getComputedStyle(get("`+seed.ID+`")).width`)).(qlova.String)
 }
+
+func (seed Seed) Value() qlova.String {
+	return seed.Qlovascript.Wrap(Javascript.String(`get("`+seed.ID+`").value`)).(qlova.String)
+}
