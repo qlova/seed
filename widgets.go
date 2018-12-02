@@ -1,5 +1,7 @@
 package seed
 
+import "fmt"
+
 func ToolBar() Seed {
 	return NewToolBar()
 }
@@ -64,5 +66,20 @@ func TextArea() Seed {
 func Button() Seed {
 	seed := New()
 	seed.tag = "button"
+	return seed
+}
+
+func ListBox(values []string) Seed {
+	seed := New()
+	seed.tag = "select"
+	
+	var content string
+	
+	for _, value := range values {
+		content += fmt.Sprint("<option value='", value, "'>", value, "</option>")
+	}
+	
+	seed.SetContent(content)
+
 	return seed
 }
