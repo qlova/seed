@@ -12,6 +12,24 @@ import qlova "github.com/qlova/script"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/language/javascript"
 
+//Set the text content of the seed.
+func (seed Seed) SyncText(text *string) {
+	var wrapper = func() string {
+		return *text
+	}
+	
+	seed.OnReady(func(q Script) {
+		q.Javascript(`setInterval(function() {`)
+			q.Get(seed).SetText(q.Call(wrapper).(qlova.String))
+			for i := 0; i < q.promises; i++ {
+				q.Raw("Javascript", "}; request.send();")
+			}
+			q.promises = 0
+		q.Javascript(`}, 100)`)
+	})
+}
+
+
 type Script struct {
 	*seedScript
 }
@@ -77,18 +95,18 @@ type ExportedFunction struct {
 
 var exports = make(map[string]reflect.Value)
 
-func (q Script) Run(f interface{}, args ...qlova.Type) {
+func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
 	if name, ok := f.(string); ok && len(args) == 0 {
 		q.Raw("Javascript", language.Statement(name+`();`))
-		return 
+		return nil
 	}
 	
 	var name = fmt.Sprint(f)
 	
 	var value = reflect.ValueOf(f)
 	
-	if value.Kind() != reflect.Func || value.Type().NumOut() != 0 {
-		panic("Script.Call: Must pass a Go function without return values")
+	if value.Kind() != reflect.Func || value.Type().NumOut() > 1 {
+		panic("Script.Call: Must pass a Go function without zero or one return values")
 	}
 	exports[name] = value
 	
@@ -104,41 +122,31 @@ func (q Script) Run(f interface{}, args ...qlova.Type) {
 				panic("Unimplemented: script.Run("+value.Type().String()+")")
 		}
 	}
-	
-	q.Raw("Javascript", language.Statement(`let request = new XMLHttpRequest(); request.open("POST", "`+CallingString+`"); request.send();`))
-}
 
-//Export a Go function to Javascript. Don't use this for non-local apps! TODO enforce this
-func (q Script) Call(f interface{}) qlova.Type {
-	if _, ok := f.(string); ok {
-		panic("script.Run(string): Unimplemented")
-		return nil
-	}
-	
 	q.promises++
+	q.Raw("Javascript", language.Statement(`let request = new XMLHttpRequest(); request.open("POST", "`+CallingString+`"); request.onload = function() {`))
 	
-	var name = fmt.Sprint(f)
-	
-	var value = reflect.ValueOf(f) 
-	
-	if value.Kind() != reflect.Func || value.Type().NumOut() != 1 {
-		panic("Script.Call: Must pass a Go function with 1 return value")
-	}
-	exports[name] = value
-	
-	
-	q.Raw("Javascript", language.Statement(`let request = new XMLHttpRequest(); request.open("POST", "/call/`+name+`"); request.onload = function() {`))
-	
-	switch value.Type().Out(0).Kind() {
-		
-		case reflect.String:
-			return q.Wrap(Javascript.String("this.responseText"))
-		
-		default:
-			panic(value.Type().String()+" Unimplemented")
+	if value.Type().NumOut() == 1 {
+		switch value.Type().Out(0).Kind() {
+			
+			case reflect.String:
+				return q.Wrap(Javascript.String("this.responseText"))
+			
+			default:
+				panic(value.Type().String()+" Unimplemented")
+		}
 	}
 	
 	return nil
+}
+
+func (q Script) Run(f interface{}, args ...qlova.Type) {
+	q.call(f, args...)
+}
+
+//Export a Go function to Javascript. Don't use this for non-local apps! TODO enforce this
+func (q Script) Call(f interface{}, args ...qlova.Type) qlova.Type {	
+	return q.call(f, args...)
 }
 
 func callHandler(w http.ResponseWriter, r *http.Request, call string) {
@@ -172,6 +180,7 @@ func callHandler(w http.ResponseWriter, r *http.Request, call string) {
 	
 	var results = f.Call(in)
 	if len(results) == 0 {
+		fmt.Fprint(w, "done")
 		return
 	}
 	switch results[0].Kind() {

@@ -560,8 +560,6 @@ func (seed Seed) Host(hostport string) error {
 	
 	withoutGz := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)  {
 		
-		fmt.Println(r.URL.Path)
-		
 		if r.URL.Path == "/socket" && strings.Contains(r.RemoteAddr, "[::1]") {
 			socket(w, r)
 			return
@@ -582,6 +580,8 @@ func (seed Seed) Host(hostport string) error {
 			callHandler(w, r, r.URL.Path[6:] )
 			return
 		}
+		
+		fmt.Println(r.URL.Path)
 		
 		if r.URL.Path != "/" {
 			for _, handler := range seed.handlers {
