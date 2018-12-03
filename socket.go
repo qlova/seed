@@ -8,6 +8,8 @@ import (
 
 import "github.com/gorilla/websocket"
 
+var SingleLocalConnection = false
+
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true //r.Header.Get("Origin") == "https://realmoforder.com"
@@ -25,7 +27,11 @@ func socket(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, _, err := c.ReadMessage()
 		if err != nil {
-			os.Exit(0)
+			if SingleLocalConnection {
+				os.Exit(0)
+			} else {
+				return
+			}
 		}
 	}
 }

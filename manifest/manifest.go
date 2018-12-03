@@ -5,7 +5,7 @@ import "encoding/json"
 type Icon struct {
 	Source string `json:"src"`
 	Sizes string `json:"sizes"`
-	Type string `json:"type"`
+	Type string `json:"type,omitempty"`
 }
 
 type Manifest struct {
@@ -15,13 +15,14 @@ type Manifest struct {
 	Display string			`json:"display"`
 	BackgroundColor string 	`json:"background_color"`
 	Description string 		`json:"description"`
+	ThemeColor string		`json:"theme_color"`
 	
 	Icons []Icon			`json:"icons"`
 }
 
 func New() Manifest {
 	var manifest Manifest
-	manifest.StartUrl = "."
+	manifest.StartUrl = "./"
 	manifest.Display = "standalone"
 	manifest.BackgroundColor = "#fff"
 	return manifest

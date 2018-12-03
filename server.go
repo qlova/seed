@@ -17,7 +17,10 @@ func Embed(name string, data []byte) {
 
 	if path.Ext(name) == ".js" {
 		ContentType = "application/javascript"
-	}	
+	}
+	if path.Ext(name) == ".css" {
+		ContentType = "text/css"
+	}		
 	
 	embeddings[name] = embedding{
 		ContentType: ContentType,
