@@ -557,10 +557,14 @@ func (seed Seed) Host(hostport string) error {
 	if err != nil {
 		return err
 	}
+
+	var LocalClients = 0
 	
 	withoutGz := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)  {
 		
 		if r.URL.Path == "/socket" && strings.Contains(r.RemoteAddr, "[::1]") {
+			LocalClients++
+			SingleLocalConnection = LocalClients == 1
 			socket(w, r)
 			return
 		}
