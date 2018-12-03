@@ -38,10 +38,15 @@ func NewFont(path string) Font {
 	var id = base64.RawURLEncoding.EncodeToString(big.NewInt(font_id).Bytes())
 	font_id++
 	
-	return Font{
+	var font = Font{
 		name: id,
 		FontFace: css.NewFontFace(id, path),
 	}
+
+	//Avoid invisisible text while webfonts are loading.
+	//font.FontFace.FontDisplay = css.Swap
+
+	return font
 }
 
 //Set the symetrical spacing within this.
