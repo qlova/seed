@@ -155,6 +155,11 @@ func (style Style) SetExpand(expand float64) {
 	style.SetFlexGrow(css.Number(expand))
 }
 
+//Make sure that this contains its aspect ratio.
+func (style Style) SetContain() {
+	style.SetObjectFit(css.Contain)
+}
+
 //Set the rendering layer, this is the order that this will be rendered in.
 func (style Style) SetScrollable() {
 	style.SetOverflow(css.Auto)
