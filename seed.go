@@ -1,5 +1,6 @@
 package seed
 
+import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/manifest"
 import "github.com/qlova/seed/interfaces"
@@ -19,6 +20,12 @@ const Left = style.Left
 const Right = style.Right
 const Auto = style.Auto
 const Center = style.Center
+
+var Arial = style.Font{
+	FontFace: css.FontFace{
+		FontFamily: "Arial",
+	},
+}
 
 func Font(path string) style.Font {
 	RegisterAsset(path)
