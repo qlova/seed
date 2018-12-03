@@ -13,6 +13,15 @@ func NewToolBar() Seed {
 	return seed
 }
 
+func Line() Seed {
+	seed := New()
+	seed.tag = "hr"
+
+	seed.Set("border-style", "solid")
+	
+	return seed
+}
+
 func Row() Seed {
 	seed := New()
 	seed.tag = "div"
