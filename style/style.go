@@ -49,6 +49,11 @@ func (style Style) SetFont(font Font) {
 	style.SetFontFamily(font.FontFace)
 }
 
+//Set the symetrical spacing within this.
+func (style Style) SetBold() {
+	style.SetFontWeight(css.Bold)
+}
+
 //Set the Text Size, a multiple of the default text size.
 func (style Style) SetTextSize(size complex128) {
 	style.SetFontSize(css.Decode(size))
