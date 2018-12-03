@@ -31,3 +31,11 @@ func (manifest Manifest) Render() []byte {
 	var result, _ = json.Marshal(manifest)
 	return result
 }
+
+func (manifest *Manifest) AddIcon(path string) {
+	var icon Icon
+	icon.Source = path
+	icon.Sizes = "72x72 96x96 128x128 256x256 512x512"
+
+	manifest.Icons = append(manifest.Icons, icon)
+}

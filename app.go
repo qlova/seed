@@ -92,6 +92,7 @@ func (seed Seed) SetDescription(description string) {
 */
 func (seed Seed) SetIcon(path string) {
 	//TODO
+	seed.manifest.AddIcon(path)
 }
 
 //TODO Should be Internal.
