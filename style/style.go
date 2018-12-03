@@ -111,7 +111,7 @@ func (style Style) SetTextColor(color color.Color) {
 
 //Set the text alignment, -1 is left, 0 is center and 1 is right
 func (style Style) SetGradient(direction complex128, start, end color.Color) {
-	style.SetBackgroundImage(css.LinearGradient(math.Atan(real(direction)/imag(direction))+math.Pi, css.Colour(start), css.Colour(end)))
+	style.SetBackgroundImage(css.LinearGradient(math.Atan2(imag(direction), real(direction))+math.Pi/2, css.Colour(start), css.Colour(end)))
 }
 
 //Set the rendering layer, this is the order that this will be rendered in.
