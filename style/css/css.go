@@ -4,6 +4,8 @@ import (
 	"bytes"
 )
 
+type Property = *Style
+
 //this is the internal stringable interface used by properties.go
 type stringable interface {
 	String() string
@@ -62,4 +64,23 @@ func (impl Implementation) Bytes() []byte {
 	}
 
 	return data.Bytes()
+}
+
+//A style implementation that catches properties.
+type propertyCatcher string
+
+//The raw set implementation.
+func (impl *propertyCatcher) Set(property, value string) {
+	*impl = propertyCatcher(property)
+}
+
+//The raw get implementation.
+func (impl *propertyCatcher) Get(property string) string {
+	*impl = propertyCatcher(property)
+	return ""
+}
+
+//Returns a CSS style string formatted as bytes.
+func (impl propertyCatcher) Bytes() []byte {
+	return nil
 }

@@ -1,5 +1,7 @@
 package seed
 
+import "github.com/qlova/seed/style/css"
+
 var pages []Seed
 
 func Page() Seed {
@@ -12,8 +14,7 @@ func NewPage() Seed {
 	seed.page = true
 	
 	seed.SetHidden()
-	
-	seed.Set("will-change", "display")
+	seed.SetWillChange(css.Property.Display)
 	
 	pages = append(pages, seed)
 	

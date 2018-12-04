@@ -4,33 +4,6 @@ package css
 import "strconv"
 import "reflect"
 
-type uintOrUnitValue interface {
-	stringable
-	uintOrUnitValue()
-}
-type uintOrUnitType string
-
-func (self uintOrUnitType) String() string { return string(self) }
-func (uintOrUnitType) uintOrUnitValue()    {}
-
-type durationValue interface {
-	stringable
-	durationValue()
-}
-type durationType string
-
-func (self durationType) String() string { return string(self) }
-func (durationType) durationValue()      {}
-
-type unitOrNoneValue interface {
-	stringable
-	unitOrNoneValue()
-}
-type unitOrNoneType string
-
-func (self unitOrNoneType) String() string { return string(self) }
-func (unitOrNoneType) unitOrNoneValue()    {}
-
 type unitValue interface {
 	stringable
 	unitValue()
@@ -39,33 +12,6 @@ type unitType string
 
 func (self unitType) String() string { return string(self) }
 func (unitType) unitValue()          {}
-
-type uintValue interface {
-	stringable
-	uintValue()
-}
-type uintType string
-
-func (self uintType) String() string { return string(self) }
-func (uintType) uintValue()          {}
-
-type imageValue interface {
-	stringable
-	imageValue()
-}
-type imageType string
-
-func (self imageType) String() string { return string(self) }
-func (imageType) imageValue()         {}
-
-type colorValue interface {
-	stringable
-	colorValue()
-}
-type colorType string
-
-func (self colorType) String() string { return string(self) }
-func (colorType) colorValue()         {}
 
 type unitAndUnitValue interface {
 	stringable
@@ -85,14 +31,14 @@ type numberType string
 func (self numberType) String() string { return string(self) }
 func (numberType) numberValue()        {}
 
-type overflowValue interface {
+type unitOrAutoValue interface {
 	stringable
-	overflowValue()
+	unitOrAutoValue()
 }
-type overflowType string
+type unitOrAutoType string
 
-func (self overflowType) String() string { return string(self) }
-func (overflowType) overflowValue()      {}
+func (self unitOrAutoType) String() string { return string(self) }
+func (unitOrAutoType) unitOrAutoValue()    {}
 
 type gridTemplateValue interface {
 	stringable
@@ -103,86 +49,23 @@ type gridTemplateType string
 func (self gridTemplateType) String() string { return string(self) }
 func (gridTemplateType) gridTemplateValue()  {}
 
-type breakValue interface {
+type imageValue interface {
 	stringable
-	breakValue()
+	imageValue()
 }
-type breakType string
+type imageType string
 
-func (self breakType) String() string { return string(self) }
-func (breakType) breakValue()         {}
+func (self imageType) String() string { return string(self) }
+func (imageType) imageValue()         {}
 
-type gridStopValue interface {
+type colorValue interface {
 	stringable
-	gridStopValue()
+	colorValue()
 }
-type gridStopType string
+type colorType string
 
-func (self gridStopType) String() string { return string(self) }
-func (gridStopType) gridStopValue()      {}
-
-type thicknessValue interface {
-	stringable
-	thicknessValue()
-}
-type thicknessType string
-
-func (self thicknessType) String() string { return string(self) }
-func (thicknessType) thicknessValue()     {}
-
-type nameValue interface {
-	stringable
-	nameValue()
-}
-type nameType string
-
-func (self nameType) String() string { return string(self) }
-func (nameType) nameValue()          {}
-
-type unitOrAutoValue interface {
-	stringable
-	unitOrAutoValue()
-}
-type unitOrAutoType string
-
-func (self unitOrAutoType) String() string { return string(self) }
-func (unitOrAutoType) unitOrAutoValue()    {}
-
-type shadowValue interface {
-	stringable
-	shadowValue()
-}
-type shadowType string
-
-func (self shadowType) String() string { return string(self) }
-func (shadowType) shadowValue()        {}
-
-type borderStyleValue interface {
-	stringable
-	borderStyleValue()
-}
-type borderStyleType string
-
-func (self borderStyleType) String() string { return string(self) }
-func (borderStyleType) borderStyleValue()   {}
-
-type boxValue interface {
-	stringable
-	boxValue()
-}
-type boxType string
-
-func (self boxType) String() string { return string(self) }
-func (boxType) boxValue()           {}
-
-type sizeValue interface {
-	stringable
-	sizeValue()
-}
-type sizeType string
-
-func (self sizeType) String() string { return string(self) }
-func (sizeType) sizeValue()          {}
+func (self colorType) String() string { return string(self) }
+func (colorType) colorValue()         {}
 
 type normalOrAutoValue interface {
 	stringable
@@ -193,32 +76,32 @@ type normalOrAutoType string
 func (self normalOrAutoType) String() string { return string(self) }
 func (normalOrAutoType) normalOrAutoValue()  {}
 
-type gridAutoValue interface {
+type uintValue interface {
 	stringable
-	gridAutoValue()
+	uintValue()
 }
-type gridAutoType string
+type uintType string
 
-func (self gridAutoType) String() string { return string(self) }
-func (gridAutoType) gridAutoValue()      {}
+func (self uintType) String() string { return string(self) }
+func (uintType) uintValue()          {}
 
-type normalOrUnitOrAutoValue interface {
+type gridStopValue interface {
 	stringable
-	normalOrUnitOrAutoValue()
+	gridStopValue()
 }
-type normalOrUnitOrAutoType string
+type gridStopType string
 
-func (self normalOrUnitOrAutoType) String() string      { return string(self) }
-func (normalOrUnitOrAutoType) normalOrUnitOrAutoValue() {}
+func (self gridStopType) String() string { return string(self) }
+func (gridStopType) gridStopValue()      {}
 
-type pageBreakValue interface {
+type unitOrNoneValue interface {
 	stringable
-	pageBreakValue()
+	unitOrNoneValue()
 }
-type pageBreakType string
+type unitOrNoneType string
 
-func (self pageBreakType) String() string { return string(self) }
-func (pageBreakType) pageBreakValue()     {}
+func (self unitOrNoneType) String() string { return string(self) }
+func (unitOrNoneType) unitOrNoneValue()    {}
 
 type integerOrAutoValue interface {
 	stringable
@@ -229,139 +112,137 @@ type integerOrAutoType string
 func (self integerOrAutoType) String() string { return string(self) }
 func (integerOrAutoType) integerOrAutoValue() {}
 
-type gridRowValue interface {
+type shadowValue interface {
 	stringable
-	gridRowValue()
+	shadowValue()
 }
-type gridRowType string
+type shadowType string
 
-func (self gridRowType) String() string { return string(self) }
-func (gridRowType) gridRowValue()       {}
+func (self shadowType) String() string { return string(self) }
+func (shadowType) shadowValue()        {}
 
-func (style *Style) GridRow() gridRowValue {
-	return gridRowType(style.Get("grid-row"))
-}
-func (style *Style) SetGridRow(value gridRowValue) {
-	style.set("grid-row", value)
-}
-
-type listStyleTypeValue interface {
+type pageBreakValue interface {
 	stringable
-	listStyleTypeValue()
+	pageBreakValue()
 }
-type listStyleTypeType string
+type pageBreakType string
 
-func (self listStyleTypeType) String() string { return string(self) }
-func (listStyleTypeType) listStyleTypeValue() {}
+func (self pageBreakType) String() string { return string(self) }
+func (pageBreakType) pageBreakValue()     {}
 
-func (style *Style) ListStyleType() listStyleTypeValue {
-	return listStyleTypeType(style.Get("list-style-type"))
-}
-func (style *Style) SetListStyleType(value listStyleTypeValue) {
-	style.set("list-style-type", value)
-}
-
-type mixBlendModeValue interface {
+type sizeValue interface {
 	stringable
-	mixBlendModeValue()
+	sizeValue()
 }
-type mixBlendModeType string
+type sizeType string
 
-func (self mixBlendModeType) String() string { return string(self) }
-func (mixBlendModeType) mixBlendModeValue()  {}
+func (self sizeType) String() string { return string(self) }
+func (sizeType) sizeValue()          {}
 
-func (style *Style) MixBlendMode() mixBlendModeValue {
-	return mixBlendModeType(style.Get("mix-blend-mode"))
-}
-func (style *Style) SetMixBlendMode(value mixBlendModeValue) {
-	style.set("mix-blend-mode", value)
-}
-
-type wordWrapValue interface {
+type nameValue interface {
 	stringable
-	wordWrapValue()
+	nameValue()
 }
-type wordWrapType string
+type nameType string
 
-func (self wordWrapType) String() string { return string(self) }
-func (wordWrapType) wordWrapValue()      {}
+func (self nameType) String() string { return string(self) }
+func (nameType) nameValue()          {}
 
-func (style *Style) WordWrap() wordWrapValue {
-	return wordWrapType(style.Get("word-wrap"))
-}
-func (style *Style) SetWordWrap(value wordWrapValue) {
-	style.set("word-wrap", value)
-}
-func (style *Style) BorderImageOutset() uintOrUnitValue {
-	return uintOrUnitType(style.Get("border-image-outset"))
-}
-func (style *Style) SetBorderImageOutset(value uintOrUnitValue) {
-	style.set("border-image-outset", value)
-}
-func (style *Style) Perspective() unitOrNoneValue {
-	return unitOrNoneType(style.Get("perspective"))
-}
-func (style *Style) SetPerspective(value unitOrNoneValue) {
-	style.set("perspective", value)
-}
-
-func (style *Style) SetTransitionProperty(properties ...interface{}) {
-	var names string
-
-	for _, property := range properties {
-		var s = NewStyle()
-		reflect.ValueOf(property).Call([]reflect.Value{reflect.ValueOf(&s)})
-
-		for i := range s.Stylable.(Implementation) {
-			names += i
-		}
-	}
-	style.set("transform-property", unitType(names))
-}
-
-func (style *Style) AnimationDuration() durationValue {
-	return durationType(style.Get("animation-duration"))
-}
-func (style *Style) SetAnimationDuration(value durationValue) {
-	style.set("animation-duration", value)
-}
-
-type columnCountValue interface {
+type overflowValue interface {
 	stringable
-	columnCountValue()
+	overflowValue()
 }
-type columnCountType string
+type overflowType string
 
-func (self columnCountType) String() string { return string(self) }
-func (columnCountType) columnCountValue()   {}
+func (self overflowType) String() string { return string(self) }
+func (overflowType) overflowValue()      {}
 
-func (style *Style) ColumnCount() columnCountValue {
-	return columnCountType(style.Get("column-count"))
-}
-func (style *Style) SetColumnCount(value columnCountValue) {
-	style.set("column-count", value)
-}
-
-type flexValue interface {
+type borderStyleValue interface {
 	stringable
-	flexValue()
+	borderStyleValue()
 }
-type flexType string
+type borderStyleType string
 
-func (self flexType) String() string { return string(self) }
-func (flexType) flexValue()          {}
+func (self borderStyleType) String() string { return string(self) }
+func (borderStyleType) borderStyleValue()   {}
 
-func (style *Style) Flex() flexValue {
-	return flexType(style.Get("flex"))
+type thicknessValue interface {
+	stringable
+	thicknessValue()
 }
-func (style *Style) SetFlex(value flexValue) {
-	style.set("flex", value)
+type thicknessType string
+
+func (self thicknessType) String() string { return string(self) }
+func (thicknessType) thicknessValue()     {}
+
+type uintOrUnitValue interface {
+	stringable
+	uintOrUnitValue()
 }
-func (style *Style) BorderBottomLeftRadius() unitValue {
-	return unitType(style.Get("border-bottom-left-radius"))
+type uintOrUnitType string
+
+func (self uintOrUnitType) String() string { return string(self) }
+func (uintOrUnitType) uintOrUnitValue()    {}
+
+type normalOrUnitOrAutoValue interface {
+	stringable
+	normalOrUnitOrAutoValue()
 }
-func (style *Style) SetBorderBottomLeftRadius(value unitValue) {
-	style.set("border-bottom-left-radius", value)
+type normalOrUnitOrAutoType string
+
+func (self normalOrUnitOrAutoType) String() string      { return string(self) }
+func (normalOrUnitOrAutoType) normalOrUnitOrAutoValue() {}
+
+type boxValue interface {
+	stringable
+	boxValue()
+}
+type boxType string
+
+func (self boxType) String() string { return string(self) }
+func (boxType) boxValue()           {}
+
+type breakValue interface {
+	stringable
+	breakValue()
+}
+type breakType string
+
+func (self breakType) String() string { return string(self) }
+func (breakType) breakValue()         {}
+
+type gridAutoValue interface {
+	stringable
+	gridAutoValue()
+}
+type gridAutoType string
+
+func (self gridAutoType) String() string { return string(self) }
+func (gridAutoType) gridAutoValue()      {}
+
+type durationValue interface {
+	stringable
+	durationValue()
+}
+type durationType string
+
+func (self durationType) String() string { return string(self) }
+func (durationType) durationValue()      {}
+
+type lineHeightValue interface {
+	stringable
+	lineHeightValue()
+}
+type lineHeightType string
+
+func (self lineHeightType) String() string { return string(self) }
+func (lineHeightType) lineHeightValue()    {}
+
+func (style *Style) LineHeight() lineHeightValue {
+	return lineHeightType(style.Get("line-height"))
+}
+func (style *Style) SetLineHeight(value lineHeightValue) {
+	style.set("line-height", value)
 }
 func (style *Style) Orphans() uintValue {
 	return uintType(style.Get("orphans"))
@@ -369,1092 +250,120 @@ func (style *Style) Orphans() uintValue {
 func (style *Style) SetOrphans(value uintValue) {
 	style.set("orphans", value)
 }
-func (style *Style) BorderImageSource() imageValue {
-	return imageType(style.Get("border-image-source"))
-}
-func (style *Style) SetBorderImageSource(value imageValue) {
-	style.set("border-image-source", value)
-}
 
-type fontVariantEastAsianValue interface {
+type positionValue interface {
 	stringable
-	fontVariantEastAsianValue()
+	positionValue()
 }
-type fontVariantEastAsianType string
+type positionType string
 
-func (self fontVariantEastAsianType) String() string        { return string(self) }
-func (fontVariantEastAsianType) fontVariantEastAsianValue() {}
+func (self positionType) String() string { return string(self) }
+func (positionType) positionValue()      {}
 
-func (style *Style) FontVariantEastAsian() fontVariantEastAsianValue {
-	return fontVariantEastAsianType(style.Get("font-variant-east-asian"))
+func (style *Style) Position() positionValue {
+	return positionType(style.Get("position"))
 }
-func (style *Style) SetFontVariantEastAsian(value fontVariantEastAsianValue) {
-	style.set("font-variant-east-asian", value)
-}
-func (style *Style) ObjectPosition() unitAndUnitValue {
-	return unitAndUnitType(style.Get("object-position"))
-}
-func (style *Style) SetObjectPosition(value unitAndUnitValue) {
-	style.set("object-position", value)
-}
-func (style *Style) BorderBottomColor() colorValue {
-	return colorType(style.Get("border-bottom-color"))
-}
-func (style *Style) SetBorderBottomColor(value colorValue) {
-	style.set("border-bottom-color", value)
+func (style *Style) SetPosition(value positionValue) {
+	style.set("position", value)
 }
 
-type borderRightValue interface {
+type backgroundValue interface {
 	stringable
-	borderRightValue()
+	backgroundValue()
 }
-type borderRightType string
+type backgroundType string
 
-func (self borderRightType) String() string { return string(self) }
-func (borderRightType) borderRightValue()   {}
+func (self backgroundType) String() string { return string(self) }
+func (backgroundType) backgroundValue()    {}
 
-func (style *Style) BorderRight() borderRightValue {
-	return borderRightType(style.Get("border-right"))
+func (style *Style) Background() backgroundValue {
+	return backgroundType(style.Get("background"))
 }
-func (style *Style) SetBorderRight(value borderRightValue) {
-	style.set("border-right", value)
+func (style *Style) SetBackground(value backgroundValue) {
+	style.set("background", value)
 }
 
-type fontVariantValue interface {
+type borderBottomValue interface {
 	stringable
-	fontVariantValue()
+	borderBottomValue()
 }
-type fontVariantType string
+type borderBottomType string
 
-func (self fontVariantType) String() string { return string(self) }
-func (fontVariantType) fontVariantValue()   {}
+func (self borderBottomType) String() string { return string(self) }
+func (borderBottomType) borderBottomValue()  {}
 
-func (style *Style) FontVariant() fontVariantValue {
-	return fontVariantType(style.Get("font-variant"))
+func (style *Style) BorderBottom() borderBottomValue {
+	return borderBottomType(style.Get("border-bottom"))
 }
-func (style *Style) SetFontVariant(value fontVariantValue) {
-	style.set("font-variant", value)
+func (style *Style) SetBorderBottom(value borderBottomValue) {
+	style.set("border-bottom", value)
 }
 
-type transitionDelayValue interface {
+type borderLeftValue interface {
 	stringable
-	transitionDelayValue()
+	borderLeftValue()
 }
-type transitionDelayType string
+type borderLeftType string
 
-func (self transitionDelayType) String() string   { return string(self) }
-func (transitionDelayType) transitionDelayValue() {}
+func (self borderLeftType) String() string { return string(self) }
+func (borderLeftType) borderLeftValue()    {}
 
-func (style *Style) TransitionDelay() transitionDelayValue {
-	return transitionDelayType(style.Get("transition-delay"))
+func (style *Style) BorderLeft() borderLeftValue {
+	return borderLeftType(style.Get("border-left"))
 }
-func (style *Style) SetTransitionDelay(value transitionDelayValue) {
-	style.set("transition-delay", value)
-}
-
-type alignItemsValue interface {
-	stringable
-	alignItemsValue()
-}
-type alignItemsType string
-
-func (self alignItemsType) String() string { return string(self) }
-func (alignItemsType) alignItemsValue()    {}
-
-func (style *Style) AlignItems() alignItemsValue {
-	return alignItemsType(style.Get("align-items"))
-}
-func (style *Style) SetAlignItems(value alignItemsValue) {
-	style.set("align-items", value)
+func (style *Style) SetBorderLeft(value borderLeftValue) {
+	style.set("border-left", value)
 }
 
-type imageRenderingValue interface {
-	stringable
-	imageRenderingValue()
-}
-type imageRenderingType string
-
-func (self imageRenderingType) String() string  { return string(self) }
-func (imageRenderingType) imageRenderingValue() {}
-
-func (style *Style) ImageRendering() imageRenderingValue {
-	return imageRenderingType(style.Get("image-rendering"))
-}
-func (style *Style) SetImageRendering(value imageRenderingValue) {
-	style.set("image-rendering", value)
-}
-
-type textOrientationValue interface {
-	stringable
-	textOrientationValue()
-}
-type textOrientationType string
-
-func (self textOrientationType) String() string   { return string(self) }
-func (textOrientationType) textOrientationValue() {}
-
-func (style *Style) TextOrientation() textOrientationValue {
-	return textOrientationType(style.Get("text-orientation"))
-}
-func (style *Style) SetTextOrientation(value textOrientationValue) {
-	style.set("text-orientation", value)
-}
-
-type transformStyleValue interface {
-	stringable
-	transformStyleValue()
-}
-type transformStyleType string
-
-func (self transformStyleType) String() string  { return string(self) }
-func (transformStyleType) transformStyleValue() {}
-
-func (style *Style) TransformStyle() transformStyleValue {
-	return transformStyleType(style.Get("transform-style"))
-}
-func (style *Style) SetTransformStyle(value transformStyleValue) {
-	style.set("transform-style", value)
-}
-func (style *Style) GridColumnGap() unitValue {
-	return unitType(style.Get("grid-column-gap"))
-}
-func (style *Style) SetGridColumnGap(value unitValue) {
-	style.set("grid-column-gap", value)
-}
-
-type textDecorationLineValue interface {
-	stringable
-	textDecorationLineValue()
-}
-type textDecorationLineType string
-
-func (self textDecorationLineType) String() string      { return string(self) }
-func (textDecorationLineType) textDecorationLineValue() {}
-
-func (style *Style) TextDecorationLine() textDecorationLineValue {
-	return textDecorationLineType(style.Get("text-decoration-line"))
-}
-func (style *Style) SetTextDecorationLine(value textDecorationLineValue) {
-	style.set("text-decoration-line", value)
-}
-func (style *Style) FlexShrink() numberValue {
-	return numberType(style.Get("flex-shrink"))
-}
-func (style *Style) SetFlexShrink(value numberValue) {
-	style.set("flex-shrink", value)
-}
-
-type fontVariantAlternatesValue interface {
-	stringable
-	fontVariantAlternatesValue()
-}
-type fontVariantAlternatesType string
-
-func (self fontVariantAlternatesType) String() string         { return string(self) }
-func (fontVariantAlternatesType) fontVariantAlternatesValue() {}
-
-func (style *Style) FontVariantAlternates() fontVariantAlternatesValue {
-	return fontVariantAlternatesType(style.Get("font-variant-alternates"))
-}
-func (style *Style) SetFontVariantAlternates(value fontVariantAlternatesValue) {
-	style.set("font-variant-alternates", value)
-}
-
-type verticalAlignValue interface {
-	stringable
-	verticalAlignValue()
-}
-type verticalAlignType string
-
-func (self verticalAlignType) String() string { return string(self) }
-func (verticalAlignType) verticalAlignValue() {}
-
-func (style *Style) VerticalAlign() verticalAlignValue {
-	return verticalAlignType(style.Get("vertical-align"))
-}
-func (style *Style) SetVerticalAlign(value verticalAlignValue) {
-	style.set("vertical-align", value)
-}
-func (style *Style) BackgroundColor() colorValue {
-	return colorType(style.Get("background-color"))
-}
-func (style *Style) SetBackgroundColor(value colorValue) {
-	style.set("background-color", value)
-}
-func (style *Style) BackgroundPosition() unitAndUnitValue {
-	return unitAndUnitType(style.Get("background-position"))
-}
-func (style *Style) SetBackgroundPosition(value unitAndUnitValue) {
-	style.set("background-position", value)
-}
-
-type backgroundRepeatValue interface {
-	stringable
-	backgroundRepeatValue()
-}
-type backgroundRepeatType string
-
-func (self backgroundRepeatType) String() string    { return string(self) }
-func (backgroundRepeatType) backgroundRepeatValue() {}
-
-func (style *Style) BackgroundRepeat() backgroundRepeatValue {
-	return backgroundRepeatType(style.Get("background-repeat"))
-}
-func (style *Style) SetBackgroundRepeat(value backgroundRepeatValue) {
-	style.set("background-repeat", value)
-}
-
-type fontValue interface {
-	stringable
-	fontValue()
-}
-type fontType string
-
-func (self fontType) String() string { return string(self) }
-func (fontType) fontValue()          {}
-
-func (style *Style) Font() fontValue {
-	return fontType(style.Get("font"))
-}
-func (style *Style) SetFont(value fontValue) {
-	style.set("font", value)
-}
-
-type fontSizeAdjustValue interface {
-	stringable
-	fontSizeAdjustValue()
-}
-type fontSizeAdjustType string
-
-func (self fontSizeAdjustType) String() string  { return string(self) }
-func (fontSizeAdjustType) fontSizeAdjustValue() {}
-
-func (style *Style) FontSizeAdjust() fontSizeAdjustValue {
-	return fontSizeAdjustType(style.Get("font-size-adjust"))
-}
-func (style *Style) SetFontSizeAdjust(value fontSizeAdjustValue) {
-	style.set("font-size-adjust", value)
-}
-func (style *Style) Overflow() overflowValue {
-	return overflowType(style.Get("overflow"))
-}
-func (style *Style) SetOverflow(value overflowValue) {
-	style.set("overflow", value)
-}
-
-type fontVariantNumericValue interface {
-	stringable
-	fontVariantNumericValue()
-}
-type fontVariantNumericType string
-
-func (self fontVariantNumericType) String() string      { return string(self) }
-func (fontVariantNumericType) fontVariantNumericValue() {}
-
-func (style *Style) FontVariantNumeric() fontVariantNumericValue {
-	return fontVariantNumericType(style.Get("font-variant-numeric"))
-}
-func (style *Style) SetFontVariantNumeric(value fontVariantNumericValue) {
-	style.set("font-variant-numeric", value)
-}
-
-type hyphensValue interface {
-	stringable
-	hyphensValue()
-}
-type hyphensType string
-
-func (self hyphensType) String() string { return string(self) }
-func (hyphensType) hyphensValue()       {}
-
-func (style *Style) Hyphens() hyphensValue {
-	return hyphensType(style.Get("hyphens"))
-}
-func (style *Style) SetHyphens(value hyphensValue) {
-	style.set("hyphens", value)
-}
-
-type objectFitValue interface {
-	stringable
-	objectFitValue()
-}
-type objectFitType string
-
-func (self objectFitType) String() string { return string(self) }
-func (objectFitType) objectFitValue()     {}
-
-func (style *Style) ObjectFit() objectFitValue {
-	return objectFitType(style.Get("object-fit"))
-}
-func (style *Style) SetObjectFit(value objectFitValue) {
-	style.set("object-fit", value)
-}
-
-type counterIncrementValue interface {
-	stringable
-	counterIncrementValue()
-}
-type counterIncrementType string
-
-func (self counterIncrementType) String() string    { return string(self) }
-func (counterIncrementType) counterIncrementValue() {}
-
-func (style *Style) CounterIncrement() counterIncrementValue {
-	return counterIncrementType(style.Get("counter-increment"))
-}
-func (style *Style) SetCounterIncrement(value counterIncrementValue) {
-	style.set("counter-increment", value)
-}
-
-func (style *Style) SetGridTemplateColumns(values []gridTemplateValue) {
-	if len(values) == 0 {
-		style.set("grid-template-columns", unitType("none"))
+func (style *Style) SetGridTemplateAreas(names []string) {
+	if len(names) == 0 {
+		style.set("grid-template-areas", unitType("none"))
 		return
 	}
 	var result string
-	for _, value := range values {
-		result += value.String() + " "
+	for _, name := range names {
+		result += name + " "
 	}
-	style.set("grid-template-columns", unitType(result))
+	style.set("grid-template-areas", unitType(result))
 }
 
-func (style *Style) PaddingBottom() unitValue {
-	return unitType(style.Get("padding-bottom"))
+func (style *Style) LetterSpacing() normalOrUnitOrAutoValue {
+	return normalOrUnitOrAutoType(style.Get("letter-spacing"))
 }
-func (style *Style) SetPaddingBottom(value unitValue) {
-	style.set("padding-bottom", value)
+func (style *Style) SetLetterSpacing(value normalOrUnitOrAutoValue) {
+	style.set("letter-spacing", value)
 }
 
-type pointerEventsValue interface {
+type transitionDurationValue interface {
 	stringable
-	pointerEventsValue()
+	transitionDurationValue()
 }
-type pointerEventsType string
+type transitionDurationType string
 
-func (self pointerEventsType) String() string { return string(self) }
-func (pointerEventsType) pointerEventsValue() {}
+func (self transitionDurationType) String() string      { return string(self) }
+func (transitionDurationType) transitionDurationValue() {}
 
-func (style *Style) PointerEvents() pointerEventsValue {
-	return pointerEventsType(style.Get("pointer-events"))
+func (style *Style) TransitionDuration() transitionDurationValue {
+	return transitionDurationType(style.Get("transition-duration"))
 }
-func (style *Style) SetPointerEvents(value pointerEventsValue) {
-	style.set("pointer-events", value)
+func (style *Style) SetTransitionDuration(value transitionDurationValue) {
+	style.set("transition-duration", value)
 }
 
-type animationDirectionValue interface {
+type backgroundOriginValue interface {
 	stringable
-	animationDirectionValue()
+	backgroundOriginValue()
 }
-type animationDirectionType string
+type backgroundOriginType string
 
-func (self animationDirectionType) String() string      { return string(self) }
-func (animationDirectionType) animationDirectionValue() {}
+func (self backgroundOriginType) String() string    { return string(self) }
+func (backgroundOriginType) backgroundOriginValue() {}
 
-func (style *Style) AnimationDirection() animationDirectionValue {
-	return animationDirectionType(style.Get("animation-direction"))
+func (style *Style) BackgroundOrigin() backgroundOriginValue {
+	return backgroundOriginType(style.Get("background-origin"))
 }
-func (style *Style) SetAnimationDirection(value animationDirectionValue) {
-	style.set("animation-direction", value)
-}
-
-type animationTimingFunctionValue interface {
-	stringable
-	animationTimingFunctionValue()
-}
-type animationTimingFunctionType string
-
-func (self animationTimingFunctionType) String() string           { return string(self) }
-func (animationTimingFunctionType) animationTimingFunctionValue() {}
-
-func (style *Style) AnimationTimingFunction() animationTimingFunctionValue {
-	return animationTimingFunctionType(style.Get("animation-timing-function"))
-}
-func (style *Style) SetAnimationTimingFunction(value animationTimingFunctionValue) {
-	style.set("animation-timing-function", value)
-}
-func (style *Style) BreakAfter() breakValue {
-	return breakType(style.Get("break-after"))
-}
-func (style *Style) SetBreakAfter(value breakValue) {
-	style.set("break-after", value)
-}
-func (style *Style) FlexGrow() numberValue {
-	return numberType(style.Get("flex-grow"))
-}
-func (style *Style) SetFlexGrow(value numberValue) {
-	style.set("flex-grow", value)
-}
-
-type fontVariantLigaturesValue interface {
-	stringable
-	fontVariantLigaturesValue()
-}
-type fontVariantLigaturesType string
-
-func (self fontVariantLigaturesType) String() string        { return string(self) }
-func (fontVariantLigaturesType) fontVariantLigaturesValue() {}
-
-func (style *Style) FontVariantLigatures() fontVariantLigaturesValue {
-	return fontVariantLigaturesType(style.Get("font-variant-ligatures"))
-}
-func (style *Style) SetFontVariantLigatures(value fontVariantLigaturesValue) {
-	style.set("font-variant-ligatures", value)
-}
-func (style *Style) GridColumnStart() gridStopValue {
-	return gridStopType(style.Get("grid-column-start"))
-}
-func (style *Style) SetGridColumnStart(value gridStopValue) {
-	style.set("grid-column-start", value)
-}
-
-type widowsValue interface {
-	stringable
-	widowsValue()
-}
-type widowsType string
-
-func (self widowsType) String() string { return string(self) }
-func (widowsType) widowsValue()        {}
-
-func (style *Style) Widows() widowsValue {
-	return widowsType(style.Get("widows"))
-}
-func (style *Style) SetWidows(value widowsValue) {
-	style.set("widows", value)
-}
-
-type animationPlayStateValue interface {
-	stringable
-	animationPlayStateValue()
-}
-type animationPlayStateType string
-
-func (self animationPlayStateType) String() string      { return string(self) }
-func (animationPlayStateType) animationPlayStateValue() {}
-
-func (style *Style) AnimationPlayState() animationPlayStateValue {
-	return animationPlayStateType(style.Get("animation-play-state"))
-}
-func (style *Style) SetAnimationPlayState(value animationPlayStateValue) {
-	style.set("animation-play-state", value)
-}
-func (style *Style) BorderRightColor() colorValue {
-	return colorType(style.Get("border-right-color"))
-}
-func (style *Style) SetBorderRightColor(value colorValue) {
-	style.set("border-right-color", value)
-}
-func (style *Style) BorderTopColor() colorValue {
-	return colorType(style.Get("border-top-color"))
-}
-func (style *Style) SetBorderTopColor(value colorValue) {
-	style.set("border-top-color", value)
-}
-
-type displayValue interface {
-	stringable
-	displayValue()
-}
-type displayType string
-
-func (self displayType) String() string { return string(self) }
-func (displayType) displayValue()       {}
-
-func (style *Style) Display() displayValue {
-	return displayType(style.Get("display"))
-}
-func (style *Style) SetDisplay(value displayValue) {
-	style.set("display", value)
-}
-func (style *Style) MinHeight() unitOrNoneValue {
-	return unitOrNoneType(style.Get("min-height"))
-}
-func (style *Style) SetMinHeight(value unitOrNoneValue) {
-	style.set("min-height", value)
-}
-func (style *Style) BorderTopWidth() thicknessValue {
-	return thicknessType(style.Get("border-top-width"))
-}
-func (style *Style) SetBorderTopWidth(value thicknessValue) {
-	style.set("border-top-width", value)
-}
-
-type fontStyleValue interface {
-	stringable
-	fontStyleValue()
-}
-type fontStyleType string
-
-func (self fontStyleType) String() string { return string(self) }
-func (fontStyleType) fontStyleValue()     {}
-
-func (style *Style) FontStyle() fontStyleValue {
-	return fontStyleType(style.Get("font-style"))
-}
-func (style *Style) SetFontStyle(value fontStyleValue) {
-	style.set("font-style", value)
-}
-
-type overflowWrapValue interface {
-	stringable
-	overflowWrapValue()
-}
-type overflowWrapType string
-
-func (self overflowWrapType) String() string { return string(self) }
-func (overflowWrapType) overflowWrapValue()  {}
-
-func (style *Style) OverflowWrap() overflowWrapValue {
-	return overflowWrapType(style.Get("overflow-wrap"))
-}
-func (style *Style) SetOverflowWrap(value overflowWrapValue) {
-	style.set("overflow-wrap", value)
-}
-
-type gridColumnValue interface {
-	stringable
-	gridColumnValue()
-}
-type gridColumnType string
-
-func (self gridColumnType) String() string { return string(self) }
-func (gridColumnType) gridColumnValue()    {}
-
-func (style *Style) GridColumn() gridColumnValue {
-	return gridColumnType(style.Get("grid-column"))
-}
-func (style *Style) SetGridColumn(value gridColumnValue) {
-	style.set("grid-column", value)
-}
-
-type textAlignValue interface {
-	stringable
-	textAlignValue()
-}
-type textAlignType string
-
-func (self textAlignType) String() string { return string(self) }
-func (textAlignType) textAlignValue()     {}
-
-func (style *Style) TextAlign() textAlignValue {
-	return textAlignType(style.Get("text-align"))
-}
-func (style *Style) SetTextAlign(value textAlignValue) {
-	style.set("text-align", value)
-}
-func (style *Style) BorderColor() colorValue {
-	return colorType(style.Get("border-color"))
-}
-func (style *Style) SetBorderColor(value colorValue) {
-	style.set("border-color", value)
-}
-
-type clipValue interface {
-	stringable
-	clipValue()
-}
-type clipType string
-
-func (self clipType) String() string { return string(self) }
-func (clipType) clipValue()          {}
-
-func (style *Style) Clip() clipValue {
-	return clipType(style.Get("clip"))
-}
-func (style *Style) SetClip(value clipValue) {
-	style.set("clip", value)
-}
-
-type columnWidthValue interface {
-	stringable
-	columnWidthValue()
-}
-type columnWidthType string
-
-func (self columnWidthType) String() string { return string(self) }
-func (columnWidthType) columnWidthValue()   {}
-
-func (style *Style) ColumnWidth() columnWidthValue {
-	return columnWidthType(style.Get("column-width"))
-}
-func (style *Style) SetColumnWidth(value columnWidthValue) {
-	style.set("column-width", value)
-}
-
-type borderImageRepeatValue interface {
-	stringable
-	borderImageRepeatValue()
-}
-type borderImageRepeatType string
-
-func (self borderImageRepeatType) String() string     { return string(self) }
-func (borderImageRepeatType) borderImageRepeatValue() {}
-
-func (style *Style) BorderImageRepeat() borderImageRepeatValue {
-	return borderImageRepeatType(style.Get("border-image-repeat"))
-}
-func (style *Style) SetBorderImageRepeat(value borderImageRepeatValue) {
-	style.set("border-image-repeat", value)
-}
-func (style *Style) CounterReset() nameValue {
-	return nameType(style.Get("counter-reset"))
-}
-func (style *Style) SetCounterReset(value nameValue) {
-	style.set("counter-reset", value)
-}
-func (style *Style) Top() unitOrAutoValue {
-	return unitOrAutoType(style.Get("top"))
-}
-func (style *Style) SetTop(value unitOrAutoValue) {
-	style.set("top", value)
-}
-func (style *Style) GridTemplate() gridTemplateValue {
-	return gridTemplateType(style.Get("grid-template"))
-}
-func (style *Style) SetGridTemplate(value gridTemplateValue) {
-	style.set("grid-template", value)
-}
-
-type justifyContentValue interface {
-	stringable
-	justifyContentValue()
-}
-type justifyContentType string
-
-func (self justifyContentType) String() string  { return string(self) }
-func (justifyContentType) justifyContentValue() {}
-
-func (style *Style) JustifyContent() justifyContentValue {
-	return justifyContentType(style.Get("justify-content"))
-}
-func (style *Style) SetJustifyContent(value justifyContentValue) {
-	style.set("justify-content", value)
-}
-func (style *Style) TextShadow() shadowValue {
-	return shadowType(style.Get("text-shadow"))
-}
-func (style *Style) SetTextShadow(value shadowValue) {
-	style.set("text-shadow", value)
-}
-
-type userSelectValue interface {
-	stringable
-	userSelectValue()
-}
-type userSelectType string
-
-func (self userSelectType) String() string { return string(self) }
-func (userSelectType) userSelectValue()    {}
-
-func (style *Style) UserSelect() userSelectValue {
-	return userSelectType(style.Get("user-select"))
-}
-func (style *Style) SetUserSelect(value userSelectValue) {
-	style.set("user-select", value)
-}
-func (style *Style) AnimationDelay() durationValue {
-	return durationType(style.Get("animation-delay"))
-}
-func (style *Style) SetAnimationDelay(value durationValue) {
-	style.set("animation-delay", value)
-}
-
-type columnRuleValue interface {
-	stringable
-	columnRuleValue()
-}
-type columnRuleType string
-
-func (self columnRuleType) String() string { return string(self) }
-func (columnRuleType) columnRuleValue()    {}
-
-func (style *Style) ColumnRule() columnRuleValue {
-	return columnRuleType(style.Get("column-rule"))
-}
-func (style *Style) SetColumnRule(value columnRuleValue) {
-	style.set("column-rule", value)
-}
-
-type flexWrapValue interface {
-	stringable
-	flexWrapValue()
-}
-type flexWrapType string
-
-func (self flexWrapType) String() string { return string(self) }
-func (flexWrapType) flexWrapValue()      {}
-
-func (style *Style) FlexWrap() flexWrapValue {
-	return flexWrapType(style.Get("flex-wrap"))
-}
-func (style *Style) SetFlexWrap(value flexWrapValue) {
-	style.set("flex-wrap", value)
-}
-func (style *Style) BorderWidth() thicknessValue {
-	return thicknessType(style.Get("border-width"))
-}
-func (style *Style) SetBorderWidth(value thicknessValue) {
-	style.set("border-width", value)
-}
-
-type clearValue interface {
-	stringable
-	clearValue()
-}
-type clearType string
-
-func (self clearType) String() string { return string(self) }
-func (clearType) clearValue()         {}
-
-func (style *Style) Clear() clearValue {
-	return clearType(style.Get("clear"))
-}
-func (style *Style) SetClear(value clearValue) {
-	style.set("clear", value)
-}
-
-type fontStretchValue interface {
-	stringable
-	fontStretchValue()
-}
-type fontStretchType string
-
-func (self fontStretchType) String() string { return string(self) }
-func (fontStretchType) fontStretchValue()   {}
-
-func (style *Style) FontStretch() fontStretchValue {
-	return fontStretchType(style.Get("font-stretch"))
-}
-func (style *Style) SetFontStretch(value fontStretchValue) {
-	style.set("font-stretch", value)
-}
-
-type gridAreaValue interface {
-	stringable
-	gridAreaValue()
-}
-type gridAreaType string
-
-func (self gridAreaType) String() string { return string(self) }
-func (gridAreaType) gridAreaValue()      {}
-
-func (style *Style) GridArea() gridAreaValue {
-	return gridAreaType(style.Get("grid-area"))
-}
-func (style *Style) SetGridArea(value gridAreaValue) {
-	style.set("grid-area", value)
-}
-
-type gridGapValue interface {
-	stringable
-	gridGapValue()
-}
-type gridGapType string
-
-func (self gridGapType) String() string { return string(self) }
-func (gridGapType) gridGapValue()       {}
-
-func (style *Style) GridGap() gridGapValue {
-	return gridGapType(style.Get("grid-gap"))
-}
-func (style *Style) SetGridGap(value gridGapValue) {
-	style.set("grid-gap", value)
-}
-
-type alignSelfValue interface {
-	stringable
-	alignSelfValue()
-}
-type alignSelfType string
-
-func (self alignSelfType) String() string { return string(self) }
-func (alignSelfType) alignSelfValue()     {}
-
-func (style *Style) AlignSelf() alignSelfValue {
-	return alignSelfType(style.Get("align-self"))
-}
-func (style *Style) SetAlignSelf(value alignSelfValue) {
-	style.set("align-self", value)
-}
-
-type borderImageSliceValue interface {
-	stringable
-	borderImageSliceValue()
-}
-type borderImageSliceType string
-
-func (self borderImageSliceType) String() string    { return string(self) }
-func (borderImageSliceType) borderImageSliceValue() {}
-
-func (style *Style) BorderImageSlice() borderImageSliceValue {
-	return borderImageSliceType(style.Get("border-image-slice"))
-}
-func (style *Style) SetBorderImageSlice(value borderImageSliceValue) {
-	style.set("border-image-slice", value)
-}
-
-type borderRadiusValue interface {
-	stringable
-	borderRadiusValue()
-}
-type borderRadiusType string
-
-func (self borderRadiusType) String() string { return string(self) }
-func (borderRadiusType) borderRadiusValue()  {}
-
-func (style *Style) BorderRadius() borderRadiusValue {
-	return borderRadiusType(style.Get("border-radius"))
-}
-func (style *Style) SetBorderRadius(value borderRadiusValue) {
-	style.set("border-radius", value)
-}
-
-func (style *Style) SetQuotes(quotes []string) {
-	if len(quotes) == 0 {
-		style.set("quotes", unitType("none"))
-		return
-	}
-	var result string
-	for _, quote := range quotes {
-		result += strconv.Quote(quote)
-	}
-	style.set("quotes", unitType(result))
-}
-
-type wordSpacingValue interface {
-	stringable
-	wordSpacingValue()
-}
-type wordSpacingType string
-
-func (self wordSpacingType) String() string { return string(self) }
-func (wordSpacingType) wordSpacingValue()   {}
-
-func (style *Style) WordSpacing() wordSpacingValue {
-	return wordSpacingType(style.Get("word-spacing"))
-}
-func (style *Style) SetWordSpacing(value wordSpacingValue) {
-	style.set("word-spacing", value)
-}
-func (style *Style) BorderTopStyle() borderStyleValue {
-	return borderStyleType(style.Get("border-top-style"))
-}
-func (style *Style) SetBorderTopStyle(value borderStyleValue) {
-	style.set("border-top-style", value)
-}
-func (style *Style) BoxSizing() boxValue {
-	return boxType(style.Get("box-sizing"))
-}
-func (style *Style) SetBoxSizing(value boxValue) {
-	style.set("box-sizing", value)
-}
-
-type filterValue interface {
-	stringable
-	filterValue()
-}
-type filterType string
-
-func (self filterType) String() string { return string(self) }
-func (filterType) filterValue()        {}
-
-func (style *Style) Filter() filterValue {
-	return filterType(style.Get("filter"))
-}
-func (style *Style) SetFilter(value filterValue) {
-	style.set("filter", value)
-}
-
-type gridValue interface {
-	stringable
-	gridValue()
-}
-type gridType string
-
-func (self gridType) String() string { return string(self) }
-func (gridType) gridValue()          {}
-
-func (style *Style) Grid() gridValue {
-	return gridType(style.Get("grid"))
-}
-func (style *Style) SetGrid(value gridValue) {
-	style.set("grid", value)
-}
-
-type textDecorationValue interface {
-	stringable
-	textDecorationValue()
-}
-type textDecorationType string
-
-func (self textDecorationType) String() string  { return string(self) }
-func (textDecorationType) textDecorationValue() {}
-
-func (style *Style) TextDecoration() textDecorationValue {
-	return textDecorationType(style.Get("text-decoration"))
-}
-func (style *Style) SetTextDecoration(value textDecorationValue) {
-	style.set("text-decoration", value)
-}
-func (style *Style) BackgroundSize() sizeValue {
-	return sizeType(style.Get("background-size"))
-}
-func (style *Style) SetBackgroundSize(value sizeValue) {
-	style.set("background-size", value)
-}
-func (style *Style) BorderLeftStyle() borderStyleValue {
-	return borderStyleType(style.Get("border-left-style"))
-}
-func (style *Style) SetBorderLeftStyle(value borderStyleValue) {
-	style.set("border-left-style", value)
-}
-func (style *Style) ListStyleImage() imageValue {
-	return imageType(style.Get("list-style-image"))
-}
-func (style *Style) SetListStyleImage(value imageValue) {
-	style.set("list-style-image", value)
-}
-func (style *Style) MaxWidth() unitOrNoneValue {
-	return unitOrNoneType(style.Get("max-width"))
-}
-func (style *Style) SetMaxWidth(value unitOrNoneValue) {
-	style.set("max-width", value)
-}
-func (style *Style) OutlineWidth() thicknessValue {
-	return thicknessType(style.Get("outline-width"))
-}
-func (style *Style) SetOutlineWidth(value thicknessValue) {
-	style.set("outline-width", value)
-}
-
-type columnGapValue interface {
-	stringable
-	columnGapValue()
-}
-type columnGapType string
-
-func (self columnGapType) String() string { return string(self) }
-func (columnGapType) columnGapValue()     {}
-
-func (style *Style) ColumnGap() columnGapValue {
-	return columnGapType(style.Get("column-gap"))
-}
-func (style *Style) SetColumnGap(value columnGapValue) {
-	style.set("column-gap", value)
-}
-func (style *Style) FlexBasis() unitOrAutoValue {
-	return unitOrAutoType(style.Get("flex-basis"))
-}
-func (style *Style) SetFlexBasis(value unitOrAutoValue) {
-	style.set("flex-basis", value)
-}
-func (style *Style) GridColumnEnd() gridStopValue {
-	return gridStopType(style.Get("grid-column-end"))
-}
-func (style *Style) SetGridColumnEnd(value gridStopValue) {
-	style.set("grid-column-end", value)
-}
-
-type listStylePositionValue interface {
-	stringable
-	listStylePositionValue()
-}
-type listStylePositionType string
-
-func (self listStylePositionType) String() string     { return string(self) }
-func (listStylePositionType) listStylePositionValue() {}
-
-func (style *Style) ListStylePosition() listStylePositionValue {
-	return listStylePositionType(style.Get("list-style-position"))
-}
-func (style *Style) SetListStylePosition(value listStylePositionValue) {
-	style.set("list-style-position", value)
-}
-
-type tableLayoutValue interface {
-	stringable
-	tableLayoutValue()
-}
-type tableLayoutType string
-
-func (self tableLayoutType) String() string { return string(self) }
-func (tableLayoutType) tableLayoutValue()   {}
-
-func (style *Style) TableLayout() tableLayoutValue {
-	return tableLayoutType(style.Get("table-layout"))
-}
-func (style *Style) SetTableLayout(value tableLayoutValue) {
-	style.set("table-layout", value)
-}
-
-type textUnderlinePositionValue interface {
-	stringable
-	textUnderlinePositionValue()
-}
-type textUnderlinePositionType string
-
-func (self textUnderlinePositionType) String() string         { return string(self) }
-func (textUnderlinePositionType) textUnderlinePositionValue() {}
-
-func (style *Style) TextUnderlinePosition() textUnderlinePositionValue {
-	return textUnderlinePositionType(style.Get("text-underline-position"))
-}
-func (style *Style) SetTextUnderlinePosition(value textUnderlinePositionValue) {
-	style.set("text-underline-position", value)
-}
-
-type allValue interface {
-	stringable
-	allValue()
-}
-type allType string
-
-func (self allType) String() string { return string(self) }
-func (allType) allValue()           {}
-
-func (style *Style) All() allValue {
-	return allType(style.Get("all"))
-}
-func (style *Style) SetAll(value allValue) {
-	style.set("all", value)
-}
-
-type borderValue interface {
-	stringable
-	borderValue()
-}
-type borderType string
-
-func (self borderType) String() string { return string(self) }
-func (borderType) borderValue()        {}
-
-func (style *Style) Border() borderValue {
-	return borderType(style.Get("border"))
-}
-func (style *Style) SetBorder(value borderValue) {
-	style.set("border", value)
-}
-func (style *Style) FontKerning() normalOrAutoValue {
-	return normalOrAutoType(style.Get("font-kerning"))
-}
-func (style *Style) SetFontKerning(value normalOrAutoValue) {
-	style.set("font-kerning", value)
-}
-
-type transitionValue interface {
-	stringable
-	transitionValue()
-}
-type transitionType string
-
-func (self transitionType) String() string { return string(self) }
-func (transitionType) transitionValue()    {}
-
-func (style *Style) Transition() transitionValue {
-	return transitionType(style.Get("transition"))
-}
-func (style *Style) SetTransition(value transitionValue) {
-	style.set("transition", value)
+func (style *Style) SetBackgroundOrigin(value backgroundOriginValue) {
+	style.set("background-origin", value)
 }
 
 type contentValue interface {
@@ -1473,74 +382,127 @@ func (style *Style) SetContent(value contentValue) {
 	style.set("content", value)
 }
 
-type gridAutoFlowValue interface {
+type filterValue interface {
 	stringable
-	gridAutoFlowValue()
+	filterValue()
 }
-type gridAutoFlowType string
+type filterType string
 
-func (self gridAutoFlowType) String() string { return string(self) }
-func (gridAutoFlowType) gridAutoFlowValue()  {}
+func (self filterType) String() string { return string(self) }
+func (filterType) filterValue()        {}
 
-func (style *Style) GridAutoFlow() gridAutoFlowValue {
-	return gridAutoFlowType(style.Get("grid-auto-flow"))
+func (style *Style) Filter() filterValue {
+	return filterType(style.Get("filter"))
 }
-func (style *Style) SetGridAutoFlow(value gridAutoFlowValue) {
-	style.set("grid-auto-flow", value)
+func (style *Style) SetFilter(value filterValue) {
+	style.set("filter", value)
 }
 
-type listStyleValue interface {
+type listStylePositionValue interface {
 	stringable
-	listStyleValue()
+	listStylePositionValue()
 }
-type listStyleType string
+type listStylePositionType string
 
-func (self listStyleType) String() string { return string(self) }
-func (listStyleType) listStyleValue()     {}
+func (self listStylePositionType) String() string     { return string(self) }
+func (listStylePositionType) listStylePositionValue() {}
 
-func (style *Style) ListStyle() listStyleValue {
-	return listStyleType(style.Get("list-style"))
+func (style *Style) ListStylePosition() listStylePositionValue {
+	return listStylePositionType(style.Get("list-style-position"))
 }
-func (style *Style) SetListStyle(value listStyleValue) {
-	style.set("list-style", value)
+func (style *Style) SetListStylePosition(value listStylePositionValue) {
+	style.set("list-style-position", value)
 }
 
-type textTransformValue interface {
+func (style *Style) SetTransformOrigin(p positionValue, z ...unitValue) {
+	if len(z) > 0 {
+		style.set("transform-origin", unitType(p.String()+" "+z[0].String()))
+	} else {
+		style.set("transform-origin", p)
+	}
+}
+
+func (style *Style) BackgroundSize() sizeValue {
+	return sizeType(style.Get("background-size"))
+}
+func (style *Style) SetBackgroundSize(value sizeValue) {
+	style.set("background-size", value)
+}
+func (style *Style) ColumnRuleColor() colorValue {
+	return colorType(style.Get("column-rule-color"))
+}
+func (style *Style) SetColumnRuleColor(value colorValue) {
+	style.set("column-rule-color", value)
+}
+func (style *Style) FlexShrink() numberValue {
+	return numberType(style.Get("flex-shrink"))
+}
+func (style *Style) SetFlexShrink(value numberValue) {
+	style.set("flex-shrink", value)
+}
+
+type listStyleTypeValue interface {
 	stringable
-	textTransformValue()
+	listStyleTypeValue()
 }
-type textTransformType string
+type listStyleTypeType string
 
-func (self textTransformType) String() string { return string(self) }
-func (textTransformType) textTransformValue() {}
+func (self listStyleTypeType) String() string { return string(self) }
+func (listStyleTypeType) listStyleTypeValue() {}
 
-func (style *Style) TextTransform() textTransformValue {
-	return textTransformType(style.Get("text-transform"))
+func (style *Style) ListStyleType() listStyleTypeValue {
+	return listStyleTypeType(style.Get("list-style-type"))
 }
-func (style *Style) SetTextTransform(value textTransformValue) {
-	style.set("text-transform", value)
-}
-func (style *Style) BackgroundImage() imageValue {
-	return imageType(style.Get("background-image"))
-}
-func (style *Style) SetBackgroundImage(value imageValue) {
-	style.set("background-image", value)
+func (style *Style) SetListStyleType(value listStyleTypeValue) {
+	style.set("list-style-type", value)
 }
 
-type fontFamilyValue interface {
+type outlineValue interface {
 	stringable
-	fontFamilyValue()
+	outlineValue()
 }
-type fontFamilyType string
+type outlineType string
 
-func (self fontFamilyType) String() string { return string(self) }
-func (fontFamilyType) fontFamilyValue()    {}
+func (self outlineType) String() string { return string(self) }
+func (outlineType) outlineValue()       {}
 
-func (style *Style) FontFamily() fontFamilyValue {
-	return fontFamilyType(style.Get("font-family"))
+func (style *Style) Outline() outlineValue {
+	return outlineType(style.Get("outline"))
 }
-func (style *Style) SetFontFamily(value fontFamilyValue) {
-	style.set("font-family", value)
+func (style *Style) SetOutline(value outlineValue) {
+	style.set("outline", value)
+}
+
+type fontVariantAlternatesValue interface {
+	stringable
+	fontVariantAlternatesValue()
+}
+type fontVariantAlternatesType string
+
+func (self fontVariantAlternatesType) String() string         { return string(self) }
+func (fontVariantAlternatesType) fontVariantAlternatesValue() {}
+
+func (style *Style) FontVariantAlternates() fontVariantAlternatesValue {
+	return fontVariantAlternatesType(style.Get("font-variant-alternates"))
+}
+func (style *Style) SetFontVariantAlternates(value fontVariantAlternatesValue) {
+	style.set("font-variant-alternates", value)
+}
+
+type gridGapValue interface {
+	stringable
+	gridGapValue()
+}
+type gridGapType string
+
+func (self gridGapType) String() string { return string(self) }
+func (gridGapType) gridGapValue()       {}
+
+func (style *Style) GridGap() gridGapValue {
+	return gridGapType(style.Get("grid-gap"))
+}
+func (style *Style) SetGridGap(value gridGapValue) {
+	style.set("grid-gap", value)
 }
 func (style *Style) MarginRight() unitOrAutoValue {
 	return unitOrAutoType(style.Get("margin-right"))
@@ -1548,23 +510,197 @@ func (style *Style) MarginRight() unitOrAutoValue {
 func (style *Style) SetMarginRight(value unitOrAutoValue) {
 	style.set("margin-right", value)
 }
-func (style *Style) Color() colorValue {
-	return colorType(style.Get("color"))
+func (style *Style) BoxSizing() boxValue {
+	return boxType(style.Get("box-sizing"))
 }
-func (style *Style) SetColor(value colorValue) {
-	style.set("color", value)
+func (style *Style) SetBoxSizing(value boxValue) {
+	style.set("box-sizing", value)
 }
-func (style *Style) BorderRightStyle() borderStyleValue {
-	return borderStyleType(style.Get("border-right-style"))
+
+type alignContentValue interface {
+	stringable
+	alignContentValue()
 }
-func (style *Style) SetBorderRightStyle(value borderStyleValue) {
-	style.set("border-right-style", value)
+type alignContentType string
+
+func (self alignContentType) String() string { return string(self) }
+func (alignContentType) alignContentValue()  {}
+
+func (style *Style) AlignContent() alignContentValue {
+	return alignContentType(style.Get("align-content"))
+}
+func (style *Style) SetAlignContent(value alignContentValue) {
+	style.set("align-content", value)
+}
+func (style *Style) BreakAfter() breakValue {
+	return breakType(style.Get("break-after"))
+}
+func (style *Style) SetBreakAfter(value breakValue) {
+	style.set("break-after", value)
+}
+
+type fontVariantPositionValue interface {
+	stringable
+	fontVariantPositionValue()
+}
+type fontVariantPositionType string
+
+func (self fontVariantPositionType) String() string       { return string(self) }
+func (fontVariantPositionType) fontVariantPositionValue() {}
+
+func (style *Style) FontVariantPosition() fontVariantPositionValue {
+	return fontVariantPositionType(style.Get("font-variant-position"))
+}
+func (style *Style) SetFontVariantPosition(value fontVariantPositionValue) {
+	style.set("font-variant-position", value)
+}
+
+type textOrientationValue interface {
+	stringable
+	textOrientationValue()
+}
+type textOrientationType string
+
+func (self textOrientationType) String() string   { return string(self) }
+func (textOrientationType) textOrientationValue() {}
+
+func (style *Style) TextOrientation() textOrientationValue {
+	return textOrientationType(style.Get("text-orientation"))
+}
+func (style *Style) SetTextOrientation(value textOrientationValue) {
+	style.set("text-orientation", value)
+}
+
+type textUnderlinePositionValue interface {
+	stringable
+	textUnderlinePositionValue()
+}
+type textUnderlinePositionType string
+
+func (self textUnderlinePositionType) String() string         { return string(self) }
+func (textUnderlinePositionType) textUnderlinePositionValue() {}
+
+func (style *Style) TextUnderlinePosition() textUnderlinePositionValue {
+	return textUnderlinePositionType(style.Get("text-underline-position"))
+}
+func (style *Style) SetTextUnderlinePosition(value textUnderlinePositionValue) {
+	style.set("text-underline-position", value)
+}
+func (style *Style) BackgroundClip() boxValue {
+	return boxType(style.Get("background-clip"))
+}
+func (style *Style) SetBackgroundClip(value boxValue) {
+	style.set("background-clip", value)
+}
+func (style *Style) BackgroundColor() colorValue {
+	return colorType(style.Get("background-color"))
+}
+func (style *Style) SetBackgroundColor(value colorValue) {
+	style.set("background-color", value)
+}
+
+type flexDirectionValue interface {
+	stringable
+	flexDirectionValue()
+}
+type flexDirectionType string
+
+func (self flexDirectionType) String() string { return string(self) }
+func (flexDirectionType) flexDirectionValue() {}
+
+func (style *Style) FlexDirection() flexDirectionValue {
+	return flexDirectionType(style.Get("flex-direction"))
+}
+func (style *Style) SetFlexDirection(value flexDirectionValue) {
+	style.set("flex-direction", value)
+}
+
+type borderRightValue interface {
+	stringable
+	borderRightValue()
+}
+type borderRightType string
+
+func (self borderRightType) String() string { return string(self) }
+func (borderRightType) borderRightValue()   {}
+
+func (style *Style) BorderRight() borderRightValue {
+	return borderRightType(style.Get("border-right"))
+}
+func (style *Style) SetBorderRight(value borderRightValue) {
+	style.set("border-right", value)
+}
+func (style *Style) Bottom() unitOrAutoValue {
+	return unitOrAutoType(style.Get("bottom"))
+}
+func (style *Style) SetBottom(value unitOrAutoValue) {
+	style.set("bottom", value)
+}
+
+type breakInsideValue interface {
+	stringable
+	breakInsideValue()
+}
+type breakInsideType string
+
+func (self breakInsideType) String() string { return string(self) }
+func (breakInsideType) breakInsideValue()   {}
+
+func (style *Style) BreakInside() breakInsideValue {
+	return breakInsideType(style.Get("break-inside"))
+}
+func (style *Style) SetBreakInside(value breakInsideValue) {
+	style.set("break-inside", value)
+}
+
+type counterIncrementValue interface {
+	stringable
+	counterIncrementValue()
+}
+type counterIncrementType string
+
+func (self counterIncrementType) String() string    { return string(self) }
+func (counterIncrementType) counterIncrementValue() {}
+
+func (style *Style) CounterIncrement() counterIncrementValue {
+	return counterIncrementType(style.Get("counter-increment"))
+}
+func (style *Style) SetCounterIncrement(value counterIncrementValue) {
+	style.set("counter-increment", value)
 }
 func (style *Style) GridAutoRows() gridAutoValue {
 	return gridAutoType(style.Get("grid-auto-rows"))
 }
 func (style *Style) SetGridAutoRows(value gridAutoValue) {
 	style.set("grid-auto-rows", value)
+}
+func (style *Style) PaddingBottom() unitValue {
+	return unitType(style.Get("padding-bottom"))
+}
+func (style *Style) SetPaddingBottom(value unitValue) {
+	style.set("padding-bottom", value)
+}
+func (style *Style) Perspective() unitOrNoneValue {
+	return unitOrNoneType(style.Get("perspective"))
+}
+func (style *Style) SetPerspective(value unitOrNoneValue) {
+	style.set("perspective", value)
+}
+
+type animationDirectionValue interface {
+	stringable
+	animationDirectionValue()
+}
+type animationDirectionType string
+
+func (self animationDirectionType) String() string      { return string(self) }
+func (animationDirectionType) animationDirectionValue() {}
+
+func (style *Style) AnimationDirection() animationDirectionValue {
+	return animationDirectionType(style.Get("animation-direction"))
+}
+func (style *Style) SetAnimationDirection(value animationDirectionValue) {
+	style.set("animation-direction", value)
 }
 
 type resizeValue interface {
@@ -1583,252 +719,20 @@ func (style *Style) SetResize(value resizeValue) {
 	style.set("resize", value)
 }
 
-type animationIterationCountValue interface {
+type borderImageSliceValue interface {
 	stringable
-	animationIterationCountValue()
+	borderImageSliceValue()
 }
-type animationIterationCountType string
+type borderImageSliceType string
 
-func (self animationIterationCountType) String() string           { return string(self) }
-func (animationIterationCountType) animationIterationCountValue() {}
+func (self borderImageSliceType) String() string    { return string(self) }
+func (borderImageSliceType) borderImageSliceValue() {}
 
-func (style *Style) AnimationIterationCount() animationIterationCountValue {
-	return animationIterationCountType(style.Get("animation-iteration-count"))
+func (style *Style) BorderImageSlice() borderImageSliceValue {
+	return borderImageSliceType(style.Get("border-image-slice"))
 }
-func (style *Style) SetAnimationIterationCount(value animationIterationCountValue) {
-	style.set("animation-iteration-count", value)
-}
-func (style *Style) LetterSpacing() normalOrUnitOrAutoValue {
-	return normalOrUnitOrAutoType(style.Get("letter-spacing"))
-}
-func (style *Style) SetLetterSpacing(value normalOrUnitOrAutoValue) {
-	style.set("letter-spacing", value)
-}
-func (style *Style) Opacity() numberValue {
-	return numberType(style.Get("opacity"))
-}
-func (style *Style) SetOpacity(value numberValue) {
-	style.set("opacity", value)
-}
-
-type textAlignLastValue interface {
-	stringable
-	textAlignLastValue()
-}
-type textAlignLastType string
-
-func (self textAlignLastType) String() string { return string(self) }
-func (textAlignLastType) textAlignLastValue() {}
-
-func (style *Style) TextAlignLast() textAlignLastValue {
-	return textAlignLastType(style.Get("text-align-last"))
-}
-func (style *Style) SetTextAlignLast(value textAlignLastValue) {
-	style.set("text-align-last", value)
-}
-
-type textJustifyValue interface {
-	stringable
-	textJustifyValue()
-}
-type textJustifyType string
-
-func (self textJustifyType) String() string { return string(self) }
-func (textJustifyType) textJustifyValue()   {}
-
-func (style *Style) TextJustify() textJustifyValue {
-	return textJustifyType(style.Get("text-justify"))
-}
-func (style *Style) SetTextJustify(value textJustifyValue) {
-	style.set("text-justify", value)
-}
-
-type backgroundAttachmentValue interface {
-	stringable
-	backgroundAttachmentValue()
-}
-type backgroundAttachmentType string
-
-func (self backgroundAttachmentType) String() string        { return string(self) }
-func (backgroundAttachmentType) backgroundAttachmentValue() {}
-
-func (style *Style) BackgroundAttachment() backgroundAttachmentValue {
-	return backgroundAttachmentType(style.Get("background-attachment"))
-}
-func (style *Style) SetBackgroundAttachment(value backgroundAttachmentValue) {
-	style.set("background-attachment", value)
-}
-func (style *Style) BoxShadow() shadowValue {
-	return shadowType(style.Get("box-shadow"))
-}
-func (style *Style) SetBoxShadow(value shadowValue) {
-	style.set("box-shadow", value)
-}
-func (style *Style) GridRowGap() unitValue {
-	return unitType(style.Get("grid-row-gap"))
-}
-func (style *Style) SetGridRowGap(value unitValue) {
-	style.set("grid-row-gap", value)
-}
-func (style *Style) GridRowEnd() gridStopValue {
-	return gridStopType(style.Get("grid-row-end"))
-}
-func (style *Style) SetGridRowEnd(value gridStopValue) {
-	style.set("grid-row-end", value)
-}
-
-type captionSideValue interface {
-	stringable
-	captionSideValue()
-}
-type captionSideType string
-
-func (self captionSideType) String() string { return string(self) }
-func (captionSideType) captionSideValue()   {}
-
-func (style *Style) CaptionSide() captionSideValue {
-	return captionSideType(style.Get("caption-side"))
-}
-func (style *Style) SetCaptionSide(value captionSideValue) {
-	style.set("caption-side", value)
-}
-
-type cursorValue interface {
-	stringable
-	cursorValue()
-}
-type cursorType string
-
-func (self cursorType) String() string { return string(self) }
-func (cursorType) cursorValue()        {}
-
-func (style *Style) Cursor() cursorValue {
-	return cursorType(style.Get("cursor"))
-}
-func (style *Style) SetCursor(value cursorValue) {
-	style.set("cursor", value)
-}
-
-type directionValue interface {
-	stringable
-	directionValue()
-}
-type directionType string
-
-func (self directionType) String() string { return string(self) }
-func (directionType) directionValue()     {}
-
-func (style *Style) Direction() directionValue {
-	return directionType(style.Get("direction"))
-}
-func (style *Style) SetDirection(value directionValue) {
-	style.set("direction", value)
-}
-
-type borderTopLeftRadiusValue interface {
-	stringable
-	borderTopLeftRadiusValue()
-}
-type borderTopLeftRadiusType string
-
-func (self borderTopLeftRadiusType) String() string       { return string(self) }
-func (borderTopLeftRadiusType) borderTopLeftRadiusValue() {}
-
-func (style *Style) BorderTopLeftRadius() borderTopLeftRadiusValue {
-	return borderTopLeftRadiusType(style.Get("border-top-left-radius"))
-}
-func (style *Style) SetBorderTopLeftRadius(value borderTopLeftRadiusValue) {
-	style.set("border-top-left-radius", value)
-}
-func (style *Style) MarginLeft() unitOrAutoValue {
-	return unitOrAutoType(style.Get("margin-left"))
-}
-func (style *Style) SetMarginLeft(value unitOrAutoValue) {
-	style.set("margin-left", value)
-}
-func (style *Style) PaddingTop() unitValue {
-	return unitType(style.Get("padding-top"))
-}
-func (style *Style) SetPaddingTop(value unitValue) {
-	style.set("padding-top", value)
-}
-func (style *Style) Width() unitOrAutoValue {
-	return unitOrAutoType(style.Get("width"))
-}
-func (style *Style) SetWidth(value unitOrAutoValue) {
-	style.set("width", value)
-}
-func (style *Style) BackgroundClip() boxValue {
-	return boxType(style.Get("background-clip"))
-}
-func (style *Style) SetBackgroundClip(value boxValue) {
-	style.set("background-clip", value)
-}
-func (style *Style) BorderBottomWidth() thicknessValue {
-	return thicknessType(style.Get("border-bottom-width"))
-}
-func (style *Style) SetBorderBottomWidth(value thicknessValue) {
-	style.set("border-bottom-width", value)
-}
-func (style *Style) BorderLeftColor() sizeValue {
-	return sizeType(style.Get("border-left-color"))
-}
-func (style *Style) SetBorderLeftColor(value sizeValue) {
-	style.set("border-left-color", value)
-}
-
-type flexDirectionValue interface {
-	stringable
-	flexDirectionValue()
-}
-type flexDirectionType string
-
-func (self flexDirectionType) String() string { return string(self) }
-func (flexDirectionType) flexDirectionValue() {}
-
-func (style *Style) FlexDirection() flexDirectionValue {
-	return flexDirectionType(style.Get("flex-direction"))
-}
-func (style *Style) SetFlexDirection(value flexDirectionValue) {
-	style.set("flex-direction", value)
-}
-func (style *Style) TextDecorationColor() colorValue {
-	return colorType(style.Get("text-decoration-color"))
-}
-func (style *Style) SetTextDecorationColor(value colorValue) {
-	style.set("text-decoration-color", value)
-}
-
-type writingModeValue interface {
-	stringable
-	writingModeValue()
-}
-type writingModeType string
-
-func (self writingModeType) String() string { return string(self) }
-func (writingModeType) writingModeValue()   {}
-
-func (style *Style) WritingMode() writingModeValue {
-	return writingModeType(style.Get("writing-mode"))
-}
-func (style *Style) SetWritingMode(value writingModeValue) {
-	style.set("writing-mode", value)
-}
-
-type flexFlowValue interface {
-	stringable
-	flexFlowValue()
-}
-type flexFlowType string
-
-func (self flexFlowType) String() string { return string(self) }
-func (flexFlowType) flexFlowValue()      {}
-
-func (style *Style) FlexFlow() flexFlowValue {
-	return flexFlowType(style.Get("flex-flow"))
-}
-func (style *Style) SetFlexFlow(value flexFlowValue) {
-	style.set("flex-flow", value)
+func (style *Style) SetBorderImageSlice(value borderImageSliceValue) {
+	style.set("border-image-slice", value)
 }
 
 type fontSynthesisValue string
@@ -1855,23 +759,128 @@ func (style *Style) SetFontSynthesis(value fontSynthesisValue) {
 	style.set("font-synthesis", value)
 }
 
-func (style *Style) SetGridTemplateAreas(names []string) {
-	if len(names) == 0 {
-		style.set("grid-template-areas", unitType("none"))
-		return
-	}
-	var result string
-	for _, name := range names {
-		result += name + " "
-	}
-	style.set("grid-template-areas", unitType(result))
+func (style *Style) GridColumnEnd() gridStopValue {
+	return gridStopType(style.Get("grid-column-end"))
+}
+func (style *Style) SetGridColumnEnd(value gridStopValue) {
+	style.set("grid-column-end", value)
 }
 
-func (style *Style) WhiteSpace() uintValue {
-	return uintType(style.Get("white-space"))
+type widowsValue interface {
+	stringable
+	widowsValue()
 }
-func (style *Style) SetWhiteSpace(value uintValue) {
-	style.set("white-space", value)
+type widowsType string
+
+func (self widowsType) String() string { return string(self) }
+func (widowsType) widowsValue()        {}
+
+func (style *Style) Widows() widowsValue {
+	return widowsType(style.Get("widows"))
+}
+func (style *Style) SetWidows(value widowsValue) {
+	style.set("widows", value)
+}
+
+type fontStretchValue interface {
+	stringable
+	fontStretchValue()
+}
+type fontStretchType string
+
+func (self fontStretchType) String() string { return string(self) }
+func (fontStretchType) fontStretchValue()   {}
+
+func (style *Style) FontStretch() fontStretchValue {
+	return fontStretchType(style.Get("font-stretch"))
+}
+func (style *Style) SetFontStretch(value fontStretchValue) {
+	style.set("font-stretch", value)
+}
+
+type listStyleValue interface {
+	stringable
+	listStyleValue()
+}
+type listStyleType string
+
+func (self listStyleType) String() string { return string(self) }
+func (listStyleType) listStyleValue()     {}
+
+func (style *Style) ListStyle() listStyleValue {
+	return listStyleType(style.Get("list-style"))
+}
+func (style *Style) SetListStyle(value listStyleValue) {
+	style.set("list-style", value)
+}
+
+func (style *Style) SetWillChange(properties ...interface{}) {
+	var names string
+
+	for _, property := range properties {
+		var s = NewStyle()
+		var catcher = propertyCatcher("")
+		s.Stylable = &catcher
+
+		reflect.ValueOf(property).Call([]reflect.Value{reflect.ValueOf(&s)})
+
+		names += *((*string)(s.Stylable.(*propertyCatcher)))
+	}
+	style.set("will-change", unitType(names))
+}
+
+type wordBreakValue interface {
+	stringable
+	wordBreakValue()
+}
+type wordBreakType string
+
+func (self wordBreakType) String() string { return string(self) }
+func (wordBreakType) wordBreakValue()     {}
+
+func (style *Style) WordBreak() wordBreakValue {
+	return wordBreakType(style.Get("word-break"))
+}
+func (style *Style) SetWordBreak(value wordBreakValue) {
+	style.set("word-break", value)
+}
+
+type gridValue interface {
+	stringable
+	gridValue()
+}
+type gridType string
+
+func (self gridType) String() string { return string(self) }
+func (gridType) gridValue()          {}
+
+func (style *Style) Grid() gridValue {
+	return gridType(style.Get("grid"))
+}
+func (style *Style) SetGrid(value gridValue) {
+	style.set("grid", value)
+}
+func (style *Style) GridRowGap() unitValue {
+	return unitType(style.Get("grid-row-gap"))
+}
+func (style *Style) SetGridRowGap(value unitValue) {
+	style.set("grid-row-gap", value)
+}
+
+type transformValue interface {
+	stringable
+	transformValue()
+}
+type transformType string
+
+func (self transformType) String() string { return string(self) }
+func (transformType) transformValue()     {}
+
+func (style *Style) Transform() transformValue {
+	return transformType(style.Get("transform"))
+}
+func (style *Style) SetTransform(value transformValue) {
+	style.set("transform", value)
 }
 func (style *Style) BorderBottomRightRadius() unitValue {
 	return unitType(style.Get("border-bottom-right-radius"))
@@ -1879,37 +888,197 @@ func (style *Style) BorderBottomRightRadius() unitValue {
 func (style *Style) SetBorderBottomRightRadius(value unitValue) {
 	style.set("border-bottom-right-radius", value)
 }
+func (style *Style) BorderTopColor() colorValue {
+	return colorType(style.Get("border-top-color"))
+}
+func (style *Style) SetBorderTopColor(value colorValue) {
+	style.set("border-top-color", value)
+}
+func (style *Style) BorderTopWidth() thicknessValue {
+	return thicknessType(style.Get("border-top-width"))
+}
+func (style *Style) SetBorderTopWidth(value thicknessValue) {
+	style.set("border-top-width", value)
+}
 
-type fontLanguageOverrideValue interface {
+type writingModeValue interface {
 	stringable
-	fontLanguageOverrideValue()
+	writingModeValue()
 }
-type fontLanguageOverrideType string
+type writingModeType string
 
-func (self fontLanguageOverrideType) String() string        { return string(self) }
-func (fontLanguageOverrideType) fontLanguageOverrideValue() {}
+func (self writingModeType) String() string { return string(self) }
+func (writingModeType) writingModeValue()   {}
 
-func (style *Style) FontLanguageOverride() fontLanguageOverrideValue {
-	return fontLanguageOverrideType(style.Get("font-language-override"))
+func (style *Style) WritingMode() writingModeValue {
+	return writingModeType(style.Get("writing-mode"))
 }
-func (style *Style) SetFontLanguageOverride(value fontLanguageOverrideValue) {
-	style.set("font-language-override", value)
+func (style *Style) SetWritingMode(value writingModeValue) {
+	style.set("writing-mode", value)
 }
 
-type visibilityValue interface {
+type borderValue interface {
 	stringable
-	visibilityValue()
+	borderValue()
 }
-type visibilityType string
+type borderType string
 
-func (self visibilityType) String() string { return string(self) }
-func (visibilityType) visibilityValue()    {}
+func (self borderType) String() string { return string(self) }
+func (borderType) borderValue()        {}
 
-func (style *Style) Visibility() visibilityValue {
-	return visibilityType(style.Get("visibility"))
+func (style *Style) Border() borderValue {
+	return borderType(style.Get("border"))
 }
-func (style *Style) SetVisibility(value visibilityValue) {
-	style.set("visibility", value)
+func (style *Style) SetBorder(value borderValue) {
+	style.set("border", value)
+}
+func (style *Style) BorderBottomWidth() thicknessValue {
+	return thicknessType(style.Get("border-bottom-width"))
+}
+func (style *Style) SetBorderBottomWidth(value thicknessValue) {
+	style.set("border-bottom-width", value)
+}
+func (style *Style) BreakBefore() breakValue {
+	return breakType(style.Get("break-before"))
+}
+func (style *Style) SetBreakBefore(value breakValue) {
+	style.set("break-before", value)
+}
+func (style *Style) ListStyleImage() imageValue {
+	return imageType(style.Get("list-style-image"))
+}
+func (style *Style) SetListStyleImage(value imageValue) {
+	style.set("list-style-image", value)
+}
+func (style *Style) OverflowY() overflowValue {
+	return overflowType(style.Get("overflow-y"))
+}
+func (style *Style) SetOverflowY(value overflowValue) {
+	style.set("overflow-y", value)
+}
+func (style *Style) AnimationDuration() durationValue {
+	return durationType(style.Get("animation-duration"))
+}
+func (style *Style) SetAnimationDuration(value durationValue) {
+	style.set("animation-duration", value)
+}
+func (style *Style) MarginBottom() unitOrAutoValue {
+	return unitOrAutoType(style.Get("margin-bottom"))
+}
+func (style *Style) SetMarginBottom(value unitOrAutoValue) {
+	style.set("margin-bottom", value)
+}
+func (style *Style) OutlineColor() colorValue {
+	return colorType(style.Get("outline-color"))
+}
+func (style *Style) SetOutlineColor(value colorValue) {
+	style.set("outline-color", value)
+}
+
+type animationNameValue interface {
+	stringable
+	animationNameValue()
+}
+type animationNameType string
+
+func (self animationNameType) String() string { return string(self) }
+func (animationNameType) animationNameValue() {}
+
+func (style *Style) AnimationName() animationNameValue {
+	return animationNameType(style.Get("animation-name"))
+}
+func (style *Style) SetAnimationName(value animationNameValue) {
+	style.set("animation-name", value)
+}
+func (style *Style) GridColumnGap() unitValue {
+	return unitType(style.Get("grid-column-gap"))
+}
+func (style *Style) SetGridColumnGap(value unitValue) {
+	style.set("grid-column-gap", value)
+}
+
+type textDecorationLineValue interface {
+	stringable
+	textDecorationLineValue()
+}
+type textDecorationLineType string
+
+func (self textDecorationLineType) String() string      { return string(self) }
+func (textDecorationLineType) textDecorationLineValue() {}
+
+func (style *Style) TextDecorationLine() textDecorationLineValue {
+	return textDecorationLineType(style.Get("text-decoration-line"))
+}
+func (style *Style) SetTextDecorationLine(value textDecorationLineValue) {
+	style.set("text-decoration-line", value)
+}
+func (style *Style) GridTemplate() gridTemplateValue {
+	return gridTemplateType(style.Get("grid-template"))
+}
+func (style *Style) SetGridTemplate(value gridTemplateValue) {
+	style.set("grid-template", value)
+}
+
+func (style *Style) SetGridTemplateRows(values []gridTemplateValue) {
+	if len(values) == 0 {
+		style.set("grid-template-rows", unitType("none"))
+		return
+	}
+	var result string
+	for _, value := range values {
+		result += value.String() + " "
+	}
+	style.set("grid-template-rows", unitType(result))
+}
+
+type animationTimingFunctionValue interface {
+	stringable
+	animationTimingFunctionValue()
+}
+type animationTimingFunctionType string
+
+func (self animationTimingFunctionType) String() string           { return string(self) }
+func (animationTimingFunctionType) animationTimingFunctionValue() {}
+
+func (style *Style) AnimationTimingFunction() animationTimingFunctionValue {
+	return animationTimingFunctionType(style.Get("animation-timing-function"))
+}
+func (style *Style) SetAnimationTimingFunction(value animationTimingFunctionValue) {
+	style.set("animation-timing-function", value)
+}
+func (style *Style) BorderRightStyle() borderStyleValue {
+	return borderStyleType(style.Get("border-right-style"))
+}
+func (style *Style) SetBorderRightStyle(value borderStyleValue) {
+	style.set("border-right-style", value)
+}
+func (style *Style) BorderColor() colorValue {
+	return colorType(style.Get("border-color"))
+}
+func (style *Style) SetBorderColor(value colorValue) {
+	style.set("border-color", value)
+}
+func (style *Style) BorderLeftStyle() borderStyleValue {
+	return borderStyleType(style.Get("border-left-style"))
+}
+func (style *Style) SetBorderLeftStyle(value borderStyleValue) {
+	style.set("border-left-style", value)
+}
+
+type cursorValue interface {
+	stringable
+	cursorValue()
+}
+type cursorType string
+
+func (self cursorType) String() string { return string(self) }
+func (cursorType) cursorValue()        {}
+
+func (style *Style) Cursor() cursorValue {
+	return cursorType(style.Get("cursor"))
+}
+func (style *Style) SetCursor(value cursorValue) {
+	style.set("cursor", value)
 }
 func (style *Style) BorderBottomStyle() borderStyleValue {
 	return borderStyleType(style.Get("border-bottom-style"))
@@ -1918,162 +1087,20 @@ func (style *Style) SetBorderBottomStyle(value borderStyleValue) {
 	style.set("border-bottom-style", value)
 }
 
-type columnRuleWidthValue interface {
+type hyphensValue interface {
 	stringable
-	columnRuleWidthValue()
+	hyphensValue()
 }
-type columnRuleWidthType string
+type hyphensType string
 
-func (self columnRuleWidthType) String() string   { return string(self) }
-func (columnRuleWidthType) columnRuleWidthValue() {}
+func (self hyphensType) String() string { return string(self) }
+func (hyphensType) hyphensValue()       {}
 
-func (style *Style) ColumnRuleWidth() columnRuleWidthValue {
-	return columnRuleWidthType(style.Get("column-rule-width"))
+func (style *Style) Hyphens() hyphensValue {
+	return hyphensType(style.Get("hyphens"))
 }
-func (style *Style) SetColumnRuleWidth(value columnRuleWidthValue) {
-	style.set("column-rule-width", value)
-}
-func (style *Style) Right() unitOrAutoValue {
-	return unitOrAutoType(style.Get("right"))
-}
-func (style *Style) SetRight(value unitOrAutoValue) {
-	style.set("right", value)
-}
-
-type borderBottomValue interface {
-	stringable
-	borderBottomValue()
-}
-type borderBottomType string
-
-func (self borderBottomType) String() string { return string(self) }
-func (borderBottomType) borderBottomValue()  {}
-
-func (style *Style) BorderBottom() borderBottomValue {
-	return borderBottomType(style.Get("border-bottom"))
-}
-func (style *Style) SetBorderBottom(value borderBottomValue) {
-	style.set("border-bottom", value)
-}
-
-type floatValue interface {
-	stringable
-	floatValue()
-}
-type floatType string
-
-func (self floatType) String() string { return string(self) }
-func (floatType) floatValue()         {}
-
-func (style *Style) Float() floatValue {
-	return floatType(style.Get("float"))
-}
-func (style *Style) SetFloat(value floatValue) {
-	style.set("float", value)
-}
-
-type textCombineUprightValue interface {
-	stringable
-	textCombineUprightValue()
-}
-type textCombineUprightType string
-
-func (self textCombineUprightType) String() string      { return string(self) }
-func (textCombineUprightType) textCombineUprightValue() {}
-
-func (style *Style) TextCombineUpright() textCombineUprightValue {
-	return textCombineUprightType(style.Get("text-combine-upright"))
-}
-func (style *Style) SetTextCombineUpright(value textCombineUprightValue) {
-	style.set("text-combine-upright", value)
-}
-
-type unicodeBidiValue interface {
-	stringable
-	unicodeBidiValue()
-}
-type unicodeBidiType string
-
-func (self unicodeBidiType) String() string { return string(self) }
-func (unicodeBidiType) unicodeBidiValue()   {}
-
-func (style *Style) UnicodeBidi() unicodeBidiValue {
-	return unicodeBidiType(style.Get("unicode-bidi"))
-}
-func (style *Style) SetUnicodeBidi(value unicodeBidiValue) {
-	style.set("unicode-bidi", value)
-}
-func (style *Style) BorderRightWidth() thicknessValue {
-	return thicknessType(style.Get("border-right-width"))
-}
-func (style *Style) SetBorderRightWidth(value thicknessValue) {
-	style.set("border-right-width", value)
-}
-func (style *Style) BorderSpacing() unitValue {
-	return unitType(style.Get("border-spacing"))
-}
-func (style *Style) SetBorderSpacing(value unitValue) {
-	style.set("border-spacing", value)
-}
-
-type isolationValue interface {
-	stringable
-	isolationValue()
-}
-type isolationType string
-
-func (self isolationType) String() string { return string(self) }
-func (isolationType) isolationValue()     {}
-
-func (style *Style) Isolation() isolationValue {
-	return isolationType(style.Get("isolation"))
-}
-func (style *Style) SetIsolation(value isolationValue) {
-	style.set("isolation", value)
-}
-
-type textOverflowValue interface {
-	stringable
-	textOverflowValue()
-}
-type textOverflowType string
-
-func (self textOverflowType) String() string { return string(self) }
-func (textOverflowType) textOverflowValue()  {}
-
-func (style *Style) TextOverflow() textOverflowValue {
-	return textOverflowType(style.Get("text-overflow"))
-}
-func (style *Style) SetTextOverflow(value textOverflowValue) {
-	style.set("text-overflow", value)
-}
-func (style *Style) BorderStyle() borderStyleValue {
-	return borderStyleType(style.Get("border-style"))
-}
-func (style *Style) SetBorderStyle(value borderStyleValue) {
-	style.set("border-style", value)
-}
-
-type lineHeightValue interface {
-	stringable
-	lineHeightValue()
-}
-type lineHeightType string
-
-func (self lineHeightType) String() string { return string(self) }
-func (lineHeightType) lineHeightValue()    {}
-
-func (style *Style) LineHeight() lineHeightValue {
-	return lineHeightType(style.Get("line-height"))
-}
-func (style *Style) SetLineHeight(value lineHeightValue) {
-	style.set("line-height", value)
-}
-func (style *Style) MinWidth() unitOrNoneValue {
-	return unitOrNoneType(style.Get("min-width"))
-}
-func (style *Style) SetMinWidth(value unitOrNoneValue) {
-	style.set("min-width", value)
+func (style *Style) SetHyphens(value hyphensValue) {
+	style.set("hyphens", value)
 }
 func (style *Style) OutlineStyle() borderStyleValue {
 	return borderStyleType(style.Get("outline-style"))
@@ -2082,182 +1109,162 @@ func (style *Style) SetOutlineStyle(value borderStyleValue) {
 	style.set("outline-style", value)
 }
 
-type positionValue interface {
+type transformStyleValue interface {
 	stringable
-	positionValue()
+	transformStyleValue()
 }
-type positionType string
+type transformStyleType string
 
-func (self positionType) String() string { return string(self) }
-func (positionType) positionValue()      {}
+func (self transformStyleType) String() string  { return string(self) }
+func (transformStyleType) transformStyleValue() {}
 
-func (style *Style) Position() positionValue {
-	return positionType(style.Get("position"))
+func (style *Style) TransformStyle() transformStyleValue {
+	return transformStyleType(style.Get("transform-style"))
 }
-func (style *Style) SetPosition(value positionValue) {
-	style.set("position", value)
+func (style *Style) SetTransformStyle(value transformStyleValue) {
+	style.set("transform-style", value)
 }
 
-type borderLeftValue interface {
+type borderTopRightRadiusValue interface {
 	stringable
-	borderLeftValue()
+	borderTopRightRadiusValue()
 }
-type borderLeftType string
+type borderTopRightRadiusType string
 
-func (self borderLeftType) String() string { return string(self) }
-func (borderLeftType) borderLeftValue()    {}
+func (self borderTopRightRadiusType) String() string        { return string(self) }
+func (borderTopRightRadiusType) borderTopRightRadiusValue() {}
 
-func (style *Style) BorderLeft() borderLeftValue {
-	return borderLeftType(style.Get("border-left"))
+func (style *Style) BorderTopRightRadius() borderTopRightRadiusValue {
+	return borderTopRightRadiusType(style.Get("border-top-right-radius"))
 }
-func (style *Style) SetBorderLeft(value borderLeftValue) {
-	style.set("border-left", value)
-}
-func (style *Style) BorderLeftWidth() thicknessValue {
-	return thicknessType(style.Get("border-left-width"))
-}
-func (style *Style) SetBorderLeftWidth(value thicknessValue) {
-	style.set("border-left-width", value)
+func (style *Style) SetBorderTopRightRadius(value borderTopRightRadiusValue) {
+	style.set("border-top-right-radius", value)
 }
 
-type emptyCellsValue interface {
+type lineBreakValue interface {
 	stringable
-	emptyCellsValue()
+	lineBreakValue()
 }
-type emptyCellsType string
+type lineBreakType string
 
-func (self emptyCellsType) String() string { return string(self) }
-func (emptyCellsType) emptyCellsValue()    {}
+func (self lineBreakType) String() string { return string(self) }
+func (lineBreakType) lineBreakValue()     {}
 
-func (style *Style) EmptyCells() emptyCellsValue {
-	return emptyCellsType(style.Get("empty-cells"))
+func (style *Style) LineBreak() lineBreakValue {
+	return lineBreakType(style.Get("line-break"))
 }
-func (style *Style) SetEmptyCells(value emptyCellsValue) {
-	style.set("empty-cells", value)
+func (style *Style) SetLineBreak(value lineBreakValue) {
+	style.set("line-break", value)
+}
+func (style *Style) MinWidth() unitOrNoneValue {
+	return unitOrNoneType(style.Get("min-width"))
+}
+func (style *Style) SetMinWidth(value unitOrNoneValue) {
+	style.set("min-width", value)
+}
+func (style *Style) ObjectPosition() unitAndUnitValue {
+	return unitAndUnitType(style.Get("object-position"))
+}
+func (style *Style) SetObjectPosition(value unitAndUnitValue) {
+	style.set("object-position", value)
 }
 
-type textDecorationStyleValue interface {
+type textAlignValue interface {
 	stringable
-	textDecorationStyleValue()
+	textAlignValue()
 }
-type textDecorationStyleType string
+type textAlignType string
 
-func (self textDecorationStyleType) String() string       { return string(self) }
-func (textDecorationStyleType) textDecorationStyleValue() {}
+func (self textAlignType) String() string { return string(self) }
+func (textAlignType) textAlignValue()     {}
 
-func (style *Style) TextDecorationStyle() textDecorationStyleValue {
-	return textDecorationStyleType(style.Get("text-decoration-style"))
+func (style *Style) TextAlign() textAlignValue {
+	return textAlignType(style.Get("text-align"))
 }
-func (style *Style) SetTextDecorationStyle(value textDecorationStyleValue) {
-	style.set("text-decoration-style", value)
+func (style *Style) SetTextAlign(value textAlignValue) {
+	style.set("text-align", value)
 }
 
-type transitionDurationValue interface {
+type allValue interface {
 	stringable
-	transitionDurationValue()
+	allValue()
 }
-type transitionDurationType string
+type allType string
 
-func (self transitionDurationType) String() string      { return string(self) }
-func (transitionDurationType) transitionDurationValue() {}
+func (self allType) String() string { return string(self) }
+func (allType) allValue()           {}
 
-func (style *Style) TransitionDuration() transitionDurationValue {
-	return transitionDurationType(style.Get("transition-duration"))
+func (style *Style) All() allValue {
+	return allType(style.Get("all"))
 }
-func (style *Style) SetTransitionDuration(value transitionDurationValue) {
-	style.set("transition-duration", value)
+func (style *Style) SetAll(value allValue) {
+	style.set("all", value)
 }
 
-type backgroundValue interface {
+type animationIterationCountValue interface {
 	stringable
-	backgroundValue()
+	animationIterationCountValue()
 }
-type backgroundType string
+type animationIterationCountType string
 
-func (self backgroundType) String() string { return string(self) }
-func (backgroundType) backgroundValue()    {}
+func (self animationIterationCountType) String() string           { return string(self) }
+func (animationIterationCountType) animationIterationCountValue() {}
 
-func (style *Style) Background() backgroundValue {
-	return backgroundType(style.Get("background"))
+func (style *Style) AnimationIterationCount() animationIterationCountValue {
+	return animationIterationCountType(style.Get("animation-iteration-count"))
 }
-func (style *Style) SetBackground(value backgroundValue) {
-	style.set("background", value)
-}
-func (style *Style) MarginTop() unitOrAutoValue {
-	return unitOrAutoType(style.Get("margin-top"))
-}
-func (style *Style) SetMarginTop(value unitOrAutoValue) {
-	style.set("margin-top", value)
-}
-func (style *Style) PageBreakBefore() pageBreakValue {
-	return pageBreakType(style.Get("page-break-before"))
-}
-func (style *Style) SetPageBreakBefore(value pageBreakValue) {
-	style.set("page-break-before", value)
+func (style *Style) SetAnimationIterationCount(value animationIterationCountValue) {
+	style.set("animation-iteration-count", value)
 }
 
-type animationFillModeValue interface {
+type columnRuleValue interface {
 	stringable
-	animationFillModeValue()
+	columnRuleValue()
 }
-type animationFillModeType string
+type columnRuleType string
 
-func (self animationFillModeType) String() string     { return string(self) }
-func (animationFillModeType) animationFillModeValue() {}
+func (self columnRuleType) String() string { return string(self) }
+func (columnRuleType) columnRuleValue()    {}
 
-func (style *Style) AnimationFillMode() animationFillModeValue {
-	return animationFillModeType(style.Get("animation-fill-mode"))
+func (style *Style) ColumnRule() columnRuleValue {
+	return columnRuleType(style.Get("column-rule"))
 }
-func (style *Style) SetAnimationFillMode(value animationFillModeValue) {
-	style.set("animation-fill-mode", value)
+func (style *Style) SetColumnRule(value columnRuleValue) {
+	style.set("column-rule", value)
 }
 
-type fontSizeValue interface {
+type fontValue interface {
 	stringable
-	fontSizeValue()
+	fontValue()
 }
-type fontSizeType string
+type fontType string
 
-func (self fontSizeType) String() string { return string(self) }
-func (fontSizeType) fontSizeValue()      {}
+func (self fontType) String() string { return string(self) }
+func (fontType) fontValue()          {}
 
-func (style *Style) FontSize() fontSizeValue {
-	return fontSizeType(style.Get("font-size"))
+func (style *Style) Font() fontValue {
+	return fontType(style.Get("font"))
 }
-func (style *Style) SetFontSize(value fontSizeValue) {
-	style.set("font-size", value)
+func (style *Style) SetFont(value fontValue) {
+	style.set("font", value)
 }
-
-type boxDecorationBreakValue interface {
-	stringable
-	boxDecorationBreakValue()
+func (style *Style) GridAutoColumns() gridAutoValue {
+	return gridAutoType(style.Get("grid-auto-columns"))
 }
-type boxDecorationBreakType string
-
-func (self boxDecorationBreakType) String() string      { return string(self) }
-func (boxDecorationBreakType) boxDecorationBreakValue() {}
-
-func (style *Style) BoxDecorationBreak() boxDecorationBreakValue {
-	return boxDecorationBreakType(style.Get("box-decoration-break"))
+func (style *Style) SetGridAutoColumns(value gridAutoValue) {
+	style.set("grid-auto-columns", value)
 }
-func (style *Style) SetBoxDecorationBreak(value boxDecorationBreakValue) {
-	style.set("box-decoration-break", value)
+func (style *Style) BorderRightColor() colorValue {
+	return colorType(style.Get("border-right-color"))
 }
-
-type fontFeatureSettingsValue interface {
-	stringable
-	fontFeatureSettingsValue()
+func (style *Style) SetBorderRightColor(value colorValue) {
+	style.set("border-right-color", value)
 }
-type fontFeatureSettingsType string
-
-func (self fontFeatureSettingsType) String() string       { return string(self) }
-func (fontFeatureSettingsType) fontFeatureSettingsValue() {}
-
-func (style *Style) FontFeatureSettings() fontFeatureSettingsValue {
-	return fontFeatureSettingsType(style.Get("font-feature-settings"))
+func (style *Style) MaxWidth() unitOrNoneValue {
+	return unitOrNoneType(style.Get("max-width"))
 }
-func (style *Style) SetFontFeatureSettings(value fontFeatureSettingsValue) {
-	style.set("font-feature-settings", value)
+func (style *Style) SetMaxWidth(value unitOrNoneValue) {
+	style.set("max-width", value)
 }
 
 type borderCollapseValue interface {
@@ -2275,37 +1282,89 @@ func (style *Style) BorderCollapse() borderCollapseValue {
 func (style *Style) SetBorderCollapse(value borderCollapseValue) {
 	style.set("border-collapse", value)
 }
+func (style *Style) PageBreakBefore() pageBreakValue {
+	return pageBreakType(style.Get("page-break-before"))
+}
+func (style *Style) SetPageBreakBefore(value pageBreakValue) {
+	style.set("page-break-before", value)
+}
+func (style *Style) AnimationDelay() durationValue {
+	return durationType(style.Get("animation-delay"))
+}
+func (style *Style) SetAnimationDelay(value durationValue) {
+	style.set("animation-delay", value)
+}
 
-type fontVariantPositionValue interface {
+type animationFillModeValue interface {
 	stringable
-	fontVariantPositionValue()
+	animationFillModeValue()
 }
-type fontVariantPositionType string
+type animationFillModeType string
 
-func (self fontVariantPositionType) String() string       { return string(self) }
-func (fontVariantPositionType) fontVariantPositionValue() {}
+func (self animationFillModeType) String() string     { return string(self) }
+func (animationFillModeType) animationFillModeValue() {}
 
-func (style *Style) FontVariantPosition() fontVariantPositionValue {
-	return fontVariantPositionType(style.Get("font-variant-position"))
+func (style *Style) AnimationFillMode() animationFillModeValue {
+	return animationFillModeType(style.Get("animation-fill-mode"))
 }
-func (style *Style) SetFontVariantPosition(value fontVariantPositionValue) {
-	style.set("font-variant-position", value)
+func (style *Style) SetAnimationFillMode(value animationFillModeValue) {
+	style.set("animation-fill-mode", value)
+}
+func (style *Style) FlexBasis() unitOrAutoValue {
+	return unitOrAutoType(style.Get("flex-basis"))
+}
+func (style *Style) SetFlexBasis(value unitOrAutoValue) {
+	style.set("flex-basis", value)
+}
+func (style *Style) PerspectiveOrigin() unitAndUnitValue {
+	return unitAndUnitType(style.Get("perspective-origin"))
+}
+func (style *Style) SetPerspectiveOrigin(value unitAndUnitValue) {
+	style.set("perspective-origin", value)
 }
 
-type borderTopValue interface {
+type alignSelfValue interface {
 	stringable
-	borderTopValue()
+	alignSelfValue()
 }
-type borderTopType string
+type alignSelfType string
 
-func (self borderTopType) String() string { return string(self) }
-func (borderTopType) borderTopValue()     {}
+func (self alignSelfType) String() string { return string(self) }
+func (alignSelfType) alignSelfValue()     {}
 
-func (style *Style) BorderTop() borderTopValue {
-	return borderTopType(style.Get("border-top"))
+func (style *Style) AlignSelf() alignSelfValue {
+	return alignSelfType(style.Get("align-self"))
 }
-func (style *Style) SetBorderTop(value borderTopValue) {
-	style.set("border-top", value)
+func (style *Style) SetAlignSelf(value alignSelfValue) {
+	style.set("align-self", value)
+}
+func (style *Style) FlexGrow() numberValue {
+	return numberType(style.Get("flex-grow"))
+}
+func (style *Style) SetFlexGrow(value numberValue) {
+	style.set("flex-grow", value)
+}
+
+type isolationValue interface {
+	stringable
+	isolationValue()
+}
+type isolationType string
+
+func (self isolationType) String() string { return string(self) }
+func (isolationType) isolationValue()     {}
+
+func (style *Style) Isolation() isolationValue {
+	return isolationType(style.Get("isolation"))
+}
+func (style *Style) SetIsolation(value isolationValue) {
+	style.set("isolation", value)
+}
+func (style *Style) OutlineOffset() unitValue {
+	return unitType(style.Get("outline-offset"))
+}
+func (style *Style) SetOutlineOffset(value unitValue) {
+	style.set("outline-offset", value)
 }
 func (style *Style) PaddingLeft() unitValue {
 	return unitType(style.Get("padding-left"))
@@ -2313,55 +1372,11 @@ func (style *Style) PaddingLeft() unitValue {
 func (style *Style) SetPaddingLeft(value unitValue) {
 	style.set("padding-left", value)
 }
-
-type pageBreakInsideValue interface {
-	stringable
-	pageBreakInsideValue()
+func (style *Style) BorderBottomLeftRadius() unitValue {
+	return unitType(style.Get("border-bottom-left-radius"))
 }
-type pageBreakInsideType string
-
-func (self pageBreakInsideType) String() string   { return string(self) }
-func (pageBreakInsideType) pageBreakInsideValue() {}
-
-func (style *Style) PageBreakInside() pageBreakInsideValue {
-	return pageBreakInsideType(style.Get("page-break-inside"))
-}
-func (style *Style) SetPageBreakInside(value pageBreakInsideValue) {
-	style.set("page-break-inside", value)
-}
-func (style *Style) BreakBefore() breakValue {
-	return breakType(style.Get("break-before"))
-}
-func (style *Style) SetBreakBefore(value breakValue) {
-	style.set("break-before", value)
-}
-func (style *Style) GridAutoColumns() gridAutoValue {
-	return gridAutoType(style.Get("grid-auto-columns"))
-}
-func (style *Style) SetGridAutoColumns(value gridAutoValue) {
-	style.set("grid-auto-columns", value)
-}
-
-type orderValue interface {
-	stringable
-	orderValue()
-}
-type orderType string
-
-func (self orderType) String() string { return string(self) }
-func (orderType) orderValue()         {}
-
-func (style *Style) Order() orderValue {
-	return orderType(style.Get("order"))
-}
-func (style *Style) SetOrder(value orderValue) {
-	style.set("order", value)
-}
-func (style *Style) BorderImageWidth() sizeValue {
-	return sizeType(style.Get("border-image-width"))
-}
-func (style *Style) SetBorderImageWidth(value sizeValue) {
-	style.set("border-image-width", value)
+func (style *Style) SetBorderBottomLeftRadius(value unitValue) {
+	style.set("border-bottom-left-radius", value)
 }
 func (style *Style) PaddingRight() unitValue {
 	return unitType(style.Get("padding-right"))
@@ -2385,45 +1400,104 @@ func (style *Style) ScrollBehavior() scrollBehaviorValue {
 func (style *Style) SetScrollBehavior(value scrollBehaviorValue) {
 	style.set("scroll-behavior", value)
 }
+func (style *Style) Width() unitOrAutoValue {
+	return unitOrAutoType(style.Get("width"))
+}
+func (style *Style) SetWidth(value unitOrAutoValue) {
+	style.set("width", value)
+}
 
-type borderImageValue interface {
+type fontStyleValue interface {
 	stringable
-	borderImageValue()
+	fontStyleValue()
 }
-type borderImageType string
+type fontStyleType string
 
-func (self borderImageType) String() string { return string(self) }
-func (borderImageType) borderImageValue()   {}
+func (self fontStyleType) String() string { return string(self) }
+func (fontStyleType) fontStyleValue()     {}
 
-func (style *Style) BorderImage() borderImageValue {
-	return borderImageType(style.Get("border-image"))
+func (style *Style) FontStyle() fontStyleValue {
+	return fontStyleType(style.Get("font-style"))
 }
-func (style *Style) SetBorderImage(value borderImageValue) {
-	style.set("border-image", value)
+func (style *Style) SetFontStyle(value fontStyleValue) {
+	style.set("font-style", value)
 }
-func (style *Style) Bottom() unitOrAutoValue {
-	return unitOrAutoType(style.Get("bottom"))
+
+func (style *Style) SetTransitionProperty(properties ...interface{}) {
+	var names string
+
+	for _, property := range properties {
+		var s = NewStyle()
+		reflect.ValueOf(property).Call([]reflect.Value{reflect.ValueOf(&s)})
+
+		for i := range s.Stylable.(Implementation) {
+			names += i
+		}
+	}
+	style.set("transform-property", unitType(names))
 }
-func (style *Style) SetBottom(value unitOrAutoValue) {
-	style.set("bottom", value)
+
+type verticalAlignValue interface {
+	stringable
+	verticalAlignValue()
 }
-func (style *Style) OutlineColor() colorValue {
-	return colorType(style.Get("outline-color"))
+type verticalAlignType string
+
+func (self verticalAlignType) String() string { return string(self) }
+func (verticalAlignType) verticalAlignValue() {}
+
+func (style *Style) VerticalAlign() verticalAlignValue {
+	return verticalAlignType(style.Get("vertical-align"))
 }
-func (style *Style) SetOutlineColor(value colorValue) {
-	style.set("outline-color", value)
+func (style *Style) SetVerticalAlign(value verticalAlignValue) {
+	style.set("vertical-align", value)
 }
-func (style *Style) OverflowY() overflowValue {
-	return overflowType(style.Get("overflow-y"))
+func (style *Style) BackgroundImage() imageValue {
+	return imageType(style.Get("background-image"))
 }
-func (style *Style) SetOverflowY(value overflowValue) {
-	style.set("overflow-y", value)
+func (style *Style) SetBackgroundImage(value imageValue) {
+	style.set("background-image", value)
 }
-func (style *Style) PageBreakAfter() pageBreakValue {
-	return pageBreakType(style.Get("page-break-after"))
+
+type columnRuleWidthValue interface {
+	stringable
+	columnRuleWidthValue()
 }
-func (style *Style) SetPageBreakAfter(value pageBreakValue) {
-	style.set("page-break-after", value)
+type columnRuleWidthType string
+
+func (self columnRuleWidthType) String() string   { return string(self) }
+func (columnRuleWidthType) columnRuleWidthValue() {}
+
+func (style *Style) ColumnRuleWidth() columnRuleWidthValue {
+	return columnRuleWidthType(style.Get("column-rule-width"))
+}
+func (style *Style) SetColumnRuleWidth(value columnRuleWidthValue) {
+	style.set("column-rule-width", value)
+}
+func (style *Style) ColumnSpan() unitOrAutoValue {
+	return unitOrAutoType(style.Get("column-span"))
+}
+func (style *Style) SetColumnSpan(value unitOrAutoValue) {
+	style.set("column-span", value)
+}
+
+func (style *Style) SetGridTemplateColumns(values []gridTemplateValue) {
+	if len(values) == 0 {
+		style.set("grid-template-columns", unitType("none"))
+		return
+	}
+	var result string
+	for _, value := range values {
+		result += value.String() + " "
+	}
+	style.set("grid-template-columns", unitType(result))
+}
+
+func (style *Style) MarginTop() unitOrAutoValue {
+	return unitOrAutoType(style.Get("margin-top"))
+}
+func (style *Style) SetMarginTop(value unitOrAutoValue) {
+	style.set("margin-top", value)
 }
 
 type backfaceVisibilityValue interface {
@@ -2441,49 +1515,361 @@ func (style *Style) BackfaceVisibility() backfaceVisibilityValue {
 func (style *Style) SetBackfaceVisibility(value backfaceVisibilityValue) {
 	style.set("backface-visibility", value)
 }
-
-func (style *Style) SetGridTemplateRows(values []gridTemplateValue) {
-	if len(values) == 0 {
-		style.set("grid-template-rows", unitType("none"))
-		return
-	}
-	var result string
-	for _, value := range values {
-		result += value.String() + " "
-	}
-	style.set("grid-template-rows", unitType(result))
+func (style *Style) BorderBottomColor() colorValue {
+	return colorType(style.Get("border-bottom-color"))
+}
+func (style *Style) SetBorderBottomColor(value colorValue) {
+	style.set("border-bottom-color", value)
 }
 
-type marginValue interface {
+type clipValue interface {
 	stringable
-	marginValue()
+	clipValue()
 }
-type marginType string
+type clipType string
 
-func (self marginType) String() string { return string(self) }
-func (marginType) marginValue()        {}
+func (self clipType) String() string { return string(self) }
+func (clipType) clipValue()          {}
 
-func (style *Style) Margin() marginValue {
-	return marginType(style.Get("margin"))
+func (style *Style) Clip() clipValue {
+	return clipType(style.Get("clip"))
 }
-func (style *Style) SetMargin(value marginValue) {
-	style.set("margin", value)
+func (style *Style) SetClip(value clipValue) {
+	style.set("clip", value)
 }
 
-type borderTopRightRadiusValue interface {
+type justifyContentValue interface {
 	stringable
-	borderTopRightRadiusValue()
+	justifyContentValue()
 }
-type borderTopRightRadiusType string
+type justifyContentType string
 
-func (self borderTopRightRadiusType) String() string        { return string(self) }
-func (borderTopRightRadiusType) borderTopRightRadiusValue() {}
+func (self justifyContentType) String() string  { return string(self) }
+func (justifyContentType) justifyContentValue() {}
 
-func (style *Style) BorderTopRightRadius() borderTopRightRadiusValue {
-	return borderTopRightRadiusType(style.Get("border-top-right-radius"))
+func (style *Style) JustifyContent() justifyContentValue {
+	return justifyContentType(style.Get("justify-content"))
 }
-func (style *Style) SetBorderTopRightRadius(value borderTopRightRadiusValue) {
-	style.set("border-top-right-radius", value)
+func (style *Style) SetJustifyContent(value justifyContentValue) {
+	style.set("justify-content", value)
+}
+func (style *Style) BackgroundPosition() unitAndUnitValue {
+	return unitAndUnitType(style.Get("background-position"))
+}
+func (style *Style) SetBackgroundPosition(value unitAndUnitValue) {
+	style.set("background-position", value)
+}
+
+type borderImageRepeatValue interface {
+	stringable
+	borderImageRepeatValue()
+}
+type borderImageRepeatType string
+
+func (self borderImageRepeatType) String() string     { return string(self) }
+func (borderImageRepeatType) borderImageRepeatValue() {}
+
+func (style *Style) BorderImageRepeat() borderImageRepeatValue {
+	return borderImageRepeatType(style.Get("border-image-repeat"))
+}
+func (style *Style) SetBorderImageRepeat(value borderImageRepeatValue) {
+	style.set("border-image-repeat", value)
+}
+func (style *Style) FontKerning() normalOrAutoValue {
+	return normalOrAutoType(style.Get("font-kerning"))
+}
+func (style *Style) SetFontKerning(value normalOrAutoValue) {
+	style.set("font-kerning", value)
+}
+
+type objectFitValue interface {
+	stringable
+	objectFitValue()
+}
+type objectFitType string
+
+func (self objectFitType) String() string { return string(self) }
+func (objectFitType) objectFitValue()     {}
+
+func (style *Style) ObjectFit() objectFitValue {
+	return objectFitType(style.Get("object-fit"))
+}
+func (style *Style) SetObjectFit(value objectFitValue) {
+	style.set("object-fit", value)
+}
+
+type fontLanguageOverrideValue interface {
+	stringable
+	fontLanguageOverrideValue()
+}
+type fontLanguageOverrideType string
+
+func (self fontLanguageOverrideType) String() string        { return string(self) }
+func (fontLanguageOverrideType) fontLanguageOverrideValue() {}
+
+func (style *Style) FontLanguageOverride() fontLanguageOverrideValue {
+	return fontLanguageOverrideType(style.Get("font-language-override"))
+}
+func (style *Style) SetFontLanguageOverride(value fontLanguageOverrideValue) {
+	style.set("font-language-override", value)
+}
+func (style *Style) Left() unitOrAutoValue {
+	return unitOrAutoType(style.Get("left"))
+}
+func (style *Style) SetLeft(value unitOrAutoValue) {
+	style.set("left", value)
+}
+func (style *Style) MarginLeft() unitOrAutoValue {
+	return unitOrAutoType(style.Get("margin-left"))
+}
+func (style *Style) SetMarginLeft(value unitOrAutoValue) {
+	style.set("margin-left", value)
+}
+
+type userSelectValue interface {
+	stringable
+	userSelectValue()
+}
+type userSelectType string
+
+func (self userSelectType) String() string { return string(self) }
+func (userSelectType) userSelectValue()    {}
+
+func (style *Style) UserSelect() userSelectValue {
+	return userSelectType(style.Get("user-select"))
+}
+func (style *Style) SetUserSelect(value userSelectValue) {
+	style.set("user-select", value)
+}
+
+type clearValue interface {
+	stringable
+	clearValue()
+}
+type clearType string
+
+func (self clearType) String() string { return string(self) }
+func (clearType) clearValue()         {}
+
+func (style *Style) Clear() clearValue {
+	return clearType(style.Get("clear"))
+}
+func (style *Style) SetClear(value clearValue) {
+	style.set("clear", value)
+}
+
+type gridColumnValue interface {
+	stringable
+	gridColumnValue()
+}
+type gridColumnType string
+
+func (self gridColumnType) String() string { return string(self) }
+func (gridColumnType) gridColumnValue()    {}
+
+func (style *Style) GridColumn() gridColumnValue {
+	return gridColumnType(style.Get("grid-column"))
+}
+func (style *Style) SetGridColumn(value gridColumnValue) {
+	style.set("grid-column", value)
+}
+
+type fontVariantEastAsianValue interface {
+	stringable
+	fontVariantEastAsianValue()
+}
+type fontVariantEastAsianType string
+
+func (self fontVariantEastAsianType) String() string        { return string(self) }
+func (fontVariantEastAsianType) fontVariantEastAsianValue() {}
+
+func (style *Style) FontVariantEastAsian() fontVariantEastAsianValue {
+	return fontVariantEastAsianType(style.Get("font-variant-east-asian"))
+}
+func (style *Style) SetFontVariantEastAsian(value fontVariantEastAsianValue) {
+	style.set("font-variant-east-asian", value)
+}
+func (style *Style) Opacity() numberValue {
+	return numberType(style.Get("opacity"))
+}
+func (style *Style) SetOpacity(value numberValue) {
+	style.set("opacity", value)
+}
+
+type unicodeBidiValue interface {
+	stringable
+	unicodeBidiValue()
+}
+type unicodeBidiType string
+
+func (self unicodeBidiType) String() string { return string(self) }
+func (unicodeBidiType) unicodeBidiValue()   {}
+
+func (style *Style) UnicodeBidi() unicodeBidiValue {
+	return unicodeBidiType(style.Get("unicode-bidi"))
+}
+func (style *Style) SetUnicodeBidi(value unicodeBidiValue) {
+	style.set("unicode-bidi", value)
+}
+func (style *Style) WhiteSpace() uintValue {
+	return uintType(style.Get("white-space"))
+}
+func (style *Style) SetWhiteSpace(value uintValue) {
+	style.set("white-space", value)
+}
+
+type animationValue interface {
+	stringable
+	animationValue()
+}
+type animationType string
+
+func (self animationType) String() string { return string(self) }
+func (animationType) animationValue()     {}
+
+func (style *Style) Animation() animationValue {
+	return animationType(style.Get("animation"))
+}
+func (style *Style) SetAnimation(value animationValue) {
+	style.set("animation", value)
+}
+
+type mixBlendModeValue interface {
+	stringable
+	mixBlendModeValue()
+}
+type mixBlendModeType string
+
+func (self mixBlendModeType) String() string { return string(self) }
+func (mixBlendModeType) mixBlendModeValue()  {}
+
+func (style *Style) MixBlendMode() mixBlendModeValue {
+	return mixBlendModeType(style.Get("mix-blend-mode"))
+}
+func (style *Style) SetMixBlendMode(value mixBlendModeValue) {
+	style.set("mix-blend-mode", value)
+}
+
+type textDecorationStyleValue interface {
+	stringable
+	textDecorationStyleValue()
+}
+type textDecorationStyleType string
+
+func (self textDecorationStyleType) String() string       { return string(self) }
+func (textDecorationStyleType) textDecorationStyleValue() {}
+
+func (style *Style) TextDecorationStyle() textDecorationStyleValue {
+	return textDecorationStyleType(style.Get("text-decoration-style"))
+}
+func (style *Style) SetTextDecorationStyle(value textDecorationStyleValue) {
+	style.set("text-decoration-style", value)
+}
+func (style *Style) ZIndex() integerOrAutoValue {
+	return integerOrAutoType(style.Get("z-index"))
+}
+func (style *Style) SetZIndex(value integerOrAutoValue) {
+	style.set("z-index", value)
+}
+func (style *Style) BorderSpacing() unitValue {
+	return unitType(style.Get("border-spacing"))
+}
+func (style *Style) SetBorderSpacing(value unitValue) {
+	style.set("border-spacing", value)
+}
+func (style *Style) BoxShadow() shadowValue {
+	return shadowType(style.Get("box-shadow"))
+}
+func (style *Style) SetBoxShadow(value shadowValue) {
+	style.set("box-shadow", value)
+}
+func (style *Style) GridRowStart() gridStopValue {
+	return gridStopType(style.Get("grid-row-start"))
+}
+func (style *Style) SetGridRowStart(value gridStopValue) {
+	style.set("grid-row-start", value)
+}
+func (style *Style) MinHeight() unitOrNoneValue {
+	return unitOrNoneType(style.Get("min-height"))
+}
+func (style *Style) SetMinHeight(value unitOrNoneValue) {
+	style.set("min-height", value)
+}
+
+type paddingValue interface {
+	stringable
+	paddingValue()
+}
+type paddingType string
+
+func (self paddingType) String() string { return string(self) }
+func (paddingType) paddingValue()       {}
+
+func (style *Style) Padding() paddingValue {
+	return paddingType(style.Get("padding"))
+}
+func (style *Style) SetPadding(value paddingValue) {
+	style.set("padding", value)
+}
+func (style *Style) PageBreakAfter() pageBreakValue {
+	return pageBreakType(style.Get("page-break-after"))
+}
+func (style *Style) SetPageBreakAfter(value pageBreakValue) {
+	style.set("page-break-after", value)
+}
+
+type pointerEventsValue interface {
+	stringable
+	pointerEventsValue()
+}
+type pointerEventsType string
+
+func (self pointerEventsType) String() string { return string(self) }
+func (pointerEventsType) pointerEventsValue() {}
+
+func (style *Style) PointerEvents() pointerEventsValue {
+	return pointerEventsType(style.Get("pointer-events"))
+}
+func (style *Style) SetPointerEvents(value pointerEventsValue) {
+	style.set("pointer-events", value)
+}
+func (style *Style) Top() unitOrAutoValue {
+	return unitOrAutoType(style.Get("top"))
+}
+func (style *Style) SetTop(value unitOrAutoValue) {
+	style.set("top", value)
+}
+
+type textCombineUprightValue interface {
+	stringable
+	textCombineUprightValue()
+}
+type textCombineUprightType string
+
+func (self textCombineUprightType) String() string      { return string(self) }
+func (textCombineUprightType) textCombineUprightValue() {}
+
+func (style *Style) TextCombineUpright() textCombineUprightValue {
+	return textCombineUprightType(style.Get("text-combine-upright"))
+}
+func (style *Style) SetTextCombineUpright(value textCombineUprightValue) {
+	style.set("text-combine-upright", value)
+}
+
+type columnCountValue interface {
+	stringable
+	columnCountValue()
+}
+type columnCountType string
+
+func (self columnCountType) String() string { return string(self) }
+func (columnCountType) columnCountValue()   {}
+
+func (style *Style) ColumnCount() columnCountValue {
+	return columnCountType(style.Get("column-count"))
+}
+func (style *Style) SetColumnCount(value columnCountValue) {
+	style.set("column-count", value)
 }
 
 type hangingPunctuationValue interface {
@@ -2502,124 +1888,188 @@ func (style *Style) SetHangingPunctuation(value hangingPunctuationValue) {
 	style.set("hanging-punctuation", value)
 }
 
-type transitionTimingFunctionValue interface {
+type flexWrapValue interface {
 	stringable
-	transitionTimingFunctionValue()
+	flexWrapValue()
 }
-type transitionTimingFunctionType string
+type flexWrapType string
 
-func (self transitionTimingFunctionType) String() string            { return string(self) }
-func (transitionTimingFunctionType) transitionTimingFunctionValue() {}
+func (self flexWrapType) String() string { return string(self) }
+func (flexWrapType) flexWrapValue()      {}
 
-func (style *Style) TransitionTimingFunction() transitionTimingFunctionValue {
-	return transitionTimingFunctionType(style.Get("transition-timing-function"))
+func (style *Style) FlexWrap() flexWrapValue {
+	return flexWrapType(style.Get("flex-wrap"))
 }
-func (style *Style) SetTransitionTimingFunction(value transitionTimingFunctionValue) {
-	style.set("transition-timing-function", value)
+func (style *Style) SetFlexWrap(value flexWrapValue) {
+	style.set("flex-wrap", value)
 }
 
-type breakInsideValue interface {
+type gridAreaValue interface {
 	stringable
-	breakInsideValue()
+	gridAreaValue()
 }
-type breakInsideType string
+type gridAreaType string
 
-func (self breakInsideType) String() string { return string(self) }
-func (breakInsideType) breakInsideValue()   {}
+func (self gridAreaType) String() string { return string(self) }
+func (gridAreaType) gridAreaValue()      {}
 
-func (style *Style) BreakInside() breakInsideValue {
-	return breakInsideType(style.Get("break-inside"))
+func (style *Style) GridArea() gridAreaValue {
+	return gridAreaType(style.Get("grid-area"))
 }
-func (style *Style) SetBreakInside(value breakInsideValue) {
-	style.set("break-inside", value)
-}
-func (style *Style) Height() unitOrAutoValue {
-	return unitOrAutoType(style.Get("height"))
-}
-func (style *Style) SetHeight(value unitOrAutoValue) {
-	style.set("height", value)
-}
-func (style *Style) TextIndent() unitValue {
-	return unitType(style.Get("text-indent"))
-}
-func (style *Style) SetTextIndent(value unitValue) {
-	style.set("text-indent", value)
-}
-func (style *Style) Left() unitOrAutoValue {
-	return unitOrAutoType(style.Get("left"))
-}
-func (style *Style) SetLeft(value unitOrAutoValue) {
-	style.set("left", value)
+func (style *Style) SetGridArea(value gridAreaValue) {
+	style.set("grid-area", value)
 }
 
-type wordBreakValue interface {
+type transitionValue interface {
 	stringable
-	wordBreakValue()
+	transitionValue()
 }
-type wordBreakType string
+type transitionType string
 
-func (self wordBreakType) String() string { return string(self) }
-func (wordBreakType) wordBreakValue()     {}
+func (self transitionType) String() string { return string(self) }
+func (transitionType) transitionValue()    {}
 
-func (style *Style) WordBreak() wordBreakValue {
-	return wordBreakType(style.Get("word-break"))
+func (style *Style) Transition() transitionValue {
+	return transitionType(style.Get("transition"))
 }
-func (style *Style) SetWordBreak(value wordBreakValue) {
-	style.set("word-break", value)
+func (style *Style) SetTransition(value transitionValue) {
+	style.set("transition", value)
 }
 
-type paddingValue interface {
+type pageBreakInsideValue interface {
 	stringable
-	paddingValue()
+	pageBreakInsideValue()
 }
-type paddingType string
+type pageBreakInsideType string
 
-func (self paddingType) String() string { return string(self) }
-func (paddingType) paddingValue()       {}
+func (self pageBreakInsideType) String() string   { return string(self) }
+func (pageBreakInsideType) pageBreakInsideValue() {}
 
-func (style *Style) Padding() paddingValue {
-	return paddingType(style.Get("padding"))
+func (style *Style) PageBreakInside() pageBreakInsideValue {
+	return pageBreakInsideType(style.Get("page-break-inside"))
 }
-func (style *Style) SetPadding(value paddingValue) {
-	style.set("padding", value)
+func (style *Style) SetPageBreakInside(value pageBreakInsideValue) {
+	style.set("page-break-inside", value)
+}
+func (style *Style) BorderLeftColor() sizeValue {
+	return sizeType(style.Get("border-left-color"))
+}
+func (style *Style) SetBorderLeftColor(value sizeValue) {
+	style.set("border-left-color", value)
 }
 
-type alignContentValue interface {
+type flexValue interface {
 	stringable
-	alignContentValue()
+	flexValue()
 }
-type alignContentType string
+type flexType string
 
-func (self alignContentType) String() string { return string(self) }
-func (alignContentType) alignContentValue()  {}
+func (self flexType) String() string { return string(self) }
+func (flexType) flexValue()          {}
 
-func (style *Style) AlignContent() alignContentValue {
-	return alignContentType(style.Get("align-content"))
+func (style *Style) Flex() flexValue {
+	return flexType(style.Get("flex"))
 }
-func (style *Style) SetAlignContent(value alignContentValue) {
-	style.set("align-content", value)
+func (style *Style) SetFlex(value flexValue) {
+	style.set("flex", value)
 }
 
-type fontVariantCapsValue interface {
+type fontVariantValue interface {
 	stringable
-	fontVariantCapsValue()
+	fontVariantValue()
 }
-type fontVariantCapsType string
+type fontVariantType string
 
-func (self fontVariantCapsType) String() string   { return string(self) }
-func (fontVariantCapsType) fontVariantCapsValue() {}
+func (self fontVariantType) String() string { return string(self) }
+func (fontVariantType) fontVariantValue()   {}
 
-func (style *Style) FontVariantCaps() fontVariantCapsValue {
-	return fontVariantCapsType(style.Get("font-variant-caps"))
+func (style *Style) FontVariant() fontVariantValue {
+	return fontVariantType(style.Get("font-variant"))
 }
-func (style *Style) SetFontVariantCaps(value fontVariantCapsValue) {
-	style.set("font-variant-caps", value)
+func (style *Style) SetFontVariant(value fontVariantValue) {
+	style.set("font-variant", value)
 }
-func (style *Style) GridRowStart() gridStopValue {
-	return gridStopType(style.Get("grid-row-start"))
+
+type textOverflowValue interface {
+	stringable
+	textOverflowValue()
 }
-func (style *Style) SetGridRowStart(value gridStopValue) {
-	style.set("grid-row-start", value)
+type textOverflowType string
+
+func (self textOverflowType) String() string { return string(self) }
+func (textOverflowType) textOverflowValue()  {}
+
+func (style *Style) TextOverflow() textOverflowValue {
+	return textOverflowType(style.Get("text-overflow"))
+}
+func (style *Style) SetTextOverflow(value textOverflowValue) {
+	style.set("text-overflow", value)
+}
+
+type backgroundRepeatValue interface {
+	stringable
+	backgroundRepeatValue()
+}
+type backgroundRepeatType string
+
+func (self backgroundRepeatType) String() string    { return string(self) }
+func (backgroundRepeatType) backgroundRepeatValue() {}
+
+func (style *Style) BackgroundRepeat() backgroundRepeatValue {
+	return backgroundRepeatType(style.Get("background-repeat"))
+}
+func (style *Style) SetBackgroundRepeat(value backgroundRepeatValue) {
+	style.set("background-repeat", value)
+}
+func (style *Style) GridRowEnd() gridStopValue {
+	return gridStopType(style.Get("grid-row-end"))
+}
+func (style *Style) SetGridRowEnd(value gridStopValue) {
+	style.set("grid-row-end", value)
+}
+func (style *Style) CounterReset() nameValue {
+	return nameType(style.Get("counter-reset"))
+}
+func (style *Style) SetCounterReset(value nameValue) {
+	style.set("counter-reset", value)
+}
+
+type fontFeatureSettingsValue interface {
+	stringable
+	fontFeatureSettingsValue()
+}
+type fontFeatureSettingsType string
+
+func (self fontFeatureSettingsType) String() string       { return string(self) }
+func (fontFeatureSettingsType) fontFeatureSettingsValue() {}
+
+func (style *Style) FontFeatureSettings() fontFeatureSettingsValue {
+	return fontFeatureSettingsType(style.Get("font-feature-settings"))
+}
+func (style *Style) SetFontFeatureSettings(value fontFeatureSettingsValue) {
+	style.set("font-feature-settings", value)
+}
+
+type gridAutoFlowValue interface {
+	stringable
+	gridAutoFlowValue()
+}
+type gridAutoFlowType string
+
+func (self gridAutoFlowType) String() string { return string(self) }
+func (gridAutoFlowType) gridAutoFlowValue()  {}
+
+func (style *Style) GridAutoFlow() gridAutoFlowValue {
+	return gridAutoFlowType(style.Get("grid-auto-flow"))
+}
+func (style *Style) SetGridAutoFlow(value gridAutoFlowValue) {
+	style.set("grid-auto-flow", value)
+}
+func (style *Style) OverflowX() overflowValue {
+	return overflowType(style.Get("overflow-x"))
+}
+func (style *Style) SetOverflowX(value overflowValue) {
+	style.set("overflow-x", value)
 }
 
 type columnsValue interface {
@@ -2637,6 +2087,149 @@ func (style *Style) Columns() columnsValue {
 func (style *Style) SetColumns(value columnsValue) {
 	style.set("columns", value)
 }
+
+type fontFamilyValue interface {
+	stringable
+	fontFamilyValue()
+}
+type fontFamilyType string
+
+func (self fontFamilyType) String() string { return string(self) }
+func (fontFamilyType) fontFamilyValue()    {}
+
+func (style *Style) FontFamily() fontFamilyValue {
+	return fontFamilyType(style.Get("font-family"))
+}
+func (style *Style) SetFontFamily(value fontFamilyValue) {
+	style.set("font-family", value)
+}
+
+type orderValue interface {
+	stringable
+	orderValue()
+}
+type orderType string
+
+func (self orderType) String() string { return string(self) }
+func (orderType) orderValue()         {}
+
+func (style *Style) Order() orderValue {
+	return orderType(style.Get("order"))
+}
+func (style *Style) SetOrder(value orderValue) {
+	style.set("order", value)
+}
+func (style *Style) TabSize() numberValue {
+	return numberType(style.Get("tab-size"))
+}
+func (style *Style) SetTabSize(value numberValue) {
+	style.set("tab-size", value)
+}
+
+type visibilityValue interface {
+	stringable
+	visibilityValue()
+}
+type visibilityType string
+
+func (self visibilityType) String() string { return string(self) }
+func (visibilityType) visibilityValue()    {}
+
+func (style *Style) Visibility() visibilityValue {
+	return visibilityType(style.Get("visibility"))
+}
+func (style *Style) SetVisibility(value visibilityValue) {
+	style.set("visibility", value)
+}
+
+type borderImageValue interface {
+	stringable
+	borderImageValue()
+}
+type borderImageType string
+
+func (self borderImageType) String() string { return string(self) }
+func (borderImageType) borderImageValue()   {}
+
+func (style *Style) BorderImage() borderImageValue {
+	return borderImageType(style.Get("border-image"))
+}
+func (style *Style) SetBorderImage(value borderImageValue) {
+	style.set("border-image", value)
+}
+
+type imageRenderingValue interface {
+	stringable
+	imageRenderingValue()
+}
+type imageRenderingType string
+
+func (self imageRenderingType) String() string  { return string(self) }
+func (imageRenderingType) imageRenderingValue() {}
+
+func (style *Style) ImageRendering() imageRenderingValue {
+	return imageRenderingType(style.Get("image-rendering"))
+}
+func (style *Style) SetImageRendering(value imageRenderingValue) {
+	style.set("image-rendering", value)
+}
+func (style *Style) PaddingTop() unitValue {
+	return unitType(style.Get("padding-top"))
+}
+func (style *Style) SetPaddingTop(value unitValue) {
+	style.set("padding-top", value)
+}
+
+func (style *Style) SetQuotes(quotes []string) {
+	if len(quotes) == 0 {
+		style.set("quotes", unitType("none"))
+		return
+	}
+	var result string
+	for _, quote := range quotes {
+		result += strconv.Quote(quote)
+	}
+	style.set("quotes", unitType(result))
+}
+
+func (style *Style) TextDecorationColor() colorValue {
+	return colorType(style.Get("text-decoration-color"))
+}
+func (style *Style) SetTextDecorationColor(value colorValue) {
+	style.set("text-decoration-color", value)
+}
+
+type textTransformValue interface {
+	stringable
+	textTransformValue()
+}
+type textTransformType string
+
+func (self textTransformType) String() string { return string(self) }
+func (textTransformType) textTransformValue() {}
+
+func (style *Style) TextTransform() textTransformValue {
+	return textTransformType(style.Get("text-transform"))
+}
+func (style *Style) SetTextTransform(value textTransformValue) {
+	style.set("text-transform", value)
+}
+
+type captionSideValue interface {
+	stringable
+	captionSideValue()
+}
+type captionSideType string
+
+func (self captionSideType) String() string { return string(self) }
+func (captionSideType) captionSideValue()   {}
+
+func (style *Style) CaptionSide() captionSideValue {
+	return captionSideType(style.Get("caption-side"))
+}
+func (style *Style) SetCaptionSide(value captionSideValue) {
+	style.set("caption-side", value)
+}
 func (style *Style) ColumnRuleStyle() borderStyleValue {
 	return borderStyleType(style.Get("column-rule-style"))
 }
@@ -2644,48 +2237,204 @@ func (style *Style) SetColumnRuleStyle(value borderStyleValue) {
 	style.set("column-rule-style", value)
 }
 
-type lineBreakValue interface {
+type flexFlowValue interface {
 	stringable
-	lineBreakValue()
+	flexFlowValue()
 }
-type lineBreakType string
+type flexFlowType string
 
-func (self lineBreakType) String() string { return string(self) }
-func (lineBreakType) lineBreakValue()     {}
+func (self flexFlowType) String() string { return string(self) }
+func (flexFlowType) flexFlowValue()      {}
 
-func (style *Style) LineBreak() lineBreakValue {
-	return lineBreakType(style.Get("line-break"))
+func (style *Style) FlexFlow() flexFlowValue {
+	return flexFlowType(style.Get("flex-flow"))
 }
-func (style *Style) SetLineBreak(value lineBreakValue) {
-	style.set("line-break", value)
-}
-func (style *Style) OutlineOffset() unitValue {
-	return unitType(style.Get("outline-offset"))
-}
-func (style *Style) SetOutlineOffset(value unitValue) {
-	style.set("outline-offset", value)
-}
-func (style *Style) ZIndex() integerOrAutoValue {
-	return integerOrAutoType(style.Get("z-index"))
-}
-func (style *Style) SetZIndex(value integerOrAutoValue) {
-	style.set("z-index", value)
+func (style *Style) SetFlexFlow(value flexFlowValue) {
+	style.set("flex-flow", value)
 }
 
-type animationNameValue interface {
+type fontVariantCapsValue interface {
 	stringable
-	animationNameValue()
+	fontVariantCapsValue()
 }
-type animationNameType string
+type fontVariantCapsType string
 
-func (self animationNameType) String() string { return string(self) }
-func (animationNameType) animationNameValue() {}
+func (self fontVariantCapsType) String() string   { return string(self) }
+func (fontVariantCapsType) fontVariantCapsValue() {}
 
-func (style *Style) AnimationName() animationNameValue {
-	return animationNameType(style.Get("animation-name"))
+func (style *Style) FontVariantCaps() fontVariantCapsValue {
+	return fontVariantCapsType(style.Get("font-variant-caps"))
 }
-func (style *Style) SetAnimationName(value animationNameValue) {
-	style.set("animation-name", value)
+func (style *Style) SetFontVariantCaps(value fontVariantCapsValue) {
+	style.set("font-variant-caps", value)
+}
+
+type gridRowValue interface {
+	stringable
+	gridRowValue()
+}
+type gridRowType string
+
+func (self gridRowType) String() string { return string(self) }
+func (gridRowType) gridRowValue()       {}
+
+func (style *Style) GridRow() gridRowValue {
+	return gridRowType(style.Get("grid-row"))
+}
+func (style *Style) SetGridRow(value gridRowValue) {
+	style.set("grid-row", value)
+}
+
+type animationPlayStateValue interface {
+	stringable
+	animationPlayStateValue()
+}
+type animationPlayStateType string
+
+func (self animationPlayStateType) String() string      { return string(self) }
+func (animationPlayStateType) animationPlayStateValue() {}
+
+func (style *Style) AnimationPlayState() animationPlayStateValue {
+	return animationPlayStateType(style.Get("animation-play-state"))
+}
+func (style *Style) SetAnimationPlayState(value animationPlayStateValue) {
+	style.set("animation-play-state", value)
+}
+
+type borderTopValue interface {
+	stringable
+	borderTopValue()
+}
+type borderTopType string
+
+func (self borderTopType) String() string { return string(self) }
+func (borderTopType) borderTopValue()     {}
+
+func (style *Style) BorderTop() borderTopValue {
+	return borderTopType(style.Get("border-top"))
+}
+func (style *Style) SetBorderTop(value borderTopValue) {
+	style.set("border-top", value)
+}
+
+type columnWidthValue interface {
+	stringable
+	columnWidthValue()
+}
+type columnWidthType string
+
+func (self columnWidthType) String() string { return string(self) }
+func (columnWidthType) columnWidthValue()   {}
+
+func (style *Style) ColumnWidth() columnWidthValue {
+	return columnWidthType(style.Get("column-width"))
+}
+func (style *Style) SetColumnWidth(value columnWidthValue) {
+	style.set("column-width", value)
+}
+
+type displayValue interface {
+	stringable
+	displayValue()
+}
+type displayType string
+
+func (self displayType) String() string { return string(self) }
+func (displayType) displayValue()       {}
+
+func (style *Style) Display() displayValue {
+	return displayType(style.Get("display"))
+}
+func (style *Style) SetDisplay(value displayValue) {
+	style.set("display", value)
+}
+func (style *Style) Right() unitOrAutoValue {
+	return unitOrAutoType(style.Get("right"))
+}
+func (style *Style) SetRight(value unitOrAutoValue) {
+	style.set("right", value)
+}
+
+type transitionTimingFunctionValue interface {
+	stringable
+	transitionTimingFunctionValue()
+}
+type transitionTimingFunctionType string
+
+func (self transitionTimingFunctionType) String() string            { return string(self) }
+func (transitionTimingFunctionType) transitionTimingFunctionValue() {}
+
+func (style *Style) TransitionTimingFunction() transitionTimingFunctionValue {
+	return transitionTimingFunctionType(style.Get("transition-timing-function"))
+}
+func (style *Style) SetTransitionTimingFunction(value transitionTimingFunctionValue) {
+	style.set("transition-timing-function", value)
+}
+
+type alignItemsValue interface {
+	stringable
+	alignItemsValue()
+}
+type alignItemsType string
+
+func (self alignItemsType) String() string { return string(self) }
+func (alignItemsType) alignItemsValue()    {}
+
+func (style *Style) AlignItems() alignItemsValue {
+	return alignItemsType(style.Get("align-items"))
+}
+func (style *Style) SetAlignItems(value alignItemsValue) {
+	style.set("align-items", value)
+}
+func (style *Style) BorderTopStyle() borderStyleValue {
+	return borderStyleType(style.Get("border-top-style"))
+}
+func (style *Style) SetBorderTopStyle(value borderStyleValue) {
+	style.set("border-top-style", value)
+}
+
+type textAlignLastValue interface {
+	stringable
+	textAlignLastValue()
+}
+type textAlignLastType string
+
+func (self textAlignLastType) String() string { return string(self) }
+func (textAlignLastType) textAlignLastValue() {}
+
+func (style *Style) TextAlignLast() textAlignLastValue {
+	return textAlignLastType(style.Get("text-align-last"))
+}
+func (style *Style) SetTextAlignLast(value textAlignLastValue) {
+	style.set("text-align-last", value)
+}
+
+type textDecorationValue interface {
+	stringable
+	textDecorationValue()
+}
+type textDecorationType string
+
+func (self textDecorationType) String() string  { return string(self) }
+func (textDecorationType) textDecorationValue() {}
+
+func (style *Style) TextDecoration() textDecorationValue {
+	return textDecorationType(style.Get("text-decoration"))
+}
+func (style *Style) SetTextDecoration(value textDecorationValue) {
+	style.set("text-decoration", value)
+}
+func (style *Style) TextShadow() shadowValue {
+	return shadowType(style.Get("text-shadow"))
+}
+func (style *Style) SetTextShadow(value shadowValue) {
+	style.set("text-shadow", value)
+}
+func (style *Style) OutlineWidth() thicknessValue {
+	return thicknessType(style.Get("outline-width"))
+}
+func (style *Style) SetOutlineWidth(value thicknessValue) {
+	style.set("outline-width", value)
 }
 
 type backgroundBlendModeValue interface {
@@ -2703,6 +2452,62 @@ func (style *Style) BackgroundBlendMode() backgroundBlendModeValue {
 func (style *Style) SetBackgroundBlendMode(value backgroundBlendModeValue) {
 	style.set("background-blend-mode", value)
 }
+func (style *Style) BorderStyle() borderStyleValue {
+	return borderStyleType(style.Get("border-style"))
+}
+func (style *Style) SetBorderStyle(value borderStyleValue) {
+	style.set("border-style", value)
+}
+
+type columnGapValue interface {
+	stringable
+	columnGapValue()
+}
+type columnGapType string
+
+func (self columnGapType) String() string { return string(self) }
+func (columnGapType) columnGapValue()     {}
+
+func (style *Style) ColumnGap() columnGapValue {
+	return columnGapType(style.Get("column-gap"))
+}
+func (style *Style) SetColumnGap(value columnGapValue) {
+	style.set("column-gap", value)
+}
+func (style *Style) GridColumnStart() gridStopValue {
+	return gridStopType(style.Get("grid-column-start"))
+}
+func (style *Style) SetGridColumnStart(value gridStopValue) {
+	style.set("grid-column-start", value)
+}
+func (style *Style) BorderImageSource() imageValue {
+	return imageType(style.Get("border-image-source"))
+}
+func (style *Style) SetBorderImageSource(value imageValue) {
+	style.set("border-image-source", value)
+}
+func (style *Style) Color() colorValue {
+	return colorType(style.Get("color"))
+}
+func (style *Style) SetColor(value colorValue) {
+	style.set("color", value)
+}
+
+type emptyCellsValue interface {
+	stringable
+	emptyCellsValue()
+}
+type emptyCellsType string
+
+func (self emptyCellsType) String() string { return string(self) }
+func (emptyCellsType) emptyCellsValue()    {}
+
+func (style *Style) EmptyCells() emptyCellsValue {
+	return emptyCellsType(style.Get("empty-cells"))
+}
+func (style *Style) SetEmptyCells(value emptyCellsValue) {
+	style.set("empty-cells", value)
+}
 
 type columnFillValue interface {
 	stringable
@@ -2719,17 +2524,207 @@ func (style *Style) ColumnFill() columnFillValue {
 func (style *Style) SetColumnFill(value columnFillValue) {
 	style.set("column-fill", value)
 }
-func (style *Style) MarginBottom() unitOrAutoValue {
-	return unitOrAutoType(style.Get("margin-bottom"))
+
+type fontSizeValue interface {
+	stringable
+	fontSizeValue()
 }
-func (style *Style) SetMarginBottom(value unitOrAutoValue) {
-	style.set("margin-bottom", value)
+type fontSizeType string
+
+func (self fontSizeType) String() string { return string(self) }
+func (fontSizeType) fontSizeValue()      {}
+
+func (style *Style) FontSize() fontSizeValue {
+	return fontSizeType(style.Get("font-size"))
 }
-func (style *Style) OverflowX() overflowValue {
-	return overflowType(style.Get("overflow-x"))
+func (style *Style) SetFontSize(value fontSizeValue) {
+	style.set("font-size", value)
 }
-func (style *Style) SetOverflowX(value overflowValue) {
-	style.set("overflow-x", value)
+
+type marginValue interface {
+	stringable
+	marginValue()
+}
+type marginType string
+
+func (self marginType) String() string { return string(self) }
+func (marginType) marginValue()        {}
+
+func (style *Style) Margin() marginValue {
+	return marginType(style.Get("margin"))
+}
+func (style *Style) SetMargin(value marginValue) {
+	style.set("margin", value)
+}
+func (style *Style) Height() unitOrAutoValue {
+	return unitOrAutoType(style.Get("height"))
+}
+func (style *Style) SetHeight(value unitOrAutoValue) {
+	style.set("height", value)
+}
+func (style *Style) Overflow() overflowValue {
+	return overflowType(style.Get("overflow"))
+}
+func (style *Style) SetOverflow(value overflowValue) {
+	style.set("overflow", value)
+}
+func (style *Style) TextIndent() unitValue {
+	return unitType(style.Get("text-indent"))
+}
+func (style *Style) SetTextIndent(value unitValue) {
+	style.set("text-indent", value)
+}
+
+type wordSpacingValue interface {
+	stringable
+	wordSpacingValue()
+}
+type wordSpacingType string
+
+func (self wordSpacingType) String() string { return string(self) }
+func (wordSpacingType) wordSpacingValue()   {}
+
+func (style *Style) WordSpacing() wordSpacingValue {
+	return wordSpacingType(style.Get("word-spacing"))
+}
+func (style *Style) SetWordSpacing(value wordSpacingValue) {
+	style.set("word-spacing", value)
+}
+
+type wordWrapValue interface {
+	stringable
+	wordWrapValue()
+}
+type wordWrapType string
+
+func (self wordWrapType) String() string { return string(self) }
+func (wordWrapType) wordWrapValue()      {}
+
+func (style *Style) WordWrap() wordWrapValue {
+	return wordWrapType(style.Get("word-wrap"))
+}
+func (style *Style) SetWordWrap(value wordWrapValue) {
+	style.set("word-wrap", value)
+}
+func (style *Style) BorderImageWidth() sizeValue {
+	return sizeType(style.Get("border-image-width"))
+}
+func (style *Style) SetBorderImageWidth(value sizeValue) {
+	style.set("border-image-width", value)
+}
+
+type directionValue interface {
+	stringable
+	directionValue()
+}
+type directionType string
+
+func (self directionType) String() string { return string(self) }
+func (directionType) directionValue()     {}
+
+func (style *Style) Direction() directionValue {
+	return directionType(style.Get("direction"))
+}
+func (style *Style) SetDirection(value directionValue) {
+	style.set("direction", value)
+}
+func (style *Style) MaxHeight() unitOrNoneValue {
+	return unitOrNoneType(style.Get("max-height"))
+}
+func (style *Style) SetMaxHeight(value unitOrNoneValue) {
+	style.set("max-height", value)
+}
+
+type textJustifyValue interface {
+	stringable
+	textJustifyValue()
+}
+type textJustifyType string
+
+func (self textJustifyType) String() string { return string(self) }
+func (textJustifyType) textJustifyValue()   {}
+
+func (style *Style) TextJustify() textJustifyValue {
+	return textJustifyType(style.Get("text-justify"))
+}
+func (style *Style) SetTextJustify(value textJustifyValue) {
+	style.set("text-justify", value)
+}
+func (style *Style) BorderImageOutset() uintOrUnitValue {
+	return uintOrUnitType(style.Get("border-image-outset"))
+}
+func (style *Style) SetBorderImageOutset(value uintOrUnitValue) {
+	style.set("border-image-outset", value)
+}
+
+type borderRadiusValue interface {
+	stringable
+	borderRadiusValue()
+}
+type borderRadiusType string
+
+func (self borderRadiusType) String() string { return string(self) }
+func (borderRadiusType) borderRadiusValue()  {}
+
+func (style *Style) BorderRadius() borderRadiusValue {
+	return borderRadiusType(style.Get("border-radius"))
+}
+func (style *Style) SetBorderRadius(value borderRadiusValue) {
+	style.set("border-radius", value)
+}
+
+type transitionDelayValue interface {
+	stringable
+	transitionDelayValue()
+}
+type transitionDelayType string
+
+func (self transitionDelayType) String() string   { return string(self) }
+func (transitionDelayType) transitionDelayValue() {}
+
+func (style *Style) TransitionDelay() transitionDelayValue {
+	return transitionDelayType(style.Get("transition-delay"))
+}
+func (style *Style) SetTransitionDelay(value transitionDelayValue) {
+	style.set("transition-delay", value)
+}
+func (style *Style) BorderLeftWidth() thicknessValue {
+	return thicknessType(style.Get("border-left-width"))
+}
+func (style *Style) SetBorderLeftWidth(value thicknessValue) {
+	style.set("border-left-width", value)
+}
+
+type fontVariantLigaturesValue interface {
+	stringable
+	fontVariantLigaturesValue()
+}
+type fontVariantLigaturesType string
+
+func (self fontVariantLigaturesType) String() string        { return string(self) }
+func (fontVariantLigaturesType) fontVariantLigaturesValue() {}
+
+func (style *Style) FontVariantLigatures() fontVariantLigaturesValue {
+	return fontVariantLigaturesType(style.Get("font-variant-ligatures"))
+}
+func (style *Style) SetFontVariantLigatures(value fontVariantLigaturesValue) {
+	style.set("font-variant-ligatures", value)
+}
+
+type fontVariantNumericValue interface {
+	stringable
+	fontVariantNumericValue()
+}
+type fontVariantNumericType string
+
+func (self fontVariantNumericType) String() string      { return string(self) }
+func (fontVariantNumericType) fontVariantNumericValue() {}
+
+func (style *Style) FontVariantNumeric() fontVariantNumericValue {
+	return fontVariantNumericType(style.Get("font-variant-numeric"))
+}
+func (style *Style) SetFontVariantNumeric(value fontVariantNumericValue) {
+	style.set("font-variant-numeric", value)
 }
 
 type fontWeightValue interface {
@@ -2747,105 +2742,127 @@ func (style *Style) FontWeight() fontWeightValue {
 func (style *Style) SetFontWeight(value fontWeightValue) {
 	style.set("font-weight", value)
 }
-func (style *Style) PerspectiveOrigin() unitAndUnitValue {
-	return unitAndUnitType(style.Get("perspective-origin"))
-}
-func (style *Style) SetPerspectiveOrigin(value unitAndUnitValue) {
-	style.set("perspective-origin", value)
-}
 
-type transformValue interface {
+type boxDecorationBreakValue interface {
 	stringable
-	transformValue()
+	boxDecorationBreakValue()
 }
-type transformType string
+type boxDecorationBreakType string
 
-func (self transformType) String() string { return string(self) }
-func (transformType) transformValue()     {}
+func (self boxDecorationBreakType) String() string      { return string(self) }
+func (boxDecorationBreakType) boxDecorationBreakValue() {}
 
-func (style *Style) Transform() transformValue {
-	return transformType(style.Get("transform"))
+func (style *Style) BoxDecorationBreak() boxDecorationBreakValue {
+	return boxDecorationBreakType(style.Get("box-decoration-break"))
 }
-func (style *Style) SetTransform(value transformValue) {
-	style.set("transform", value)
-}
-func (style *Style) MaxHeight() unitOrNoneValue {
-	return unitOrNoneType(style.Get("max-height"))
-}
-func (style *Style) SetMaxHeight(value unitOrNoneValue) {
-	style.set("max-height", value)
+func (style *Style) SetBoxDecorationBreak(value boxDecorationBreakValue) {
+	style.set("box-decoration-break", value)
 }
 
-type outlineValue interface {
+type tableLayoutValue interface {
 	stringable
-	outlineValue()
+	tableLayoutValue()
 }
-type outlineType string
+type tableLayoutType string
 
-func (self outlineType) String() string { return string(self) }
-func (outlineType) outlineValue()       {}
+func (self tableLayoutType) String() string { return string(self) }
+func (tableLayoutType) tableLayoutValue()   {}
 
-func (style *Style) Outline() outlineValue {
-	return outlineType(style.Get("outline"))
+func (style *Style) TableLayout() tableLayoutValue {
+	return tableLayoutType(style.Get("table-layout"))
 }
-func (style *Style) SetOutline(value outlineValue) {
-	style.set("outline", value)
+func (style *Style) SetTableLayout(value tableLayoutValue) {
+	style.set("table-layout", value)
 }
 
-type animationValue interface {
+type backgroundAttachmentValue interface {
 	stringable
-	animationValue()
+	backgroundAttachmentValue()
 }
-type animationType string
+type backgroundAttachmentType string
 
-func (self animationType) String() string { return string(self) }
-func (animationType) animationValue()     {}
+func (self backgroundAttachmentType) String() string        { return string(self) }
+func (backgroundAttachmentType) backgroundAttachmentValue() {}
 
-func (style *Style) Animation() animationValue {
-	return animationType(style.Get("animation"))
+func (style *Style) BackgroundAttachment() backgroundAttachmentValue {
+	return backgroundAttachmentType(style.Get("background-attachment"))
 }
-func (style *Style) SetAnimation(value animationValue) {
-	style.set("animation", value)
-}
-func (style *Style) ColumnRuleColor() colorValue {
-	return colorType(style.Get("column-rule-color"))
-}
-func (style *Style) SetColumnRuleColor(value colorValue) {
-	style.set("column-rule-color", value)
-}
-func (style *Style) ColumnSpan() unitOrAutoValue {
-	return unitOrAutoType(style.Get("column-span"))
-}
-func (style *Style) SetColumnSpan(value unitOrAutoValue) {
-	style.set("column-span", value)
+func (style *Style) SetBackgroundAttachment(value backgroundAttachmentValue) {
+	style.set("background-attachment", value)
 }
 
-type backgroundOriginValue interface {
+type borderTopLeftRadiusValue interface {
 	stringable
-	backgroundOriginValue()
+	borderTopLeftRadiusValue()
 }
-type backgroundOriginType string
+type borderTopLeftRadiusType string
 
-func (self backgroundOriginType) String() string    { return string(self) }
-func (backgroundOriginType) backgroundOriginValue() {}
+func (self borderTopLeftRadiusType) String() string       { return string(self) }
+func (borderTopLeftRadiusType) borderTopLeftRadiusValue() {}
 
-func (style *Style) BackgroundOrigin() backgroundOriginValue {
-	return backgroundOriginType(style.Get("background-origin"))
+func (style *Style) BorderTopLeftRadius() borderTopLeftRadiusValue {
+	return borderTopLeftRadiusType(style.Get("border-top-left-radius"))
 }
-func (style *Style) SetBackgroundOrigin(value backgroundOriginValue) {
-	style.set("background-origin", value)
+func (style *Style) SetBorderTopLeftRadius(value borderTopLeftRadiusValue) {
+	style.set("border-top-left-radius", value)
 }
-func (style *Style) TabSize() numberValue {
-	return numberType(style.Get("tab-size"))
+func (style *Style) BorderWidth() thicknessValue {
+	return thicknessType(style.Get("border-width"))
 }
-func (style *Style) SetTabSize(value numberValue) {
-	style.set("tab-size", value)
+func (style *Style) SetBorderWidth(value thicknessValue) {
+	style.set("border-width", value)
 }
 
-func (style *Style) SetTransformOrigin(p positionValue, z ...unitValue) {
-	if len(z) > 0 {
-		style.set("transform-origin", unitType(p.String()+" "+z[0].String()))
-	} else {
-		style.set("transform-origin", p)
-	}
+type fontSizeAdjustValue interface {
+	stringable
+	fontSizeAdjustValue()
+}
+type fontSizeAdjustType string
+
+func (self fontSizeAdjustType) String() string  { return string(self) }
+func (fontSizeAdjustType) fontSizeAdjustValue() {}
+
+func (style *Style) FontSizeAdjust() fontSizeAdjustValue {
+	return fontSizeAdjustType(style.Get("font-size-adjust"))
+}
+func (style *Style) SetFontSizeAdjust(value fontSizeAdjustValue) {
+	style.set("font-size-adjust", value)
+}
+
+type overflowWrapValue interface {
+	stringable
+	overflowWrapValue()
+}
+type overflowWrapType string
+
+func (self overflowWrapType) String() string { return string(self) }
+func (overflowWrapType) overflowWrapValue()  {}
+
+func (style *Style) OverflowWrap() overflowWrapValue {
+	return overflowWrapType(style.Get("overflow-wrap"))
+}
+func (style *Style) SetOverflowWrap(value overflowWrapValue) {
+	style.set("overflow-wrap", value)
+}
+func (style *Style) BorderRightWidth() thicknessValue {
+	return thicknessType(style.Get("border-right-width"))
+}
+func (style *Style) SetBorderRightWidth(value thicknessValue) {
+	style.set("border-right-width", value)
+}
+
+type floatValue interface {
+	stringable
+	floatValue()
+}
+type floatType string
+
+func (self floatType) String() string { return string(self) }
+func (floatType) floatValue()         {}
+
+func (style *Style) Float() floatValue {
+	return floatType(style.Get("float"))
+}
+func (style *Style) SetFloat(value floatValue) {
+	style.set("float", value)
 }
