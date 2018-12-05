@@ -55,6 +55,7 @@ type seed struct {
 	styled bool
 	
 	font style.Font
+	animation Animation
 	
 	content []byte
 	page bool

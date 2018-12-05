@@ -24,6 +24,10 @@ func Decode(unit complex128) unitType {
 	}
 }
 
+func AnimationName(name string) animationNameValue {
+	return animationNameType(name)
+}
+
 //Shorthand for Percent()
 func (n numberType) Pc() unitType {
 	return n.Percent()
@@ -83,3 +87,10 @@ func Colour(c go_color.Color) colorType {
 func LinearGradient(direction float64, start, end colorValue) gradientType {
 	return gradientType(fmt.Sprint("linear-gradient(", direction, "rad,", start, ",", end, ")"))
 }
+
+var Linear animationTimingFunctionType = "linear"
+var EaseInOut animationTimingFunctionType = "ease-in-out"
+
+
+
+

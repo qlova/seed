@@ -295,6 +295,34 @@ func (seed Seed) BuildFonts() []byte {
 	return buffer.Bytes()
 }
 
+func (seed Seed) buildAnimations(animations *[]Animation, names *[]string) {
+	
+	if seed.animation != nil {
+		*animations = append(*animations, seed.animation)
+		*names = append(*names, seed.ID())
+	}
+
+	for _, child := range seed.children {
+		child.(Seed).buildAnimations(animations, names)
+	}
+}
+
+func (seed Seed) BuildAnimations() []byte {
+	var buffer bytes.Buffer
+	
+	var animations = make([]Animation, 0) 
+	var names = make([]string, 0) 
+	seed.buildAnimations(&animations, &names)
+
+	for i, animation := range animations {
+		buffer.WriteString("@keyframes "+names[i]+" {")
+		buffer.Write(animation.Bytes())
+		buffer.WriteByte('}')
+	}
+
+	return buffer.Bytes()
+}
+
 type dynamicHandler struct {
 	id string
 	handler func(Client)
@@ -409,6 +437,7 @@ func (seed Seed) Host(hostport string) error {
 	
 	var html = seed.Render()
 	var fonts = seed.BuildFonts()
+	var animations = seed.BuildAnimations()
 	var worker = ServiceWorker.Render()
 	var manifest = seed.manifest.Render()
 	
@@ -456,6 +485,7 @@ func (seed Seed) Host(hostport string) error {
 	`))
 	
 	buffer.Write(fonts)
+	buffer.Write(animations)
 	buffer.Write(style)
 	
 	

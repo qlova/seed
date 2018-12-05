@@ -183,6 +183,10 @@ func (style Style) SetOuterSpacing(x, y complex128) {
 	style.SetMarginBottom(css.Decode(y))
 }
 
+func (style Style) SetDuration(duration float64) {
+	style.SetAnimationDuration(css.Time(duration))
+} 
+
 //Set the offset from an attached side, call this after style.Attach().
 func (style Style) SetOffset(side complex128, offset complex128) {
 	switch side {
