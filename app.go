@@ -102,6 +102,11 @@ func (seed Seed) SetThemeColor(color string) {
 }
 
 //TODO Should be Internal.
+func (seed Seed) SetClass(class string) {
+	seed.class = class
+}
+
+//TODO Should be Internal.
 func (seed Seed) SetTag(tag string) {
 	seed.tag = tag
 }
