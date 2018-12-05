@@ -78,6 +78,21 @@ func Time(seconds float64) timeType {
 	return timeType(fmt.Sprint(seconds, "s"))
 }
 
+//Returns a CSS time.
+func Rotate(angle float64) transformType {
+	return transformType(fmt.Sprint("rotate(", angle, "rad)"))
+}
+
+//Returns a CSS time.
+func Scale(x, y float64) transformType {
+	return transformType(fmt.Sprint("scale(", x, ",", y, ")"))
+}
+
+//Returns a CSS time.
+func Skew(x, y float64) transformType {
+	return transformType(fmt.Sprint("skew(", x, "rad,", y, "rad)"))
+}
+
 //Returns a CSS color.
 func Colour(c go_color.Color) colorType {
 	var r, g, b, a = c.RGBA()

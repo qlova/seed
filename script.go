@@ -8,6 +8,7 @@ import (
 )
 
 import "github.com/qlova/seed/script"
+import "github.com/qlova/seed/style/css"
 import qlova "github.com/qlova/script"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/language/javascript"
@@ -39,11 +40,46 @@ type seedScript struct {
 	promises int
 }
 
+func (q Script) newSeed(tag string) script.Seed {
+	var variable = script.Unique()
+	q.Javascript(`let `+variable+` = document.createElement("`+tag+`");`)
+	var seed = script.Seed{
+		Native: variable,
+		Qlovascript: q.Script,
+	}
+	seed.Style = css.Style{Stylable: seed}
+	return seed
+}
+
+func (q Script) New(inherit func() Seed) script.Seed {
+	var parent = inherit()
+	var seed = q.newSeed(parent.tag)
+	return seed
+} 
+
+func (q Script) NewSeed() script.Seed {
+	return q.newSeed("div")
+}
+
+func (q Script) Contains(text, match qlova.String) qlova.Boolean {
+	return q.Script.Wrap(Javascript.Boolean(text.Raw()+`.includes(`+match.Raw()+`)`)).(qlova.Boolean)
+}
+
+func (q Script) After(promise script.Promise, f func(q Script)) {
+	q.Javascript(promise.Raw()+".then(function() {")
+	f(q)
+	q.Javascript("})")
+}
+
 func (q Script) Get(seed Seed) script.Seed {
 	return script.Seed{
 		ID: seed.id,
 		Qlovascript: q.Script,
 	}
+}
+
+func ToJavascript(f func(q Script)) string {
+	return string(toJavascript(f))
 }
 
 func toJavascript(f func(q Script)) []byte {
