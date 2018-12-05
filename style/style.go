@@ -19,6 +19,9 @@ const Center = 0
 
 type Style struct {
 	css.Style
+
+	angle *float64
+	scale *float64
 }
 
 func New() Style {
@@ -47,6 +50,33 @@ func NewFont(path string) Font {
 	//font.FontFace.FontDisplay = css.Swap
 
 	return font
+}
+
+func (style Style) Bytes() []byte {
+	var transform = css.Rotate(0)
+	var changed bool
+	
+	if style.angle != nil {
+		transform += css.Rotate(*style.angle)
+		changed = true
+	}
+	if style.scale != nil {
+		transform += css.Scale(*style.scale, *style.scale)
+		changed = true
+	}
+
+	if changed {
+		style.SetTransform(transform)
+	}
+
+	return style.Style.Bytes()
+}
+
+func (style *Style) Rotate(angle float64) {
+	style.angle = &angle
+}
+func (style *Style) Scale(scale float64) {
+	style.scale = &scale
 }
 
 //Set the symetrical spacing within this.
