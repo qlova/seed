@@ -76,6 +76,22 @@ type seed struct {
 	dynamicText func(Client)
 }
 
+func (seed Seed) Copy() Seed {
+	var another = *seed.seed
+	
+	var OldStyleImplemenation = another.Style.Style.Stylable.(css.Implementation)
+	var NewStyleImplementation = make(css.Implementation, len(OldStyleImplemenation))
+	
+	for key := range OldStyleImplemenation {
+		NewStyleImplementation[key] = OldStyleImplemenation[key]
+	}
+	another.Style.Style.Stylable = NewStyleImplementation
+	
+	another.id =  base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
+	id++
+	return Seed{ seed: &another }
+}
+
 //All seeds have a unique id.
 var id int64 = 1;
 
