@@ -46,7 +46,7 @@ type Seed struct {
 func (seed Seed) Set(property, value string) {
 	property = dashes2camels(property)
 
-	seed.Javascript(seed.Element()+`.style.`+property+` = "`+value+`";`)
+	seed.Javascript(`set(`+seed.Element()+`, "`+property+`", "`+value+`");`)
 }
 
 func (seed Seed) Get(property string) string {
@@ -83,19 +83,19 @@ func (seed Seed) SetText(s qlova.String) {
 }
 
 func (seed Seed) SetLeft(s qlova.String) {
-	seed.Javascript(seed.Element()+`.style.left = `+s.Raw()+`;`)
+	seed.Javascript(`set(`+seed.Element()+`, "left", `+s.Raw()+`);`)
 }
 
 func (seed Seed) SetDisplay(s qlova.String) {
-	seed.Javascript(seed.Element()+`.style.display = `+s.Raw()+`;`)
+	seed.Javascript(`set(`+seed.Element()+`, "display", `+s.Raw()+`);`)
 }
 
 func (seed Seed) SetVisible() {
-	seed.Javascript(seed.Element()+`.style.display = "inline-flex";`)
+	seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
 }
 
 func (seed Seed) SetHidden() {
-	seed.Javascript(seed.Element()+`.style.display = "none";`)
+	seed.Javascript(`set(`+seed.Element()+`, "display", "none");`)
 }
 
 func (seed Seed) Click() {

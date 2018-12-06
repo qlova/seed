@@ -496,9 +496,9 @@ func (seed Seed) Host(hostport string) error {
 	
 	var gotoBody string
 	for _, page := range pages {
-		gotoBody += "document.getElementById('"+page.ID()+"').style.display = 'none';"
+		gotoBody += "set(get('"+page.ID()+"'), 'display', 'none');"
 	}
-	gotoBody += "document.getElementById(page).style.display = 'inline-flex';"
+	gotoBody += "set(get(page), 'display', 'inline-flex');"
 	
 	buffer.Write([]byte(`
 		</style>
@@ -540,6 +540,15 @@ func (seed Seed) Host(hostport string) error {
 				` + gotoBody + `
 			}
 			
+			var InternalStyleState = {};
+			var set = function(element, property, value) {
+				if (!(element.id in InternalStyleState)) {
+					InternalStyleState[element.id] = {};
+				}
+				element.style[property] = value;
+				InternalStyleState[element.id][property] = element.style[property].trim();
+			}
+			
 			if (window.location.hostname.includes("localhost")) {
 				let url = new URL('/socket', window.location.href);
 				url.protocol = url.protocol.replace('http', 'ws');
@@ -565,6 +574,82 @@ func (seed Seed) Host(hostport string) error {
 							} 
 					}
 				}
+				
+				var edits = {};
+				window.addEventListener('load', function() {
+					var observer = new MutationObserver(function(mutations) {
+						mutations.forEach(function(mutation) {
+							if (mutation.target.id == "") return;
+							
+							let attribute =  mutation.target.getAttribute("style");
+								
+							attribute = attribute.replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, '');
+						
+							//Gonna have to parse the css.
+							let styles = attribute.split(';');
+							for (let style of styles) {
+								if (style == "") continue;
+								let splits = style.split(':');
+								let property = splits[0];
+								let value = splits[1];
+								if (value == undefined) continue;
+								
+								if (mutation.target.id in InternalStyleState && InternalStyleState[mutation.target.id][property] == value.trim()) {
+									continue;
+								}
+								
+								if (!(mutation.target.id in edits)) {
+									edits[mutation.target.id] = {};
+								}
+								edits[mutation.target.id][property] = true;
+							}
+						
+							//InternalStyleState[mutation.target][]
+						});    
+					});
+	
+					const observerConfig = {
+					
+						attributes: true, // attribute changes will be observed | on add/remove/change attributes
+						attributeOldValue: true, // will show oldValue of attribute | on add/remove/change attributes | default: null
+						
+						characterData: true, // data changes will be observed | on add/remove/change characterData
+						characterDataOldValue: true, // will show OldValue of characterData | on add/remove/change characterData | default: null
+						
+						childList: true, // target childs will be observed | on add/remove
+						subtree: true, // target childs will be observed | on attributes/characterData changes if they observed on target
+						
+						attributeFilter: ['style'] // filter for attributes | array of attributes that should be observed, in this case only style
+					
+					};
+	
+					observer.observe(document, observerConfig);
+				});
+				
+				window.addEventListener("keypress", function(event) {
+					//Edit mode.
+					if (event.key == "e" && event.ctrlKey) {
+						let body = document.querySelector("body");
+						if (body.contentEditable == "true") {
+							body.contentEditable = "false";
+						} else {
+							body.contentEditable = "true";
+							body.focus();
+						}
+					}
+					//Save Edits.
+					if (event.key == "s" && event.ctrlKey) {
+	
+						for (let edit in edits) {
+							console.log(edit, edits[edit])
+						}
+						
+						
+						event.preventDefault();
+						return true;
+					}
+				})
+					
 			} else {
 				//Conflicts with our code above.
 				window.addEventListener('load', function() {
