@@ -20,18 +20,17 @@ func (k Keyframes) Bytes() []byte {
 
 	for _, key := range keys {
 		switch key {
-			case From:
-				buffer.WriteString(`from {`)
-			case To:
-				buffer.WriteString(`to {`)
-			default:
-				buffer.WriteString(fmt.Sprint(key, `% {`))
+		case From:
+			buffer.WriteString(`from {`)
+		case To:
+			buffer.WriteString(`to {`)
+		default:
+			buffer.WriteString(fmt.Sprint(key, `% {`))
 		}
-		
+
 		buffer.Write(k[key].Bytes())
 		buffer.WriteByte('}')
 	}
 
 	return buffer.Bytes()
 }
-
