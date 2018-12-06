@@ -565,6 +565,25 @@ func (seed Seed) Host(hostport string) error {
 							} 
 					}
 				}
+			} else {
+				//Conflicts with our code above.
+				window.addEventListener('load', function() {
+					var _hash = "!";
+					var noBackPlease = function () {
+						window.location.href += "#";
+
+						window.setTimeout(function () {
+							window.location.href += "!";
+						}, 50);
+					};
+
+					window.onhashchange = function () {
+						if (window.location.hash !== _hash) {
+							window.location.hash = _hash;
+						}
+					};
+					noBackPlease();
+				});
 			}
 			
 		`))
