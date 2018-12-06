@@ -510,11 +510,12 @@ func (seed Seed) Host(hostport string) error {
 			}
 			
 			 html, body {
+				position: fixed;
 				overscroll-behavior: none; 
 				cursor: pointer; 
 				margin: 0; 
-				height: 100vh;
-				width: 100vw;
+				height: 100%;
+				width: 100%;
 				-webkit-touch-callout: none;
 				-webkit-user-select: none;
 				-khtml-user-select: none;
