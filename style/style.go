@@ -154,6 +154,11 @@ func (style Style) SetLayer(layer int) {
 	style.SetZIndex(css.Integer(layer))
 }
 
+//This should not shrink to make space for other elements.
+func (style Style) SetUnshrinkable() {
+	style.SetFlexShrink(css.Number(0))
+}
+
 //Set where this attaches to, 0 0 is unattached, -1, 0 is attached to left, 1 1 is attached to bottom right etc.
 func (style Style) SetAttach(attach complex64) {
 	switch real(attach) {
