@@ -17,6 +17,8 @@ type Expression struct {
 	expression string
 }
 
+
+
 type Promise Expression
 
 func (p Promise) Raw() string {
@@ -152,6 +154,11 @@ func (seed Seed) Text() qlova.String {
 
 func (seed Seed) File() File {
 	return File{seed: seed, expression:seed.Element()+`.files[0]`}
+}
+
+//Temporary method DEPRECIATED
+func (f File) Raw() string {
+	return f.expression
 }
 
 func (seed Seed) Load(f File) {
