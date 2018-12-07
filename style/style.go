@@ -195,9 +195,14 @@ func (style Style) SetContain() {
 	style.SetObjectFit(css.Contain)
 }
 
-//Set the rendering layer, this is the order that this will be rendered in.
+//Set that this can be scrolled.
 func (style Style) SetScrollable() {
 	style.SetOverflow(css.Auto)
+}
+
+//Set that this cannot be scrolled.
+func (style Style) SetNotScrollable() {
+	style.SetOverflow(css.Hidden)
 }
 
 //Set the symetrical spacing within this.
