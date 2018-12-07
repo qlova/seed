@@ -255,6 +255,7 @@ func (seed Seed) OnChange(f func(Script)) {
 }
 
 func (seed Seed) buildStyleSheet(sheet *style.Sheet) {
+	seed.postProduction()
 	if data := seed.Style.Bytes(); data != nil {
 		seed.styled = true
 		sheet.Add("#"+seed.id, seed.Style)
@@ -371,6 +372,8 @@ func (seed Seed) BuildDynamicHandler() (func(w http.ResponseWriter, r *http.Requ
 }
 
 func (seed Seed) Render() ([]byte) {
+	seed.postProduction()
+
 	var html bytes.Buffer
 	
 	html.WriteByte('<')
@@ -574,6 +577,27 @@ func (seed Seed) Host(hostport string) error {
 							} 
 					}
 				}
+
+				function parseCss(attribute) {
+					let css = {};
+					if (!attribute) return css;
+					
+					attribute = attribute.replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, '');
+											
+					//Gonna have to parse the css.
+					let styles = attribute.split(';');
+					for (let style of styles) {
+						if (style == "") continue;
+						let splits = style.split(':');
+						let property = splits[0];
+						let value = splits[1];
+						if (value == undefined) continue;
+						
+						css[property] = value;
+					}
+
+					return css;
+				}
 				
 				var edits = {};
 				window.addEventListener('load', function() {
@@ -581,19 +605,11 @@ func (seed Seed) Host(hostport string) error {
 						mutations.forEach(function(mutation) {
 							if (mutation.target.id == "") return;
 							
-							let attribute =  mutation.target.getAttribute("style");
+							let style = parseCss(mutation.target.getAttribute("style"));
 								
-							attribute = attribute.replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, '');
-						
-							//Gonna have to parse the css.
-							let styles = attribute.split(';');
-							for (let style of styles) {
-								if (style == "") continue;
-								let splits = style.split(':');
-								let property = splits[0];
-								let value = splits[1];
-								if (value == undefined) continue;
-								
+							for (let property in style) {
+								let value = style[property];
+							
 								if (mutation.target.id in InternalStyleState && InternalStyleState[mutation.target.id][property] == value.trim()) {
 									continue;
 								}
@@ -603,7 +619,7 @@ func (seed Seed) Host(hostport string) error {
 								}
 								edits[mutation.target.id][property] = true;
 							}
-						
+							
 							//InternalStyleState[mutation.target][]
 						});    
 					});
@@ -625,26 +641,69 @@ func (seed Seed) Host(hostport string) error {
 	
 					observer.observe(document, observerConfig);
 				});
+				window.addEventListener("click", function(event) {
+					var an = window.getSelection().anchorNode;
+				 	// this is the innermost *element*
+				 	var element = an;
+				 	if (element == null) return;
+				 	while (!( element instanceof Element )) {
+				    	element = element.parentElement;
+				    	if (element == null) return;
+				    }
+
+					if (!(element.id in edits)) {
+						edits[element.id] = {};
+					}
+					edits[element.id].text = true;
+				});
 				
 				window.addEventListener("keypress", function(event) {
 					//Edit mode.
 					if (event.key == "e" && event.ctrlKey) {
-						let body = document.querySelector("body");
-						if (body.contentEditable == "true") {
-							body.contentEditable = "false";
+
+						if (document.designMode == "on") {
+							document.designMode = "off";
 						} else {
-							body.contentEditable = "true";
-							body.focus();
+							document.designMode = "on";
 						}
+
+						event.preventDefault();
+						return true;
 					}
 					//Save Edits.
 					if (event.key == "s" && event.ctrlKey) {
 	
 						for (let edit in edits) {
-							console.log(edit, edits[edit])
+							
+						
+							let style = parseCss(get(edit).getAttribute("style"));
+							let change = false;
+
+							let message = "#"+edit+" {";
+
+							if (edits[edit].text) {
+								message += "text: `+"`"+`"+get(edit).innerHTML+"`+"`"+`;";
+								change = true;
+							}
+							
+							for (let property in style) {
+								let value = style[property];
+								
+								if (edit in InternalStyleState && InternalStyleState[edit][property] == value.trim()) {
+									continue;
+								}
+
+								message += property.trim()+":"+value.trim()+";";
+								change = true;
+							}
+							message += "}";
+							if (change) {
+								Socket.send(message)								
+							}
 						}
-						
-						
+
+						let body = document.querySelector("body");
+						body.contentEditable = "false";
 						event.preventDefault();
 						return true;
 					}

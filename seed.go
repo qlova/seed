@@ -95,6 +95,8 @@ func (seed Seed) Copy() Seed {
 //All seeds have a unique id.
 var id int64 = 1;
 
+var allSeeds = make(map[string]*seed)
+
 //Create and return a new seed.
 func New() Seed {
 	seed := new(seed)
@@ -108,6 +110,8 @@ func New() Seed {
 	
 	//All seeds have the potential to be the root seed, so they all need a minimal viable manifest.
 	seed.manifest = manifest.New()
+
+	allSeeds[seed.id] = seed
 
 	return Seed{seed:seed}
 }
