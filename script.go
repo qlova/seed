@@ -71,8 +71,8 @@ func (q Script) After(promise script.Promise, f func(q Script)) {
 	q.Javascript("})")
 }
 
-func (q Script) Get(seed Seed) script.Seed {
-	return script.Seed{
+func (q Script) Get(seed Seed) *script.Seed {
+	return &script.Seed{
 		ID: seed.id,
 		Qlovascript: q.Script,
 	}
