@@ -9,6 +9,10 @@ func RGB(r, g, b uint8) color.Color {
 	return color.RGBA{R: r, G:g, B:b, A:255}
 }
 
+func RGBA(r, g, b, a uint8) color.Color {
+	return color.RGBA{R: r, G:g, B:b, A:a}
+}
+
 type Hex string
 
 func (h Hex) RGBA() (r, g, b, a uint32) {
