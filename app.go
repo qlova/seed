@@ -475,7 +475,7 @@ func (seed Seed) Host(hostport string) error {
 		<meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<meta name="theme-color" content="`+seed.manifest.ThemeColor+`">
 		
 		<title>`+seed.manifest.Name+`</title>
@@ -483,6 +483,10 @@ func (seed Seed) Host(hostport string) error {
 		
 
 		<link rel="manifest" href="/app.webmanifest">`))
+
+		for _, icon := range seed.manifest.Icons {
+			buffer.Write([]byte(`<link rel="apple-touch-icon" sizes="`+icon.Sizes+`" href="`+icon.Source+`">`))
+		}
 	
 	for script := range scripts {
 		if path.Ext(script) == ".js" { 
