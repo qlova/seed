@@ -121,16 +121,37 @@ func (style Style) SetAlignment(align float64) {
 	switch align {
 		case 0:
 			style.SetTextAlign(css.Center)
-			style.SetAlignItems(css.Center)
-			style.SetJustifyContent(css.Center)
+			style.SetAlignSelf(css.Center)
+			//style.SetJustifySelf(css.Center)
+			style.Set("justify-self", "center")
 		case -1:
 			style.SetTextAlign(css.Left)
 			style.SetAlignSelf(css.FlexStart)
-			style.SetAlignItems(css.FlexStart)
+			//style.SetJustifySelf(css.FlexStart)
+			style.Set("justify-self", "flex-start")
 		case 1:
 			style.SetTextAlign(css.Right)
 			style.SetAlignSelf(css.FlexEnd)
-			style.SetAlignItems(css.FlexEnd)
+			//style.SetJustifySelf(css.FlexEnd)
+			style.Set("justify-self", "flex-end")
+	}
+}
+
+//Set the text alignment, -1 is left, 0 is center and 1 is right
+func (style Style) SetChildAlignment(align float64) {
+	switch align {
+		case 0:
+			style.SetTextAlign(css.Center)
+			style.SetAlignContent(css.Center)
+			style.SetJustifyContent(css.Center)
+		case -1:
+			style.SetTextAlign(css.Left)
+			style.SetAlignContent(css.FlexStart)
+			style.SetJustifyContent(css.FlexStart)
+		case 1:
+			style.SetTextAlign(css.Right)
+			style.SetAlignContent(css.FlexEnd)
+			style.SetJustifyContent(css.FlexEnd)
 	}
 }
 

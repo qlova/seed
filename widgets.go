@@ -30,7 +30,6 @@ func Row() Seed {
 	seed.SetName("Row")
 	seed.Stylable.Set("display", "flex")
 	seed.Stylable.Set("flex-direction", "row")
-	seed.Stylable.Set("align-items", "center")
 	return seed
 }
 
@@ -40,7 +39,6 @@ func Col() Seed {
 	seed.SetName("Column")
 	seed.Stylable.Set("display", "inline-flex")
 	seed.Stylable.Set("flex-direction", "column")
-	seed.Stylable.Set("align-items", "center")
 	return seed
 }
 
