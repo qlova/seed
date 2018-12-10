@@ -241,6 +241,22 @@ func (seed Seed) OnReady(f func(Script)) {
 	}
 }
 
+func (seed Seed) OnPageEnter(f func(Script)) {
+	seed.OnReady(func(q Script) {
+		q.Javascript(q.Get(seed).Element()+".enterpage = function() {")
+		f(q)
+		q.Javascript("};")
+	})
+}
+
+func (seed Seed) OnPageExit(f func(Script)) {
+	seed.OnReady(func(q Script) {
+		q.Javascript(q.Get(seed).Element()+".exitpage = function() {")
+		f(q)
+		q.Javascript("};")
+	})
+}
+
 
 func (seed Seed) OnChange(f func(Script)) {
 	if seed.onchange == nil {
@@ -496,12 +512,14 @@ func (seed Seed) Host(hostport string) error {
 	buffer.Write(animations)
 	buffer.Write(style)
 	
-	
-	var gotoBody string
-	for _, page := range pages {
-		gotoBody += "set(get('"+page.ID()+"'), 'display', 'none');"
+	//Optimise to array
+	var PagesArray string
+	for i, page := range pages {
+		PagesArray += "'"+page.ID()+"'"
+		if i < len(pages)-1 {
+			PagesArray += ","
+		}
 	}
-	gotoBody += "set(get(page), 'display', 'inline-flex');"
 	
 	buffer.Write([]byte(`
 		</style>
@@ -538,19 +556,31 @@ func (seed Seed) Host(hostport string) error {
 		<script>
 			var get = function(id) {
 				return document.getElementById(id)
-			}
-			var goto = function(page) {
-				` + gotoBody + `
-			}
-			
-			var InternalStyleState = {};
+			};
 			var set = function(element, property, value) {
 				if (!(element.id in InternalStyleState)) {
 					InternalStyleState[element.id] = {};
 				}
 				element.style[property] = value;
 				InternalStyleState[element.id][property] = element.style[property].trim();
-			}
+			};
+						
+			var pages = [`+PagesArray+`];
+			var goto = function(next_page_id) {
+				for (let page_id of pages) {
+					let page = get(page_id);
+					if (getComputedStyle(page).display != "none") {
+						if (page.exitpage) page.exitpage();
+						set(page, 'display', 'none');
+					}
+				}
+				let next_page = get(next_page_id);
+				if (next_page.enterpage) next_page.enterpage();
+				set(next_page, 'display', 'inline-flex');
+			};
+			
+			var InternalStyleState = {};
+			
 			
 			if (window.location.hostname.includes("localhost")) {
 				let url = new URL('/socket', window.location.href);
