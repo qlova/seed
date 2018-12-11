@@ -11,7 +11,9 @@ import "github.com/qlova/script/language/javascript"
 
 import "github.com/qlova/seed/style/css"
 
-type String = qlova.String
+type String = qlova.ExportedString
+type Object string
+
 type Expression struct {
 	seed Seed
 	expression string
@@ -76,19 +78,19 @@ func (seed Seed) Javascript(js string) {
 
 type File Expression
 
-func (f File) Type() qlova.String {
-	return f.seed.Qlovascript.Wrap(Javascript.String(f.expression+`.type`)).(qlova.String)
+func (f File) Type() String {
+	return f.seed.Qlovascript.Wrap(Javascript.String(f.expression+`.type`)).(String)
 }
 
-func (seed Seed) SetText(s qlova.String) {
+func (seed Seed) SetText(s String) {
 	seed.Javascript(seed.Element()+`.textContent = `+s.Raw()+`;`)
 }
 
-func (seed Seed) SetLeft(s qlova.String) {
+func (seed Seed) SetLeft(s String) {
 	seed.Javascript(`set(`+seed.Element()+`, "left", `+s.Raw()+`);`)
 }
 
-func (seed Seed) SetDisplay(s qlova.String) {
+func (seed Seed) SetDisplay(s String) {
 	seed.Javascript(`set(`+seed.Element()+`, "display", `+s.Raw()+`);`)
 }
 
@@ -128,28 +130,28 @@ func (seed Seed) Restart() {
 	seed.Javascript(seed.Element()+`.load();`)
 }
 
-func (seed Seed) Left() qlova.String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.style.left`)).(qlova.String)
+func (seed Seed) Left() String {
+	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.style.left`)).(String)
 }
 
-func (seed Seed) Width() qlova.String {
-	return seed.Qlovascript.Wrap(Javascript.String(`getComputedStyle(get("`+seed.ID+`")).width`)).(qlova.String)
+func (seed Seed) Width() String {
+	return seed.Qlovascript.Wrap(Javascript.String(`getComputedStyle(get("`+seed.ID+`")).width`)).(String)
 }
 
-func (seed Seed) SetValue(value qlova.String) {
+func (seed Seed) SetValue(value String) {
 	seed.Javascript(seed.Element()+`.value = `+value.Raw()+`;`)
 }
 
-func (seed Seed) SetClass(value qlova.String) {
+func (seed Seed) SetClass(value String) {
 	seed.Javascript(seed.Element()+`.className = `+value.Raw()+`;`)
 }
 
-func (seed Seed) Value() qlova.String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.value`)).(qlova.String)
+func (seed Seed) Value() String {
+	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.value`)).(String)
 }
 
-func (seed Seed) Text() qlova.String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.innerText`)).(qlova.String)
+func (seed Seed) Text() String {
+	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.innerText`)).(String)
 }
 
 func (seed Seed) File() File {

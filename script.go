@@ -21,7 +21,7 @@ func (seed Seed) SyncText(text *string) {
 	
 	seed.OnReady(func(q Script) {
 		q.Javascript(`setInterval(function() {`)
-			q.Get(seed).SetText(q.Call(wrapper).(qlova.String))
+			q.Get(seed).SetText(q.Call(wrapper).(qlova.ExportedString))
 			for i := 0; i < q.promises; i++ {
 				q.Raw("Javascript", "}; request.send();")
 			}
@@ -61,7 +61,7 @@ func (q Script) NewSeed() script.Seed {
 	return q.newSeed("div")
 }
 
-func (q Script) Contains(text, match qlova.String) qlova.Boolean {
+func (q Script) Contains(text, match qlova.ExportedString) qlova.Boolean {
 	return q.Script.Wrap(Javascript.Boolean(text.Raw()+`.includes(`+match.Raw()+`)`)).(qlova.Boolean)
 }
 
@@ -83,7 +83,7 @@ func ToJavascript(f func(q Script)) string {
 }
 
 func toJavascript(f func(q Script)) []byte {
-	var program = qlova.NewProgram(func(q qlova.Script) {
+	var program = qlova.Program(func(q qlova.Script) {
 		var s = Script{seedScript: &seedScript{ Script:q }}
 		f(s)
 		for i := 0; i < s.promises; i++ {
@@ -91,12 +91,12 @@ func toJavascript(f func(q Script)) []byte {
 		}
 		s.promises = 0
 	})
-	source, err := program.Source(Javascript.Language())
-	if err != nil {
-		panic(err)
+	source := program.SourceCode(Javascript.Language())
+	if source.Error {
+		panic(source.ErrorMessage)
 	}
 	
-	return []byte(source)
+	return source.Data
 }
 		
 
@@ -113,7 +113,7 @@ type Element struct {
 	q Script
 }
 
-func (q Script) Query(query qlova.String) Element {
+func (q Script) Query(query qlova.ExportedString) Element {
 	return Element{ query:query.Raw(), q:q }
 }
 
@@ -156,7 +156,7 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
 		switch value.Type().In(i).Kind() {
 			case reflect.String:
 				
-				CallingString += `/_"+encodeURIComponent(`+args[i].(qlova.String).Raw()+`)+"`
+				CallingString += `/_"+encodeURIComponent(`+args[i].(qlova.ExportedString).Raw()+`)+"`
 				
 			default:
 				panic("Unimplemented: script.Run("+value.Type().String()+")")
