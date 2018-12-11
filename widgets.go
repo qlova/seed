@@ -14,6 +14,14 @@ func NewToolBar() Seed {
 	return seed
 }
 
+func Spacer() Seed {
+	seed := New()
+	seed.SetName("Spacer")
+	seed.SetExpand(1)
+	
+	return seed
+}
+
 func Line() Seed {
 	seed := New()
 	seed.SetName("Line")
