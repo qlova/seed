@@ -570,18 +570,23 @@ func (seed Seed) Host(hostport string) error {
 			};
 						
 			var pages = [`+PagesArray+`];
+			var last_page = null;
 			var goto = function(next_page_id) {
 				for (let page_id of pages) {
 					let page = get(page_id);
 					if (getComputedStyle(page).display != "none") {
 						if (page.exitpage) page.exitpage();
 						set(page, 'display', 'none');
+						last_page = page_id;
 					}
 				}
 				let next_page = get(next_page_id);
 				if (next_page.enterpage) next_page.enterpage();
 				set(next_page, 'display', 'inline-flex');
 			};
+			var back = function() {
+				goto(last_page);
+			}
 			
 			var InternalStyleState = {};
 			

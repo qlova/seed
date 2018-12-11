@@ -125,6 +125,10 @@ func (q Script) Alert(message script.String) {
 	q.Raw("Javascript", language.Statement(`alert(`+message.Raw()+`);`))
 }
 
+func (q Script) Back() {
+	q.Raw("Javascript", language.Statement(`back();`))
+}
+
 type ExportedFunction struct {
 	f reflect.Value
 }
