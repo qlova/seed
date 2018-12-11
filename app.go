@@ -585,6 +585,7 @@ func (seed Seed) Host(hostport string) error {
 				set(next_page, 'display', 'inline-flex');
 			};
 			var back = function() {
+				if (last_page == null) return;
 				goto(last_page);
 			}
 			
@@ -747,27 +748,14 @@ func (seed Seed) Host(hostport string) error {
 						return true;
 					}
 				})
-					
-			} else {
-				//Conflicts with our code above.
-				window.addEventListener('load', function() {
-					var _hash = "!";
-					var noBackPlease = function () {
-						window.location.href += "#";
-
-						window.setTimeout(function () {
-							window.location.href += "!";
-						}, 50);
-					};
-
-					window.onhashchange = function () {
-						if (window.location.hash !== _hash) {
-							window.location.hash = _hash;
-						}
-					};
-					noBackPlease();
-				});
 			}
+
+	
+			history.pushState(null, null, document.URL);
+			window.addEventListener('popstate', function () {
+				back();
+			    history.pushState(null, null, document.URL);
+			});
 			
 		`))
 	
