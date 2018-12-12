@@ -14,10 +14,17 @@ func NewToolBar() Seed {
 	return seed
 }
 
-func Spacer() Seed {
+func Spacer(amount ...float64) Seed {
+	
+	
 	seed := New()
 	seed.SetName("Spacer")
-	seed.SetExpand(1)
+
+	if len(amount) > 0 {
+		seed.SetExpand(amount[0])
+	} else {
+		seed.SetExpand(1)
+	}
 	
 	return seed
 }
