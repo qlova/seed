@@ -142,6 +142,10 @@ func (seed Seed) SetValue(value String) {
 	seed.Javascript(seed.Element()+`.value = `+value.Raw()+`;`)
 }
 
+func (seed Seed) SetPlaceholder(value String) {
+	seed.Javascript(seed.Element()+`.placeholder = `+value.Raw()+`;`)
+}
+
 func (seed Seed) SetClass(value String) {
 	seed.Javascript(seed.Element()+`.className = `+value.Raw()+`;`)
 }
