@@ -9,6 +9,7 @@ import (
 	"bufio"
 	"fmt"
 	"encoding/json"
+	"path"
 )
 
 import "github.com/gorilla/websocket"
@@ -29,9 +30,10 @@ var post PostProduction
 func init() {
 	post = make(PostProduction)
 
-	file, err := os.Open("style.sss")
+	fmt.Println(path.Dir(os.Args[0])+"/style.sss")
+	file, err := os.Open(path.Dir(os.Args[0])+"/style.sss")
 	if err != nil {
-		fmt.Println("No style.sss could be found");
+		fmt.Println("No "+path.Dir(os.Args[0])+"/style.sss could be found", err.Error());
 		return
 	}
 
