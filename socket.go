@@ -52,7 +52,7 @@ func (seed Seed) postProduction() {
 				if err != nil {
 					continue
 				}
-				seed.SetText(value)
+				seed.SetContent(value)
 			} else {
 				seed.Set(property, value)
 			}
