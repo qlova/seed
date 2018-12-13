@@ -140,14 +140,14 @@ func (seed Seed) Scripts() map[string]struct{} {
 
 func (seed Seed) buildOnReady(buffer *bytes.Buffer) {
 	
+	for _, child := range seed.children {
+		child.(Seed).buildOnReady(buffer)
+	}
+	
 	if seed.onready != nil {
 		buffer.WriteByte('{')
 		buffer.Write(toJavascript(seed.onready))
 		buffer.WriteByte('}')
-	}
-	
-	for _, child := range seed.children {
-		child.(Seed).buildOnReady(buffer)
 	}
 }
 
