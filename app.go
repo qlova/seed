@@ -748,14 +748,16 @@ func (seed Seed) Host(hostport string) error {
 						return true;
 					}
 				})
+			} else {
+				history.pushState(null, null, document.URL);
+				window.addEventListener('popstate', function () {
+					back();
+					history.pushState(null, null, document.URL);
+				});
 			}
 
 	
-			history.pushState(null, null, document.URL);
-			window.addEventListener('popstate', function () {
-				back();
-			    history.pushState(null, null, document.URL);
-			});
+			
 			
 		`))
 	
