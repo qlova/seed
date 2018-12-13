@@ -534,6 +534,11 @@ func (seed Seed) Host(hostport string) error {
 				display: none; 
 			}
 			
+			p {
+				margin-block-start: 0;
+				margin-block-end: 0;
+			}
+			
 			 html, body {
 				position: fixed;
 				overscroll-behavior: none; 
