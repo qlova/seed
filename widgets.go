@@ -57,10 +57,15 @@ func Col() Seed {
 	return seed
 }
 
-func Text() Seed {
+func Text(s ...string) Seed {
 	seed := New()
 	seed.SetName("Text")
 	seed.tag = "p"
+	
+	if len(s) > 0 {
+		seed.SetText(s[0])
+	}
+	
 	return seed
 }
 
