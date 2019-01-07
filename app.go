@@ -26,15 +26,10 @@ import (
 	"net/http"
 	"fmt"
 	"path"
-	"path/filepath"
 	"bytes"
-	"os"
-	"log"
 	"html"
 	"strings"
 )
-
-import "github.com/NYTimes/gziphandler"
 
 //TODO cleanup
 var ServiceWorker worker.Service
@@ -450,6 +445,11 @@ func (seed Seed) HTML() ([]byte) {
 }
 
 func (seed Seed) Render() []byte {
+	return seed.HTML()
+}
+
+//Return a fully fully rendered application in HTML for the seed.
+func (seed Seed) render(production bool) []byte {
 	var style = seed.BuildStyleSheet().Bytes()
 	var html = seed.HTML()
 	var fonts = seed.BuildFonts()
@@ -579,8 +579,10 @@ func (seed Seed) Render() []byte {
 			var back = function() {
 				if (last_page == null) return;
 				goto(last_page);
-			}
-			
+			}`))
+
+		if !production {
+			buffer.Write([]byte(`
 			var InternalStyleState = {};
 			
 			
@@ -747,11 +749,16 @@ func (seed Seed) Render() []byte {
 					history.pushState(null, null, document.URL);
 				});
 			}
+			`))
+		}
 
-	
-			
-			
-		`))
+		if production {
+			buffer.Write([]byte(`history.pushState(null, null, document.URL);
+							window.addEventListener('popstate', function () {
+								back();
+								history.pushState(null, null, document.URL);
+							});`))
+		}
 
 		buffer.Write(onready)
 
@@ -788,105 +795,6 @@ func (seed Seed) Render() []byte {
 
 //TODO random port, can be set with enviromental variables.
 func (seed Seed) Launch() error {
-	return seed.Host(":1234")
-}
-
-//TODO Depreciate
-func (seed Seed) Host(hostport string) error {
-
-	seed.SetVisible()
-	
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-    if err != nil {
-            log.Fatal(err)
-    }
-	
-	var html = seed.Render()
-
-	var worker = ServiceWorker.Render()
-	var manifest = seed.manifest.Render()
-	
-	var dynamic = seed.BuildDynamicHandler()
-
-
-	var LocalClients = 0
-
-	minified, err := mini(html)
-	if err != nil {
-		return err
-	}
-	
-	withoutGz := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)  {
-		
-		if r.URL.Path == "/socket" && strings.Contains(r.RemoteAddr, "[::1]") {
-			LocalClients++
-			SingleLocalConnection = LocalClients == 1
-			socket(w, r)
-			return
-		}
-		
-		if r.URL.Path == "/dynamic" && dynamic != nil {
-			w.Write([]byte("{"))
-			dynamic(w, r)
-			w.Write([]byte("}"))
-			return
-		}
-
-		if embedded(w, r) {
-			return
-		}
-		
-		if len(r.URL.Path) > 5 && r.URL.Path[:6] == "/call/" {
-			callHandler(w, r, r.URL.Path[6:] )
-			return
-		}
-		
-		fmt.Println(r.URL.Path)
-		
-		if r.URL.Path != "/" {
-			for _, handler := range seed.handlers {
-				handler(w, r)
-			}
-			
-			if path.Ext(r.URL.Path) == "" {
-				return
-			}
-		}
-		
-		if r.URL.Path == "/index.js" {
-			if strings.Contains(r.RemoteAddr, "[::1]") {
-				//Don't use a web worker if we are running locally.
-				w.Header().Set("content-type", "text/javascript")
-				w.Write([]byte(`self.addEventListener('install', () => {self.skipWaiting();});`))
-				
-			} else {
-				w.Header().Set("content-type", "text/javascript")
-				w.Write(worker)
-			}
-			return
-		}
-		
-		if r.URL.Path == "/app.webmanifest" {
-			w.Header().Set("content-type", "application/json")
-			w.Write(manifest)
-			return
-		}
-		
-		
-		if path.Ext(r.URL.Path) != "" {
-			http.ServeFile(w, r, dir+"/assets"+r.URL.Path)
-			return
-		}
-
-		w.Write(minified)
-	})
-	
-	withGz := gziphandler.GzipHandler(withoutGz)
-	
-	http.Handle("/", withGz)
-	
-	//Launch the app if possible.
-	go launch(hostport)
-	
-	return http.ListenAndServe(hostport, nil)
+	Launcher{Seed: seed}.Launch()
+	return nil
 }
