@@ -39,6 +39,14 @@ func Line() Seed {
 	return seed
 }
 
+func Link(url string) Seed {
+	seed := New()
+	seed.SetName("Link")
+	seed.tag = "a"
+	seed.attr = "href='"+url+"'"
+	
+	return seed
+}
 func Row() Seed {
 	seed := New()
 	seed.tag = "div"
