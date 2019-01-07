@@ -392,7 +392,7 @@ func (seed Seed) BuildDynamicHandler() (func(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-func (seed Seed) Render() ([]byte) {
+func (seed Seed) HTML() ([]byte) {
 	seed.postProduction()
 
 	var html bytes.Buffer
@@ -449,32 +449,14 @@ func (seed Seed) Render() ([]byte) {
 	return html.Bytes()
 }
 
-//TODO random port, can be set with enviromental variables.
-func (seed Seed) Launch() error {
-	return seed.Host(":1234")
-}
-
-//TODO Depreciate
-func (seed Seed) Host(hostport string) error {
-	
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-    if err != nil {
-            log.Fatal(err)
-    }
-    
+func (seed Seed) Render() []byte {
 	var style = seed.BuildStyleSheet().Bytes()
-	
-	var html = seed.Render()
+	var html = seed.HTML()
 	var fonts = seed.BuildFonts()
 	var animations = seed.BuildAnimations()
-	var worker = ServiceWorker.Render()
-	var manifest = seed.manifest.Render()
-	
-	var dynamic = seed.BuildDynamicHandler()
-	
 	var scripts = seed.Scripts()
 	var onready = seed.BuildOnReady()
-	
+
 	var buffer bytes.Buffer
 	buffer.Write([]byte(`<!DOCTYPE html><html><head>
 		<meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -489,10 +471,10 @@ func (seed Seed) Host(hostport string) error {
 
 		<link rel="manifest" href="/app.webmanifest">`))
 
-		for _, icon := range seed.manifest.Icons {
-			buffer.Write([]byte(`<link rel="apple-touch-icon" sizes="`+icon.Sizes+`" href="`+icon.Source+`">`))
-		}
-	
+	for _, icon := range seed.manifest.Icons {
+		buffer.Write([]byte(`<link rel="apple-touch-icon" sizes="`+icon.Sizes+`" href="`+icon.Source+`">`))
+	}
+
 	for script := range scripts {
 		if path.Ext(script) == ".js" { 
 			buffer.Write([]byte(`<script src="`+script+`"></script>`))
@@ -500,7 +482,7 @@ func (seed Seed) Host(hostport string) error {
 			buffer.Write([]byte(`<link rel="stylesheet" href="`+script+`" />`))
 		}
 	}
-		
+
 	buffer.Write([]byte(`<script>
 			if ('serviceWorker' in navigator) {
 				window.addEventListener('load', function() {
@@ -516,11 +498,11 @@ func (seed Seed) Host(hostport string) error {
 		
 		<style>
 	`))
-	
+
 	buffer.Write(fonts)
 	buffer.Write(animations)
-	buffer.Write(style)
-	
+	buffer.Write(style)	
+
 	//Optimise to array
 	var PagesArray string
 	for i, page := range pages {
@@ -529,8 +511,8 @@ func (seed Seed) Host(hostport string) error {
 			PagesArray += ","
 		}
 	}
-	
-	buffer.Write([]byte(`
+
+		buffer.Write([]byte(`
 		</style>
 			
 		<style>
@@ -770,13 +752,15 @@ func (seed Seed) Host(hostport string) error {
 			
 			
 		`))
-	
-	buffer.Write(onready)
-	
-	if dynamic != nil {
-		buffer.WriteString(`
-			var dynamic = new XMLHttpRequest();
 
+		buffer.Write(onready)
+
+		var dynamic = seed.BuildDynamicHandler()
+
+		if dynamic != nil {
+			buffer.WriteString(`
+			var dynamic = new XMLHttpRequest();
+	
 			dynamic.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
 					var updates = JSON.parse(this.responseText);
@@ -785,25 +769,52 @@ func (seed Seed) Host(hostport string) error {
 					}
 				}
 			};
-
+	
 			dynamic.open("GET", "/dynamic", true);
 			dynamic.send();`)
-	}
+		}
 
-	buffer.Write([]byte(`
-		</script>
-		
-		</head><body>
-	`))
+		buffer.Write([]byte(`
+				</script>
+				
+				</head><body>
+			`))
 	buffer.Write(html)
 	buffer.Write([]byte(`</body></html>`))
+
 	
-	minified, err := mini(buffer.Bytes())
+	return buffer.Bytes()
+}
+
+//TODO random port, can be set with enviromental variables.
+func (seed Seed) Launch() error {
+	return seed.Host(":1234")
+}
+
+//TODO Depreciate
+func (seed Seed) Host(hostport string) error {
+
+	seed.SetVisible()
+	
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+    if err != nil {
+            log.Fatal(err)
+    }
+	
+	var html = seed.Render()
+
+	var worker = ServiceWorker.Render()
+	var manifest = seed.manifest.Render()
+	
+	var dynamic = seed.BuildDynamicHandler()
+
+
+	var LocalClients = 0
+
+	minified, err := mini(html)
 	if err != nil {
 		return err
 	}
-
-	var LocalClients = 0
 	
 	withoutGz := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)  {
 		
