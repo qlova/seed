@@ -143,6 +143,7 @@ func (style Style) SetChildAlignment(align float64) {
 		case 0:
 			style.SetTextAlign(css.Center)
 			style.SetAlignContent(css.Center)
+			style.SetAlignItems(css.Center)
 			style.SetJustifyContent(css.Center)
 		case -1:
 			style.SetTextAlign(css.Left)
