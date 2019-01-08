@@ -575,13 +575,6 @@ func (seed Seed) render(production bool) []byte {
 			var get = function(id) {
 				return document.getElementById(id)
 			};
-			var set = function(element, property, value) {
-				if (!(element.id in InternalStyleState)) {
-					InternalStyleState[element.id] = {};
-				}
-				element.style[property] = value;
-				InternalStyleState[element.id][property] = element.style[property].trim();
-			};
 						
 			var pages = [`+PagesArray+`];
 			var last_page = null;
@@ -601,10 +594,19 @@ func (seed Seed) render(production bool) []byte {
 			var back = function() {
 				if (last_page == null) return;
 				goto(last_page);
-			}`))
+			};
+		`))
 
 		if !production {
 			buffer.Write([]byte(`
+			var set = function(element, property, value) {
+				if (!(element.id in InternalStyleState)) {
+					InternalStyleState[element.id] = {};
+				}
+				element.style[property] = value;
+				InternalStyleState[element.id][property] = element.style[property].trim();
+			};
+			
 			var InternalStyleState = {};
 			
 			
@@ -775,7 +777,12 @@ func (seed Seed) render(production bool) []byte {
 		}
 
 		if production {
-			buffer.Write([]byte(`history.pushState(null, null, document.URL);
+			buffer.Write([]byte(`
+			var set = function(element, property, value) {
+				element.style[property] = value;
+			};
+
+			history.pushState(null, null, document.URL);
 							window.addEventListener('popstate', function () {
 								back();
 								history.pushState(null, null, document.URL);
