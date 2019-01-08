@@ -105,6 +105,11 @@ func (style Style) SetVisible() {
 }
 
 //Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+func (style Style) SetCol() {
+	style.SetFlexDirection(css.Column)
+}
+
+//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
 func (style Style) SetSize(width, height complex128) {
 	style.SetWidth(css.Decode(width))
 	style.SetHeight(css.Decode(height))

@@ -287,6 +287,23 @@ func (seed Seed) BuildStyleSheet() style.Sheet {
 	return stylesheet
 }
 
+func (seed Seed) buildStyleSheetForLandscape(sheet *style.Sheet) {
+	seed.postProduction()
+	if data := seed.Landscape.Bytes(); data != nil {
+		seed.styled = true
+		sheet.Add("#"+seed.id, seed.Landscape)
+	}
+	for _, child := range seed.children {
+		child.(Seed).buildStyleSheetForLandscape(sheet)
+	}
+}
+
+func (seed Seed) BuildStyleSheetForLandscape() style.Sheet {
+	var stylesheet = make(style.Sheet)
+	seed.buildStyleSheetForLandscape(&stylesheet)
+	return stylesheet
+}
+
 func (seed Seed) buildFonts() map[style.Font]struct{} {
 	
 	var fonts = make(map[style.Font]struct{})
@@ -451,6 +468,7 @@ func (seed Seed) Render() []byte {
 //Return a fully fully rendered application in HTML for the seed.
 func (seed Seed) render(production bool) []byte {
 	var style = seed.BuildStyleSheet().Bytes()
+	var styleForLandscape = seed.BuildStyleSheetForLandscape().Bytes()
 	var html = seed.HTML()
 	var fonts = seed.BuildFonts()
 	var animations = seed.BuildAnimations()
@@ -502,6 +520,10 @@ func (seed Seed) render(production bool) []byte {
 	buffer.Write(fonts)
 	buffer.Write(animations)
 	buffer.Write(style)	
+
+	buffer.WriteString(`@media screen and (orientation: landscape) {`)
+	buffer.Write(styleForLandscape)
+	buffer.WriteString(`}`)
 
 	//Optimise to array
 	var PagesArray string
