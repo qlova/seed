@@ -225,6 +225,9 @@ func (style Style) SetContain() {
 //Set that this can be scrolled.
 func (style Style) SetScrollable() {
 	style.SetOverflow(css.Auto)
+	style.Set("-webkit-overflow-scrolling", "touch")
+	style.Set("-webkit-overscroll-behavior", "contain")
+	style.Set("overscroll-behavior", "contain")
 }
 
 //Set that this cannot be scrolled.
