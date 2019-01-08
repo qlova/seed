@@ -116,7 +116,7 @@ func (seed Seed) Attributes() string {
 
 //TODO Should be Internal.
 func (seed Seed) SetPlaceholder(placeholder string) {
-	seed.attr += "placeholder='"+placeholder+"'"
+	seed.attr += " placeholder='"+placeholder+"' "
 }
 
 //Add a font to the seed.
