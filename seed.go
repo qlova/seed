@@ -105,6 +105,11 @@ func New() Seed {
 	
 	//Seed identification is compressed to base64.
 	seed.id = base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
+
+	if seed.id[0] >= '0' && seed.id[0] <= '9' {
+		seed.id = "_"+seed.id
+	}
+	
 	id++
 
 	seed.Style = style.New()
