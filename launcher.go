@@ -129,6 +129,11 @@ func (launcher Launcher) Launch() {
 			launcher.Listen = ":1234"
 		}
 		http.Handle("/", launcher.Handler())
+
+		//Allow port config from Env
+		if port := os.Getenv("PORT"); port != "" {
+			launcher.Listen = port
+		}
 			
 		//Launch the app if possible.
 		go launch(launcher.Listen)
