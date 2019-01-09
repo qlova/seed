@@ -5,6 +5,10 @@ import (
 	"reflect"
 	"strings"
 	"net/http"
+
+	//Global ids.
+	"encoding/base64"
+	"math/big"
 )
 
 import "github.com/qlova/seed/script"
@@ -76,6 +80,28 @@ func (q Script) Get(seed Seed) *script.Seed {
 		ID: seed.id,
 		Qlovascript: q.Script,
 	}
+}
+
+type global string
+
+//All globals have a unique id.
+var global_id int64 = 1;
+
+func Global() global {
+	//global identification is compressed to base64 and prefixed with g_.
+	var result = "g_"+base64.RawURLEncoding.EncodeToString(big.NewInt(global_id).Bytes())
+
+	global_id++
+
+	return global(result)
+}
+
+func (q Script) Global(name global) qlova.ExportedString {
+	return q.Script.Wrap(Javascript.String(`window.localStorage.getItem("`+string(name)+`");`)).(qlova.ExportedString)
+}
+
+func (q Script) SetGlobal(name global, value qlova.ExportedString) {
+	q.Raw("Javascript", language.Statement(`window.localStorage.setItem("`+string(name)+`", `+value.Raw()+`);`))
 }
 
 func ToJavascript(f func(q Script)) string {
