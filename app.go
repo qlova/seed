@@ -32,11 +32,11 @@ import (
 )
 
 //TODO cleanup
-var ServiceWorker worker.Service
+var ServiceWorker = worker.NewServiceWorker()
 
 //TODO cleanup
 func RegisterAsset(path string) {
-	ServiceWorker.Assets = append(ServiceWorker.Assets, path)
+	ServiceWorker.Assets[path] = true
 }
 
 //DEPRECIATED
