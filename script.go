@@ -104,6 +104,28 @@ func (q Script) SetGlobal(name global, value qlova.ExportedString) {
 	q.Raw("Javascript", language.Statement(`window.localStorage.setItem("`+string(name)+`", `+value.Raw()+`);`))
 }
 
+type cookie string
+
+//All globals have a unique id.
+var cookie_id int64 = 1;
+
+func Cookie() cookie {
+	//global identification is compressed to base64 and prefixed with g_.
+	var result = "c_"+base64.RawURLEncoding.EncodeToString(big.NewInt(cookie_id).Bytes())
+
+	cookie_id++
+
+	return cookie(result)
+}
+
+func (q Script) Cookie(name cookie) qlova.ExportedString {
+	return q.Script.Wrap(Javascript.String(`getCookie("`+string(name)+`");`)).(qlova.ExportedString)
+}
+
+func (q Script) SetCookie(name cookie, value qlova.ExportedString) {
+	q.Raw("Javascript", language.Statement(`setCookie("`+string(name)+`", `+value.Raw()+`, 365);`))
+}
+
 func ToJavascript(f func(q Script)) string {
 	return string(toJavascript(f))
 }
@@ -216,6 +238,8 @@ func (q Script) Call(f interface{}, args ...qlova.Type) qlova.Type {
 }
 
 func callHandler(w http.ResponseWriter, r *http.Request, call string) {
+	fmt.Println(r.URL)
+
 	var args = strings.Split(call, "/")
 	if len(args) == 0 {
 		return
