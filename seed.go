@@ -78,6 +78,10 @@ type seed struct {
 	Landscape, Portrait style.Style
 }
 
+func (seed Seed) Child(number int) Seed {
+	return seed.children[number-1].(Seed)
+}
+
 func (seed Seed) Copy() Seed {
 	var another = *seed.seed
 	
