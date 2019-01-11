@@ -4,7 +4,8 @@ import "strconv"
 
 func (seed Seed) AddFeed(template Seed, feed func(Client)) {
 	var WrapperSeed = New()
-	WrapperSeed.SetSize(100, 100)
+	WrapperSeed.SetSize(100, Auto)
+	WrapperSeed.SetUnshrinkable()
 
 	minified, err := mini(template.HTML())
 	if err != nil {
