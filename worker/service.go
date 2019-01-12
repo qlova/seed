@@ -2,8 +2,14 @@ package worker
 
 import "bytes"
 
+func NewServiceWorker() Service {
+	return Service{
+		Assets: make(map[string]bool),
+	}
+}
+
 type Service struct {
-	Assets []string
+	Assets map[string]bool
 }
 
 func (worker Service) Render() []byte {
@@ -14,14 +20,16 @@ func (worker Service) Render() []byte {
     caches.open("cache").then(function(cache) {
       return cache.addAll(
         ["/", `)
-	
-	for i, asset := range worker.Assets {
+
+	var i = 0
+	for asset := range worker.Assets {
 		b.WriteByte('"')
 		b.WriteString(asset)
 		b.WriteByte('"')
 		if i < len(worker.Assets)-1 {
 			b.WriteString(", ")
 		}
+		i++
 	}
 	
 	b.WriteString(`]

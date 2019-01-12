@@ -74,6 +74,12 @@ type seed struct {
 	handlers []func(w http.ResponseWriter, r *http.Request)
 	
 	dynamicText func(Client)
+
+	Landscape, Portrait style.Style
+}
+
+func (seed Seed) Child(number int) Seed {
+	return seed.children[number-1].(Seed)
 }
 
 func (seed Seed) Copy() Seed {
@@ -103,9 +109,16 @@ func New() Seed {
 	
 	//Seed identification is compressed to base64.
 	seed.id = base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
+
+	if seed.id[0] >= '0' && seed.id[0] <= '9' {
+		seed.id = "_"+seed.id
+	}
+	
 	id++
 
-	seed.Style = style.New()	
+	seed.Style = style.New()
+	seed.Landscape = style.New()
+	seed.Portrait = style.New()
 	seed.tag = "div"
 	
 	//All seeds have the potential to be the root seed, so they all need a minimal viable manifest.

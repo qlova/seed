@@ -105,6 +105,16 @@ func (style Style) SetVisible() {
 }
 
 //Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+func (style Style) SetCol() {
+	style.SetFlexDirection(css.Column)
+}
+
+//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+func (style Style) SetRow() {
+	style.SetFlexDirection(css.Row)
+}
+
+//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
 func (style Style) SetSize(width, height complex128) {
 	style.SetWidth(css.Decode(width))
 	style.SetHeight(css.Decode(height))
@@ -143,6 +153,7 @@ func (style Style) SetChildAlignment(align float64) {
 		case 0:
 			style.SetTextAlign(css.Center)
 			style.SetAlignContent(css.Center)
+			style.SetAlignItems(css.Center)
 			style.SetJustifyContent(css.Center)
 		case -1:
 			style.SetTextAlign(css.Left)
@@ -219,6 +230,9 @@ func (style Style) SetContain() {
 //Set that this can be scrolled.
 func (style Style) SetScrollable() {
 	style.SetOverflow(css.Auto)
+	style.Set("-webkit-overflow-scrolling", "touch")
+	style.Set("-webkit-overscroll-behavior", "contain")
+	style.Set("overscroll-behavior", "contain")
 }
 
 //Set that this cannot be scrolled.
