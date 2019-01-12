@@ -57,7 +57,20 @@ func Col() Seed {
 	return seed
 }
 
-func Text(s ...string) Seed {
+
+type text struct {
+	Seed
+}
+
+//func ()
+
+func AddTextTo(parent Seed, s ...string) text {
+	var Text = Text()
+	parent.Add(Text)
+	return Text
+}
+
+func Text(s ...string) text {
 	seed := New()
 	seed.SetName("Text")
 	seed.tag = "p"
@@ -66,7 +79,9 @@ func Text(s ...string) Seed {
 		seed.SetText(s[0])
 	}
 	
-	return seed
+	return text{
+		Seed: seed,
+	}
 }
 
 func Header() Seed {
