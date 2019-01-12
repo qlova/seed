@@ -113,6 +113,9 @@ func New() Seed {
 
 	allSeeds[seed.id] = seed
 
+	//Intial style.
+	seed.SetSize(100, 100)
+	
 	return Seed{seed:seed}
 }
 
