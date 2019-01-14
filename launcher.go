@@ -76,6 +76,12 @@ func (launcher Launcher) Handler() http.Handler {
 			callHandler(response, request, request.URL.Path[6:] )
 			return
 		}
+		
+		//Remote procedure calls.
+		if len(request.URL.Path) > 6 && request.URL.Path[:7] == "/feeds/" {
+			feedHandler(response, request, request.URL.Path[7:])
+			return
+		}
 
 		//Run custom handlers.
 		if request.URL.Path != "/" {
