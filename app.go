@@ -631,8 +631,10 @@ func (seed Seed) render(production bool) []byte {
 					}
 				}
 				let next_page = get(next_page_id);
-				if (next_page.enterpage) next_page.enterpage();
-				set(next_page, 'display', 'inline-flex');
+				if (next_page) {
+					if (next_page.enterpage) next_page.enterpage();
+					set(next_page, 'display', 'inline-flex');
+				}
 			};
 			var back = function() {
 				if (last_page == null) return;

@@ -153,6 +153,10 @@ func (q Script) Javascript(js string) {
 }
 
 func (q Script) Goto(seed Seed) {
+	if !seed.page {
+		q.Raw("Javascript", language.Statement(`get("`+seed.id+`").enterpage();`))
+		return
+	}
 	q.Raw("Javascript", language.Statement(`goto("`+seed.id+`");`))
 }
 
