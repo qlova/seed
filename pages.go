@@ -4,12 +4,8 @@ import "github.com/qlova/seed/style/css"
 
 var pages []Seed
 
-func Page() Seed {
-	return NewPage()
-}
-
 func NewPage() Seed {
-	seed := Col()
+	seed := NewColumn()
 	
 	seed.page = true
 	

@@ -3,13 +3,13 @@ package seed
 import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/manifest"
-import "github.com/qlova/seed/interfaces"
 
 import (
 	"bytes"
 	"net/http"
 	"math/big"
 	"encoding/base64"
+	"strings"
 )
 
 const Em = style.Em
@@ -50,7 +50,7 @@ type seed struct {
 	
 	id string
 	tag, attr, class string
-	children []interfaces.App
+	children []Interface
 	
 	styled bool
 	
@@ -64,7 +64,7 @@ type seed struct {
 	onchange func(Script)
 	onready func(Script)
 	
-	parent interfaces.App
+	parent Interface
 	
 	//This is a list of scripts that are needed by this seed.
 	//eg. []string{"jquery.js"}
@@ -76,6 +76,10 @@ type seed struct {
 	dynamicText func(Client)
 
 	Landscape, Portrait style.Style
+}
+
+func (seed Seed) GetSeed() Seed {
+	return seed
 }
 
 func (seed Seed) Child(number int) Seed {
@@ -114,6 +118,8 @@ func New() Seed {
 		seed.id = "_"+seed.id
 	}
 	
+	seed.id = strings.Replace(seed.id, "-", "__", -1)
+	
 	id++
 
 	seed.Style = style.New()
@@ -127,7 +133,7 @@ func New() Seed {
 	allSeeds[seed.id] = seed
 
 	//Intial style.
-	seed.SetSize(100, 100)
+	//seed.SetSize(100, 100)
 	
 	return Seed{seed:seed}
 }
@@ -136,7 +142,7 @@ func (seed Seed) getScripts() []string {
 	var scripts = seed.scripts
 
 	for _, child := range seed.children {
-		scripts = append(scripts, child.(Seed).getScripts()...)
+		scripts = append(scripts, child.GetSeed().getScripts()...)
 	}
 	
 	return scripts
@@ -157,7 +163,7 @@ func (seed Seed) Scripts() map[string]struct{} {
 func (seed Seed) buildOnReady(buffer *bytes.Buffer) {
 	
 	for _, child := range seed.children {
-		child.(Seed).buildOnReady(buffer)
+		child.GetSeed().buildOnReady(buffer)
 	}
 	
 	if seed.onready != nil {

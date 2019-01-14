@@ -20,7 +20,6 @@ package seed
 
 import "github.com/qlova/seed/worker"
 import "github.com/qlova/seed/style"
-import "github.com/qlova/seed/interfaces"
 
 import (
 	"net/http"
@@ -170,9 +169,9 @@ func (seed Seed) Require(script string) {
 }
 
 //Add a child seed to this seed.
-func (seed Seed) Add(child interfaces.App) {
+func (seed Seed) Add(child Interface) {
 	seed.children = append(seed.children, child)
-	child.SetParent(seed)
+	child.GetSeed().SetParent(seed)
 }
 
 //Add a handler to the seed, when this seed is launched as root, the handlers will be executed for each incomming request.
@@ -181,16 +180,16 @@ func (seed Seed) AddHandler(handler func(w http.ResponseWriter, r *http.Request)
 }
 
 
-func (seed Seed) GetParent() interfaces.App {
+func (seed Seed) GetParent() Interface {
 	return seed.parent
 }
 
 
-func (seed Seed) SetParent(parent interfaces.App) {
+func (seed Seed) SetParent(parent Interface) {
 	seed.parent = parent
 }
 
-func (seed Seed) GetChildren() []interfaces.App {
+func (seed Seed) GetChildren() []Interface {
 	return seed.children
 }
 
@@ -303,7 +302,7 @@ func (seed Seed) buildStyleSheet(sheet *style.Sheet) {
 		sheet.Add("#"+seed.id, seed.Style)
 	}
 	for _, child := range seed.children {
-		child.(Seed).buildStyleSheet(sheet)
+		child.GetSeed().buildStyleSheet(sheet)
 	}
 }
 
@@ -320,7 +319,7 @@ func (seed Seed) buildStyleSheetForLandscape(sheet *style.Sheet) {
 		sheet.Add("#"+seed.id, seed.Landscape)
 	}
 	for _, child := range seed.children {
-		child.(Seed).buildStyleSheetForLandscape(sheet)
+		child.GetSeed().buildStyleSheetForLandscape(sheet)
 	}
 }
 
@@ -338,7 +337,7 @@ func (seed Seed) buildFonts() map[style.Font]struct{} {
 	}
 
 	for _, child := range seed.children {
-		for font := range child.(Seed).buildFonts() {
+		for font := range child.GetSeed().buildFonts() {
 			fonts[font] = struct{}{}
 		}
 	}
@@ -368,7 +367,7 @@ func (seed Seed) buildAnimations(animations *[]Animation, names *[]string) {
 	}
 
 	for _, child := range seed.children {
-		child.(Seed).buildAnimations(animations, names)
+		child.GetSeed().buildAnimations(animations, names)
 	}
 }
 
@@ -403,7 +402,7 @@ func (seed Seed) buildDynamicHandler(handler *[]dynamicHandler) {
 	}
 	
 	for _, child := range seed.children {
-		child.(Seed).buildDynamicHandler(handler)
+		child.GetSeed().buildDynamicHandler(handler)
 	}
 }
 
@@ -477,7 +476,7 @@ func (seed Seed) HTML() ([]byte) {
 	}
 	
 	for _, child := range seed.children {
-		html.Write(child.Render())
+		html.Write(child.GetSeed().Render())
 	}
 	
 	html.WriteString("</")
@@ -566,9 +565,8 @@ func (seed Seed) render(production bool) []byte {
 		<style>
 
 			* {
-				overscroll-behavior: none; 
-				-webkit-overscroll-behavior: none; 
-				overscroll-behavior-y: none
+				
+				flex-shrink: 0;
 			}
 			
 			::-webkit-scrollbar { 
