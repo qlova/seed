@@ -126,6 +126,34 @@ func (style Style) SetMaxSize(width, height complex128) {
 	style.SetMaxHeight(css.Decode(height))
 }
 
+
+//Set the text alignment, -1 is left, 0 is center and 1 is right
+func (style Style) Align(alignment float64) {
+	switch alignment {
+		case 0:
+			style.SetTextAlign(css.Center)
+			style.SetAlignSelf(css.Center)
+		case -1:
+			style.SetTextAlign(css.Left)
+			style.SetAlignSelf(css.FlexStart)
+		case 1:
+			style.SetTextAlign(css.Right)
+			style.SetAlignSelf(css.FlexEnd)
+	}
+}
+
+//Set the text alignment, -1 is left, 0 is center and 1 is right
+func (style Style) AlignChildren(alignment float64) {
+	switch alignment {
+		case 0:
+			style.SetJustifyContent(css.Center)
+		case -1:
+			style.SetJustifyContent(css.FlexStart)
+		case 1:
+			style.SetJustifyContent(css.FlexEnd)
+	}
+}
+
 //Set the text alignment, -1 is left, 0 is center and 1 is right
 func (style Style) SetAlignment(align float64) {
 	switch align {
@@ -189,6 +217,11 @@ func (style Style) SetLayer(layer int) {
 //This should not shrink to make space for other elements.
 func (style Style) SetUnshrinkable() {
 	style.SetFlexShrink(css.Number(0))
+}
+
+//This should not shrink to make space for other elements.
+func (style Style) Shrink() {
+	style.SetFlexShrink(css.Number(1))
 }
 
 //Set where this attaches to, 0 0 is unattached, -1, 0 is attached to left, 1 1 is attached to bottom right etc.

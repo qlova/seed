@@ -86,6 +86,14 @@ func (seed Seed) SetText(s String) {
 	seed.Javascript(seed.Element()+`.textContent = `+s.Raw()+`;`)
 }
 
+func (seed Seed) SetPath(s String) {
+	seed.Javascript(seed.Element()+`.src = `+s.Raw()+`;`)
+}
+
+func (seed Seed) SetHTML(s String) {
+	seed.Javascript(seed.Element()+`.innerHTML = `+s.Raw()+`;`)
+}
+
 func (seed Seed) SetLeft(s String) {
 	seed.Javascript(`set(`+seed.Element()+`, "left", `+s.Raw()+`);`)
 }
@@ -156,6 +164,15 @@ func (seed Seed) Value() String {
 
 func (seed Seed) Text() String {
 	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.innerText`)).(String)
+}
+
+func (seed Seed) Data(key string) String {
+	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.data["`+key+`"]`)).(String)
+}
+
+
+func (seed Seed) HTML() String {
+	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.innerHTML`)).(String)
 }
 
 func (seed Seed) File() File {

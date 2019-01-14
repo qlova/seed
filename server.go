@@ -3,7 +3,22 @@ package seed
 import (
 	"net/http"
 	"path"
+	"encoding/json"
+	"fmt"
 )
+
+func (client Client) Send(data interface{}) {
+	json.NewEncoder(client.ResponseWriter).Encode(data)
+}
+
+func (client Client) Cookie(c cookie) string {
+	result, err := client.Request.Cookie(string(c))
+	if err != nil {
+		fmt.Println(err.Error())
+		return ""
+	}
+	return result.Value
+}
 
 type embedding struct {
 	ContentType string

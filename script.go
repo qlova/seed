@@ -75,9 +75,9 @@ func (q Script) After(promise script.Promise, f func(q Script)) {
 	q.Javascript("})")
 }
 
-func (q Script) Get(seed Seed) *script.Seed {
+func (q Script) Get(seed Interface) *script.Seed {
 	return &script.Seed{
-		ID: seed.id,
+		ID: seed.GetSeed().id,
 		Qlovascript: q.Script,
 	}
 }
@@ -204,11 +204,17 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
 	
 	var CallingString = `/call/`+name
 	
-	for i := 0; i < value.Type().NumIn(); i++ {
+	var StartFrom = 0;
+	//The function can take an optional client as it's first argument.
+	if value.Type().NumIn() > 0 && value.Type().In(0) == reflect.TypeOf(Client{}) {
+		StartFrom = 1;
+	}
+	
+	for i := StartFrom; i < value.Type().NumIn(); i++ {
 		switch value.Type().In(i).Kind() {
 			case reflect.String:
 				
-				CallingString += `/_"+encodeURIComponent(`+args[i].(qlova.ExportedString).Raw()+`)+"`
+				CallingString += `/_"+encodeURIComponent(`+args[i-StartFrom].(qlova.ExportedString).Raw()+`)+"`
 				
 			default:
 				panic("Unimplemented: script.Run("+value.Type().String()+")")
@@ -254,17 +260,33 @@ func callHandler(w http.ResponseWriter, r *http.Request, call string) {
 		return
 	}
 	
-	if len(args)-1 != f.Type().NumIn() {
+	var in []reflect.Value
+	
+	var StartFrom = 0;
+	//The function can take an optional client as it's first argument.
+	if f.Type().NumIn() > 0 && f.Type().In(0) == reflect.TypeOf(Client{}) {
+		StartFrom = 1;
+		
+		in = append(in, reflect.ValueOf(Client{client{
+			Request: r,
+			ResponseWriter: w, 
+		}}))
+		
+	}
+	
+	if len(args)-1 != f.Type().NumIn()-StartFrom {
 		println("argument length mismatch")
 		return
 	}
 	
-	var in []reflect.Value
-	for i := 0; i < f.Type().NumIn(); i++ {
+	
+	
+	
+	for i := StartFrom; i < f.Type().NumIn(); i++ {
 		switch f.Type().In(i).Kind() {
 			case reflect.String:
 				
-				in = append(in, reflect.ValueOf(args[i+1][1:]))
+				in = append(in, reflect.ValueOf(args[i+1-StartFrom][1:]))
 				
 			default:
 				println("unimplemented callHandler for "+f.Type().String())
