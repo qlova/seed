@@ -4,9 +4,15 @@ import "fmt"
 import "strconv"
 import "net/http"
 
+type Feed Seed
+
+func (feed Feed) Refresh(q Script) {
+	q.Javascript(q.Get(Seed(feed)).Element()+".onready();")
+}
+
 var feeds = make(map[string]func(Client))
 
-func (seed Seed) AddFeed(template Seed, feed func(Client)) {
+func (seed Seed) AddFeed(template Seed, feed func(Client)) Feed {
 	var WrapperSeed = New()
 	WrapperSeed.SetSize(100, Auto)
 	WrapperSeed.SetUnshrinkable()
@@ -29,13 +35,13 @@ func (seed Seed) AddFeed(template Seed, feed func(Client)) {
 	feeds[id] = feed
 	
 	WrapperSeed.OnReady(func(q Script) {
-		
+		q.Javascript(q.Get(WrapperSeed).Element()+".onready = function() {")
 		q.Javascript(`let request = new XMLHttpRequest(); request.open("GET", "/feeds/`+id+`"); request.onload = function() {`)
 			q.Javascript(`if (request.response.length <= 0) return;`)
 		
 			q.Javascript(`let json = JSON.parse(request.response);`)
-			q.Javascript(`console.log(json);`)
 			
+			q.Javascript(q.Get(WrapperSeed).Element()+`.innerHTML = "";`)
 			q.Javascript(`for (let i = 0; i < json.length; i++) {`)
 				q.Javascript(q.Get(WrapperSeed).Element()+`.innerHTML += `+strconv.Quote(string(minified))+ReplaceList)
 			q.Javascript(`}`)
@@ -56,7 +62,7 @@ func (seed Seed) AddFeed(template Seed, feed func(Client)) {
 					text = text[1:len(text)-1]
 					var id = child.GetSeed().id
 
-					q.Javascript(`get("`+id+`-"+i).innerHTML = json[i]["`+text+`"].replace(new RegExp('\r?\n','g'), '<br />');`)
+					q.Javascript(`get("`+id+`-"+i).innerHTML = json[i]["`+text+`"];`)
 				}
 			}
 			q.Javascript(`}`)
@@ -64,14 +70,19 @@ func (seed Seed) AddFeed(template Seed, feed func(Client)) {
 			
 		
 		q.Javascript(`}; request.send();`)
+		q.Javascript(`};`)
+		q.Javascript(q.Get(WrapperSeed).Element()+".onready();")
 	})
 
-	seed.Add(WrapperSeed)	
+	seed.Add(WrapperSeed)
+	return Feed(WrapperSeed)
 }
 
 func feedHandler(w http.ResponseWriter, r *http.Request, id string) {
-	feeds[id](Client{client{
-		Request: r,
-		ResponseWriter: w, 
-	}})
+	if feed, ok := feeds[id]; ok {
+		feed(Client{client{
+			Request: r,
+			ResponseWriter: w, 
+		}})
+	}
 }
