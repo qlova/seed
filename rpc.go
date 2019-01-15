@@ -15,10 +15,18 @@ type Promise struct {
 	q Script
 }
 
-func (promise Promise) Then(f func()) {
+func (promise Promise) Then(f func()) Promise {
 	promise.q.Javascript(promise.expression+".then(function(rpc_result) {")
 	f()
 	promise.q.Javascript("})")
+	return Promise{"", promise.q}
+}
+
+func (promise Promise) Catch(f func()) Promise {
+	promise.q.Javascript(promise.expression+".catch(function(rpc_result) {")
+	f()
+	promise.q.Javascript("})")
+	return promise
 }
 
 func (q Script) rpc(f interface{}, args ...qlova.Type) Promise {

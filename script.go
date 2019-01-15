@@ -174,6 +174,10 @@ func (q Script) Goto(seed Seed) {
 	q.Raw("Javascript", language.Statement(`goto("`+seed.id+`");`))
 }
 
+func (q Script) SetCurrentPage(page Seed) {
+	q.Javascript(`current_page = `+page.id)
+}
+
 type Element struct {
 	query string
 	q Script
@@ -356,6 +360,11 @@ func callHandler(w http.ResponseWriter, r *http.Request, call string) {
 	switch results[0].Kind() {
 		
 		case reflect.String:
+			if results[0].Interface().(string) == "" {
+				//Error
+				http.Error(w, "", 500)
+				return
+			}
 			fmt.Fprint(w, results[0].Interface())
 			
 		default:
