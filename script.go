@@ -35,6 +35,7 @@ func (seed Seed) SyncText(text *string) {
 }
 
 
+
 type Script struct {
 	*seedScript
 }
@@ -69,10 +70,16 @@ func (q Script) Contains(text, match qlova.ExportedString) qlova.Boolean {
 	return q.Script.Wrap(Javascript.Boolean(text.Raw()+`.includes(`+match.Raw()+`)`)).(qlova.Boolean)
 }
 
-func (q Script) After(promise script.Promise, f func(q Script)) {
+/*func (q Script) After(promise script.Promise, f func(q Script)) {
 	q.Javascript(promise.Raw()+".then(function() {")
 	f(q)
 	q.Javascript("})")
+}*/
+
+func (q Script) After(time float64, f func()) {
+	q.Javascript("setTimeout(function() {")
+	f()
+	q.Javascript("}, "+fmt.Sprint(time)+");")
 }
 
 func (q Script) Get(seed Interface) *script.Seed {
@@ -104,7 +111,7 @@ func Global() global {
 }
 
 func (q Script) Global(name global) qlova.ExportedString {
-	return q.Script.Wrap(Javascript.String(`window.localStorage.getItem("`+string(name)+`");`)).(qlova.ExportedString)
+	return q.Script.Wrap(Javascript.String(`window.localStorage.getItem("`+string(name)+`")`)).(qlova.ExportedString)
 }
 
 func (q Script) SetGlobal(name global, value qlova.ExportedString) {

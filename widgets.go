@@ -133,7 +133,7 @@ func NewText(s ...string) Text {
 
 //Create a new Text widget and add it to the provided parent.
 func AddTextTo(parent Interface, s ...string) Text {
-	var Text = NewText()
+	var Text = NewText(s...)
 	parent.GetSeed().Add(Text)
 	return Text
 }
