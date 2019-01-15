@@ -268,17 +268,25 @@ func (seed Seed) OnReady(f func(Script)) {
 
 func (seed Seed) OnPageEnter(f func(Script)) {
 	seed.OnReady(func(q Script) {
-		q.Javascript(q.Get(seed).Element()+".enterpage = function() {")
-		f(q)
-		q.Javascript("};")
+		q.Javascript("{")
+			q.Javascript("let old_enterpage = "+q.Get(seed).Element()+".enterpage;")
+			q.Javascript(q.Get(seed).Element()+".enterpage = function() {")
+			q.Javascript("if (old_enterpage) old_enterpage();")
+			f(q)
+			q.Javascript("};")
+		q.Javascript("}")
 	})
 }
 
 func (seed Seed) OnPageExit(f func(Script)) {
 	seed.OnReady(func(q Script) {
-		q.Javascript(q.Get(seed).Element()+".exitpage = function() {")
-		f(q)
-		q.Javascript("};")
+		q.Javascript("{")
+			q.Javascript("let old_exitpage = "+q.Get(seed).Element()+".exitpage;")
+			q.Javascript(q.Get(seed).Element()+".exitpage = function() {")
+			q.Javascript("if (old_exitpage) old_exitpage();")
+			f(q)
+			q.Javascript("};")
+		q.Javascript("}")
 	})
 }
 
@@ -619,20 +627,28 @@ func (seed Seed) render(production bool) []byte {
 						
 			var pages = [`+PagesArray+`];
 			var last_page = null;
+			var current_page = null;
+			var next_page = null;
 			var goto = function(next_page_id) {
+				if (current_page == next_page_id) return;
+				if (next_page == next_page_id) return;
+				next_page = next_page_id;
+			
 				for (let page_id of pages) {
 					let page = get(page_id);
 					if (getComputedStyle(page).display != "none") {
+						set(page, 'display', 'none');						
 						if (page.exitpage) page.exitpage();
-						set(page, 'display', 'none');
 						last_page = page_id;
 					}
 				}
-				let next_page = get(next_page_id);
-				if (next_page) {
-					if (next_page.enterpage) next_page.enterpage();
-					set(next_page, 'display', 'inline-flex');
+				let next_element = get(next_page_id);
+				if (next_element) {
+					set(next_element, 'display', 'inline-flex');
+					if (next_element.enterpage) next_element.enterpage();
+					current_page = next_page_id;
 				}
+				next_page = null;
 			};
 			var back = function() {
 				if (last_page == null) return;

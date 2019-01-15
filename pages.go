@@ -11,6 +11,12 @@ func NewPage() Seed {
 	
 	seed.SetHidden()
 	seed.SetWillChange(css.Property.Display)
+
+	seed.SetPosition(css.Fixed)
+	seed.SetTop(css.Zero)
+	seed.SetLeft(css.Zero)
+	seed.SetWidth(css.Number(100).Vw())
+	seed.SetHeight(css.Number(100).Vh())
 	
 	pages = append(pages, seed)
 	

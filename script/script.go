@@ -179,6 +179,10 @@ func (seed Seed) File() File {
 	return File{seed: seed, expression:seed.Element()+`.files[0]`}
 }
 
+func (seed Seed) Display() String {
+	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.style.display`)).(String)
+}
+
 //Temporary method DEPRECIATED
 func (f File) Raw() string {
 	return f.expression
@@ -197,4 +201,81 @@ func (seed Seed) OnClick(f func()) {
 	seed.Javascript(seed.Element()+`.onclick = function() {`)
 	f()
 	seed.Javascript(`};`)
+}
+
+//Animations
+func (seed Seed) SlideInFrom(direction complex128) {
+
+	if direction == 1i {
+	
+		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
+		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
+		seed.Javascript(seed.Element()+`.style.transform = "translateY(100vh)";`)
+		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
+		
+		seed.Javascript(`window.requestAnimationFrame(function() {`)
+			seed.Javascript(seed.Element()+`.style.transform = "translateY(0)";`)
+			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
+		seed.Javascript(`})`)
+	}
+
+	if direction == 1 {
+		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
+		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
+		seed.Javascript(seed.Element()+`.style.transform = "translateX(100vh)";`)
+		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
+		
+		seed.Javascript(`window.requestAnimationFrame(function() {`)
+			seed.Javascript(seed.Element()+`.style.transform = "translateX(0)";`)
+			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
+		seed.Javascript(`})`)
+	}
+
+	if direction == -1 {
+		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
+		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
+		seed.Javascript(seed.Element()+`.style.transform = "translateX(-100vh)";`)
+		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
+		
+		seed.Javascript(`window.requestAnimationFrame(function() {`)
+			seed.Javascript(seed.Element()+`.style.transform = "translateX(0)";`)
+			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
+		seed.Javascript(`})`)
+	}
+}
+
+//Animations
+func (seed Seed) SlideOutFrom(direction complex128) {
+	/*seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
+	seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
+	seed.Javascript(`set(`+seed.Element()+`, "position", "fixed");`)
+	seed.Javascript(`set(`+seed.Element()+`, "top", "0");`)
+	seed.Javascript(`set(`+seed.Element()+`, "left", "0");`)
+	seed.Javascript(`set(`+seed.Element()+`, "transition", "top 0.5s");`)
+	seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "top", "100vh"); }, 30);`)
+	seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)*/
+
+	if direction == 1i {
+		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
+		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
+		seed.Javascript(seed.Element()+`.style.transform = "translateY(0)";`)
+		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
+		
+		seed.Javascript(`window.requestAnimationFrame(function() {`)
+			seed.Javascript(seed.Element()+`.style.transform = "translateY(100vh)";`)
+			seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
+		seed.Javascript(`})`)
+	}
+
+	if direction == 1 {
+		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
+		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
+		seed.Javascript(seed.Element()+`.style.transform = "translateX(0)";`)
+		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
+		
+		seed.Javascript(`window.requestAnimationFrame(function() {`)
+			seed.Javascript(seed.Element()+`.style.transform = "translateX(100vh)";`)
+			seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
+		seed.Javascript(`})`)
+	}
 }

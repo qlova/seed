@@ -82,6 +82,13 @@ func (q Script) Get(seed Interface) *script.Seed {
 	}
 }
 
+func (q Script) LastPage() *script.Seed {
+	return &script.Seed{
+		ID: `"+last_page+"`,
+		Qlovascript: q.Script,
+	}
+}
+
 type global string
 
 //All globals have a unique id.
@@ -236,6 +243,46 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
 	}
 	
 	return nil
+}
+
+func (q Script) IfNextPageIs(page Seed, f func(), els ...func()) {
+	if page.seed == nil {
+		if len(els) > 0 {
+			q.Javascript(`{`)
+			els[0]()
+			q.Javascript(`}`)
+		}
+		return
+	}
+
+	q.Javascript(`if (next_page == "`+page.id+`") {`)
+	f()
+	q.Javascript(`}`)
+	if len(els) > 0 {
+		q.Javascript(`else {`)
+		els[0]()
+		q.Javascript(`}`)
+	}
+}
+
+func (q Script) IfLastPageWas(page Seed, f func(), els ...func()) {
+	if page.seed == nil {
+		if len(els) > 0 {
+			q.Javascript(`{`)
+			els[0]()
+			q.Javascript(`}`)
+		}
+		return
+	}
+
+	q.Javascript(`if (last_page  == "`+page.id+`") {`)
+	f()
+	q.Javascript(`}`)
+	if len(els) > 0 {
+		q.Javascript(`else {`)
+		els[0]()
+		q.Javascript(`}`)
+	}
 }
 
 func (q Script) Run(f interface{}, args ...qlova.Type) {

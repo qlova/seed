@@ -324,3 +324,10 @@ func (style Style) SetRoundedCorners(radius complex128) {
 	style.SetBorderTopRightRadius(value)
 	style.SetBorderTopLeftRadius(value)
 }
+
+//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+func (style Style) WillAnimate() {
+	style.Set("will-change", "transform")
+	//style.Set("transform", "translateY(0)")
+	//style.Set("transition", "transform 0.5s")
+}
