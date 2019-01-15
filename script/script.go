@@ -213,34 +213,34 @@ func (seed Seed) SlideInFrom(direction complex128) {
 		seed.Javascript(seed.Element()+`.style.transform = "translateY(100vh)";`)
 		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 		
-		seed.Javascript(`window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateY(0)";`)
+		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
+			seed.Javascript(seed.Element()+`.style.transform = "translateY(0vh)";`)
 			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
-		seed.Javascript(`})`)
+		seed.Javascript(`})})`)
 	}
 
 	if direction == 1 {
 		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
 		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateX(100vh)";`)
+		seed.Javascript(seed.Element()+`.style.transform = "translateX(100vw)";`)
 		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 		
-		seed.Javascript(`window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateX(0)";`)
+		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
+			seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
 			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
-		seed.Javascript(`})`)
+		seed.Javascript(`})})`)
 	}
 
 	if direction == -1 {
 		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
 		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateX(-100vh)";`)
+		seed.Javascript(seed.Element()+`.style.transform = "translateX(-100vw)";`)
 		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 		
-		seed.Javascript(`window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateX(0)";`)
+		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
+			seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
 			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
-		seed.Javascript(`})`)
+		seed.Javascript(`})})`)
 	}
 }
 
@@ -258,24 +258,24 @@ func (seed Seed) SlideOutFrom(direction complex128) {
 	if direction == 1i {
 		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
 		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateY(0)";`)
+		seed.Javascript(seed.Element()+`.style.transform = "translateY(0vh)";`)
 		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 		
-		seed.Javascript(`window.requestAnimationFrame(function() {`)
+		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
 			seed.Javascript(seed.Element()+`.style.transform = "translateY(100vh)";`)
 			seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
-		seed.Javascript(`})`)
+		seed.Javascript(`})})`)
 	}
 
 	if direction == 1 {
 		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
 		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateX(0)";`)
+		seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
 		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 		
-		seed.Javascript(`window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateX(100vh)";`)
+		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
+			seed.Javascript(seed.Element()+`.style.transform = "translateX(100vw)";`)
 			seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
-		seed.Javascript(`})`)
+		seed.Javascript(`})})`)
 	}
 }
