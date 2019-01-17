@@ -5,7 +5,6 @@ import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/manifest"
 
 import (
-	"bytes"
 	"net/http"
 	"math/big"
 	"encoding/base64"
@@ -105,6 +104,10 @@ func (seed Seed) GetSeed() Seed {
 	return seed
 }
 
+func (seed Seed) Parent() Seed {
+	return seed.parent
+}
+
 func (seed Seed) Child(number int) Seed {
 	return seed.children[number-1].(Seed)
 }
@@ -159,50 +162,4 @@ func New() Seed {
 	//seed.SetSize(100, 100)
 	
 	return Seed{seed:seed}
-}
-
-func (seed Seed) getScripts() []string {
-	var scripts = seed.scripts
-
-	for _, child := range seed.children {
-		scripts = append(scripts, child.GetSeed().getScripts()...)
-	}
-	
-	return scripts
-}
-
-func (seed Seed) Scripts() map[string]struct{} {
-	
-	var scripts = seed.getScripts()
-	var uniques = make(map[string]struct{})
-
-	for _, script := range scripts {
-		uniques[script] = struct{}{}
-	}
-
-	return uniques
-}
-
-func (seed Seed) buildOnReady(buffer *bytes.Buffer) {
-	
-	for _, child := range seed.children {
-		child.GetSeed().buildOnReady(buffer)
-	}
-	
-	if seed.onready != nil {
-		buffer.WriteByte('{')
-		buffer.Write(toJavascript(seed.onready))
-		buffer.WriteByte('}')
-	}
-}
-
-
-func (seed Seed) BuildOnReady() []byte {
-	var buffer bytes.Buffer
-	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() {`)
-	
-	seed.buildOnReady(&buffer)
-	
-	buffer.WriteString(`}, false);`)
-	return buffer.Bytes()
 }

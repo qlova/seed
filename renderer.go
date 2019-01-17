@@ -22,9 +22,16 @@ const (
 	Xbox
 )
 
-func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
+func (seed Seed) ShortCircuit(platform Platform) Seed {
 	if platform == Desktop && seed.desktop.seed != nil {
-		seed.desktop.buildStyleSheet(platform, sheet)
+		return seed.desktop
+	}
+	return Seed{}
+}
+
+func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
+	if short := seed.ShortCircuit(platform); short.seed != nil {
+		short.buildStyleSheet(platform, sheet)
 		return
 	}
 
@@ -45,8 +52,8 @@ func (seed Seed) BuildStyleSheet(platform Platform) style.Sheet {
 }
 
 func (seed Seed) buildStyleSheetForLandscape(platform Platform, sheet *style.Sheet) {
-	if platform == Desktop && seed.desktop.seed != nil {
-		seed.desktop.buildStyleSheetForLandscape(platform, sheet)
+	if short := seed.ShortCircuit(platform); short.seed != nil {
+		short.buildStyleSheetForLandscape(platform, sheet)
 		return
 	}
 
@@ -73,8 +80,8 @@ func (seed Seed) BuildStyleSheetForPortrait(platform Platform) style.Sheet {
 }
 
 func (seed Seed) buildStyleSheetForPortrait(platform Platform, sheet *style.Sheet) {
-	if platform == Desktop && seed.desktop.seed != nil {
-		seed.desktop.buildStyleSheetForPortrait(platform, sheet)
+	if short := seed.ShortCircuit(platform); short.seed != nil {
+		short.buildStyleSheetForPortrait(platform, sheet)
 		return
 	}
 
@@ -92,8 +99,8 @@ func (seed Seed) buildStyleSheetForPortrait(platform Platform, sheet *style.Shee
 	
 
 func (seed Seed) HTML(platform Platform) ([]byte) {
-	if platform == Desktop && seed.desktop.seed != nil {
-		return seed.desktop.Render(platform)
+	if short := seed.ShortCircuit(platform); short.seed != nil {
+		return short.HTML(platform)
 	}
 
 	seed.postProduction()
@@ -156,6 +163,61 @@ func (seed Seed) Render(platform Platform) []byte {
 	return seed.HTML(platform)
 }
 
+func (seed Seed) getScripts(platform Platform) []string {
+	if short := seed.ShortCircuit(platform); short.seed != nil {
+		return short.getScripts(platform)
+	}
+
+	var scripts = seed.scripts
+
+	for _, child := range seed.children {
+		scripts = append(scripts, child.GetSeed().getScripts(platform)...)
+	}
+	
+	return scripts
+}
+
+func (seed Seed) Scripts(platform Platform) map[string]struct{} {
+	
+	var scripts = seed.getScripts(platform)
+	var uniques = make(map[string]struct{})
+
+	for _, script := range scripts {
+		uniques[script] = struct{}{}
+	}
+
+	return uniques
+}
+
+func (seed Seed) buildOnReady(platform Platform, buffer *bytes.Buffer) {
+
+	if short := seed.ShortCircuit(platform); short.seed != nil {
+		short.buildOnReady(platform, buffer)
+		return
+	}
+	
+	for _, child := range seed.children {
+		child.GetSeed().buildOnReady(platform, buffer)
+	}
+	
+	if seed.onready != nil {
+		buffer.WriteByte('{')
+		buffer.Write(toJavascript(seed.onready))
+		buffer.WriteByte('}')
+	}
+}
+
+
+func (seed Seed) BuildOnReady(platform Platform) []byte {
+	var buffer bytes.Buffer
+	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() {`)
+	
+	seed.buildOnReady(platform, &buffer)
+	
+	buffer.WriteString(`}, false);`)
+	return buffer.Bytes()
+}
+
 //Return a fully fully rendered application in HTML for the seed.
 func (seed Seed) render(production bool, platform Platform) []byte {
 
@@ -165,8 +227,8 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 	var html = seed.HTML(platform)
 	var fonts = seed.BuildFonts()
 	var animations = seed.BuildAnimations()
-	var scripts = seed.Scripts()
-	var onready = seed.BuildOnReady()
+	var scripts = seed.Scripts(platform)
+	var onready = seed.BuildOnReady(platform)
 
 	var buffer bytes.Buffer
 	buffer.Write([]byte(`<!DOCTYPE html><html><head>
@@ -234,13 +296,7 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 		buffer.Write([]byte(`
 		</style>
 			
-		<style>
-
-			* {
-				
-				flex-shrink: 0;
-			}
-			
+		<style>			
 			::-webkit-scrollbar { 
 				display: none; 
 			}
@@ -288,8 +344,7 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 			var get = function(id) {
 				return document.getElementById(id)
 			};
-						
-			var pages = [`+PagesArray+`];
+
 			var last_page = null;
 			var current_page = null;
 			var next_page = null;
@@ -297,15 +352,17 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 				if (current_page == next_page_id) return;
 				if (next_page == next_page_id) return;
 				next_page = next_page_id;
-			
-				for (let page_id of pages) {
-					let page = get(page_id);
-					if (getComputedStyle(page).display != "none") {
-						set(page, 'display', 'none');						
-						if (page.exitpage) page.exitpage();
-						last_page = page_id;
+
+				for (let element of get(next_page_id).parentElement.childNodes) {
+					if (element.classList.contains("page")) {
+						if (getComputedStyle(element).display != "none") {
+							set(element, 'display', 'none');						
+							if (element.exitpage) element.exitpage();
+							last_page = element.id;
+						}
 					}
 				}
+
 				let next_element = get(next_page_id);
 				if (next_element) {
 					set(next_element, 'display', 'inline-flex');
