@@ -9,6 +9,12 @@ func NewImage(path string) Seed {
 	return seed
 }
 
+func AddImageTo(seed Seed, path string) Seed {
+	var image = NewImage(path)
+	seed.Add(image)
+	return image
+}
+
 func NewVideo(path string) Seed {
 	seed := New()
 	seed.tag = "video"

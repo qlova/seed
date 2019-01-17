@@ -31,6 +31,22 @@ func NewSpacer(amount ...float64) Seed {
 	return seed
 }
 
+func NewExpander() Seed {
+	
+	
+	seed := New()
+	seed.SetExpand(1)
+	
+	return seed
+}
+
+func AddExpanderTo(parent Seed) Seed {
+	seed := NewExpander()
+	parent.Add(seed)
+	return seed
+}
+
+
 func NewLine() Seed {
 	seed := New()
 	seed.SetName("Line")
@@ -227,7 +243,14 @@ func NewRow() Seed {
 	seed.Stylable.Set("display", "flex")
 	seed.Stylable.Set("flex-direction", "row")
 	seed.Stylable.Set("flex-shrink", "1")
+
 	return seed
+}
+
+func AddRowTo(seed Seed) Seed {
+	var row = NewRow()
+	seed.Add(row)
+	return row
 }
 
 func NewColumn() Seed {
@@ -237,5 +260,13 @@ func NewColumn() Seed {
 	seed.Stylable.Set("display", "inline-flex")
 	seed.Stylable.Set("flex-direction", "column")
 	seed.Stylable.Set("flex-shrink", "1")
+
+
 	return seed
+}
+
+func AddColumnTo(seed Seed) Seed {
+	var column = NewColumn()
+	seed.Add(column)
+	return column
 }
