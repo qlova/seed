@@ -8,6 +8,7 @@ func NewPage() Seed {
 	seed := NewColumn()
 	
 	seed.page = true
+	seed.class = "page"
 	
 	seed.SetHidden()
 	seed.SetWillChange(css.Property.Display)

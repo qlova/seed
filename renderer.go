@@ -111,7 +111,7 @@ func (seed Seed) HTML(platform Platform) ([]byte) {
 	html.WriteString(fmt.Sprint(seed.id))
 	html.WriteByte('\'')
 	
-	if seed.attr != "" {
+	if seed.class != "" {
 		html.WriteString("class='")
 		html.WriteString(seed.class)
 		html.WriteByte('\'')
