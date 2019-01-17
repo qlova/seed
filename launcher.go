@@ -121,13 +121,14 @@ func (launcher Launcher) Handler() http.Handler {
 		}
 
 		//Identify platform.
-		device := ua.Parse(request.UserAgent())
-
-		if device.DeviceType == ua.DeviceComputer {
-			response.Write(desktop)
-			return
+		if os.Getenv("IGNORE_PLATFORM") == "" {
+			device := ua.Parse(request.UserAgent())
+	
+			if device.DeviceType == ua.DeviceComputer {
+				response.Write(desktop)
+				return
+			}
 		}
-		
 
 		//Anything else? Serve application.
 		if local {
