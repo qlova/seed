@@ -12,6 +12,7 @@ import (
 	"strings"
 )
 
+const Vm = style.Vm
 const Em = style.Em
 const Px = style.Px
 const Top = style.Top
@@ -76,6 +77,28 @@ type seed struct {
 	dynamicText func(Client)
 
 	Landscape, Portrait style.Style
+
+	desktop, mobile, tablet, watch, tv Seed
+}
+
+func (seed Seed) clone() Seed {
+	var clone = New()
+	clone.id = seed.id
+	clone.tag = seed.tag
+	clone.attr = seed.attr
+	clone.class = seed.class
+	clone.content = seed.content
+	clone.parent = seed.parent
+
+	return clone
+}
+
+//Return the seed that should replace this seed when on the Desktop.
+func (seed Seed) Desktop() Seed {
+	if seed.desktop.seed == nil {
+		seed.desktop = seed.clone()
+	}
+	return seed.desktop
 }
 
 func (seed Seed) GetSeed() Seed {

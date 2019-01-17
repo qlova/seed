@@ -8,6 +8,8 @@ import (
 	"strings"
 	"net/http"
 ) 
+
+import ua "github.com/avct/uasurfer"
 import "github.com/NYTimes/gziphandler"
 
 /* 
@@ -19,10 +21,6 @@ type Launcher struct {
 
 	//Hostname and port where you want the application to be listening on.
 	Listen string
-
-	//Here you can pass different seeds to be used for different devices.
-	Mobile Seed
-	Tablet Seed
 }
 
 
@@ -34,16 +32,18 @@ func (launcher Launcher) Handler() http.Handler {
 		log.Fatal(err)
     }
 
-	minified, err := mini(launcher.Seed.render(true))
+	minified, err := mini(launcher.Seed.render(true, Default))
 	if err != nil {
 		//Panic?
 	}
 
-	var html = launcher.Seed.render(false)
+	var html = launcher.Seed.render(false, Default)
 
 	var worker = ServiceWorker.Render()
 	var manifest = launcher.Seed.manifest.Render()
 	var dynamic = launcher.Seed.BuildDynamicHandler()
+
+	var desktop = launcher.Seed.render(true, Desktop)
 
 	var LocalClients = 0
 
@@ -119,6 +119,15 @@ func (launcher Launcher) Handler() http.Handler {
 			http.ServeFile(response, request, dir+"/assets"+request.URL.Path)
 			return
 		}
+
+		//Identify platform.
+		device := ua.Parse(request.UserAgent())
+
+		if device.DeviceType == ua.DeviceComputer {
+			response.Write(desktop)
+			return
+		}
+		
 
 		//Anything else? Serve application.
 		if local {
