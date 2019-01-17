@@ -31,17 +31,20 @@ func NewSpacer(amount ...float64) Seed {
 	return seed
 }
 
-func NewExpander() Seed {
-	
+func NewExpander(ratio ...float64) Seed {
 	
 	seed := New()
-	seed.SetExpand(1)
+	if len(ratio) > 0 {
+		seed.SetExpand(ratio[0])
+	} else {
+		seed.SetExpand(1)
+	}
 	
 	return seed
 }
 
-func AddExpanderTo(parent Seed) Seed {
-	seed := NewExpander()
+func AddExpanderTo(parent Seed, ratio ...float64) Seed {
+	seed := NewExpander(ratio...)
 	parent.Add(seed)
 	return seed
 }
