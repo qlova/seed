@@ -8,6 +8,7 @@ import "encoding/base64"
 
 const Em = css.Em
 const Px = css.Px
+const Vm = css.Vm
 
 const Top = -1i
 const Bottom = 1i
@@ -20,6 +21,8 @@ const Center = 0
 type Style struct {
 	css.Style
 
+	x *complex128
+	y *complex128
 	angle *float64
 	scale *float64
 }
@@ -54,6 +57,7 @@ func NewFont(path string) Font {
 
 func (style Style) Bytes() []byte {
 	var transform = css.Rotate(0)
+	transform = ""
 	var changed bool
 	
 	if style.angle != nil {
@@ -63,6 +67,22 @@ func (style Style) Bytes() []byte {
 	if style.scale != nil {
 		transform += css.Scale(*style.scale, *style.scale)
 		changed = true
+	}
+
+	if style.y != nil && style.x != nil {
+
+		transform += css.Translate(css.Decode(*style.x), css.Decode(*style.y))
+		changed = true
+	
+	} else {
+		if style.y != nil {
+			transform += css.TranslateY(css.Decode(*style.y))
+			changed = true
+		}
+		if style.x != nil {
+			transform += css.TranslateX(css.Decode(*style.x))
+			changed = true
+		}
 	}
 
 	if changed {
@@ -77,6 +97,11 @@ func (style *Style) Rotate(angle float64) {
 }
 func (style *Style) Scale(scale float64) {
 	style.scale = &scale
+}
+
+func (style *Style) Translate(x, y complex128) {
+	style.x = &x
+	style.y = &y
 }
 
 //Set the symetrical spacing within this.

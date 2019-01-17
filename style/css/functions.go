@@ -5,8 +5,11 @@ import (
 	go_color "image/color"
 )
 
+const Pc = 1
 const Em = 1i
 const Px = 1i + 1
+
+const Vm = 1i - 1
 
 func Decode(unit complex128) unitType {
 	if unit == 0 {
@@ -15,6 +18,10 @@ func Decode(unit complex128) unitType {
 
 	if imag(unit) == real(unit) {
 		return unitType(fmt.Sprint(real(unit), "px"))
+	}
+
+	if imag(unit) == -real(unit) {
+		return unitType(fmt.Sprint(imag(unit), "vmin"))
 	}
 
 	if imag(unit) != 0 {
@@ -76,6 +83,21 @@ func Integer(integer int) integerType {
 //Returns a CSS time.
 func Time(seconds float64) timeType {
 	return timeType(fmt.Sprint(seconds, "s"))
+}
+
+//Returns a CSS time.
+func Translate(x, y unitType) transformType {
+	return transformType(fmt.Sprint("translate(", x.String(), ",", y.String(),")"))
+}
+
+//Returns a CSS time.
+func TranslateX(x unitType) transformType {
+	return transformType(fmt.Sprint("translateX(", x.String(),")"))
+}
+
+//Returns a CSS time.
+func TranslateY( y unitType) transformType {
+	return transformType(fmt.Sprint("translateY(", y.String(),")"))
 }
 
 //Returns a CSS time.
