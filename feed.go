@@ -10,6 +10,15 @@ func (feed Feed) Refresh(q Script) {
 	q.Javascript(q.Get(Seed(feed)).Element()+".onready();")
 }
 
+func (feed Feed) OnRefresh(f func(Script)) {
+	Seed(feed).OnReady(func(q Script) {
+		q.Javascript(q.Get(Seed(feed)).Element()+".onrefresh = function() {")
+		f(q)
+		q.Javascript("}); ")
+		q.Javascript(q.Get(Seed(feed)).Element()+".onrefresh()")
+	})
+}
+
 var feeds = make(map[string]func(Client))
 
 func (seed Seed) AddFeed(template Seed, feed func(Client)) Feed {
@@ -17,7 +26,7 @@ func (seed Seed) AddFeed(template Seed, feed func(Client)) Feed {
 	WrapperSeed.SetSize(100, Auto)
 	WrapperSeed.SetUnshrinkable()
 
-	minified, err := mini(template.HTML())
+	minified, err := mini(template.HTML(Default))
 	if err != nil {
 		//Panic?
 	}
@@ -40,6 +49,8 @@ func (seed Seed) AddFeed(template Seed, feed func(Client)) Feed {
 			q.Javascript(`if (request.response.length <= 0) return;`)
 		
 			q.Javascript(`let json = JSON.parse(request.response);`)
+
+			q.Javascript(q.Get(WrapperSeed).Element()+`.data = json;`)
 			
 			q.Javascript(q.Get(WrapperSeed).Element()+`.innerHTML = "";`)
 			q.Javascript(`for (let i = 0; i < json.length; i++) {`)
@@ -72,6 +83,7 @@ func (seed Seed) AddFeed(template Seed, feed func(Client)) Feed {
 		q.Javascript(`}; request.send();`)
 		q.Javascript(`};`)
 		q.Javascript(q.Get(WrapperSeed).Element()+".onready();")
+		q.Javascript(`if (`+q.Get(WrapperSeed).Element()+".onrefresh) "+q.Get(WrapperSeed).Element()+".onrefresh();")
 	})
 
 	seed.Add(WrapperSeed)
