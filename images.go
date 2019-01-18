@@ -23,3 +23,15 @@ func NewVideo(path string) Seed {
 	RegisterAsset(path)
 	return seed
 }
+
+
+func NewDocument(path string) Seed {
+	seed := New()
+	seed.tag = "embed"
+	seed.attr = "src='"+path+"'"
+
+	if path != "" {
+		RegisterAsset(path)
+	}
+	return seed
+}
