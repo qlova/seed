@@ -247,6 +247,11 @@ func (style Style) SetUnshrinkable() {
 }
 
 //This should not shrink to make space for other elements.
+func (style Style) DontShrink() {
+	style.SetFlexShrink(css.Number(0))
+}
+
+//This should not shrink to make space for other elements.
 func (style Style) Shrink() {
 	style.SetFlexShrink(css.Number(1))
 }
