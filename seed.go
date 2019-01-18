@@ -105,7 +105,7 @@ func (seed Seed) GetSeed() Seed {
 }
 
 func (seed Seed) Parent() Seed {
-	return seed.parent
+	return seed.parent.GetSeed()
 }
 
 func (seed Seed) Child(number int) Seed {
