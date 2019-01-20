@@ -239,6 +239,12 @@ func NewButton() Seed {
 	return seed
 }
 
+func AddButtonTo(parent Seed) Seed {
+	seed := NewButton()
+	parent.Add(seed)
+	return seed
+}
+
 func NewRow() Seed {
 	seed := New()
 	seed.tag = "div"
