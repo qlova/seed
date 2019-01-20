@@ -237,19 +237,9 @@ func (seed Seed) OnClick(f func(Script)) {
 }
 
 func (seed Seed) OnClickGoto(page Seed) {
-	if seed.onclick == nil {
-		seed.onclick = func(q Script) {
-			q.Goto(page)
-		}
-	} else {
-		var old = seed.onclick
-		seed.onclick = func(q Script) {
-			old(q)
-			func(q Script) {
-				q.Goto(page)
-			}(q)
-		}
-	}
+	seed.OnClick(func(q Script) {
+		q.Goto(page)
+	})
 }
 
 func (seed Seed) OnReady(f func(Script)) {
@@ -262,6 +252,12 @@ func (seed Seed) OnReady(f func(Script)) {
 			f(q)
 		}
 	}
+}
+
+func (seed Seed) OnReadyGoto(page Seed) {
+	seed.OnReady(func(q Script) {
+		q.Goto(page)
+	})
 }
 
 func (seed Seed) OnPageEnter(f func(Script)) {
