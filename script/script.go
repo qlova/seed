@@ -229,7 +229,7 @@ func (seed Seed) SlideInFrom(direction complex128) {
 
 	if direction == 1 {
 		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "1000");`)
+		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
 		seed.Javascript(seed.Element()+`.style.transform = "translateX(100vw)";`)
 		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 		
@@ -241,7 +241,7 @@ func (seed Seed) SlideInFrom(direction complex128) {
 
 	if direction == -1 {
 		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "1000");`)
+		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
 		seed.Javascript(seed.Element()+`.style.transform = "translateX(-100vw)";`)
 		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 		
@@ -265,7 +265,7 @@ func (seed Seed) SlideOutFrom(direction complex128) {
 
 	if direction == 1i {
 		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "1000");`)
+		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
 		seed.Javascript(seed.Element()+`.style.transform = "translateY(0vh)";`)
 		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 		
@@ -277,7 +277,7 @@ func (seed Seed) SlideOutFrom(direction complex128) {
 
 	if direction == 1 {
 		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "1000");`)
+		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
 		seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
 		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 		
