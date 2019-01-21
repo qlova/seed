@@ -83,6 +83,10 @@ func (f File) Type() String {
 	return f.seed.Qlovascript.Wrap(Javascript.String(f.expression+`.type`)).(String)
 }
 
+func (f File) Name() String {
+	return f.seed.Qlovascript.Wrap(Javascript.String(f.expression+`.name`)).(String)
+}
+
 func (seed Seed) SetText(s String) {
 	seed.Javascript(seed.Element()+`.textContent = `+s.Raw()+`;`)
 }
