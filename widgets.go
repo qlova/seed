@@ -81,11 +81,42 @@ func NewHeader() Seed {
 	return seed
 }
 
-func NewFilePicker(types string) Seed {
+func NewPopup() Seed {
+	seed := NewColumn()
+
+	seed.Set("position", "fixed")
+	seed.Set("left", "50%")
+	seed.Set("top", "50%")
+	seed.Set("transform", "translate(-50%, -50%)")
+	seed.Set("box-shadow", "3px 4px 20px black")
+
+	seed.SetSize(Auto, Auto)
+	seed.SetHidden()
+	
+	return seed
+}
+
+func AddPopupTo(parent Interface) Seed {
+	seed := NewPopup()
+	parent.GetSeed().Add(seed)
+	return seed
+}
+
+func NewFilePicker(types ...string) Seed {
 	seed := New()
 	seed.SetName("File")
 	seed.tag = "input"
-	seed.attr = `type="file" accept="`+types+`"`
+	if len(types) > 0 {
+		seed.attr = `type="file" accept="`+types[0]+`"`
+	} else {
+		seed.attr = `type="file" accept="*"`
+	}
+	return seed
+}
+
+func AddFilePickerTo(parent Interface, types ...string) Seed {
+	seed := NewFilePicker(types...)
+	parent.GetSeed().Add(seed)
 	return seed
 }
 
@@ -96,6 +127,12 @@ func NewTextArea() Seed {
 	seed.attr = "data-gramm_editor=false"
 	
 	return seed
+}
+
+func AddTextAreaTo(parent Interface) Seed {
+	var TextArea = NewTextArea()
+	parent.GetSeed().Add(TextArea)
+	return TextArea
 }
 
 func NewListBox(values []string) Seed {
