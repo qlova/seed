@@ -233,7 +233,6 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 	var buffer bytes.Buffer
 	buffer.Write([]byte(`<!DOCTYPE html><html><head>
 		<meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 	`))
 		
 	if platform != Desktop {
@@ -245,14 +244,20 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 		
 	buffer.Write([]byte(`
 		<meta name="theme-color" content="`+seed.manifest.ThemeColor+`">
-		
+
 		<title>`+seed.manifest.Name+`</title>
-		
-		
 
 		<link rel="manifest" href="/app.webmanifest">`))
 
-	for _, icon := range seed.manifest.Icons {
+	
+
+	for i, icon := range seed.manifest.Icons {
+
+		//The first icon can be the Favicon.
+		if i == 0 {
+			buffer.WriteString(`<link rel="shortcut icon" type="image/png" href="`+icon.Source+`"/>`)
+		}
+	
 		buffer.Write([]byte(`<link rel="apple-touch-icon" sizes="`+icon.Sizes+`" href="`+icon.Source+`">`))
 	}
 
