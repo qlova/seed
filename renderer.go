@@ -310,15 +310,6 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 	buffer.Write(styleForPortrait)
 	buffer.WriteString(`}`)
 
-	//Optimise to array
-	var PagesArray string
-	for i, page := range pages {
-		PagesArray += "'"+page.ID()+"'"
-		if i < len(pages)-1 {
-			PagesArray += ","
-		}
-	}
-
 		buffer.Write([]byte(`
 		</style>
 			

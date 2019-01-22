@@ -7,15 +7,15 @@ import "net/http"
 type Feed Seed
 
 func (feed Feed) Refresh(q Script) {
-	q.Javascript(q.Get(Seed(feed)).Element()+".onready();")
+	q.Javascript(Seed(feed).Script(q).Element()+".onready();")
 }
 
 func (feed Feed) OnRefresh(f func(Script)) {
 	Seed(feed).OnReady(func(q Script) {
-		q.Javascript(q.Get(Seed(feed)).Element()+".onrefresh = function() {")
+		q.Javascript(Seed(feed).Script(q).Element()+".onrefresh = function() {")
 		f(q)
 		q.Javascript("}); ")
-		q.Javascript(q.Get(Seed(feed)).Element()+".onrefresh()")
+		q.Javascript(Seed(feed).Script(q).Element()+".onrefresh()")
 	})
 }
 
@@ -44,17 +44,17 @@ func (seed Seed) AddFeed(template Seed, feed func(Client)) Feed {
 	feeds[id] = feed
 	
 	WrapperSeed.OnReady(func(q Script) {
-		q.Javascript(q.Get(WrapperSeed).Element()+".onready = function() {")
+		q.Javascript(WrapperSeed.Script(q).Element()+".onready = function() {")
 		q.Javascript(`let request = new XMLHttpRequest(); request.open("GET", "/feeds/`+id+`"); request.onload = function() {`)
 			q.Javascript(`if (request.response.length <= 0) return;`)
 		
 			q.Javascript(`let json = JSON.parse(request.response);`)
 
-			q.Javascript(q.Get(WrapperSeed).Element()+`.data = json;`)
+			q.Javascript(WrapperSeed.Script(q).Element()+`.data = json;`)
 			
-			q.Javascript(q.Get(WrapperSeed).Element()+`.innerHTML = "";`)
+			q.Javascript(WrapperSeed.Script(q).Element()+`.innerHTML = "";`)
 			q.Javascript(`for (let i = 0; i < json.length; i++) {`)
-				q.Javascript(q.Get(WrapperSeed).Element()+`.innerHTML += `+strconv.Quote(string(minified))+ReplaceList)
+				q.Javascript(WrapperSeed.Script(q).Element()+`.innerHTML += `+strconv.Quote(string(minified))+ReplaceList)
 			q.Javascript(`}`)
 
 			q.Javascript(`for (let i = 0; i < json.length; i++) {`)
@@ -82,8 +82,8 @@ func (seed Seed) AddFeed(template Seed, feed func(Client)) Feed {
 		
 		q.Javascript(`}; request.send();`)
 		q.Javascript(`};`)
-		q.Javascript(q.Get(WrapperSeed).Element()+".onready();")
-		q.Javascript(`if (`+q.Get(WrapperSeed).Element()+".onrefresh) "+q.Get(WrapperSeed).Element()+".onrefresh();")
+		q.Javascript(WrapperSeed.Script(q).Element()+".onready();")
+		q.Javascript(`if (`+WrapperSeed.Script(q).Element()+".onrefresh) "+WrapperSeed.Script(q).Element()+".onrefresh();")
 	})
 
 	seed.Add(WrapperSeed)

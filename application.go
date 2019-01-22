@@ -11,7 +11,7 @@ func NewApp() Application {
 	}
 }
 
-func (app Application) OnReadyGoto(page Seed) {
+func (app Application) OnReadyGoto(page Page) {
 	app.Seed.OnReady(func(q Script) {
 		//Don't bypass persistence features.
 		q.Javascript(`if (!window.localStorage.getItem('*CurrentPage'))`)

@@ -43,9 +43,9 @@ func NewExpander(ratio ...float64) Seed {
 	return seed
 }
 
-func AddExpanderTo(parent Seed, ratio ...float64) Seed {
+func AddExpanderTo(parent Interface, ratio ...float64) Seed {
 	seed := NewExpander(ratio...)
-	parent.Add(seed)
+	parent.GetSeed().Add(seed)
 	return seed
 }
 

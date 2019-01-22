@@ -17,6 +17,14 @@ import qlova "github.com/qlova/script"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/language/javascript"
 
+//Return a scriptable version of this seed.
+func (seed Seed) Script(q Script) script.Seed {
+	return script.Seed{
+		ID: seed.id,
+		Qlovascript: q.Script,
+	}
+}
+
 //Set the text content of the seed.
 func (seed Seed) SyncText(text *string) {
 	var wrapper = func() string {
@@ -25,7 +33,7 @@ func (seed Seed) SyncText(text *string) {
 	
 	seed.OnReady(func(q Script) {
 		q.Javascript(`setInterval(function() {`)
-			q.Get(seed).SetText(q.Call(wrapper).(qlova.String))
+			seed.Script(q).SetText(q.Call(wrapper).(qlova.String))
 			for i := 0; i < q.promises; i++ {
 				q.Raw("Javascript", "}; request.send();")
 			}
@@ -82,18 +90,25 @@ func (q Script) After(time float64, f func()) {
 	q.Javascript("}, "+fmt.Sprint(time)+");")
 }
 
-func (q Script) Get(seed Interface) *script.Seed {
+/*func (q Script) Get(seed Interface) *script.Seed {
 	return &script.Seed{
 		ID: seed.GetSeed().id,
 		Qlovascript: q.Script,
 	}
-}
+}*/
 
-func (q Script) LastPage() *script.Seed {
-	return &script.Seed{
+func (q Script) LastPage() script.Page {
+	return script.Page{script.Seed{
 		ID: `"+last_page+"`,
 		Qlovascript: q.Script,
-	}
+	}}
+}
+
+func (q Script) NextPage() script.Page {
+	return script.Page{script.Seed{
+		ID: `"+next_page+"`,
+		Qlovascript: q.Script,
+	}}
 }
 
 type global string
@@ -166,15 +181,15 @@ func (q Script) Javascript(js string) {
 	q.Raw("Javascript", language.Statement(js))
 }
 
-func (q Script) Goto(seed Seed) {
-	if !seed.page {
+func (q Script) Goto(page Page) {
+	/*if !seed.page {
 		q.Raw("Javascript", language.Statement(`get("`+seed.id+`").enterpage();`))
 		return
-	}
-	q.Raw("Javascript", language.Statement(`goto("`+seed.id+`");`))
+	}*/
+	page.Script(q).Goto()
 }
 
-func (q Script) SetCurrentPage(page Seed) {
+func (q Script) SetCurrentPage(page Page) {
 	q.Javascript(`current_page = `+page.id)
 }
 

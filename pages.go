@@ -1,10 +1,13 @@
 package seed
 
+import "github.com/qlova/seed/script"
 import "github.com/qlova/seed/style/css"
 
-var pages []Seed
+type Page struct {
+	Seed
+}
 
-func NewPage() Seed {
+func NewPage() Page {
 	seed := NewColumn()
 	
 	seed.page = true
@@ -19,7 +22,15 @@ func NewPage() Seed {
 	seed.SetWidth(css.Number(100).Vw())
 	seed.SetHeight(css.Number(100).Vh())
 	
-	pages = append(pages, seed)
-	
-	return seed
+	return Page{seed}
+}
+
+func AddPageTo(parent Interface) Page {
+	var page = NewPage()
+	parent.GetSeed().Add(page)
+	return page
+}
+
+func (page Page) Script(q Script) script.Page {
+	return script.Page{page.Seed.Script(q)}
 }
