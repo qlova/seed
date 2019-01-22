@@ -221,6 +221,19 @@ func (seed Seed) BuildOnReady(platform Platform) []byte {
 //Return a fully fully rendered application in HTML for the seed.
 func (seed Seed) render(production bool, platform Platform) []byte {
 
+	seed.OnReady(func(q Script) {
+		q.Javascript(`window.addEventListener('load', function() {
+			//Load persistent state.
+			if (window.localStorage) {
+				let current_page = window.localStorage.getItem('*CurrentPage');
+				if (current_page) {
+					goto(current_page);
+				}
+			}
+		})				
+		`)
+	})
+
 	var style = seed.BuildStyleSheet(platform).Bytes()
 	var styleForLandscape = seed.BuildStyleSheetForLandscape(platform).Bytes()
 	var styleForPortrait = seed.BuildStyleSheetForPortrait(platform).Bytes()
@@ -404,6 +417,10 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 					set(next_element, 'display', 'inline-flex');
 					if (next_element.enterpage) next_element.enterpage();
 					current_page = next_page_id;
+
+					//Persistence.
+					window.localStorage.setItem('*CurrentPage', next_page_id);
+					
 				}
 				next_page = null;
 			};
@@ -681,7 +698,7 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 			dynamic.send();`)
 		}
 
-		buffer.Write([]byte(`
+		buffer.Write([]byte(`	
 				</script>
 				
 				</head><body>

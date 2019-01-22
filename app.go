@@ -254,12 +254,6 @@ func (seed Seed) OnReady(f func(Script)) {
 	}
 }
 
-func (seed Seed) OnReadyGoto(page Seed) {
-	seed.OnReady(func(q Script) {
-		q.Goto(page)
-	})
-}
-
 func (seed Seed) OnPageEnter(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
