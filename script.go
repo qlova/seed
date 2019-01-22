@@ -25,7 +25,7 @@ func (seed Seed) SyncText(text *string) {
 	
 	seed.OnReady(func(q Script) {
 		q.Javascript(`setInterval(function() {`)
-			q.Get(seed).SetText(q.Call(wrapper).(qlova.ExportedString))
+			q.Get(seed).SetText(q.Call(wrapper).(qlova.String))
 			for i := 0; i < q.promises; i++ {
 				q.Raw("Javascript", "}; request.send();")
 			}
@@ -66,8 +66,8 @@ func (q Script) NewSeed() script.Seed {
 	return q.newSeed("div")
 }
 
-func (q Script) Contains(text, match qlova.ExportedString) qlova.Boolean {
-	return q.Script.Wrap(Javascript.Boolean(text.Raw()+`.includes(`+match.Raw()+`)`)).(qlova.Boolean)
+func (q Script) Contains(text, match qlova.String) qlova.Bool {
+	return q.Script.BoolFromLanguageType(Javascript.Bit{Expression:language.Statement(raw(text)+`.includes(`+raw(match)+`)`)})
 }
 
 /*func (q Script) After(promise script.Promise, f func(q Script)) {
@@ -110,12 +110,12 @@ func Global() global {
 	return global(result)
 }
 
-func (q Script) Global(name global) qlova.ExportedString {
-	return q.Script.Wrap(Javascript.String(`window.localStorage.getItem("`+string(name)+`")`)).(qlova.ExportedString)
+func (q Script) Global(name global) qlova.String {
+	return q.wrap(`window.localStorage.getItem("`+string(name)+`")`)
 }
 
-func (q Script) SetGlobal(name global, value qlova.ExportedString) {
-	q.Raw("Javascript", language.Statement(`window.localStorage.setItem("`+string(name)+`", `+value.Raw()+`);`))
+func (q Script) SetGlobal(name global, value qlova.String) {
+	q.Javascript(`window.localStorage.setItem("`+string(name)+`", `+raw(value)+`);`)
 }
 
 type cookie string
@@ -132,12 +132,12 @@ func Cookie() cookie {
 	return cookie(result)
 }
 
-func (q Script) Cookie(name cookie) qlova.ExportedString {
-	return q.Script.Wrap(Javascript.String(`getCookie("`+string(name)+`");`)).(qlova.ExportedString)
+func (q Script) Cookie(name cookie) qlova.String {
+	return q.wrap(`getCookie("`+string(name)+`");`)
 }
 
-func (q Script) SetCookie(name cookie, value qlova.ExportedString) {
-	q.Raw("Javascript", language.Statement(`setCookie("`+string(name)+`", `+value.Raw()+`, 365);`))
+func (q Script) SetCookie(name cookie, value qlova.String) {
+	q.Javascript(`setCookie("`+string(name)+`", `+raw(value)+`, 365);`)
 }
 
 func ToJavascript(f func(q Script)) string {
@@ -153,7 +153,7 @@ func toJavascript(f func(q Script)) []byte {
 		}
 		s.promises = 0
 	})
-	source := program.SourceCode(Javascript.Language())
+	source := program.SourceCode(Javascript.Implementation{})
 	if source.Error {
 		panic(source.ErrorMessage)
 	}
@@ -183,8 +183,8 @@ type Element struct {
 	q Script
 }
 
-func (q Script) Query(query qlova.ExportedString) Element {
-	return Element{ query:query.Raw(), q:q }
+func (q Script) Query(query qlova.String) Element {
+	return Element{ query: raw(query), q:q }
 }
 
 func (element Element) Run(method string) {
@@ -192,11 +192,11 @@ func (element Element) Run(method string) {
 }
 
 func (q Script) Alert(message script.String) {
-	q.Raw("Javascript", language.Statement(`alert(`+message.Raw()+`);`))
+	q.Javascript(`alert(`+raw(message)+`);`)
 }
 
 func (q Script) Back() {
-	q.Raw("Javascript", language.Statement(`back();`))
+	q.Javascript(`back();`)
 }
 
 type ExportedFunction struct {
@@ -232,7 +232,7 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
 		switch value.Type().In(i).Kind() {
 			case reflect.String:
 				
-				CallingString += `/_"+encodeURIComponent(`+args[i-StartFrom].(qlova.ExportedString).Raw()+`)+"`
+				CallingString += `/_"+encodeURIComponent(`+raw(args[i-StartFrom].(qlova.String))+`)+"`
 				
 			default:
 				panic("Unimplemented: script.Run("+value.Type().String()+")")
@@ -246,7 +246,7 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
 		switch value.Type().Out(0).Kind() {
 			
 			case reflect.String:
-				return q.Wrap(Javascript.String("this.responseText"))
+				return q.wrap("this.responseText")
 			
 			default:
 				panic(value.Type().String()+" Unimplemented")

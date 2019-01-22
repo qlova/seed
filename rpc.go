@@ -10,6 +10,16 @@ import "github.com/qlova/seed/script"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/language/javascript"
 
+func raw(s script.String) string {
+	return string(s.LanguageType().(Javascript.String).Expression)
+}
+
+func (q Script) wrap(s string) script.String {
+	return q.StringFromLanguageType(Javascript.String{
+		Expression: language.Statement(s),
+	})
+}
+
 type Promise struct {
 	expression string
 	q Script
@@ -53,7 +63,7 @@ func (q Script) rpc(f interface{}, args ...qlova.Type) Promise {
 		switch value.Type().In(i).Kind() {
 			case reflect.String:
 				
-				CallingString += `/_"+encodeURIComponent(`+args[i-StartFrom].(qlova.ExportedString).Raw()+`)+"`
+				CallingString += `/_"+encodeURIComponent(`+raw(args[i-StartFrom].(qlova.String))+`)+"`
 				
 			default:
 				panic("Unimplemented: script.Run("+value.Type().String()+")")
@@ -67,8 +77,8 @@ func (q Script) rpc(f interface{}, args ...qlova.Type) Promise {
 	return Promise{variable, q}
 }
 
-func (q Script) ReturnValue() qlova.ExportedString {
-	return q.Wrap(Javascript.String("rpc_result")).(qlova.ExportedString)
+func (q Script) ReturnValue() qlova.String {
+	return q.wrap("rpc_result")
 }
 
 //Call a Go function from within a script. The result is returned as a promise.

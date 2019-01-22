@@ -11,7 +11,7 @@ import "github.com/qlova/script/language/javascript"
 
 import "github.com/qlova/seed/style/css"
 
-type String = qlova.ExportedString
+type String = qlova.String
 type Object string
 
 type Expression struct {
@@ -80,34 +80,44 @@ func (seed Seed) Javascript(js string) {
 type File Expression
 
 func (f File) Type() String {
-	return f.seed.Qlovascript.Wrap(Javascript.String(f.expression+`.type`)).(String)
+	return f.seed.wrap(f.expression+`.type`)
 }
 
 func (f File) Name() String {
-	return f.seed.Qlovascript.Wrap(Javascript.String(f.expression+`.name`)).(String)
+	return f.seed.wrap(f.expression+`.name`)
 }
 
-func (seed Seed) SetText(s String) {
-	seed.Javascript(seed.Element()+`.textContent = `+s.Raw()+`;`)
+func raw(s String) string {
+	return string(s.LanguageType().(Javascript.String).Expression)
+}
+
+func (seed Seed) wrap(s string) String {
+	return seed.Qlovascript.StringFromLanguageType(Javascript.String{
+		Expression: language.Statement(s),
+	})
+}
+
+func (seed Seed) SetText(s String) {	
+	seed.Javascript(seed.Element()+`.textContent = `+raw(s)+`;`)
 }
 
 func (seed Seed) SetPath(s String) {
-	seed.Javascript(seed.Element()+`.src = `+s.Raw()+`;`)
+	seed.Javascript(seed.Element()+`.src = `+raw(s)+`;`)
 }
 func (seed Seed) SetSource(s String) {
-	seed.Javascript(seed.Element()+`.src = `+s.Raw()+`;`)
+	seed.Javascript(seed.Element()+`.src = `+raw(s)+`;`)
 }
 
 func (seed Seed) SetHTML(s String) {
-	seed.Javascript(seed.Element()+`.innerHTML = `+s.Raw()+`;`)
+	seed.Javascript(seed.Element()+`.innerHTML = `+raw(s)+`;`)
 }
 
 func (seed Seed) SetLeft(s String) {
-	seed.Javascript(`set(`+seed.Element()+`, "left", `+s.Raw()+`);`)
+	seed.Javascript(`set(`+seed.Element()+`, "left", `+raw(s)+`);`)
 }
 
 func (seed Seed) SetDisplay(s String) {
-	seed.Javascript(`set(`+seed.Element()+`, "display", `+s.Raw()+`);`)
+	seed.Javascript(`set(`+seed.Element()+`, "display", `+raw(s)+`);`)
 }
 
 func (seed Seed) SetVisible() {
@@ -147,44 +157,43 @@ func (seed Seed) Restart() {
 }
 
 func (seed Seed) Left() String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.style.left`)).(String)
+	return seed.wrap(seed.Element()+`.style.left`)
 }
 
 func (seed Seed) Width() String {
-	return seed.Qlovascript.Wrap(Javascript.String(`getComputedStyle(get("`+seed.ID+`")).width`)).(String)
+	return seed.wrap(`getComputedStyle(get("`+seed.ID+`")).width`)
 }
 
 func (seed Seed) SetValue(value String) {
-	seed.Javascript(seed.Element()+`.value = `+value.Raw()+`;`)
+	seed.Javascript(seed.Element()+`.value = `+raw(value)+`;`)
 }
 
 func (seed Seed) SetPlaceholder(value String) {
-	seed.Javascript(seed.Element()+`.placeholder = `+value.Raw()+`;`)
+	seed.Javascript(seed.Element()+`.placeholder = `+raw(value)+`;`)
 }
 
 func (seed Seed) SetClass(value String) {
-	seed.Javascript(seed.Element()+`.className = `+value.Raw()+`;`)
+	seed.Javascript(seed.Element()+`.className = `+raw(value)+`;`)
 }
 
 func (seed Seed) Value() String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.value`)).(String)
+	return seed.wrap(seed.Element()+`.value`)
 }
 
 func (seed Seed) Text() String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.innerText`)).(String)
+	return seed.wrap(seed.Element()+`.innerText`)
 }
 
 func (seed Seed) Location() String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.href`)).(String)
+	return seed.wrap(seed.Element()+`.href`)
 }
 
 func (seed Seed) Data(key string) String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.data["`+key+`"]`)).(String)
+	return seed.wrap(seed.Element()+`.data["`+key+`"]`)
 }
 
-
 func (seed Seed) HTML() String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.innerHTML`)).(String)
+	return seed.wrap(seed.Element()+`.innerHTML`)
 }
 
 func (seed Seed) File() File {
@@ -192,7 +201,7 @@ func (seed Seed) File() File {
 }
 
 func (seed Seed) Display() String {
-	return seed.Qlovascript.Wrap(Javascript.String(seed.Element()+`.style.display`)).(String)
+	return seed.wrap(seed.Element()+`.style.display`)
 }
 
 //Temporary method DEPRECIATED
