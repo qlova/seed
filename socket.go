@@ -14,7 +14,7 @@ import (
 
 import "github.com/gorilla/websocket"
 
-var SingleLocalConnection = false
+var singleLocalConnection = false
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -118,7 +118,7 @@ func socket(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, data, err := c.ReadMessage()
 		if err != nil {
-			if SingleLocalConnection {
+			if singleLocalConnection {
 				os.Exit(0)
 			} else {
 				return

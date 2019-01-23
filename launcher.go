@@ -53,7 +53,7 @@ func (launcher Launcher) Handler() http.Handler {
 		//Editmode socket.
 		if request.URL.Path == "/socket" && local {
 			LocalClients++
-			SingleLocalConnection = LocalClients == 1
+			singleLocalConnection = LocalClients == 1
 			socket(response, request)
 			return
 		}
@@ -139,16 +139,21 @@ func (launcher Launcher) Handler() http.Handler {
 	}))
 }
 
-func (launcher Launcher) Launch() {
+func (launcher Launcher) Launch(port ...string) {
 	if launcher.Seed.seed != nil {
-		if launcher.Listen == "" {
-			launcher.Listen = ":1234"
-		}
 		http.Handle("/", launcher.Handler())
+
+		if len(port) > 0 {
+			launcher.Listen = port[0]
+		}
 
 		//Allow port config from Env
 		if port := os.Getenv("PORT"); port != "" {
 			launcher.Listen = port
+		}
+
+		if launcher.Listen == "" {
+			launcher.Listen = ":1234"
 		}
 			
 		//Launch the app if possible.

@@ -82,3 +82,9 @@ func (page Page) Get(key string) string {
 func (page Page) Script(q Script) script.Page {
 	return script.Page{page.Seed.Script(q)}
 }
+
+func (seed Seed) SetPage(page Page) {
+	seed.OnReady(func(q Script) {
+		q.Javascript(`if (!window.localStorage.getItem("*CurrentPage")) goto("`+page.id+`");`)
+	})
+}

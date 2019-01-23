@@ -1,21 +1,3 @@
-/*
-	Seed is an eco-friendly Go library for creating cross-platform applications that work on the Desktop, Mobile and Web.
-	
-	Example:
-		
-		package main
-
-		import "github.com/qlova/seed"
-
-		func main() {
-			var App = seed.New()
-			App.SetName("Hello World")
-			App.SetText("Hello World")
-			App.Launch()
-		}
-
-*/
-
 package seed
 
 import "github.com/qlova/seed/worker"
@@ -392,7 +374,7 @@ func (seed Seed) BuildDynamicHandler() (func(w http.ResponseWriter, r *http.Requ
 }
 
 //TODO random port, can be set with enviromental variables.
-func (seed Seed) Launch() error {
-	Launcher{Seed: seed}.Launch()
+func (seed Seed) Launch(listen ...string) error {
+	Launcher{Seed: seed}.Launch(listen...)
 	return nil
 }
