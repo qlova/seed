@@ -319,13 +319,13 @@ func (application Application) render(production bool, platform Platform) []byte
 		<style>			
 			`))
 
-		if platform != Desktop {
+		/*if platform == Desktop {
 			buffer.WriteString(`
 				::-webkit-scrollbar { 
 					display: none; 
 				}
 			`)
-		}
+		}*/
 
 		buffer.Write([]byte(`
 
