@@ -7,11 +7,22 @@ type Application struct {
 	manifest.Manifest
 }
 
-func NewApp() Application {
-	return Application {
+//Create a new application, accepts title and content arguments.
+func NewApp(args ...string) Application {
+	var app = Application {
 		Seed: New(),
 		Manifest: manifest.New(),
 	}
+
+	if len(args) > 0 {
+		app.SetName(args[0])
+	}
+
+	if len(args) > 1 {
+		app.SetContent(args[1])
+	}
+
+	return app
 }
 
 //TODO random port, can be set with enviromental variables.

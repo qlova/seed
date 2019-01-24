@@ -7,10 +7,7 @@ This package can be used to write web applications without the need for HTML, CS
 	import "github.com/qlova/seed"
 	
 	func main() {
-		var App = seed.NewApp()
-		App.SetName("Hello World")
-		App.SetText("Hello World")
-		App.Launch()
+		seed.NewApp("Hello World", "Hello World").Launch()
 	}
 
 Applications can be local or remote and are automatically served and managed by the package.
