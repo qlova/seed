@@ -187,21 +187,8 @@ func (seed Seed) SetText(data string) {
 	seed.content = []byte(data)
 }
 
-type Client struct {
-	client
-}
-
-func (client Client) WriteString(s string) {
-	client.client.ResponseWriter.Write([]byte(s))
-}
-
-type client struct {
-	http.ResponseWriter
-	*http.Request
-}
-
 //Set the text content of the seed which will be dynamic at runtime.
-func (seed Seed) SetDynamicText(f func(Client)) {
+func (seed Seed) SetDynamicText(f func(User)) {
 	seed.dynamicText = f
 }
 
@@ -333,7 +320,7 @@ func (seed Seed) BuildAnimations() []byte {
 
 type dynamicHandler struct {
 	id string
-	handler func(Client)
+	handler func(User)
 }
 
 func (seed Seed) buildDynamicHandler(handler *[]dynamicHandler) {
@@ -364,10 +351,7 @@ func (seed Seed) BuildDynamicHandler() (func(w http.ResponseWriter, r *http.Requ
 			w.Write([]byte(`"`))
 			w.Write([]byte(handler.id))
 			w.Write([]byte(`":"`))
-			handler.handler(Client{client{
-				Request: r,
-				ResponseWriter: w, 
-			}})
+			handler.handler(User{}.FromHandler(w, r))
 			w.Write([]byte(`"`))
 		}
 	}

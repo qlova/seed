@@ -1,6 +1,6 @@
 package script
 
-import "github.com/qlova/script"
+import qlova "github.com/qlova/script"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/language/javascript"
 
@@ -12,8 +12,12 @@ func (page Page) Goto() {
 	page.Javascript(`goto("`+page.ID+`");`)
 }
 
-func (a Page) Equals(b Page) script.Bool {
-	return a.Qlovascript.BoolFromLanguageType(Javascript.Bit{
+func (a Page) Equals(b Page) qlova.Bool {
+	return a.Q.BoolFromLanguageType(Javascript.Bit{
 		Expression: language.Statement(`("`+a.ID+`" == "`+b.ID+`")`),
 	})
+}
+
+func (page Page) SetCurrent() {
+	page.Javascript(`current_page = `+page.ID)
 }

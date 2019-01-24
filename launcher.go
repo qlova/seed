@@ -12,6 +12,8 @@ import (
 import ua "github.com/avct/uasurfer"
 import "github.com/NYTimes/gziphandler"
 
+import "github.com/qlova/seed/script"
+
 /* 
 	A Launcher is used to launch your seed into an application.
 	
@@ -73,7 +75,7 @@ func (launcher Launcher) Handler() http.Handler {
 
 		//Remote procedure calls.
 		if len(request.URL.Path) > 5 && request.URL.Path[:6] == "/call/" {
-			callHandler(response, request, request.URL.Path[6:] )
+			script.Handler(response, request, request.URL.Path[6:] )
 			return
 		}
 		

@@ -19,9 +19,9 @@ func (feed Feed) OnRefresh(f func(Script)) {
 	})
 }
 
-var feeds = make(map[string]func(Client))
+var feeds = make(map[string]func(User))
 
-func (seed Seed) AddFeed(template Seed, feed func(Client)) Feed {
+func (seed Seed) AddFeed(template Seed, feed func(User)) Feed {
 	var WrapperSeed = New()
 	WrapperSeed.SetSize(100, Auto)
 	WrapperSeed.SetUnshrinkable()
@@ -92,9 +92,6 @@ func (seed Seed) AddFeed(template Seed, feed func(Client)) Feed {
 
 func feedHandler(w http.ResponseWriter, r *http.Request, id string) {
 	if feed, ok := feeds[id]; ok {
-		feed(Client{client{
-			Request: r,
-			ResponseWriter: w, 
-		}})
+		feed(User{}.FromHandler(w, r))
 	}
 }

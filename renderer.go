@@ -6,6 +6,7 @@ import (
 	"fmt"
 )
 
+import "github.com/qlova/seed/script"
 import "github.com/qlova/seed/style"
 
 type Platform int
@@ -132,13 +133,13 @@ func (seed Seed) HTML(platform Platform) ([]byte) {
 	
 	if seed.onclick != nil {
 		html.WriteString(" onclick='")
-		html.Write(toJavascript(seed.onclick))
+		html.WriteString(script.ToJavascript(seed.onclick))
 		html.WriteByte('\'')
 	}
 	
 	if seed.onchange != nil {
 		html.WriteString(" onchange='")
-		html.Write(toJavascript(seed.onchange))
+		html.WriteString(script.ToJavascript(seed.onchange))
 		html.WriteByte('\'')
 	}
 	
@@ -202,7 +203,7 @@ func (seed Seed) buildOnReady(platform Platform, buffer *bytes.Buffer) {
 	
 	if seed.onready != nil {
 		buffer.WriteByte('{')
-		buffer.Write(toJavascript(seed.onready))
+		buffer.WriteString(script.ToJavascript(seed.onready))
 		buffer.WriteByte('}')
 	}
 }

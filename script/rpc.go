@@ -1,24 +1,14 @@
-package seed
+package script
 
 import (
 	"fmt"
 	"reflect"
 )
 
+import "github.com/qlova/seed/user"
+
 import qlova "github.com/qlova/script"
-import "github.com/qlova/seed/script"
 import "github.com/qlova/script/language"
-import "github.com/qlova/script/language/javascript"
-
-func raw(s script.String) string {
-	return string(s.LanguageType().(Javascript.String).Expression)
-}
-
-func (q Script) wrap(s string) script.String {
-	return q.StringFromLanguageType(Javascript.String{
-		Expression: language.Statement(s),
-	})
-}
 
 type Promise struct {
 	expression string
@@ -55,7 +45,7 @@ func (q Script) rpc(f interface{}, args ...qlova.Type) Promise {
 	
 	var StartFrom = 0;
 	//The function can take an optional client as it's first argument.
-	if value.Type().NumIn() > 0 && value.Type().In(0) == reflect.TypeOf(Client{}) {
+	if value.Type().NumIn() > 0 && value.Type().In(0) == reflect.TypeOf(user.User{}) {
 		StartFrom = 1;
 	}
 	
@@ -70,7 +60,7 @@ func (q Script) rpc(f interface{}, args ...qlova.Type) Promise {
 		}
 	}
 
-	var variable = script.Unique() 
+	var variable = Unique() 
 	
 	q.Raw("Javascript", language.Statement(`let `+variable+` = request("POST", "`+CallingString+`");`))
 	

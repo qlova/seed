@@ -6,6 +6,13 @@ import "bytes"
 import "fmt"
 import "strings"
 
+/*
+	Possible names for this format?
+
+	SEED
+	SOON
+*/
+
 func openIML(path string) map[string]string {
 	file, err := os.Open(path)
 	if err != nil {

@@ -3,6 +3,7 @@ package seed
 import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/manifest"
+import "github.com/qlova/seed/user"
 
 import (
 	"net/http"
@@ -10,6 +11,14 @@ import (
 	"encoding/base64"
 	"strings"
 )
+
+type User = user.User
+
+//Return a reference to a new type of user data, this is small data that is used to identify the user.
+func UserData() user.Data {
+	return user.DataType()
+}
+
 
 const Vm = style.Vm
 const Em = style.Em
@@ -73,11 +82,15 @@ type seed struct {
 	manifest manifest.Manifest
 	handlers []func(w http.ResponseWriter, r *http.Request)
 	
-	dynamicText func(Client)
+	dynamicText func(User)
 
 	Landscape, Portrait style.Style
 
 	desktop, mobile, tablet, watch, tv Seed
+}
+
+func (seed Seed) AddTo(parent Interface) {
+	parent.GetSeed().Add(seed)
 }
 
 func (seed Seed) clone() Seed {

@@ -2,301 +2,299 @@ package script
 
 import (
 	"fmt"
+	"reflect"
+
 	"strings"
+	"net/http"
+
+	//Global ids.
+	"encoding/base64"
+	"math/big"
 )
 
+import "github.com/qlova/seed/user"
+
+import "github.com/qlova/seed/style/css"
 import qlova "github.com/qlova/script"
+
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/language/javascript"
 
-import "github.com/qlova/seed/style/css"
-
-type String = qlova.String
-type Object string
-
-type Expression struct {
-	seed Seed
-	expression string
+type Script struct {
+	*script
 }
 
-
-
-type Promise Expression
-
-
-func (p Promise) Raw() string {
-	return p.expression
+type script struct {
+	qlova.Script
 }
 
-func dashes2camels(s string) string {
-	var camel string
-	var parts = strings.Split(s, "-")
-	for i, part := range parts {
-		if i == 0 {
-			camel += part
-		} else {
-			camel += strings.Title(part)
-		}
-	}
-	return camel
-}
-
-type Seed struct {
-	css.Style
-
-	ID, Native string
-	Qlovascript qlova.Script
-}
-
-func (seed Seed) Set(property, value string) {
-	property = dashes2camels(property)
-
-	seed.Javascript(`set(`+seed.Element()+`, "`+property+`", "`+value+`");`)
-}
-
-func (seed Seed) Get(property string) string {
-
-	property = dashes2camels(property)
-
-	return string(`getComputedStyle(`+seed.Element()+`).`+property)
-}
-
-//TODO
-func (seed Seed) Bytes() []byte {
-	return nil
-}
-
-func (seed Seed) Element() string {
-	if seed.Native != "" {
-		return seed.Native
-	}
-	return `get("`+seed.ID+`")`
-}
-
-func (seed Seed) Javascript(js string) {
-	seed.Qlovascript.Raw("Javascript", language.Statement(js))
-}
-
-type File Expression
-
-func (f File) Type() String {
-	return f.seed.wrap(f.expression+`.type`)
-}
-
-func (f File) Name() String {
-	return f.seed.wrap(f.expression+`.name`)
-}
-
-func raw(s String) string {
+func raw(s qlova.String) string {
 	return string(s.LanguageType().(Javascript.String).Expression)
 }
 
-func (seed Seed) wrap(s string) String {
-	return seed.Qlovascript.StringFromLanguageType(Javascript.String{
+func (q Script) wrap(s string) qlova.String {
+	return q.StringFromLanguageType(Javascript.String{
 		Expression: language.Statement(s),
 	})
 }
 
-func (seed Seed) SetText(s String) {	
-	seed.Javascript(seed.Element()+`.textContent = `+raw(s)+`;`)
+
+func (q Script) newSeed(tag string) Seed {
+	var variable = Unique()
+	q.Javascript(`let `+variable+` = document.createElement("`+tag+`");`)
+	var seed = Seed{
+		Native: variable,
+		Q: q,
+	}
+	seed.Style = css.Style{Stylable: seed}
+	return seed
 }
 
-func (seed Seed) SetPath(s String) {
-	seed.Javascript(seed.Element()+`.src = `+raw(s)+`;`)
-}
-func (seed Seed) SetSource(s String) {
-	seed.Javascript(seed.Element()+`.src = `+raw(s)+`;`)
+/*func (q Script) New(inherit func() Seed) script.Seed {
+	var parent = inherit()
+	var seed = q.newSeed(parent.tag)
+	return seed
+}*/
+
+func (q Script) NewSeed() Seed {
+	return q.newSeed("div")
 }
 
-func (seed Seed) SetHTML(s String) {
-	seed.Javascript(seed.Element()+`.innerHTML = `+raw(s)+`;`)
+func (q Script) Contains(text, match qlova.String) qlova.Bool {
+	return q.Script.BoolFromLanguageType(Javascript.Bit{Expression:language.Statement(raw(text)+`.includes(`+raw(match)+`)`)})
 }
 
-func (seed Seed) SetLeft(s String) {
-	seed.Javascript(`set(`+seed.Element()+`, "left", `+raw(s)+`);`)
-}
+/*func (q Script) After(promise script.Promise, f func(q Script)) {
+	q.Javascript(promise.Raw()+".then(function() {")
+	f(q)
+	q.Javascript("})")
+}*/
 
-func (seed Seed) SetDisplay(s String) {
-	seed.Javascript(`set(`+seed.Element()+`, "display", `+raw(s)+`);`)
-}
-
-func (seed Seed) SetVisible() {
-	seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
-}
-
-func (seed Seed) SetHidden() {
-	seed.Javascript(`set(`+seed.Element()+`, "display", "none");`)
-}
-
-func (seed Seed) Click() {
-	seed.Javascript(seed.Element()+`.click();`)
-}
-
-var unique int
-func Unique() string {
-	unique++
-	return fmt.Sprint("unique_", unique)
-}
-
-func (seed Seed) Play() Promise {
-	var variable = Unique() 
-	seed.Javascript(`let `+variable+` = `+seed.Element()+`.play();`)
-	return Promise{seed:seed, expression: variable}
-}
-
-func (seed Seed) Pause() {
-	seed.Javascript(seed.Element()+`.pause();`)
-}
-
-func (seed Seed) Focus() {
-	seed.Javascript(seed.Element()+`.focus();`)
-}
-
-func (seed Seed) Restart() {
-	seed.Javascript(seed.Element()+`.load();`)
-}
-
-func (seed Seed) Left() String {
-	return seed.wrap(seed.Element()+`.style.left`)
-}
-
-func (seed Seed) Width() String {
-	return seed.wrap(`getComputedStyle(get("`+seed.ID+`")).width`)
-}
-
-func (seed Seed) SetValue(value String) {
-	seed.Javascript(seed.Element()+`.value = `+raw(value)+`;`)
-}
-
-func (seed Seed) SetPlaceholder(value String) {
-	seed.Javascript(seed.Element()+`.placeholder = `+raw(value)+`;`)
-}
-
-func (seed Seed) SetClass(value String) {
-	seed.Javascript(seed.Element()+`.className = `+raw(value)+`;`)
-}
-
-func (seed Seed) Value() String {
-	return seed.wrap(seed.Element()+`.value`)
-}
-
-func (seed Seed) Text() String {
-	return seed.wrap(seed.Element()+`.innerText`)
-}
-
-func (seed Seed) Location() String {
-	return seed.wrap(seed.Element()+`.href`)
-}
-
-func (seed Seed) Data(key string) String {
-	return seed.wrap(seed.Element()+`.data["`+key+`"]`)
-}
-
-func (seed Seed) HTML() String {
-	return seed.wrap(seed.Element()+`.innerHTML`)
-}
-
-func (seed Seed) File() File {
-	return File{seed: seed, expression:seed.Element()+`.files[0]`}
-}
-
-func (seed Seed) Display() String {
-	return seed.wrap(seed.Element()+`.style.display`)
-}
-
-//Temporary method DEPRECIATED
-func (f File) Raw() string {
-	return f.expression
-}
-
-func (seed Seed) Load(f File) {
-	seed.Javascript(seed.Element()+`.src = window.URL.createObjectURL(`+f.expression+`);`)
-}
-
-//Add a child seed to this seed.
-func (seed Seed) Add(child Seed) {
-	seed.Javascript(seed.Element()+`.appendChild(`+child.Element()+`);`)
-}
-
-func (seed Seed) OnClick(f func()) {
-	seed.Javascript(seed.Element()+`.onclick = function() {`)
+func (q Script) After(time float64, f func()) {
+	q.Javascript("setTimeout(function() {")
 	f()
-	seed.Javascript(`};`)
+	q.Javascript("}, "+fmt.Sprint(time)+");")
 }
 
-//Animations
-func (seed Seed) SlideInFrom(direction complex128) {
+/*func (q Script) Get(seed Interface) *script.Seed {
+	return &script.Seed{
+		ID: seed.GetSeed().id,
+		Qlovascript: q.Script,
+	}
+}*/
 
-	if direction == 1i {
+func (q Script) LastPage() Page {
+	return Page{Seed{
+		ID: `"+last_page+"`,
+		Q: q,
+	}}
+}
+
+func (q Script) NextPage() Page {
+	return Page{Seed{
+		ID: `"+next_page+"`,
+		Q: q,
+	}}
+}
+
+type Variable string
+
+//All globals have a unique id.
+var global_id int64 = 1;
+
+func NewVariable() Variable {
+	//global identification is compressed to base64 and prefixed with g_.
+	var result = "g_"+base64.RawURLEncoding.EncodeToString(big.NewInt(global_id).Bytes())
+
+	global_id++
+
+	return Variable(result)
+}
+
+func (q Script) Get(name Variable) qlova.String {
+	return q.wrap(`window.localStorage.getItem("`+string(name)+`")`)
+}
+
+func (q Script) Set(name Variable, value qlova.String) {
+	q.Javascript(`window.localStorage.setItem("`+string(name)+`", `+raw(value)+`);`)
+}
+
+func (q Script) UserData(name user.Data) qlova.String {
+	return q.wrap(`getCookie("`+string(name)+`");`)
+}
+
+func (q Script) SetUserData(name user.Data, value qlova.String) {
+	q.Javascript(`setCookie("`+string(name)+`", `+raw(value)+`, 365);`)
+}
+
+func ToJavascript(f func(q Script)) string {
+	return string(toJavascript(f))
+}
+
+func toJavascript(f func(q Script)) []byte {
+	var program = qlova.Program(func(q qlova.Script) {
+		var s = Script{&script{ Script:q }}
+		f(s)
+	})
+	source := program.SourceCode(Javascript.Implementation{})
+	if source.Error {
+		panic(source.ErrorMessage)
+	}
 	
-		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateY(100vh)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
+	return source.Data
+}
 		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateY(0vh)";`)
-			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)
-		seed.Javascript(`})})`)
-	}
 
-	if direction == 1 {
-		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateX(100vw)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
-		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
-			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", ""); }, 500);`)
-		seed.Javascript(`})})`)
-	}
-
-	if direction == -1 {
-		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateX(-100vw)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
-		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
-			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", ""); }, 500);`)
-		seed.Javascript(`})})`)
-	}
+func (q Script) Javascript(js string) {
+	q.Raw("Javascript", language.Statement(js))
 }
 
-//Animations
-func (seed Seed) SlideOutFrom(direction complex128) {
-	/*seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
-	seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-	seed.Javascript(`set(`+seed.Element()+`, "position", "fixed");`)
-	seed.Javascript(`set(`+seed.Element()+`, "top", "0");`)
-	seed.Javascript(`set(`+seed.Element()+`, "left", "0");`)
-	seed.Javascript(`set(`+seed.Element()+`, "transition", "top 0.5s");`)
-	seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "top", "100vh"); }, 30);`)
-	seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)*/
+type Element struct {
+	query string
+	q Script
+}
 
-	if direction == 1i {
-		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateY(0vh)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
-		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateY(100vh)";`)
-			seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", ""); }, 500);`)
-		seed.Javascript(`})})`)
+func (q Script) Query(query qlova.String) Element {
+	return Element{ query: raw(query), q:q }
+}
+
+func (element Element) Run(method string) {
+	element.q.Raw("Javascript", language.Statement(`document.querySelector(`+element.query+`).`+method+`();`))
+}
+
+func (q Script) Alert(message qlova.String) {
+	q.Javascript(`alert(`+raw(message)+`);`)
+}
+
+func (q Script) Back() {
+	q.Javascript(`back();`)
+}
+
+type ExportedFunction struct {
+	f reflect.Value
+}
+
+var exports = make(map[string]reflect.Value)
+
+func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
+	if name, ok := f.(string); ok && len(args) == 0 {
+		q.Raw("Javascript", language.Statement(name+`();`))
+		return nil
+	}
+	
+	var name = fmt.Sprint(f)
+	
+	var value = reflect.ValueOf(f)
+	
+	if value.Kind() != reflect.Func || value.Type().NumOut() > 1 {
+		panic("Script.Call: Must pass a Go function without zero or one return values")
+	}
+	exports[name] = value
+	
+	var CallingString = `/call/`+name
+	
+	var StartFrom = 0;
+	//The function can take an optional client as it's first argument.
+	if value.Type().NumIn() > 0 && value.Type().In(0) == reflect.TypeOf(user.User{}) {
+		StartFrom = 1;
+	}
+	
+	for i := StartFrom; i < value.Type().NumIn(); i++ {
+		switch value.Type().In(i).Kind() {
+			case reflect.String:
+				
+				CallingString += `/_"+encodeURIComponent(`+raw(args[i-StartFrom].(qlova.String))+`)+"`
+				
+			default:
+				panic("Unimplemented: script.Run("+value.Type().String()+")")
+		}
 	}
 
-	if direction == 1 {
-		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
+	q.Raw("Javascript", language.Statement(`let request = new XMLHttpRequest(); request.open("POST", "`+CallingString+`"); request.onload = function() {`))
+	
+	if value.Type().NumOut() == 1 {
+		switch value.Type().Out(0).Kind() {
+			
+			case reflect.String:
+				return q.wrap("this.responseText")
+			
+			default:
+				panic(value.Type().String()+" Unimplemented")
+		}
+	}
+	
+	return nil
+}
+
+func (q Script) Run(f interface{}, args ...qlova.Type) {
+	q.call(f, args...)
+}
+
+//Export a Go function to Javascript. Don't use this for non-local apps! TODO enforce this
+func (q Script) Call(f interface{}, args ...qlova.Type) qlova.Type {	
+	return q.call(f, args...)
+}
+
+func Handler(w http.ResponseWriter, r *http.Request, call string) {
+	fmt.Println(r.URL)
+
+	var args = strings.Split(call, "/")
+	if len(args) == 0 {
+		return
+	}
+	
+	f, ok := exports[args[0]]
+	if !ok {
+		return
+	}
+	
+	var in []reflect.Value
+	
+	var StartFrom = 0;
+	//The function can take an optional client as it's first argument.
+	if f.Type().NumIn() > 0 && f.Type().In(0) == reflect.TypeOf(user.User{}) {
+		StartFrom = 1;
 		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateX(100vw)";`)
-			seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", ""); }, 500);`)
-		seed.Javascript(`})})`)
+		in = append(in, reflect.ValueOf(user.User{}.FromHandler(w, r)))
+		
+	}
+	
+	if len(args)-1 != f.Type().NumIn()-StartFrom {
+		println("argument length mismatch")
+		return
+	}
+	
+	
+	
+	
+	for i := StartFrom; i < f.Type().NumIn(); i++ {
+		switch f.Type().In(i).Kind() {
+			case reflect.String:
+				
+				in = append(in, reflect.ValueOf(args[i+1-StartFrom][1:]))
+				
+			default:
+				println("unimplemented callHandler for "+f.Type().String())
+				return
+		}
+	}
+	
+	var results = f.Call(in)
+	if len(results) == 0 {
+		fmt.Fprint(w, "done")
+		return
+	}
+	switch results[0].Kind() {
+		
+		case reflect.String:
+			if results[0].Interface().(string) == "" {
+				//Error
+				http.Error(w, "", 500)
+				return
+			}
+			fmt.Fprint(w, results[0].Interface())
+			
+		default:
+			fmt.Println(results[0].Type().String(), " Unimplemented")
 	}
 }
