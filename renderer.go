@@ -692,6 +692,14 @@ func (application Application) render(production bool, platform Platform) []byte
 			dynamic.send();`)
 		}
 
+		for name, function := range functions {
+			buffer.WriteString("function ")
+			buffer.WriteString(name)
+			buffer.WriteString("() {")
+			buffer.WriteString(script.ToJavascript(function))
+			buffer.WriteString("}")
+		}
+
 		buffer.Write([]byte(`	
 				</script>
 				

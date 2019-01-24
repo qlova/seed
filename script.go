@@ -9,6 +9,23 @@ func NewVariable() script.Variable {
 	return script.NewVariable()
 }
 
+var functions = make(map[string]func(Script))
+
+//Define a new function that can be called from any Script context.
+func NewFunction(f func(Script), names ...string) script.Function {
+	var name string
+	if len(names) > 0 {
+		name = names[0]
+	} else {
+		name = script.Unique()
+	}
+
+	//TODO auto dependencies.
+	functions[name] = f
+
+	return script.Function(name)
+}
+
 //Return a scriptable version of this seed.
 func (seed Seed) Script(q Script) script.Seed {
 	return script.Seed{

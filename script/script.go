@@ -28,6 +28,10 @@ type script struct {
 	qlova.Script
 }
 
+func (q Script) RawString(s qlova.String) string {
+	return raw(s)
+}
+
 func raw(s qlova.String) string {
 	return string(s.LanguageType().(Javascript.String).Expression)
 }
@@ -231,8 +235,9 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
 	return nil
 }
 
-func (q Script) Run(f interface{}, args ...qlova.Type) {
-	q.call(f, args...)
+func (q Script) Run(f Function, args ...qlova.Type) {
+	//.call(f, args...)
+	q.Javascript(string(f)+"();")
 }
 
 //Export a Go function to Javascript. Don't use this for non-local apps! TODO enforce this
