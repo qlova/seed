@@ -14,12 +14,9 @@ import "github.com/NYTimes/gziphandler"
 
 import "github.com/qlova/seed/script"
 
-/* 
-	A Launcher is used to launch your seed into an application.
-	
-*/
+
 type Launcher struct {
-	Seed //The default seed.
+	Application
 
 	//Hostname and port where you want the application to be listening on.
 	Listen string
@@ -34,18 +31,18 @@ func (launcher Launcher) Handler() http.Handler {
 		log.Fatal(err)
     }
 
-	minified, err := mini(launcher.Seed.render(true, Default))
+	minified, err := mini(launcher.render(true, Default))
 	if err != nil {
 		//Panic?
 	}
 
-	var html = launcher.Seed.render(false, Default)
+	var html = launcher.render(false, Default)
 
 	var worker = ServiceWorker.Render()
-	var manifest = launcher.Seed.manifest.Render()
+	var manifest = launcher.Manifest.Render()
 	var dynamic = launcher.Seed.BuildDynamicHandler()
 
-	var desktop = launcher.Seed.render(true, Desktop)
+	var desktop = launcher.render(true, Desktop)
 
 	var LocalClients = 0
 

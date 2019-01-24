@@ -8,7 +8,6 @@ import "github.com/qlova/seed/style/css"
 func NewToolBar() Seed {
 	seed := New()
 
-	seed.SetName("Toolbar")
 	seed.Stylable.Set("display", "flex")
 	seed.Stylable.Set("position", "fixed")
 	seed.SetFlexDirection(css.Row)
@@ -20,7 +19,6 @@ func NewSpacer(amount ...float64) Seed {
 	
 	
 	seed := New()
-	seed.SetName("Spacer")
 
 	if len(amount) > 0 {
 		seed.SetExpand(amount[0])
@@ -52,7 +50,6 @@ func AddExpanderTo(parent Interface, ratio ...float64) Seed {
 
 func NewLine() Seed {
 	seed := New()
-	seed.SetName("Line")
 	seed.tag = "hr"
 	
 	seed.SetSize(Auto, Auto)
@@ -64,7 +61,6 @@ func NewLine() Seed {
 
 func NewLink(url string) Seed {
 	seed := New()
-	seed.SetName("Link")
 	seed.tag = "a"
 	seed.attr = "href='"+url+"'"
 	
@@ -73,7 +69,6 @@ func NewLink(url string) Seed {
 
 func NewHeader() Seed {
 	seed := New()
-	seed.SetName("Header")
 	seed.tag = "h1"
 	
 	seed.SetSize(Auto, Auto)
@@ -104,7 +99,6 @@ func AddPopupTo(parent Interface) Seed {
 
 func NewFilePicker(types ...string) Seed {
 	seed := New()
-	seed.SetName("File")
 	seed.tag = "input"
 	if len(types) > 0 {
 		seed.attr = `type="file" accept="`+types[0]+`"`
@@ -122,7 +116,6 @@ func AddFilePickerTo(parent Interface, types ...string) Seed {
 
 func NewTextArea() Seed {
 	seed := New()
-	seed.SetName("TextArea")
 	seed.tag = "textarea"
 	seed.attr = "data-gramm_editor=false"
 	
@@ -137,7 +130,6 @@ func AddTextAreaTo(parent Interface) Seed {
 
 func NewListBox(values []string) Seed {
 	seed := New()
-	seed.SetName("ListBox")
 	seed.tag = "select"
 	
 	var content string
@@ -170,7 +162,6 @@ func (text Text) SetSize(s complex128) {
 
 func NewText(s ...string) Text {
 	seed := New()
-	seed.SetName("Text")
 	seed.tag = "span"
 	
 	if len(s) > 0 {
@@ -201,7 +192,6 @@ type TextBox struct {
 
 func NewTextBox(s ...string) TextBox {
 	seed := New()
-	seed.SetName("Text")
 	seed.tag = "input"
 	
 	if len(s) > 0 {
@@ -231,7 +221,6 @@ type Space struct {
 //Create a new Text widget and add it to the provided parent.
 func AddSpaceTo(parent Interface, s ...complex128) Space {
 	seed := New()
-	seed.SetName("Text")
 	seed.tag = "div"
 	
 	if len(s) > 0 {
@@ -253,7 +242,6 @@ type PasswordBox struct {
 //Create a new Text widget and add it to the provided parent.
 func AddPasswordBoxTo(parent Interface) PasswordBox {
 	seed := New()
-	seed.SetName("Text")
 	seed.tag = "input"
 	seed.attr = `type="password"`
 	
@@ -268,7 +256,6 @@ func AddPasswordBoxTo(parent Interface) PasswordBox {
 
 func NewButton() Seed {
 	seed := New()
-	seed.SetName("Button")
 	seed.tag = "button"
 	
 	seed.SetSize(Auto, Auto)
@@ -285,7 +272,6 @@ func AddButtonTo(parent Interface) Seed {
 func NewRow() Seed {
 	seed := New()
 	seed.tag = "div"
-	seed.SetName("Row")
 	seed.Stylable.Set("display", "flex")
 	seed.Stylable.Set("flex-direction", "row")
 	seed.Stylable.Set("flex-shrink", "1")
@@ -302,7 +288,6 @@ func AddRowTo(seed Interface) Seed {
 func NewColumn() Seed {
 	seed := New()
 	seed.tag = "div"
-	seed.SetName("Column")
 	seed.Stylable.Set("display", "inline-flex")
 	seed.Stylable.Set("flex-direction", "column")
 	seed.Stylable.Set("flex-shrink", "1")

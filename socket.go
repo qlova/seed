@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"log"
 	"os"
-	"strings"
-	"strconv"
-	"bufio"
-	"fmt"
-	"encoding/json"
-	"path"
+	//"strings"
+	//"strconv"
+	//"bufio"
+	//"fmt"
+	//"encoding/json"
+	//"path"
 )
 
 import "github.com/gorilla/websocket"
@@ -23,7 +23,7 @@ var upgrader = websocket.Upgrader{
 }
 
 //This will be single threaded.
-type PostProduction map[string]map[string]string
+/*type PostProduction map[string]map[string]string
 
 var post PostProduction
 
@@ -105,7 +105,7 @@ func (p PostProduction) Save() {
 		fmt.Println("Could not save SeedStyleSheet file!");
 		return
 	}
-}
+}*/
  
 func socket(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -116,7 +116,7 @@ func socket(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 	
 	for {
-		_, data, err := c.ReadMessage()
+		_, _, err := c.ReadMessage()
 		if err != nil {
 			if singleLocalConnection {
 				os.Exit(0)
@@ -125,7 +125,7 @@ func socket(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		
-		var StyleModification = string(data)
+		/*var StyleModification = string(data)
 		if len(StyleModification) == 0 || StyleModification[0] != '#' {
 			continue
 		}
@@ -152,6 +152,6 @@ func socket(w http.ResponseWriter, r *http.Request) {
 		var seed, ok = allSeeds[id]
 		if ok {
 			post.Add(Seed{seed}, css)
-		}
+		}*/
 	}
 }

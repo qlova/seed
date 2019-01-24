@@ -36,7 +36,7 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
 		return
 	}
 
-	seed.postProduction()
+	//seed.postProduction()
 	if data := seed.Style.Bytes(); data != nil {
 		seed.styled = true
 		sheet.Add("#"+seed.id, seed.Style)
@@ -58,7 +58,7 @@ func (seed Seed) buildStyleSheetForLandscape(platform Platform, sheet *style.She
 		return
 	}
 
-	seed.postProduction()
+	//seed.postProduction()
 	if data := seed.Landscape.Bytes(); data != nil {
 		seed.styled = true
 		sheet.Add("#"+seed.id, seed.Landscape)
@@ -86,7 +86,7 @@ func (seed Seed) buildStyleSheetForPortrait(platform Platform, sheet *style.Shee
 		return
 	}
 
-	seed.postProduction()
+	//seed.postProduction()
 	if data := seed.Portrait.Bytes(); data != nil {
 		seed.styled = true
 		sheet.Add("#"+seed.id, seed.Portrait)
@@ -104,7 +104,7 @@ func (seed Seed) HTML(platform Platform) ([]byte) {
 		return short.HTML(platform)
 	}
 
-	seed.postProduction()
+	//seed.postProduction()
 
 	var html bytes.Buffer
 	
@@ -220,7 +220,9 @@ func (seed Seed) BuildOnReady(platform Platform) []byte {
 }
 
 //Return a fully fully rendered application in HTML for the seed.
-func (seed Seed) render(production bool, platform Platform) []byte {
+func (application Application) render(production bool, platform Platform) []byte {
+
+	var seed = application.Seed
 
 	seed.OnReady(func(q Script) {
 		q.Javascript(`window.addEventListener('load', function() {
@@ -257,15 +259,15 @@ func (seed Seed) render(production bool, platform Platform) []byte {
 	}
 		
 	buffer.Write([]byte(`
-		<meta name="theme-color" content="`+seed.manifest.ThemeColor+`">
+		<meta name="theme-color" content="`+application.Manifest.ThemeColor+`">
 
-		<title>`+seed.manifest.Name+`</title>
+		<title>`+application.Manifest.Name+`</title>
 
 		<link rel="manifest" href="/app.webmanifest">`))
 
 	
 
-	for i, icon := range seed.manifest.Icons {
+	for i, icon := range application.Manifest.Icons {
 
 		//The first icon can be the Favicon.
 		if i == 0 {

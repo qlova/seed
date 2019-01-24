@@ -2,7 +2,6 @@ package seed
 
 import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/style"
-import "github.com/qlova/seed/manifest"
 import "github.com/qlova/seed/user"
 
 import (
@@ -35,6 +34,7 @@ var Arial = style.Font{
 		FontFamily: "Arial",
 	},
 }
+
 
 func Font(path string) style.Font {
 	RegisterAsset(path)
@@ -78,8 +78,7 @@ type seed struct {
 	//This is a list of scripts that are needed by this seed.
 	//eg. []string{"jquery.js"}
 	scripts []string
-	
-	manifest manifest.Manifest
+
 	handlers []func(w http.ResponseWriter, r *http.Request)
 	
 	dynamicText func(User)
@@ -109,16 +108,14 @@ func (seed Seed) Desktop() Seed {
 	return seed.desktop
 }
 
+//Return the seed itself, when embedded in a struct, this is good way to retrieve the original seed.
 func (seed Seed) Root() Seed {
 	return seed
 }
 
+//Return the parent seed.
 func (seed Seed) Parent() Seed {
 	return seed.parent.Root()
-}
-
-func (seed Seed) Child(number int) Seed {
-	return seed.children[number-1].(Seed)
 }
 
 func (seed Seed) Copy() Seed {
@@ -161,9 +158,6 @@ func New() Seed {
 	seed.Landscape = style.New()
 	seed.Portrait = style.New()
 	seed.tag = "div"
-	
-	//All seeds have the potential to be the root seed, so they all need a minimal viable manifest.
-	seed.manifest = manifest.New()
 
 	allSeeds[seed.id] = seed
 

@@ -19,7 +19,6 @@ func (text Widget) SetSize(s complex128) {
 
 func New(s ...string) Widget {
 	widget := seed.New()
-	widget.SetName("Text")
 	widget.SetTag("span")
 	
 	if len(s) > 0 {
