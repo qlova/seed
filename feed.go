@@ -31,11 +31,11 @@ func (seed Seed) AddFeed(template Seed, feed func(User)) Feed {
 		//Panic?
 	}
 	
-	var ReplaceList string = ".replace(/"+template.GetSeed().id+"/g,'"+template.GetSeed().id+"-'+i)"
+	var ReplaceList string = ".replace(/"+template.Root().id+"/g,'"+template.Root().id+"-'+i)"
 	//Each id needs to be replaced with an id with a unique suffix.
 	//TODO support recursion.
 	for _, child := range template.children {
-		ReplaceList += ".replace(/"+child.GetSeed().id+"/g,'"+child.GetSeed().id+"-'+i)"
+		ReplaceList += ".replace(/"+child.Root().id+"/g,'"+child.Root().id+"-'+i)"
 	}
 
 
@@ -64,14 +64,14 @@ func (seed Seed) AddFeed(template Seed, feed func(User)) Feed {
 			//Figure out what content to replace.
 			for _, child := range template.children {
 
-				var text = string(child.GetSeed().content)
+				var text = string(child.Root().content)
 				if len(text) < 2 {
 					continue
 				}
 				
 				if text[0] == '{' && text[len(text)-1] == '}' {
 					text = text[1:len(text)-1]
-					var id = child.GetSeed().id
+					var id = child.Root().id
 
 					q.Javascript(`get("`+id+`-"+i).innerHTML = json[i]["`+text+`"];`)
 				}

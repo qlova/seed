@@ -89,10 +89,6 @@ type seed struct {
 	desktop, mobile, tablet, watch, tv Seed
 }
 
-func (seed Seed) AddTo(parent Interface) {
-	parent.GetSeed().Add(seed)
-}
-
 func (seed Seed) clone() Seed {
 	var clone = New()
 	clone.id = seed.id
@@ -113,12 +109,12 @@ func (seed Seed) Desktop() Seed {
 	return seed.desktop
 }
 
-func (seed Seed) GetSeed() Seed {
+func (seed Seed) Root() Seed {
 	return seed
 }
 
 func (seed Seed) Parent() Seed {
-	return seed.parent.GetSeed()
+	return seed.parent.Root()
 }
 
 func (seed Seed) Child(number int) Seed {

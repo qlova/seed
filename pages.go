@@ -71,7 +71,7 @@ func init() {
 
 func AddPageTo(parent Interface) Page {
 	var page = NewPage()
-	parent.GetSeed().Add(page)
+	parent.Root().Add(page)
 	return page
 }
 

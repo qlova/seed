@@ -34,6 +34,6 @@ func New(s ...string) Widget {
 //Create a new Text widget and add it to the provided parent.
 func AddTo(parent seed.Interface, s ...string) Widget {
 	var Text = New(s...)
-	parent.GetSeed().Add(Text)
+	parent.Root().Add(Text)
 	return Text
 }

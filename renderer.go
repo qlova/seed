@@ -42,7 +42,7 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
 		sheet.Add("#"+seed.id, seed.Style)
 	}
 	for _, child := range seed.children {
-		child.GetSeed().buildStyleSheet(platform, sheet)
+		child.Root().buildStyleSheet(platform, sheet)
 	}
 }
 
@@ -64,7 +64,7 @@ func (seed Seed) buildStyleSheetForLandscape(platform Platform, sheet *style.She
 		sheet.Add("#"+seed.id, seed.Landscape)
 	}
 	for _, child := range seed.children {
-		child.GetSeed().buildStyleSheetForLandscape(platform, sheet)
+		child.Root().buildStyleSheetForLandscape(platform, sheet)
 	}
 }
 
@@ -92,7 +92,7 @@ func (seed Seed) buildStyleSheetForPortrait(platform Platform, sheet *style.Shee
 		sheet.Add("#"+seed.id, seed.Portrait)
 	}
 	for _, child := range seed.children {
-		child.GetSeed().buildStyleSheetForPortrait(platform, sheet)
+		child.Root().buildStyleSheetForPortrait(platform, sheet)
 	}
 }
 
@@ -150,7 +150,7 @@ func (seed Seed) HTML(platform Platform) ([]byte) {
 	}
 	
 	for _, child := range seed.children {
-		html.Write(child.GetSeed().Render(platform))
+		html.Write(child.Root().Render(platform))
 	}
 	
 	html.WriteString("</")
@@ -172,7 +172,7 @@ func (seed Seed) getScripts(platform Platform) []string {
 	var scripts = seed.scripts
 
 	for _, child := range seed.children {
-		scripts = append(scripts, child.GetSeed().getScripts(platform)...)
+		scripts = append(scripts, child.Root().getScripts(platform)...)
 	}
 	
 	return scripts
@@ -198,7 +198,7 @@ func (seed Seed) buildOnReady(platform Platform, buffer *bytes.Buffer) {
 	}
 	
 	for _, child := range seed.children {
-		child.GetSeed().buildOnReady(platform, buffer)
+		child.Root().buildOnReady(platform, buffer)
 	}
 	
 	if seed.onready != nil {

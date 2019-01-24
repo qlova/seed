@@ -45,7 +45,7 @@ func NewExpander(ratio ...float64) Seed {
 
 func AddExpanderTo(parent Interface, ratio ...float64) Seed {
 	seed := NewExpander(ratio...)
-	parent.GetSeed().Add(seed)
+	parent.Root().Add(seed)
 	return seed
 }
 
@@ -98,7 +98,7 @@ func NewPopup() Seed {
 
 func AddPopupTo(parent Interface) Seed {
 	seed := NewPopup()
-	parent.GetSeed().Add(seed)
+	parent.Root().Add(seed)
 	return seed
 }
 
@@ -116,7 +116,7 @@ func NewFilePicker(types ...string) Seed {
 
 func AddFilePickerTo(parent Interface, types ...string) Seed {
 	seed := NewFilePicker(types...)
-	parent.GetSeed().Add(seed)
+	parent.Root().Add(seed)
 	return seed
 }
 
@@ -131,7 +131,7 @@ func NewTextArea() Seed {
 
 func AddTextAreaTo(parent Interface) Seed {
 	var TextArea = NewTextArea()
-	parent.GetSeed().Add(TextArea)
+	parent.Root().Add(TextArea)
 	return TextArea
 }
 
@@ -190,7 +190,7 @@ func NewText(s ...string) Text {
 //Create a new Text widget and add it to the provided parent.
 func AddTextTo(parent Interface, s ...string) Text {
 	var Text = NewText(s...)
-	parent.GetSeed().Add(Text)
+	parent.Root().Add(Text)
 	return Text
 }
 
@@ -219,7 +219,7 @@ func NewTextBox(s ...string) TextBox {
 //Create a new Text widget and add it to the provided parent.
 func AddTextBoxTo(parent Interface, s ...string) TextBox {
 	var TextBox = NewTextBox(s...)
-	parent.GetSeed().Add(TextBox)
+	parent.Root().Add(TextBox)
 	return TextBox
 }
 
@@ -241,7 +241,7 @@ func AddSpaceTo(parent Interface, s ...complex128) Space {
 	var Space = Space{
 		Seed: seed,
 	}
-	parent.GetSeed().Add(Space)
+	parent.Root().Add(Space)
 	return Space
 }
 
@@ -262,7 +262,7 @@ func AddPasswordBoxTo(parent Interface) PasswordBox {
 	var PasswordBox = PasswordBox{
 		Seed: seed,
 	}
-	parent.GetSeed().Add(PasswordBox)
+	parent.Root().Add(PasswordBox)
 	return PasswordBox
 }
 
@@ -276,9 +276,9 @@ func NewButton() Seed {
 	return seed
 }
 
-func AddButtonTo(parent Seed) Seed {
+func AddButtonTo(parent Interface) Seed {
 	seed := NewButton()
-	parent.Add(seed)
+	parent.Root().Add(seed)
 	return seed
 }
 
@@ -293,9 +293,9 @@ func NewRow() Seed {
 	return seed
 }
 
-func AddRowTo(seed Seed) Seed {
+func AddRowTo(seed Interface) Seed {
 	var row = NewRow()
-	seed.Add(row)
+	seed.Root().Add(row)
 	return row
 }
 
@@ -311,8 +311,8 @@ func NewColumn() Seed {
 	return seed
 }
 
-func AddColumnTo(seed Seed) Seed {
+func AddColumnTo(seed Interface) Seed {
 	var column = NewColumn()
-	seed.Add(column)
+	seed.Root().Add(column)
 	return column
 }

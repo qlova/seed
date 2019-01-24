@@ -151,7 +151,7 @@ func (seed Seed) Require(script string) {
 //Add a child seed to this seed.
 func (seed Seed) Add(child Interface) {
 	seed.children = append(seed.children, child)
-	child.GetSeed().SetParent(seed)
+	child.Root().SetParent(seed)
 }
 
 //Add a handler to the seed, when this seed is launched as root, the handlers will be executed for each incomming request.
@@ -268,7 +268,7 @@ func (seed Seed) buildFonts() map[style.Font]struct{} {
 	}
 
 	for _, child := range seed.children {
-		for font := range child.GetSeed().buildFonts() {
+		for font := range child.Root().buildFonts() {
 			fonts[font] = struct{}{}
 		}
 	}
@@ -298,7 +298,7 @@ func (seed Seed) buildAnimations(animations *[]Animation, names *[]string) {
 	}
 
 	for _, child := range seed.children {
-		child.GetSeed().buildAnimations(animations, names)
+		child.Root().buildAnimations(animations, names)
 	}
 }
 
@@ -333,7 +333,7 @@ func (seed Seed) buildDynamicHandler(handler *[]dynamicHandler) {
 	}
 	
 	for _, child := range seed.children {
-		child.GetSeed().buildDynamicHandler(handler)
+		child.Root().buildDynamicHandler(handler)
 	}
 }
 

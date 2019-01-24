@@ -56,7 +56,12 @@ func (q Script) newSeed(tag string) Seed {
 	return seed
 }*/
 
-func (q Script) NewSeed() Seed {
+func (q Script) NewSeed(tag ...string) Seed {
+
+	if len(tag) > 0 {
+		return q.newSeed(tag[0])
+	}
+
 	return q.newSeed("div")
 }
 
