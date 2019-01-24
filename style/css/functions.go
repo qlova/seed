@@ -3,6 +3,7 @@ package css
 import (
 	"fmt"
 	go_color "image/color"
+	"math"
 )
 
 const Pc = 1
@@ -13,7 +14,11 @@ const Vm = 1i - 1
 
 func Decode(unit complex128) unitType {
 	if unit == 0 {
-		return "initial"
+		return "0"
+	}
+
+	if real(unit) == math.MaxFloat64 {
+		return "auto"
 	}
 
 	if imag(unit) == real(unit) {

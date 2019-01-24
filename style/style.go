@@ -15,7 +15,7 @@ const Bottom = 1i
 const Left = -1
 const Right = 1
 
-const Auto = 0
+const Auto = math.MaxFloat64
 const Center = 0
 
 type Style struct {
