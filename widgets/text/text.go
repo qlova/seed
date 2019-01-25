@@ -27,6 +27,8 @@ func New(s ...string) Widget {
 	
 	widget.SetSize(seed.Auto, seed.Auto)
 
+	widget.Align(0)
+
 	return  Widget{widget}
 }
 
