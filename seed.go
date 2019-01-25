@@ -18,15 +18,22 @@ func UserData() user.Data {
 	return user.DataType()
 }
 
-
+//The Vm value is relative to the viewport size.
 const Vm = style.Vm
+
+//The Em value is relative to the current font size.
 const Em = style.Em
+
+//The Px value (pixels)
 const Px = style.Px
+
+//The auto value where appropriate will automatically select a suitable value.
+const Auto = style.Auto
+
 const Top = style.Top
 const Bottom = style.Bottom
 const Left = style.Left
 const Right = style.Right
-const Auto = style.Auto
 const Center = style.Center
 
 var Arial = style.Font{
