@@ -2,14 +2,14 @@ package seed
 
 import "github.com/qlova/seed/manifest"
 
-type Application struct {
+type App struct {
 	Seed
 	manifest.Manifest
 }
 
 //Create a new application, accepts title and content arguments.
-func NewApp(args ...string) Application {
-	var app = Application {
+func NewApp(args ...string) App {
+	var app = App {
 		Seed: New(),
 		Manifest: manifest.New(),
 	}
@@ -26,7 +26,7 @@ func NewApp(args ...string) Application {
 }
 
 //TODO random port, can be set with enviromental variables.
-func (app Application) Launch(listen ...string) error {
-	Launcher{Application: app}.Launch(listen...)
+func (app App) Launch(listen ...string) error {
+	Launcher{App: app}.Launch(listen...)
 	return nil
 }

@@ -16,7 +16,7 @@ import "github.com/qlova/seed/script"
 
 
 type Launcher struct {
-	Application
+	App
 
 	//Hostname and port where you want the application to be listening on.
 	Listen string
