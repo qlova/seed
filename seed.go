@@ -54,9 +54,6 @@ func (seed Seed) SetFont(font style.Font) {
 	seed.Style.SetFont(font)
 }
 
-
-//#seedsafe
-type Slice []*seed
 type Seed struct {
 	*seed
 }
