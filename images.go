@@ -9,9 +9,9 @@ func NewImage(path string) Seed {
 	return seed
 }
 
-func AddImageTo(seed Seed, path string) Seed {
+func AddImageTo(seed Interface, path string) Seed {
 	var image = NewImage(path)
-	seed.Add(image)
+	seed.Root().Add(image)
 	return image
 }
 

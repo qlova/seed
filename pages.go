@@ -18,7 +18,8 @@ type Page struct {
 }
 
 func NewPage() Page {
-	seed := NewColumn()
+	seed := New()
+	seed.SetCol()
 	
 	seed.page = true
 	seed.class = "page"

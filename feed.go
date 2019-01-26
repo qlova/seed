@@ -21,12 +21,12 @@ func (feed Feed) OnRefresh(f func(Script)) {
 
 var feeds = make(map[string]func(User))
 
-func (seed Seed) AddFeed(template Seed, feed func(User)) Feed {
+func (seed Seed) AddFeed(template Interface, feed func(User)) Feed {
 	var WrapperSeed = New()
 	WrapperSeed.SetSize(100, Auto)
 	WrapperSeed.SetUnshrinkable()
 
-	minified, err := mini(template.HTML(Default))
+	minified, err := mini(template.Root().HTML(Default))
 	if err != nil {
 		//Panic?
 	}
@@ -34,7 +34,7 @@ func (seed Seed) AddFeed(template Seed, feed func(User)) Feed {
 	var ReplaceList string = ".replace(/"+template.Root().id+"/g,'"+template.Root().id+"-'+i)"
 	//Each id needs to be replaced with an id with a unique suffix.
 	//TODO support recursion.
-	for _, child := range template.children {
+	for _, child := range template.Root().children {
 		ReplaceList += ".replace(/"+child.Root().id+"/g,'"+child.Root().id+"-'+i)"
 	}
 
@@ -59,10 +59,10 @@ func (seed Seed) AddFeed(template Seed, feed func(User)) Feed {
 
 			q.Javascript(`for (let i = 0; i < json.length; i++) {`)
 
-			q.Javascript(`get("`+template.id+`-"+i).data = json[i];`)
+			q.Javascript(`get("`+template.Root().id+`-"+i).data = json[i];`)
 			
 			//Figure out what content to replace.
-			for _, child := range template.children {
+			for _, child := range template.Root().children {
 
 				var text = string(child.Root().content)
 				if len(text) < 2 {
