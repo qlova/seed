@@ -15,7 +15,7 @@ import "github.com/NYTimes/gziphandler"
 import "github.com/qlova/seed/script"
 
 
-type Launcher struct {
+type launcher struct {
 	App
 
 	//Hostname and port where you want the application to be listening on.
@@ -24,7 +24,7 @@ type Launcher struct {
 
 
 //Returns a http handler that serves this application.
-func (launcher Launcher) Handler() http.Handler {
+func (launcher launcher) Handler() http.Handler {
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
     if err != nil {
@@ -138,7 +138,7 @@ func (launcher Launcher) Handler() http.Handler {
 	}))
 }
 
-func (launcher Launcher) Launch(port ...string) {
+func (launcher launcher) Launch(port ...string) {
 	if launcher.Seed.seed != nil {
 		http.Handle("/", launcher.Handler())
 

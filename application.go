@@ -27,6 +27,6 @@ func NewApp(args ...string) App {
 
 //TODO random port, can be set with enviromental variables.
 func (app App) Launch(listen ...string) error {
-	Launcher{App: app}.Launch(listen...)
+	launcher{App: app}.Launch(listen...)
 	return nil
 }
