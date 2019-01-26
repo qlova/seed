@@ -6,18 +6,18 @@ type Widget struct {
 	seed.Seed
 }
 
-func New(amount ...float64) Widget {
+func New(amount ...complex128) Widget {
 	widget := seed.New()
 
-	if len(s) > 0 {
-		widget.SetSize(s[0], s[0])
+	if len(amount) > 0 {
+		widget.SetSize(amount[0], amount[0])
 	}
 
 	return  Widget{widget}
 }
 
 //Create a new Text widget and add it to the provided parent.
-func AddTo(parent seed.Interface, amount ...float64) Widget {
+func AddTo(parent seed.Interface, amount ...complex128) Widget {
 	var widget = New(amount...)
 	parent.Root().Add(widget)
 	return widget
