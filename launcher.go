@@ -38,7 +38,7 @@ func (launcher launcher) Handler() http.Handler {
 
 	var html = launcher.render(false, Default)
 
-	var worker = ServiceWorker.Render()
+	var worker = launcher.App.Worker.Render()
 	var manifest = launcher.Manifest.Render()
 	var dynamic = launcher.Seed.BuildDynamicHandler()
 

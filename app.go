@@ -1,6 +1,5 @@
 package seed
 
-import "github.com/qlova/seed/worker"
 import "github.com/qlova/seed/style"
 
 import (
@@ -9,15 +8,6 @@ import (
 	"html"
 	"strings"
 )
-
-//TODO cleanup
-var ServiceWorker = worker.NewServiceWorker()
-
-//TODO cleanup
-func RegisterAsset(path string) {
-	ServiceWorker.Assets[path] = true
-}
-
 //DEPRECIATED
 func (seed Seed) ID() string {
 	return seed.id
@@ -90,6 +80,21 @@ func (seed Seed) Require(script string) {
 func (seed Seed) Add(child Interface) {
 	seed.children = append(seed.children, child)
 	child.Root().SetParent(seed)
+	
+	seed.setApp()
+}
+
+//Add a child seed to this seed.
+func (seed Seed) setApp() {
+	if seed.parent == nil {
+		return
+	}
+	
+	if seed.parent.Root().app == nil {
+		seed.parent.Root().setApp()
+	} 
+	
+	seed.app = seed.parent.Root().app
 }
 
 //Add a handler to the seed, when this seed is launched as root, the handlers will be executed for each incomming request.

@@ -42,16 +42,19 @@ var Arial = style.Font{
 	},
 }
 
-
-func Font(path string) style.Font {
-	RegisterAsset(path)
-	
-	return style.NewFont(path)
+type Font struct {
+	style.Font
+	path string
 }
 
-func (seed Seed) SetFont(font style.Font) {
-	seed.font = font
-	seed.Style.SetFont(font)
+func NewFont(path string) Font {
+	return Font{style.NewFont(path), path}
+}
+
+func (seed Seed) SetFont(font Font) {
+	seed.font = font.Font
+	NewAsset(font.path).AddTo(seed)
+	seed.Style.SetFont(font.Font)
 }
 
 type Seed struct {
@@ -90,6 +93,10 @@ type seed struct {
 	Landscape, Portrait style.Style
 
 	desktop, mobile, tablet, watch, tv Seed
+	
+	app *App
+	
+	assets []Asset
 }
 
 func (seed Seed) AddTo(parent Interface) Seed {

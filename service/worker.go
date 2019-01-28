@@ -1,18 +1,18 @@
-package worker
+package service
 
 import "bytes"
 
-func NewServiceWorker() Service {
-	return Service{
+func NewWorker() Worker {
+	return Worker{
 		Assets: make(map[string]bool),
 	}
 }
 
-type Service struct {
+type Worker struct {
 	Assets map[string]bool
 }
 
-func (worker Service) Render() []byte {
+func (worker Worker) Render() []byte {
 	var b bytes.Buffer
 	
 	b.WriteString(`self.addEventListener('install', function(event) {
