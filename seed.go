@@ -182,3 +182,9 @@ func New() Seed {
 	
 	return Seed{seed:seed}
 }
+
+func AddTo(parent Interface) Seed {
+	var seed = New()
+	parent.Root().Add(seed)
+	return seed
+}
