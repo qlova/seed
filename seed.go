@@ -92,7 +92,7 @@ type seed struct {
 
 	Landscape, Portrait style.Style
 
-	desktop, mobile, tablet, watch, tv Seed
+	desktop, mobile, tablet, watch, tv, native Seed
 	
 	app *App
 	
@@ -123,6 +123,15 @@ func (seed Seed) Desktop() Seed {
 	}
 	return seed.desktop
 }
+
+//Return the seed that should replace this seed when on ReactNative.
+func (seed Seed) ReactNative() Seed {
+	if seed.native.seed == nil {
+		seed.native = seed.clone()
+	}
+	return seed.native
+}
+
 
 //Return the seed itself, when embedded in a struct, this is good way to retrieve the original seed.
 func (seed Seed) Root() Seed {
@@ -157,30 +166,30 @@ var allSeeds = make(map[string]*seed)
 
 //Create and return a new seed.
 func New() Seed {
-	seed := new(seed)
+	s := new(seed)
 	
 	//Seed identification is compressed to base64.
-	seed.id = base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
+	s.id = base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
 
-	if seed.id[0] >= '0' && seed.id[0] <= '9' {
-		seed.id = "_"+seed.id
+	if s.id[0] >= '0' && s.id[0] <= '9' {
+		s.id = "_"+s.id
 	}
 	
-	seed.id = strings.Replace(seed.id, "-", "__", -1)
+	s.id = strings.Replace(s.id, "-", "__", -1)
 	
 	id++
 
-	seed.Style = style.New()
-	seed.Landscape = style.New()
-	seed.Portrait = style.New()
-	seed.tag = "div"
+	s.Style = style.New()
+	s.Landscape = style.New()
+	s.Portrait = style.New()
+	s.tag = "div"
 
-	allSeeds[seed.id] = seed
+	allSeeds[s.id] = s
 
 	//Intial style.
 	//seed.SetSize(100, 100)
 	
-	return Seed{seed:seed}
+	return Seed{seed:s}
 }
 
 func AddTo(parent Interface) Seed {

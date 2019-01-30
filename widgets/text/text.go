@@ -21,8 +21,11 @@ func New(s ...string) Widget {
 	widget := seed.New()
 	widget.SetTag("span")
 	
+	widget.ReactNative().SetTag("Text")
+	
 	if len(s) > 0 {
 		widget.SetText(s[0])
+		widget.ReactNative().SetContent("Text")
 	}
 	
 	widget.SetSize(seed.Auto, seed.Auto)
