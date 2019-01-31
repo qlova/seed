@@ -7,6 +7,8 @@ type App struct {
 	Seed
 	manifest.Manifest
 	service.Worker
+
+	host, rest string
 }
 
 //Create a new application, accepts title and content arguments.
@@ -28,6 +30,16 @@ func NewApp(args ...string) *App {
 	}
 
 	return &app
+}
+
+//Set the hostname of this app, this is where the app is expected to be hosted from.
+func (app *App) SetHost(name string) {
+	app.host = name
+}
+
+//Set the REST hostname of this app, this is where the app will serve and request API calls.
+func (app *App) SetRest(name string) {
+	app.rest = name
 }
 
 //TODO random port, can be set with enviromental variables.
