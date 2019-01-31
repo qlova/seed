@@ -47,10 +47,10 @@ func (launcher launcher) Handler() http.Handler {
 	var LocalClients = 0
 
 	return gziphandler.GzipHandler(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "file://")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	    w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-	    if r.Method == "OPTIONS" {
+		response.Header().Set("Access-Control-Allow-Origin", "file://")
+		response.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	    response.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	    if request.Method == "OPTIONS" {
 	   		return
 	   	}
 		   	
