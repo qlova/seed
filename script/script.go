@@ -246,7 +246,12 @@ func (q Script) Call(f interface{}, args ...qlova.Type) qlova.Type {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request, call string) {
-	w.Header().Set("Access-Control-Allow-Origin", "file://*")
+	w.Header().Set("Access-Control-Allow-Origin", "file://")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+    w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+    if r.Method == "OPTIONS" {
+   		return
+   	}
 
 	fmt.Println(r.URL)
 
