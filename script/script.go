@@ -246,6 +246,8 @@ func (q Script) Call(f interface{}, args ...qlova.Type) qlova.Type {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request, call string) {
+	w.Header().Set("Access-Control-Allow-Origin", "file://*")
+
 	fmt.Println(r.URL)
 
 	var args = strings.Split(call, "/")
