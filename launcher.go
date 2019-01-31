@@ -47,6 +47,14 @@ func (launcher launcher) Handler() http.Handler {
 	var LocalClients = 0
 
 	return gziphandler.GzipHandler(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "file://")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	    w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	    if r.Method == "OPTIONS" {
+	   		return
+	   	}
+		   	
+	
 		var local = strings.Contains(request.RemoteAddr, "[::1]")
 
 		//Editmode socket.
