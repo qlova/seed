@@ -7,9 +7,36 @@ type Target int
 
 const (
 	ReactNative Target = iota
+	Website
 )
 
 func (app App) Export(t Target) {
+	if t == Website {
+		var dir = filepath.Dir(os.Args[0])
+				
+		os.Mkdir(dir+"/website", 0755)
+
+		var index, err = os.Create(dir+"/website/index.html")
+		if err != nil {
+			panic(err.Error())
+		}
+		defer index.Close()
+
+		for name, data := range embeddings {
+			var file, err = os.Create(dir+"/website/"+name)
+			if err != nil {
+				panic(err.Error())
+			}
+			defer file.Close()
+
+			file.Write(data.Data)
+		}
+
+		index.Write(app.render(true, Mobile))
+		return
+	}
+
+
 	if t == ReactNative {
 		
 		var dir = filepath.Dir(os.Args[0])
