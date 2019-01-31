@@ -1,5 +1,6 @@
-package column
+package listbox
 
+import "fmt"
 import "github.com/qlova/seed"
 
 type Widget struct {
