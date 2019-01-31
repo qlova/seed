@@ -446,7 +446,13 @@ func (application App) render(production bool, platform Platform) []byte {
 			  return "";
 			}
 
-			function request (method, url) {
+			function request (method, url, manual) {
+				if (manual) {
+					 var xhr = new XMLHttpRequest();
+					 xhr.open(method, url);
+					return xhr;
+				}
+			
 			  return new Promise(function (resolve, reject) {
 			    var xhr = new XMLHttpRequest();
 			    xhr.open(method, url);
