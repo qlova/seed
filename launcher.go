@@ -103,7 +103,7 @@ func (launcher launcher) Handler() http.Handler {
 			}
 		}
 
-		if request.Host == launcher.App.rest {
+		if request.URL.Host == launcher.App.rest || request.Host == launcher.App.rest {
 			response.Write([]byte(string("This place is for computers")))
 			return
 		}
