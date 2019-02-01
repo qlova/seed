@@ -382,6 +382,8 @@ func (application App) render(production bool, platform Platform) []byte {
 			`)
 		}
 
+		buffer.WriteString(`var host = "`+application.rest+`";`)
+
 		buffer.Write([]byte(`
 			
 			var get = function(id) {
@@ -447,6 +449,8 @@ func (application App) render(production bool, platform Platform) []byte {
 			}
 
 			function request (method, url, manual) {
+				if (url.charAt(0) == "/") url = host+url;
+			
 				if (manual) {
 					 var xhr = new XMLHttpRequest();
 					 xhr.open(method, url);
