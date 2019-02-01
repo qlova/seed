@@ -103,6 +103,11 @@ func (launcher launcher) Handler() http.Handler {
 			}
 		}
 
+		if request.Host == launcher.App.rest {
+			response.Write([]byte(string("This place is for computers")))
+			return
+		}
+
 		//Serve service worker.
 		if request.URL.Path == "/index.js" {
 			if local {
@@ -137,11 +142,6 @@ func (launcher launcher) Handler() http.Handler {
 				response.Write(desktop)
 				return
 			}
-		}
-
-		if request.Host == launcher.App.rest {
-			response.Write([]byte(string("This place is for computers")))
-			return
 		}
 
 		//Anything else? Serve application.
