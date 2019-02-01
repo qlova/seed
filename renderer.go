@@ -382,7 +382,11 @@ func (application App) render(production bool, platform Platform) []byte {
 			`)
 		}
 
-		buffer.WriteString(`var host = "`+application.rest+`";`)
+		//Need to actually detect if we are running inside a dev environment or not!
+		//probably should check the request hostname in launcher to decide if we are in production or not.
+		if production {
+			buffer.WriteString(`var host = "`+application.rest+`";`)
+		}
 
 		buffer.Write([]byte(`
 			

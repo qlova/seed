@@ -53,6 +53,8 @@ func (launcher launcher) Handler() http.Handler {
 	    if request.Method == "OPTIONS" {
 	   		return
 	   	}
+
+	   	
 		   	
 	
 		var local = strings.Contains(request.RemoteAddr, "[::1]")
@@ -135,6 +137,11 @@ func (launcher launcher) Handler() http.Handler {
 				response.Write(desktop)
 				return
 			}
+		}
+
+		if request.Host == launcher.App.rest {
+			response.Write([]byte(string("This place is for computers")))
+			return
 		}
 
 		//Anything else? Serve application.
