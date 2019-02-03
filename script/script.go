@@ -6,10 +6,6 @@ import (
 
 	"strings"
 	"net/http"
-
-	//Global ids.
-	"encoding/base64"
-	"math/big"
 )
 
 import "github.com/qlova/seed/user"
@@ -106,28 +102,6 @@ func (q Script) NextPage() Page {
 	}}
 }
 
-type Variable string
-
-//All globals have a unique id.
-var global_id int64 = 1;
-
-func NewVariable() Variable {
-	//global identification is compressed to base64 and prefixed with g_.
-	var result = "g_"+base64.RawURLEncoding.EncodeToString(big.NewInt(global_id).Bytes())
-
-	global_id++
-
-	return Variable(result)
-}
-
-func (q Script) Get(name Variable) qlova.String {
-	return q.wrap(`window.localStorage.getItem("`+string(name)+`")`)
-}
-
-func (q Script) Set(name Variable, value qlova.String) {
-	q.Javascript(`window.localStorage.setItem("`+string(name)+`", `+raw(value)+`);`)
-}
-
 func (q Script) UserData(name user.Data) qlova.String {
 	return q.wrap(`getCookie("`+string(name)+`");`)
 }
@@ -149,10 +123,10 @@ func toJavascript(f func(q Script)) []byte {
 	if source.Error {
 		panic(source.ErrorMessage)
 	}
-	
+
 	return source.Data
 }
-		
+
 
 func (q Script) Javascript(js string) {
 	q.Raw("Javascript", language.Statement(js))
@@ -190,48 +164,48 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
 		q.Raw("Javascript", language.Statement(name+`();`))
 		return nil
 	}
-	
+
 	var name = fmt.Sprint(f)
-	
+
 	var value = reflect.ValueOf(f)
-	
+
 	if value.Kind() != reflect.Func || value.Type().NumOut() > 1 {
 		panic("Script.Call: Must pass a Go function without zero or one return values")
 	}
 	exports[name] = value
-	
+
 	var CallingString = `/call/`+name
-	
+
 	var StartFrom = 0;
 	//The function can take an optional client as it's first argument.
 	if value.Type().NumIn() > 0 && value.Type().In(0) == reflect.TypeOf(user.User{}) {
 		StartFrom = 1;
 	}
-	
+
 	for i := StartFrom; i < value.Type().NumIn(); i++ {
 		switch value.Type().In(i).Kind() {
 			case reflect.String:
-				
+
 				CallingString += `/_"+encodeURIComponent(`+raw(args[i-StartFrom].(qlova.String))+`)+"`
-				
+
 			default:
 				panic("Unimplemented: script.Run("+value.Type().String()+")")
 		}
 	}
 
 	q.Raw("Javascript", language.Statement(`let request = new XMLHttpRequest(); request.open("POST", "`+CallingString+`"); request.onload = function() {`))
-	
+
 	if value.Type().NumOut() == 1 {
 		switch value.Type().Out(0).Kind() {
-			
+
 			case reflect.String:
 				return q.wrap("this.responseText")
-			
+
 			default:
 				panic(value.Type().String()+" Unimplemented")
 		}
 	}
-	
+
 	return nil
 }
 
@@ -241,7 +215,7 @@ func (q Script) Run(f Function, args ...qlova.Type) {
 }
 
 //Export a Go function to Javascript. Don't use this for non-local apps! TODO enforce this
-func (q Script) Call(f interface{}, args ...qlova.Type) qlova.Type {	
+func (q Script) Call(f interface{}, args ...qlova.Type) qlova.Type {
 	return q.call(f, args...)
 }
 
@@ -253,50 +227,50 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	if len(args) == 0 {
 		return
 	}
-	
+
 	f, ok := exports[args[0]]
 	if !ok {
 		return
 	}
-	
+
 	var in []reflect.Value
-	
+
 	var StartFrom = 0;
 	//The function can take an optional client as it's first argument.
 	if f.Type().NumIn() > 0 && f.Type().In(0) == reflect.TypeOf(user.User{}) {
 		StartFrom = 1;
-		
+
 		in = append(in, reflect.ValueOf(user.User{}.FromHandler(w, r)))
-		
+
 	}
-	
+
 	if len(args)-1 != f.Type().NumIn()-StartFrom {
 		println("argument length mismatch")
 		return
 	}
-	
-	
-	
-	
+
+
+
+
 	for i := StartFrom; i < f.Type().NumIn(); i++ {
 		switch f.Type().In(i).Kind() {
 			case reflect.String:
-				
+
 				in = append(in, reflect.ValueOf(args[i+1-StartFrom][1:]))
-				
+
 			default:
 				println("unimplemented callHandler for "+f.Type().String())
 				return
 		}
 	}
-	
+
 	var results = f.Call(in)
 	if len(results) == 0 {
 		fmt.Fprint(w, "done")
 		return
 	}
 	switch results[0].Kind() {
-		
+
 		case reflect.String:
 			if results[0].Interface().(string) == "" {
 				//Error
@@ -304,7 +278,7 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 				return
 			}
 			fmt.Fprint(w, results[0].Interface())
-			
+
 		default:
 			fmt.Println(results[0].Type().String(), " Unimplemented")
 	}
