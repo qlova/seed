@@ -53,9 +53,6 @@ func (launcher launcher) Handler() http.Handler {
 	    if request.Method == "OPTIONS" {
 	   		return
 	   	}
-
-	   	
-		   	
 	
 		var local = strings.Contains(request.RemoteAddr, "[::1]")
 
@@ -110,6 +107,7 @@ func (launcher launcher) Handler() http.Handler {
 		}
 
 		if request.URL.Path == "/.well-known/assetlinks.json" && launcher.App.pkg != "" {
+			response.Header().Set("Content-Type", "application/json")
 			response.Write([]byte(`[{
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target" : { "namespace": "android_app", "package_name": "`+launcher.App.pkg+`",
