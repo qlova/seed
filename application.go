@@ -8,7 +8,9 @@ type App struct {
 	manifest.Manifest
 	service.Worker
 
-	host, rest string
+	host, rest, pkg string
+	
+	hashes []string
 }
 
 //Create a new application, accepts title and content arguments.
@@ -40,6 +42,16 @@ func (app *App) SetHost(name string) {
 //Set the REST hostname of this app, this is where the app will serve and request API calls.
 func (app *App) SetRest(name string) {
 	app.rest = name
+}
+
+//Set the package name of this application on android.
+func (app *App) SetPackage(name string) {
+	app.pkg = name
+}
+
+//Add a hash of the certificate that you will sign your android app with. 
+func (app *App) AddHash(name string) {
+	app.hashes = append(app.hashes, name)
 }
 
 //TODO random port, can be set with enviromental variables.

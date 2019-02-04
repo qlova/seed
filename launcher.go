@@ -106,6 +106,25 @@ func (launcher launcher) Handler() http.Handler {
 		if launcher.App.rest != "" && (request.URL.Host == launcher.App.rest || request.Host == launcher.App.rest) {
 			response.Write([]byte(string("This place is for computers")))
 			return
+			
+		}
+
+		if request.URL.Path == "/.well-known/assetlinks.json" && launcher.App.pkg != "" {
+			response.Write([]byte(`[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target" : { "namespace": "android_app", "package_name": "`+launcher.App.pkg+`",
+               "sha256_cert_fingerprints": [`))
+			
+			for i, hash := range launcher.App.hashes {
+				response.Write([]byte("\""+hash+"\""))
+				if i < len(launcher.App.hashes)-1 {
+					response.Write([]byte(`,`))
+				}
+			}
+
+			response.Write([]byte(`] }
+}]`))
+			return
 		}
 
 		//Serve service worker.
