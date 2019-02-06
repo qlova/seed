@@ -13,6 +13,7 @@ func New(amount ...complex128) Widget {
 		widget.SetSize(amount[0], amount[0])
 	}
 
+	widget.SetUnshrinkable()
 	
 	return  Widget{widget}
 }
