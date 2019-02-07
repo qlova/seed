@@ -120,7 +120,7 @@ func (seed Seed) SetDynamicText(f func(User)) {
 	seed.dynamicText = f
 }
 
-
+//Run a script when this seed is clicked.
 func (seed Seed) OnClick(f func(Script)) {
 	if seed.onclick == nil {
 		seed.onclick = f
@@ -133,12 +133,14 @@ func (seed Seed) OnClick(f func(Script)) {
 	}
 }
 
+//Shorthand for seed.OnClick(func(q seed.Script){ page.Script(q).Goto() })
 func (seed Seed) OnClickGoto(page Page) {
 	seed.OnClick(func(q Script) {
 		page.Script(q).Goto()
 	})
 }
 
+//Run a script when this seed is ready/loaded/onload/init.
 func (seed Seed) OnReady(f func(Script)) {
 	if seed.onready == nil {
 		seed.onready = f
@@ -151,6 +153,7 @@ func (seed Seed) OnReady(f func(Script)) {
 	}
 }
 
+//Run a script when this page is entered/ongoto.
 func (seed Seed) OnPageEnter(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
@@ -163,6 +166,7 @@ func (seed Seed) OnPageEnter(f func(Script)) {
 	})
 }
 
+//Run a script when this leaving this page (onleave).
 func (seed Seed) OnPageExit(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
@@ -175,7 +179,7 @@ func (seed Seed) OnPageExit(f func(Script)) {
 	})
 }
 
-
+//Run a script when this seed's value is changed by the user.
 func (seed Seed) OnChange(f func(Script)) {
 	if seed.onchange == nil {
 		seed.onchange = f
