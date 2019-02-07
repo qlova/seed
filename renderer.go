@@ -226,6 +226,7 @@ func (seed Seed) BuildOnReady(platform Platform) []byte {
 
 //Return a fully fully rendered application in HTML for the seed.
 func (application App) render(production bool, platform Platform) []byte {
+	application.build()
 
 	var seed = application.Seed
 
@@ -241,12 +242,11 @@ func (application App) render(production bool, platform Platform) []byte {
 		})				
 		`)
 	})
-
+	
 	var style = seed.BuildStyleSheet(platform).Bytes()
 	var styleForLandscape = seed.BuildStyleSheetForLandscape(platform).Bytes()
 	var styleForPortrait = seed.BuildStyleSheetForPortrait(platform).Bytes()
 	var html = seed.HTML(platform)
-	var fonts = seed.BuildFonts()
 	var animations = seed.BuildAnimations()
 	var scripts = seed.Scripts(platform)
 	var onready = seed.BuildOnReady(platform)
@@ -320,7 +320,8 @@ func (application App) render(production bool, platform Platform) []byte {
 		<style>
 	`))
 
-	buffer.Write(fonts)
+	buffer.Write(application.Fonts())
+	
 	buffer.Write(animations)
 	buffer.Write(style)	
 

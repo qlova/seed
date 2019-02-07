@@ -7,6 +7,7 @@ type App struct {
 	Seed
 	manifest.Manifest
 	service.Worker
+	*harvester
 
 	host, rest, pkg, tracking string
 	
@@ -19,6 +20,7 @@ func NewApp(args ...string) *App {
 		Seed: New(),
 		Manifest: manifest.New(),
 		Worker: service.NewWorker(),
+		harvester: newHarvester(),
 	}
 	
 	app.Seed.app = &app
@@ -61,7 +63,6 @@ func (app *App) SetTrackingCode(code string) {
 
 //TODO random port, can be set with enviromental variables.
 func (app *App) Launch(listen ...string) error {
-	app.build()
 	launcher{App: *app}.Launch(listen...)
 	return nil
 }

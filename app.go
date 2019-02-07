@@ -192,36 +192,6 @@ func (seed Seed) OnChange(f func(Script)) {
 	}
 }
 
-func (seed Seed) buildFonts() map[style.Font]struct{} {
-	
-	var fonts = make(map[style.Font]struct{})
-	if seed.font.FontFace.FontFamily != "" {
-		fonts[seed.font] = struct{}{}
-	}
-
-	for _, child := range seed.children {
-		for font := range child.Root().buildFonts() {
-			fonts[font] = struct{}{}
-		}
-	}
-	
-	return fonts
-}
-
-func (seed Seed) BuildFonts() []byte {
-	var buffer bytes.Buffer
-	
-	var fonts = seed.buildFonts()
-
-	for font := range fonts {
-		buffer.WriteString("@font-face {")
-		buffer.Write(font.Bytes())
-		buffer.WriteByte('}')
-	}
-
-	return buffer.Bytes()
-}
-
 func (seed Seed) buildAnimations(animations *[]Animation, names *[]string) {
 	
 	if seed.animation != nil {
