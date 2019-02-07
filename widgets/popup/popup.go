@@ -1,13 +1,14 @@
 package popup
 
 import "github.com/qlova/seed"
+import "github.com/qlova/seed/widgets/column"
 
 type Widget struct {
-	seed.Seed
+	column.Widget
 }
 
 func New() Widget {
-	widget := seed.New()
+	widget := column.New()
 	
 	widget.Set("position", "fixed")
 	widget.Set("left", "50%")
