@@ -152,10 +152,15 @@ func (seed Seed) HTML(platform Platform) ([]byte) {
 	for _, child := range seed.children {
 		html.Write(child.Root().Render(platform))
 	}
-	
-	html.WriteString("</")
-	html.WriteString(seed.tag)
-	html.WriteByte('>')
+
+	switch seed.tag {
+		case "input", "img", "br", "hr", "meta", "area", "base", "col", "embed", "link", "param", "source", "track", "wbr":
+
+		default:
+			html.WriteString("</")
+			html.WriteString(seed.tag)
+			html.WriteByte('>')
+	}
 	
 	return html.Bytes()
 }
