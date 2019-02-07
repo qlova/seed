@@ -8,7 +8,7 @@ type App struct {
 	manifest.Manifest
 	service.Worker
 
-	host, rest, pkg string
+	host, rest, pkg, tracking string
 	
 	hashes []string
 }
@@ -52,6 +52,11 @@ func (app *App) SetPackage(name string) {
 //Add a hash of the certificate that you will sign your android app with. 
 func (app *App) AddHash(name string) {
 	app.hashes = append(app.hashes, name)
+}
+
+//Set the google analytics tracking code.
+func (app *App) SetTrackingCode(code string) {
+	app.tracking = code
 }
 
 //TODO random port, can be set with enviromental variables.

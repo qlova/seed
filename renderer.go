@@ -255,6 +255,20 @@ func (application App) render(production bool, platform Platform) []byte {
 	buffer.Write([]byte(`<!DOCTYPE html><html><head>
 		<meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	`))
+
+	if application.tracking != "" {
+		buffer.WriteString(`
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=`+application.tracking+`"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+		
+		  gtag('config', 'UA-134084549-1');
+		</script>
+		`)
+	}
 		
 	if platform != Desktop {
 		buffer.WriteString(`
