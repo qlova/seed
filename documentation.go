@@ -35,7 +35,7 @@ Qlovaseed uses less CPU usage on client devices compared to Javascript/CSS frame
 Since applications are cached on clients, they do not need to communicate with your server as much, meaning applications with Qlovaseed cater for more returning users than standard web technologies.
 You will save money by deploying your application with Qlovaseed.
 
-Workflow
+Getting Started
 
 Before you write a line of code, sit down with a piece of paper and create some drawings of how you would like your application to look, feel & function. Think about different platforms (eg. mobile, tablet, desktop) and portait/landscape orientations. This is the design process and is the most important part of creating an app.
 A rough design is fine. Now for each design, identify the outline of the application, recognise the types of widgets, the rows, columns and spacing. You can do this in your head if you like.
