@@ -12,7 +12,7 @@ This package can be used to write web applications without the need for HTML, CS
 
 Applications are automatically served and managed by the package.
 
-  Deploying (TODO)
+Deploying (TODO)
 
 Before you deploy, you will need a server and a domain name pointing at your server.
 
@@ -29,7 +29,7 @@ You can export an .apk or .ipa of your application. These will need to be signed
 	./App -ipa
 
 
-  Environmentally Friendly
+Environmentally Friendly
 
 Qlovaseed uses less CPU usage on client devices compared to Javascript/CSS frameworks.
 Since applications are cached on clients, they do not need to communicate with your server as much, meaning applications with Qlovaseed cater for more returning users than standard web technologies.
