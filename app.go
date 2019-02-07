@@ -4,7 +4,6 @@ import "github.com/qlova/seed/style"
 
 import (
 	"net/http"
-	"bytes"
 	"html"
 	"strings"
 )
@@ -188,73 +187,6 @@ func (seed Seed) OnChange(f func(Script)) {
 		seed.onchange = func(q Script) {
 			old(q)
 			f(q)
-		}
-	}
-}
-
-func (seed Seed) buildAnimations(animations *[]Animation, names *[]string) {
-	
-	if seed.animation != nil {
-		*animations = append(*animations, seed.animation)
-		*names = append(*names, seed.ID())
-	}
-
-	for _, child := range seed.children {
-		child.Root().buildAnimations(animations, names)
-	}
-}
-
-func (seed Seed) BuildAnimations() []byte {
-	var buffer bytes.Buffer
-	
-	var animations = make([]Animation, 0) 
-	var names = make([]string, 0) 
-	seed.buildAnimations(&animations, &names)
-
-	for i, animation := range animations {
-		buffer.WriteString("@keyframes "+names[i]+" {")
-		buffer.Write(animation.Bytes())
-		buffer.WriteByte('}')
-	}
-
-	return buffer.Bytes()
-}
-
-type dynamicHandler struct {
-	id string
-	handler func(User)
-}
-
-func (seed Seed) buildDynamicHandler(handler *[]dynamicHandler) {
-	
-	if seed.dynamicText != nil {
-		(*handler) = append((*handler), dynamicHandler{
-			id: seed.id,
-			handler: seed.dynamicText,
-		})
-	}
-	
-	for _, child := range seed.children {
-		child.Root().buildDynamicHandler(handler)
-	}
-}
-
-
-func (seed Seed) BuildDynamicHandler() (func(w http.ResponseWriter, r *http.Request)) {
-	var handlers = make([]dynamicHandler, 0)
-	seed.buildDynamicHandler(&handlers)
-	
-	if len(handlers) == 0 {
-		return nil
-	}
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		for _, handler := range handlers {
-			w.Write([]byte(`"`))
-			w.Write([]byte(handler.id))
-			w.Write([]byte(`":"`))
-			handler.handler(User{}.FromHandler(w, r))
-			w.Write([]byte(`"`))
 		}
 	}
 }

@@ -247,7 +247,6 @@ func (application App) render(production bool, platform Platform) []byte {
 	var styleForLandscape = seed.BuildStyleSheetForLandscape(platform).Bytes()
 	var styleForPortrait = seed.BuildStyleSheetForPortrait(platform).Bytes()
 	var html = seed.HTML(platform)
-	var animations = seed.BuildAnimations()
 	var scripts = seed.Scripts(platform)
 	var onready = seed.BuildOnReady(platform)
 
@@ -321,8 +320,7 @@ func (application App) render(production bool, platform Platform) []byte {
 	`))
 
 	buffer.Write(application.Fonts())
-	
-	buffer.Write(animations)
+	buffer.Write(application.Animations())
 	buffer.Write(style)	
 
 	buffer.WriteString(`@media screen and (orientation: landscape) {`)
@@ -709,9 +707,7 @@ func (application App) render(production bool, platform Platform) []byte {
 
 		buffer.Write(onready)
 
-		var dynamic = seed.BuildDynamicHandler()
-
-		if dynamic != nil {
+		if application.DynamicHandler() != nil {
 			buffer.WriteString(`
 			var dynamic = new XMLHttpRequest();
 	
