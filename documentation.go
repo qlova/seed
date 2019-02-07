@@ -42,26 +42,26 @@ A rough design is fine. Now for each design, identify the outline of the applica
 Now you can actually program the application!
 Start by picking a page of the application and importing the widgets you need, you can currently select from:
 
-* button
-* column
-* datebox
-* document
-* expander
-* filepicker
-* header
-* image
-* line
-* link
-* listbox
-* passwordbox
-* popup
-* row
-* spacer
-* text
-* textarea
-* textbox
-* toolbar
-* video
+	* button
+	* column
+	* datebox
+	* document
+	* expander
+	* filepicker
+	* header
+	* image
+	* line
+	* link
+	* listbox
+	* passwordbox
+	* popup
+	* row
+	* spacer
+	* text
+	* textarea
+	* textbox
+	* toolbar
+	* video
 
 To use one of these widgets, import it at the top of your .go file.
 
