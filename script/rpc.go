@@ -51,7 +51,7 @@ func (q Script) rpc(f interface{}, args ...qlova.Type) Promise {
 	
 	for i := StartFrom; i < value.Type().NumIn(); i++ {
 		switch value.Type().In(i).Kind() {
-			case reflect.String:
+			case reflect.String, reflect.Int:
 				
 				CallingString += `/_"+encodeURIComponent(`+raw(args[i-StartFrom].(qlova.String))+`)+"`
 				

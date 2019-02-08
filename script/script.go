@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"strings"
+	"strconv"
 	"net/http"
 )
 
@@ -257,6 +258,10 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 			case reflect.String:
 
 				in = append(in, reflect.ValueOf(args[i+1-StartFrom][1:]))
+
+			case reflect.Int:
+				var number, _ = strconv.Atoi(args[i+1-StartFrom][1:])
+				in = append(in, reflect.ValueOf(number))
 
 			default:
 				println("unimplemented callHandler for "+f.Type().String())

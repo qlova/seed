@@ -10,6 +10,9 @@ import (
 
 type User struct {
 	user
+
+	indices []int
+	marker int
 }
 
 type user struct {
@@ -22,10 +25,24 @@ func (user User) WriteString(s string) {
 }
 
 func (User) FromHandler(w http.ResponseWriter, r *http.Request) User {
-	return User{user{
+	return User{user:user{
 		Request: r,
 		ResponseWriter: w, 
 	}}
+}
+
+func (user *User) SetIndices(i []int) {
+	user.indices = i
+	user.marker = 0
+}
+
+func (user User) Index() int {
+	if user.marker < len(user.indices) {
+		user.marker++
+		return user.indices[user.marker-1]
+	} else {
+		return -1
+	}
 }
 
 func (user User) Send(data interface{}) {
