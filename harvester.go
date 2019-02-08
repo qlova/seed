@@ -32,12 +32,13 @@ func newHarvester() *harvester {
 }
 
 //Do the harvesting.
-func (h *harvester) harvest(seed Seed) {
+func (app *harvester) harvest(seed Seed) {
+	var h = app
 	
 	//Harvest Animations.
 	if seed.animation != nil {
 		h.animations = append(h.animations, seed.animation)
-		h.animationNames = append(h.animationNames, seed.ID())
+		h.animationNames = append(h.animationNames, seed.id)
 	}
 
 	//Harvest Assets.
@@ -75,7 +76,8 @@ func (app *App) build() {
 }
 
 //Return rendered fonts.
-func (h *harvester) Fonts() []byte {
+func (app *harvester) Fonts() []byte {
+	var h = app
 
 	var buffer bytes.Buffer
 
@@ -89,7 +91,9 @@ func (h *harvester) Fonts() []byte {
 }
 
 //Return rendered animations.
-func (h *harvester) Animations() []byte {
+func (app *harvester) Animations() []byte {
+	var h = app
+	
 	var buffer bytes.Buffer
 
 	for i, animation := range h.animations {
@@ -101,7 +105,9 @@ func (h *harvester) Animations() []byte {
 	return buffer.Bytes()
 }
 
-func (h *harvester) DynamicHandler() (func(w http.ResponseWriter, r *http.Request)) {
+func (app *harvester) DynamicHandler() (func(w http.ResponseWriter, r *http.Request)) {
+	var h = app
+	
 	if len(h.dynamicHandlers) == 0 {
 		return nil
 	}
