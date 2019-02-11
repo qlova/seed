@@ -10,7 +10,7 @@ type Animation map[float64]func(Frame)
 
 func (seed Seed) SetAnimation(animation Animation) {
 	seed.animation = animation
-	seed.SetAnimationName(css.AnimationName(seed.ID()))
+	seed.SetAnimationName(css.AnimationName(seed.id))
 	seed.SetAnimationDuration(css.Time(1))
 	seed.SetAnimationIterationCount(css.Infinite)
 }

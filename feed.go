@@ -54,7 +54,7 @@ func NewFeedWithin(parent Feed, food interface{}) Feed {
 //Refresh the feeds content from the server.
 func (feed Feed) Script(q Script) script.Feed {
 	return script.Feed{script.Seed{
-		ID: feed.ID(),
+		ID: feed.id,
 		Q: q,
 	}}
 }
