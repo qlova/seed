@@ -307,6 +307,11 @@ func (application App) render(production bool, platform Platform) []byte {
 			if ('serviceWorker' in navigator) {
 				window.addEventListener('load', function() {
 					navigator.serviceWorker.register('/index.js').then(function(registration) {
+
+						registration.onupdatefound = function() {
+							window.localStorage.setItem("update", "true");
+						}
+					
 						console.log('ServiceWorker registration successful with scope: ', registration.scope);
 					}, function(err) {
 						console.log('ServiceWorker registration failed: ', err);

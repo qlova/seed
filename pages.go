@@ -86,6 +86,10 @@ func (page Page) Script(q Script) script.Page {
 
 func (seed Seed) SetPage(page Page) {
 	seed.OnReady(func(q Script) {
+		q.Javascript(`if (window.localStorage.getItem("update")) {`)
+			q.Javascript(`window.localStorage.removeItem("update");`)
+			q.Javascript(`window.localStorage.removeItem("*CurrentPage");`)
+		q.Javascript(`}`)
 		q.Javascript(`if (!window.localStorage.getItem("*CurrentPage")) goto("`+page.id+`");`)
 	})
 }
