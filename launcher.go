@@ -13,6 +13,7 @@ import ua "github.com/avct/uasurfer"
 import "github.com/NYTimes/gziphandler"
 
 import "github.com/qlova/seed/script"
+import "github.com/qlova/seed/user"
 
 
 type launcher struct {
@@ -87,6 +88,12 @@ func (launcher launcher) Handler() http.Handler {
 		//Remote procedure calls.
 		if len(request.URL.Path) > 6 && request.URL.Path[:7] == "/feeds/" {
 			feedHandler(response, request, request.URL.Path[7:])
+			return
+		}
+
+		//Serve assets.
+		if len(request.URL.Path) > len("/attachments/") && request.URL.Path[:len("/attachments/")] == "/attachments/" {
+			http.ServeFile(response, request, dir+"/"+user.AttachmentDirectory+"/"+request.URL.Path[len("/attachments/"):])
 			return
 		}
 

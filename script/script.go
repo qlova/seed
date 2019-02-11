@@ -23,6 +23,7 @@ type Script struct {
 
 type script struct {
 	qlova.Script
+	Go Go
 }
 
 func (q Script) RawString(s qlova.String) string {
@@ -118,6 +119,7 @@ func ToJavascript(f func(q Script)) string {
 func toJavascript(f func(q Script)) []byte {
 	var program = qlova.Program(func(q qlova.Script) {
 		var s = Script{&script{ Script:q }}
+		s.Go.Script = s
 		f(s)
 	})
 	source := program.SourceCode(Javascript.Implementation{})

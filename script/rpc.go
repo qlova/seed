@@ -29,7 +29,7 @@ func (promise Promise) Catch(f func()) Promise {
 	return promise
 }
 
-func (q Script) rpc(f interface{}, args ...qlova.Type) Promise {
+func (q Script) rpc(f interface{}, formdata string, args ...qlova.Type) Promise {
 
 	//Get a unique string reference for f.	
 	var name = fmt.Sprint(f)
@@ -62,7 +62,7 @@ func (q Script) rpc(f interface{}, args ...qlova.Type) Promise {
 
 	var variable = Unique() 
 	
-	q.Raw("Javascript", language.Statement(`let `+variable+` = request("POST", "`+CallingString+`");`))
+	q.Raw("Javascript", language.Statement(`let `+variable+` = request("POST", `+formdata+`, "`+CallingString+`");`))
 	
 	return Promise{variable, q}
 }
@@ -73,5 +73,5 @@ func (q Script) ReturnValue() qlova.String {
 
 //Call a Go function from within a script. The result is returned as a promise.
 func (q Script) ServerCall(f interface{}, args ...qlova.Type) Promise {	
-	return q.rpc(f, args...)
+	return q.rpc(f, "undefined", args...)
 }

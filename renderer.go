@@ -472,7 +472,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			  return "";
 			}
 
-			function request (method, url, manual) {
+			function request (method, formdata, url, manual) {
 				if (url.charAt(0) == "/") url = host+url;
 			
 				if (manual) {
@@ -483,7 +483,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			
 			  return new Promise(function (resolve, reject) {
 			    var xhr = new XMLHttpRequest();
-			    xhr.open(method, url);
+			    xhr.open(method, url, true);
 			    xhr.onload = function () {
 			      if (this.status >= 200 && this.status < 300) {
 			        resolve(xhr.response);
@@ -500,7 +500,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			        statusText: xhr.statusText
 			      });
 			    };
-			    xhr.send();
+			    xhr.send(formdata);
 			  });
 			}
 			
