@@ -351,6 +351,9 @@ func (application App) render(production bool, platform Platform) []byte {
 		}*/
 
 		buffer.Write([]byte(`
+			* {
+				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+			}
 
 			a {
 				text-decoration: none;
