@@ -352,7 +352,9 @@ func (application App) render(production bool, platform Platform) []byte {
 
 		buffer.Write([]byte(`
 			* {
-				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+				-webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important; 
+				-webkit-focus-ring-color: rgba(255, 255, 255, 0) !important; 
+				outline: none !important;
 			}
 
 			a {
