@@ -19,3 +19,7 @@ func AddTo(parent seed.Interface) Widget {
 	parent.Root().Add(widget)
 	return widget
 }
+
+func (widget Widget) SetRequired() {
+	widget.SetAttributes(widget.Attributes()+" required")
+}

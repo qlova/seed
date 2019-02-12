@@ -1,6 +1,7 @@
 package textbox
 
 import "github.com/qlova/seed"
+import "github.com/qlova/seed/script"
 
 type Widget struct {
 	seed.Seed
@@ -21,4 +22,17 @@ func AddTo(parent seed.Interface) Widget {
 	var widget = New()
 	parent.Root().Add(widget)
 	return widget
+}
+
+func (widget Widget) SetRequired() {
+	widget.SetAttributes(widget.Attributes()+" required")
+}
+
+
+type Script struct {
+	script.Seed
+}
+
+func (w Widget) Script(q script.Script) Script {
+	return Script{w.Seed.Script(q)}
 }
