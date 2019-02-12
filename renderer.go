@@ -454,7 +454,16 @@ func (application App) render(production bool, platform Platform) []byte {
 				}
 				next_page = null;
 			};
+
+			var ActivePhotoSwipe = null;
+			
 			var back = function() {
+
+				if (ActivePhotoSwipe) {
+					ActivePhotoSwipe.close();
+					return;
+				}
+			
 				if (last_page == null) return;
 				goto(last_page);
 			};
@@ -748,8 +757,16 @@ func (application App) render(production bool, platform Platform) []byte {
 				</head><body>
 			`))
 	buffer.Write(html)
-	buffer.Write([]byte(`</body></html>`))
+	buffer.WriteString(tail)
+	buffer.Write([]byte(`
+
+	</body></html>`))
 
 	
 	return buffer.Bytes()
+}
+
+var tail string
+func Tail(t string) {
+	tail += t
 }

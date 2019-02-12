@@ -10,7 +10,12 @@ import (
 	"encoding/base64"
 	"strings"
 	"html"
+
+	"path/filepath"
+	"os"
 )
+
+var Dir = filepath.Dir(os.Args[0])
 
 type User = user.User
 
