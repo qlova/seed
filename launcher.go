@@ -49,7 +49,7 @@ func (launcher launcher) Handler() http.Handler {
 	var LocalClients = 0
 
 	return gziphandler.GzipHandler(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		if origin := request.Header.Get("Origin"); origin == launcher.App.host && origin != "" {
+		if origin := request.Header.Get("Origin"); origin == "https://"+launcher.App.host && origin != "" {
 			response.Header().Set("Access-Control-Allow-Origin", origin)
 		} else {
 			response.Header().Set("Access-Control-Allow-Origin", "file://")
