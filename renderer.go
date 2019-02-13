@@ -492,7 +492,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			}
 
 			function request (method, formdata, url, manual) {
-				if (url.charAt(0) == "/") url = host+url;
+				if (url.charAt(0) == "/") url = "https://"+host+url;
 			
 				if (manual) {
 					 var xhr = new XMLHttpRequest();
