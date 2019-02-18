@@ -296,3 +296,7 @@ func (seed Seed) SlideOutFrom(direction complex128) {
 		seed.Javascript(`})})`)
 	}
 }
+
+func (seed Seed) Translate(x, y Unit) {
+	seed.Javascript(seed.Element()+`.style.transform = "translate(`+x.Raw()+","+y.Raw()+`)";`)
+}

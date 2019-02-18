@@ -290,3 +290,15 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 			fmt.Println(results[0].Type().String(), " Unimplemented")
 	}
 }
+
+type Unit qlova.String
+
+func (unit Unit) Raw() string {
+	return raw(qlova.String(unit))
+}
+
+func (script Script) Unit(unit complex128) Unit {
+	return Unit(script.StringFromLanguageType(Javascript.String{
+		Expression: language.Statement(css.Decode(unit)),
+	}))
+}
