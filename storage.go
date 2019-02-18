@@ -7,7 +7,7 @@ import "github.com/qlova/seed/storage/bolt"
 
 var Database = bolt.Open(Dir+"/seed.db")
 
-func Store(path string) storage.View {
+func Store(path string) storage.JSON {
 
 	var view = storage.View{
 		Node: Database,
@@ -16,5 +16,5 @@ func Store(path string) storage.View {
 
 	view.Create()
 
-	return view
+	return view.JSON()
 }
