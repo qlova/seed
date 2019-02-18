@@ -413,7 +413,7 @@ func (application App) render(production bool, platform Platform) []byte {
 		//Need to actually detect if we are running inside a dev environment or not!
 		//probably should check the request hostname in launcher to decide if we are in production or not.
 		if production {
-			buffer.WriteString(`var host = "`+application.rest+`";`)
+			buffer.WriteString(`var host = "https://`+application.rest+`";`)
 		} else {
 			buffer.WriteString(`var host = "";`)
 		}
@@ -492,7 +492,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			}
 
 			function request (method, formdata, url, manual) {
-				if (url.charAt(0) == "/") url = "https://"+host+url;
+				if (url.charAt(0) == "/") url = host+url;
 			
 				if (manual) {
 					 var xhr = new XMLHttpRequest();
