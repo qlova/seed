@@ -1,5 +1,18 @@
 package storage
 
+//TODO
+/*
+	FORLOOP
+
+	var message Message
+	for element := Messages.Range(); !element.End(); element.Next() {
+		element.Update(message)
+
+		message.Email
+	}
+
+*/
+
 //A storage.Node can be thought of as a database or directory.
 type Node interface {
 	//Create a view.
