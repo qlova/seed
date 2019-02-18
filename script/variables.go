@@ -48,6 +48,9 @@ func (q Script) Set(name setable, value qlova.Type) {
 	case Javascript.Integer:
 		q.Javascript(`window.localStorage.setItem("`+name.raw()+`", (`+string(t.Expression)+`).toString());`)
 
+	case Javascript.Bit:
+			q.Javascript(`window.localStorage.setItem("`+name.raw()+`", (`+string(t.Expression)+`).toString());`)
+
 	default:
 		panic("Unimplemented")
 	}
@@ -65,5 +68,19 @@ func NewInt() Int {
 func (i Int) Script(q Script) qlova.Int {
 	return q.IntFromLanguageType(Javascript.Integer{
 		Expression: language.Statement(`parseInt(window.localStorage.getItem("`+string(i.Variable)+`") || "0")`),
+	})
+}
+
+type Bool struct {
+	Variable
+}
+
+func NewBool() Bool {
+	return Bool{NewVariable()}
+}
+
+func (b Bool) Script(q Script) qlova.Bool {
+	return q.BoolFromLanguageType(Javascript.Bit{
+		Expression: language.Statement(`window.localStorage.getItem("`+string(b.Variable)+`") == "true"`),
 	})
 }
