@@ -53,8 +53,8 @@ func AddTo(parent seed.Interface) Widget {
 
 func (widget Widget) Script(q seed.Script) Script {
 	return Script{
-		widget.Widget.Script(q),
-		widget.fakebox.Script(q),
+		widget.Widget.Seed.Script(q),
+		widget.fakebox.Seed.Script(q),
 	}
 }
 
