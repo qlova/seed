@@ -9,7 +9,7 @@ import (
 	"net/http"
 ) 
 
-import ua "github.com/avct/uasurfer"
+//import ua "github.com/avct/uasurfer"
 import "github.com/NYTimes/gziphandler"
 
 import "github.com/qlova/seed/script"
@@ -44,7 +44,7 @@ func (launcher launcher) Handler() http.Handler {
 
 	var dynamic = launcher.App.DynamicHandler()
 
-	var desktop = launcher.render(true, Desktop)
+	//var desktop = launcher.render(true, Desktop)
 
 	var LocalClients = 0
 
@@ -164,14 +164,14 @@ func (launcher launcher) Handler() http.Handler {
 		}
 
 		//Identify platform.
-		if os.Getenv("IGNORE_PLATFORM") == "" {
+		/*if os.Getenv("IGNORE_PLATFORM") == "" {
 			device := ua.Parse(request.UserAgent())
 	
 			if device.DeviceType == ua.DeviceComputer {
 				response.Write(desktop)
 				return
 			}
-		}
+		}*/
 
 		//Anything else? Serve application.
 		if local {
