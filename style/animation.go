@@ -22,3 +22,16 @@ func (style Style) SetDelay(delay float64) {
 func (style Style) SetDuration(duration float64) {
 	style.SetAnimationDuration(css.Time(duration))
 }
+
+func (style Style) Animate(duration float64, justdelay ...float64) {
+	var delay float64
+	if len(justdelay) > 0 {
+		delay = justdelay[0]
+	}
+
+	style.SetTransitionProperty((*css.Style).Transform)
+	style.SetWillChange((*css.Style).Transform)
+
+	style.SetTransitionDuration(css.Time(duration))
+	style.SetTransitionDelay(css.Time(delay))
+}
