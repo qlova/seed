@@ -80,7 +80,14 @@ func NewBool() Bool {
 }
 
 func (b Bool) Script(q Script) qlova.Bool {
-	return q.BoolFromLanguageType(Javascript.Bit{
+	var result = q.BoolFromLanguageType(Javascript.Bit{
 		Expression: language.Statement(`window.localStorage.getItem("`+string(b.Variable)+`") == "true"`),
 	})
+
+	/*var extension = result.Extend()
+		extension.Setter = func(value language.Type) language.Statement {
+			return language.Statement(`window.localStorage.setItem("`+name.raw()+`", (`+string(t.Expression)+`).toString());`)
+		}*/
+
+	return result 
 }
