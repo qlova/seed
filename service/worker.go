@@ -19,7 +19,7 @@ func (worker Worker) Render() []byte {
   event.waitUntil(
     caches.open("cache").then(function(cache) {
       return cache.addAll(
-        ["/", `)
+        [".", `)
 
 	var i = 0
 	for asset := range worker.Assets {
