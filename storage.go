@@ -3,9 +3,8 @@ package seed
 import "strings"
 
 import "github.com/qlova/seed/storage"
-import "github.com/qlova/seed/storage/bolt"
 
-var Database = bolt.Open(Dir+"/seed.db")
+var Database storage.Node = storage.NewMap()
 
 func Store(path string) storage.JSON {
 
