@@ -310,6 +310,7 @@ func (seed Seed) Page() bool {
 
 func (seed Seed) Require(script string) {
 	seed.scripts = append(seed.scripts, script)
+	NewAsset(script).AddTo(seed)
 }
 
 //Add a child seed to this seed.
