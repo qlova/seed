@@ -37,18 +37,23 @@ func (worker Worker) Render() []byte {
     })
   );
 });
-	
-self.addEventListener('fetch', function(event) {
-	event.respondWith(
-		caches.open("cache").then(function(cache) {
-		  	caches.match(event.request).then(function(response) {
-		  		return response || fetch(event.request);
-		  	})
-		}).catch(function(cache) {
-			return Promise.resolve(new Response());		
-		})
-	);
-});
+
+self.addEventListener('fetch', event => event.respondWith(cacheThenNetwork(event)));
+
+async function cacheThenNetwork(event) {
+
+    const cache = await caches.open("cache");
+
+    const cachedResponse = await cache.match(event.request);
+
+    if (cachedResponse) {
+        return cachedResponse;
+    }
+
+    const networkResponse = await fetch(event.request);
+
+    return networkResponse;
+}
 `)
 	
 	return b.Bytes()
