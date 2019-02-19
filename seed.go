@@ -342,3 +342,16 @@ func (seed Seed) SetText(data string) {
 func (seed Seed) SetDynamicText(f func(User)) {
 	seed.dynamicText = f
 }
+
+//Shorthand for seed.OnClick(func(q seed.Script){ page.Script(q).Goto() })
+func (seed Seed) OnSwipeLeft(f func(Script)) {
+	seed.Require("hammer.js")
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+			q.Javascript("let hammertime = new Hammer("+seed.Script(q).Element()+");")
+			q.Javascript(`hammertime.on("swipeleft", function() {`)
+			f(q)
+			q.Javascript("});")
+		q.Javascript("}")
+	})
+}
