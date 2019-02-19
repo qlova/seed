@@ -22,7 +22,7 @@ type Manifest struct {
 
 func New() Manifest {
 	var manifest Manifest
-	manifest.StartUrl = "./"
+	manifest.StartUrl = "/"
 	manifest.Display = "standalone"
 	manifest.BackgroundColor = "#fff"
 	return manifest
