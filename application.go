@@ -67,6 +67,16 @@ func (app *App) SetTrackingCode(code string) {
 
 //TODO random port, can be set with enviromental variables.
 func (app *App) Launch(listen ...string) error {
+
+	if len(os.Args) == 2 && os.Args[1] == "-deploy" {
+		err := app.Deploy()
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
 	launcher{App: *app}.Launch(listen...)
 	return nil
 }
