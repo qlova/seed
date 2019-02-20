@@ -419,6 +419,7 @@ func (application App) render(production bool, platform Platform) []byte {
 		}
 
 		buffer.Write([]byte(`
+			var animating = false;
 			
 			var get = function(id) {
 				return document.getElementById(id)
@@ -428,6 +429,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			var current_page = "`+seed.id+`";
 			var next_page = "`+seed.id+`";
 			var goto = function(next_page_id) {
+				if (animating) return;
 				if (current_page == next_page_id) return;
 				if (next_page == next_page_id) return;
 				next_page = next_page_id;
