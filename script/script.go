@@ -83,6 +83,10 @@ func (q Script) After(time float64, f func()) {
 	q.Javascript("}, "+fmt.Sprint(time)+");")
 }
 
+func (q Script) Restart() {
+	q.Javascript("window.location.reload();")
+}
+
 /*func (q Script) Get(seed Interface) *script.Seed {
 	return &script.Seed{
 		ID: seed.GetSeed().id,
@@ -113,6 +117,10 @@ func (q Script) SetUserData(name user.Data, value qlova.String) {
 }
 
 func ToJavascript(f func(q Script)) string {
+	if f == nil {
+		return ""
+	}
+
 	return string(toJavascript(f))
 }
 

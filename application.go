@@ -1,5 +1,7 @@
 package seed
 
+import "fmt"
+import "os"
 import "github.com/qlova/seed/manifest"
 import "github.com/qlova/seed/service"
 
@@ -12,6 +14,8 @@ type App struct {
 	host, rest, pkg, tracking string
 	
 	hashes []string
+
+	onupdatefound func(Script)
 }
 
 //Create a new application, accepts title and content arguments.
@@ -65,4 +69,8 @@ func (app *App) SetTrackingCode(code string) {
 func (app *App) Launch(listen ...string) error {
 	launcher{App: *app}.Launch(listen...)
 	return nil
+}
+
+func (app *App) OnUpdateFound(f func(Script)) {
+	app.onupdatefound = f
 }
