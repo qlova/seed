@@ -16,6 +16,7 @@ func (worker Worker) Render() []byte {
 	var b bytes.Buffer
 	
 	b.WriteString(`self.addEventListener('install', function(event) {
+		self.skipWaiting();
   event.waitUntil(
     caches.open("cache").then(function(cache) {
       return cache.addAll(
