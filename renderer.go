@@ -131,7 +131,7 @@ func (seed Seed) HTML(platform Platform) ([]byte) {
 		html.WriteByte('\'')
 	}
 	
-	if seed.onclick != nil {
+	if seed.onclick != nil && !seed.ready {
 		html.WriteString(" onclick='")
 		html.WriteString(script.ToJavascript(seed.onclick))
 		html.WriteByte('\'')
@@ -207,6 +207,7 @@ func (seed Seed) buildOnReady(platform Platform, buffer *bytes.Buffer) {
 	}
 	
 	if seed.onready != nil {
+		seed.ready = true
 		buffer.WriteByte('{')
 		buffer.WriteString(script.ToJavascript(seed.onready))
 		buffer.WriteByte('}')

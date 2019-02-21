@@ -75,6 +75,7 @@ type seed struct {
 	children []Interface
 	
 	styled bool
+	ready bool
 	
 	font style.Font
 	animation Animation
@@ -223,7 +224,7 @@ func AddTo(parent Interface) Seed {
 
 //Run a script when this seed is clicked.
 func (seed Seed) OnClick(f func(Script)) {
-
+	seed.onclick = f
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
 			q.Javascript("let old_onclick = "+seed.Script(q).Element()+".onclick;")
