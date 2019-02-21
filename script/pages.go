@@ -19,5 +19,5 @@ func (a Page) Equals(b Page) qlova.Bool {
 }
 
 func (page Page) SetCurrent() {
-	page.Javascript(`current_page = `+page.ID)
+	page.Javascript(`current_page = `+page.ID+";")
 }
