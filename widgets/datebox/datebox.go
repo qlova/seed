@@ -45,6 +45,10 @@ func New() Widget {
 	return Widget{TextBox, FakeBox}
 }
 
+func (widget Widget) SetRequired() {
+	widget.fakebox.SetRequired()
+}
+
 func AddTo(parent seed.Interface) Widget {
 	var widget = New()
 	parent.Root().Add(widget)
