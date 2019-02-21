@@ -272,7 +272,8 @@ func (application App) render(production bool, platform Platform) []byte {
 	if platform != Desktop {
 		buffer.WriteString(`
 			<meta name="apple-mobile-web-app-capable" content="yes">
-			<meta name="apple-mobile-web-app-status-bar-style" content="black">
+			<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+			
 		`)
 	}
 		
@@ -318,6 +319,30 @@ func (application App) render(production bool, platform Platform) []byte {
 					console.log('ServiceWorker registration failed: ', err);
 				});
 			}
+
+			//Some SERIOUS HACKS TO WORKAROUND APPLE'S BUGS.
+		    var canvas = document.createElement("canvas");
+		    if (canvas) {
+		        var context = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+		        if (context) {
+		            var info = context.getExtension("WEBGL_debug_renderer_info");
+		            if (info) {
+		                var renderer = context.getParameter(info.UNMASKED_RENDERER_WEBGL);
+
+		          		switch (renderer) {
+		          			case "PowerVR SGX 543":
+		          			case "Apple A8 GPU":
+		          			case "Apple A9 GPU":
+		          			case "Apple A10 GPU":
+		          				console.log("GET YOUR ACT TOGETHER WEBKIT: the viewport-fit: cover bug is seriously annoying.")
+		          				document.querySelector('meta[name=viewport]').
+		          					setAttribute('content', 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no');
+		          				
+		          		}
+		            }
+		        }
+		    }
+			
 		</script>
 		
 		
@@ -365,8 +390,14 @@ func (application App) render(production bool, platform Platform) []byte {
 				margin-block-start: 0;
 				margin-block-end: 0;
 			}
-			
-			 html, body {
+			html {
+				height: 100vh;
+			}
+			body {
+				top: 0;
+				left: 0
+				right: 0;
+				bottom: 0;
 				position: fixed;
 				overscroll-behavior: none; 
 				-webkit-overscroll-behavior: none; 
@@ -375,7 +406,7 @@ func (application App) render(production bool, platform Platform) []byte {
 				margin: 0; 
 				padding: 0;
 				height: 100%;
-				width: 100%;
+				width: 100vw;
 				`))
 
 				//We dont want people to select things on mobile.
