@@ -351,3 +351,16 @@ func (seed Seed) OnSwipeLeft(f func(Script)) {
 		q.Javascript("}")
 	})
 }
+
+//Shorthand for seed.OnClick(func(q seed.Script){ page.Script(q).Goto() })
+func (seed Seed) OnSwipeRight(f func(Script)) {
+	seed.Require("hammer.js")
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+			q.Javascript("let hammertime = new Hammer("+seed.Script(q).Element()+");")
+			q.Javascript(`hammertime.on("swiperight", function() {`)
+			f(q)
+			q.Javascript("});")
+		q.Javascript("}")
+	})
+}
