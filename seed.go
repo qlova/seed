@@ -172,14 +172,10 @@ func (seed Seed) Parent() Seed {
 
 func (seed Seed) Copy() Seed {
 	var another = *seed.seed
-	
-	var OldStyleImplemenation = another.Style.Style.Stylable.(css.Implementation)
-	var NewStyleImplementation = make(css.Implementation, len(OldStyleImplemenation))
-	
-	for key := range OldStyleImplemenation {
-		NewStyleImplementation[key] = OldStyleImplemenation[key]
-	}
-	another.Style.Style.Stylable = NewStyleImplementation
+
+	another.Style = another.Style.Copy()
+	another.Portrait = another.Portrait.Copy()
+	another.Landscape = another.Landscape.Copy()
 	
 	another.id =  base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
 	id++

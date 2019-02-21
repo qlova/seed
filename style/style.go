@@ -55,6 +55,20 @@ func NewFont(path string) Font {
 	return font
 }
 
+func (style Style) Copy() Style {
+	var OldStyleImplemenation = style.Stylable.(css.Implementation)
+	var NewStyleImplementation = make(css.Implementation, len(OldStyleImplemenation))
+	
+	for key := range OldStyleImplemenation {
+		NewStyleImplementation[key] = OldStyleImplemenation[key]
+	}
+	return Style{
+		Style: css.Style{
+			Stylable: NewStyleImplementation,
+		},
+	}
+}
+
 func (style Style) Bytes() []byte {
 	var transform = css.Rotate(0)
 	transform = ""
