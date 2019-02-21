@@ -252,7 +252,7 @@ func (application App) render(production bool, platform Platform) []byte {
 
 	var buffer bytes.Buffer
 	buffer.Write([]byte(`<!DOCTYPE html><html><head>
-		<meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="viewport" content="viewport-fit=cover, height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	`))
 
 	if application.tracking != "" {
