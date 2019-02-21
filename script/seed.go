@@ -223,45 +223,39 @@ func (seed Seed) OnClick(f func()) {
 //Animations
 func (seed Seed) SlideInFrom(direction complex128) {
 
-	if direction == 1i {
+	var FirstTransform string
+	var SecondTransform string
 	
-		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateY(100vh)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
-		seed.Javascript(`animating = true;`)
-		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateY(0vh)";`)
-			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", ""); animating = false; }, 500);`)
-		seed.Javascript(`})});`)
+	if direction == 1i {
+		FirstTransform = "translateY(100vh)"
+		SecondTransform = "translateY(0)"
+	}
+
+	if direction == -1i {
+		FirstTransform = "translateY(-100vh)"
+		SecondTransform = "translateY(0)"
 	}
 
 	if direction == 1 {
-		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateX(100vw)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
-		seed.Javascript(`animating = true;`)
-		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
-			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", "");animating = false;  }, 500);`)
-		seed.Javascript(`})});`)
+		FirstTransform = "translateX(100vw)"
+		SecondTransform = "translateX(0)"
 	}
 
 	if direction == -1 {
-		seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateX(-100vw)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
-		seed.Javascript(`animating = true;`)
-		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
-			seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", "");animating = false;  }, 500);`)
-		seed.Javascript(`})});`)
+		FirstTransform = "translateX(-100vw)"
+		SecondTransform = "translateX(0)"
 	}
+
+	seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
+	seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
+	seed.Javascript(seed.Element()+`.style.transform = "`+FirstTransform+`";`)
+	seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
+	seed.Javascript(`animating = true;`)
+	
+	seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
+		seed.Javascript(seed.Element()+`.style.transform = "`+SecondTransform+`";`)
+		seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", ""); animating = false; }, 500);`)
+	seed.Javascript(`})});`)
 }
 
 //Animations
@@ -275,31 +269,39 @@ func (seed Seed) SlideOutFrom(direction complex128) {
 	seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "top", "100vh"); }, 30);`)
 	seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)*/
 
+	var FirstTransform string
+	var SecondTransform string
+	
 	if direction == 1i {
-		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateY(0vh)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
-		seed.Javascript(`animating = true;`)
-		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateY(100vh)";`)
-			seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "");animating = false;  }, 500);`)
-		seed.Javascript(`})});`)
+		FirstTransform = "translateY(0)"
+		SecondTransform = "translateY(100vh)"
+	}
+
+	if direction == -1i {
+		FirstTransform = "translateY(0)"
+		SecondTransform = "translateY(-100vh)"
 	}
 
 	if direction == 1 {
-		seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
-		seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-		seed.Javascript(seed.Element()+`.style.transform = "translateX(0vw)";`)
-		seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
-		seed.Javascript(`animating = true;`)
-		
-		seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-			seed.Javascript(seed.Element()+`.style.transform = "translateX(100vw)";`)
-			seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "");animating = false;  }, 500);`)
-		seed.Javascript(`})});`)
+		FirstTransform = "translateX(0)"
+		SecondTransform = "translateX(100vw)"
 	}
+
+	if direction == -1 {
+		FirstTransform = "translateX(0)"
+		SecondTransform = "translateX(-100vw)"
+	}
+
+	seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
+	seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
+	seed.Javascript(seed.Element()+`.style.transform = "`+FirstTransform+`";`)
+	seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
+	seed.Javascript(`animating = true;`)
+	
+	seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
+		seed.Javascript(seed.Element()+`.style.transform = "`+SecondTransform+`";`)
+		seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "");animating = false;  }, 500);`)
+	seed.Javascript(`})});`)
 }
 
 func (seed Seed) Translate(x, y Unit) {
