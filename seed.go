@@ -223,13 +223,20 @@ func AddTo(parent Interface) Seed {
 
 //Run a script when this seed is clicked.
 func (seed Seed) OnClick(f func(Script)) {
+
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
-			q.Javascript(`let onclick = function(ev) {`)
+			q.Javascript("let old_onclick = "+seed.Script(q).Element()+".onclick;")
+			q.Javascript(`let onclick = function(event) {`)
 			f(q)
-			q.Javascript(`ev.preventDefault()};`)
-			q.Javascript(seed.Script(q).Element()+`.onclick = onclick;`)
-			q.Javascript(seed.Script(q).Element()+`.ontouchstart = onclick;`)
+			q.Javascript("if (old_onclick) old_onclick();")
+			q.Javascript(`};`)
+			
+			q.Javascript("if (navigator.maxTouchPoints || 'ontouchstart' in document.documentElement) {")
+				q.Javascript(seed.Script(q).Element()+`.ontouchend = function(ev) { ev = ev.changedTouches[0]; onclick(ev); };`)
+			q.Javascript("} else {")
+				q.Javascript(seed.Script(q).Element()+`.onclick = onclick;`)
+			q.Javascript(`}`)
 		q.Javascript("}")
 	})
 }
