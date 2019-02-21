@@ -67,7 +67,7 @@ func NewInt() Int {
 
 func (i Int) Script(q Script) qlova.Int {
 	return q.IntFromLanguageType(Javascript.Integer{
-		Expression: language.Statement(`parseInt(window.localStorage.getItem("`+string(i.Variable)+`") || "0")`),
+		Expression: language.Statement(`(parseInt(window.localStorage.getItem("`+string(i.Variable)+`") || "0"))`),
 	})
 }
 
@@ -81,7 +81,7 @@ func NewBool() Bool {
 
 func (b Bool) Script(q Script) qlova.Bool {
 	var result = q.BoolFromLanguageType(Javascript.Bit{
-		Expression: language.Statement(`window.localStorage.getItem("`+string(b.Variable)+`") == "true"`),
+		Expression: language.Statement(`(window.localStorage.getItem("`+string(b.Variable)+`") == "true")`),
 	})
 
 	/*var extension = result.Extend()
