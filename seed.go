@@ -223,15 +223,15 @@ func AddTo(parent Interface) Seed {
 
 //Run a script when this seed is clicked.
 func (seed Seed) OnClick(f func(Script)) {
-	if seed.onclick == nil {
-		seed.onclick = f
-	} else {
-		var old = seed.onclick
-		seed.onclick = func(q Script) {
-			old(q)
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+			q.Javascript(`let onclick = function(ev) {`)
 			f(q)
-		}
-	}
+			q.Javascript(`ev.preventDefault()};`)
+			q.Javascript(seed.Script(q).Element()+`.onclick = onclick;`)
+			q.Javascript(seed.Script(q).Element()+`.ontouchstart = onclick;`)
+		q.Javascript("}")
+	})
 }
 
 //Shorthand for seed.OnClick(func(q seed.Script){ page.Script(q).Goto() })
@@ -361,6 +361,18 @@ func (seed Seed) OnSwipeRight(f func(Script)) {
 			q.Javascript(`hammertime.on("swiperight", function() {`)
 			f(q)
 			q.Javascript("});")
+		q.Javascript("}")
+	})
+}
+
+//Run a script when this seed is clicked.
+func (seed Seed) OnFocus(f func(Script)) {
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+			q.Javascript(`let onfocus = function(ev) {`)
+			f(q)
+			q.Javascript(`};`)
+			q.Javascript(seed.Script(q).Element()+`.onfocus = onfocus;`)
 		q.Javascript("}")
 	})
 }
