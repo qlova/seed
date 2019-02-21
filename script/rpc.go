@@ -25,7 +25,7 @@ func (promise Promise) Then(f func()) Promise {
 func (promise Promise) Catch(f func()) Promise {
 	promise.q.Javascript(promise.expression+".catch(function(rpc_result) {")
 	f()
-	promise.q.Javascript("})")
+	promise.q.Javascript("});")
 	return promise
 }
 
