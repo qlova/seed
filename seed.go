@@ -385,3 +385,15 @@ func (seed Seed) OnFocus(f func(Script)) {
 		q.Javascript("}")
 	})
 }
+
+//Run a script when this seed is clicked.
+func (seed Seed) OnFocusLost(f func(Script)) {
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+			q.Javascript(`let onfocuslost = function(ev) {`)
+			f(q)
+			q.Javascript(`};`)
+			q.Javascript(seed.Script(q).Element()+`.onfocusout = onfocuslost;`)
+		q.Javascript("}")
+	})
+}
