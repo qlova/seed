@@ -397,3 +397,15 @@ func (seed Seed) OnFocusLost(f func(Script)) {
 		q.Javascript("}")
 	})
 }
+
+//Run a script when this seed is clicked.
+func (seed Seed) OnLongPress(f func(Script)) {
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+			q.Javascript(`let onlongpress = function(ev) {ev.preventDefault()`)
+			f(q)
+			q.Javascript(`};`)
+			q.Javascript(seed.Script(q).Element()+`.addEventListener('long-press', onlongpress);`)
+		q.Javascript("}")
+	})
+}
