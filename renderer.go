@@ -131,7 +131,7 @@ func (seed Seed) HTML(platform Platform) ([]byte) {
 		html.WriteByte('\'')
 	}
 	
-	if seed.onclick != nil && !seed.ready {
+	if seed.onclick != nil && seed.parent == nil {
 		html.WriteString(" onclick='")
 		html.WriteString(script.ToJavascript(seed.onclick))
 		html.WriteByte('\'')
