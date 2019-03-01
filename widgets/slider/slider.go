@@ -1,5 +1,6 @@
 package slider
 
+import "strconv"
 import "github.com/qlova/seed"
 import "github.com/qlova/seed/script"
 
@@ -27,6 +28,11 @@ func AddTo(parent seed.Interface) Widget {
 
 func (widget Widget) SetRequired() {
 	widget.SetAttributes(widget.Attributes()+" required")
+}
+
+
+func (widget Widget) SetMax(max int) {
+	widget.SetAttributes(widget.Attributes()+" max='"+strconv.Itoa(max)+"'")
 }
 
 type Script struct {
