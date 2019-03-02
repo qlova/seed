@@ -83,6 +83,12 @@ func (q Script) After(time float64, f func()) {
 	q.Javascript("}, "+fmt.Sprint(time)+");")
 }
 
+func (q Script) Every(time float64, f func()) {
+	q.Javascript("setInterval(function() {")
+	f()
+	q.Javascript("}, "+fmt.Sprint(time)+");")
+}
+
 func (q Script) Restart() {
 	q.Javascript("window.location.reload();")
 }
