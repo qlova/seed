@@ -69,7 +69,7 @@ func (style Style) Copy() Style {
 	}
 }
 
-func (style Style) Bytes() []byte {
+func (style *Style) update() {
 	var transform = css.Rotate(0)
 	transform = ""
 	var changed bool
@@ -102,20 +102,28 @@ func (style Style) Bytes() []byte {
 	if changed {
 		style.SetTransform(transform)
 	}
+}
+
+func (style Style) Bytes() []byte {
+
+	style.update()
 
 	return style.Style.Bytes()
 }
 
 func (style *Style) Rotate(angle float64) {
 	style.angle = &angle
+	style.update()
 }
 func (style *Style) Scale(scale float64) {
 	style.scale = &scale
+	style.update()
 }
 
 func (style *Style) Translate(x, y complex128) {
 	style.x = &x
 	style.y = &y
+	style.update()
 }
 
 //Set the symetrical spacing within this.
