@@ -227,8 +227,6 @@ func (seed Seed) BuildOnReady(platform Platform) []byte {
 
 //Return a fully fully rendered application in HTML for the seed.
 func (application App) render(production bool, platform Platform) []byte {
-	application.build()
-
 	var seed = application.Seed
 
 	seed.OnReady(func(q Script) {

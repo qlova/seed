@@ -26,6 +26,7 @@ type launcher struct {
 
 //Returns a http handler that serves this application.
 func (launcher launcher) Handler() http.Handler {
+	launcher.App.build()
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
     if err != nil {
