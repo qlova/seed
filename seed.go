@@ -251,7 +251,7 @@ func (seed Seed) OnClick(f func(Script)) {
 	let b = changedTouch.clientY - point[1];
 	if ((a*a + b*b) > 50*50) moved = true;
 };`)
-				q.Javascript(seed.Script(q).Element()+`.ontouchend = function(ev) { ev.stopPropagation(); ev.preventDefault(); if (moved) { moved = false; return; } ev = ev.changedTouches[0]; handler(ev);  };`)
+				q.Javascript(seed.Script(q).Element()+`.ontouchend = function(ev) { if (ev.stopPropagation) ev.stopPropagation(); ev.preventDefault(); if (moved) { moved = false; return; } ev = ev.changedTouches[0]; handler(ev);  };`)
 			//q.Javascript("} else {")
 				q.Javascript(seed.Script(q).Element()+`.onclick = handler;`)
 			//q.Javascript(`}`)
