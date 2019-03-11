@@ -8,8 +8,11 @@ import "github.com/qlova/seed/widgets/editor"
 
 //A basic text editor without the ability to save files.
 func main() {
-	var Editor = editor.New()
-	Editor.SetName("Text Editor")
+	var App = seed.NewApp("Text Editor")
+		App.SetSize(100, 100)
+	
+	var Editor = editor.AddTo(App)
+		Editor.SetSize(100, 100)
 	
 	if len(os.Args) > 1 {
 		data, err := ioutil.ReadFile(os.Args[1])
@@ -18,9 +21,9 @@ func main() {
 				q.Alert(q.String(err.Error()))
 			})
 		} else {
-			Editor.SetText(string(data))
+			Editor.SetContent(string(data))
 		}
 	}
 	
-	Editor.Launch()
+	App.Launch()
 }

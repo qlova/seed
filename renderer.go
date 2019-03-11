@@ -392,6 +392,9 @@ func (application App) render(production bool, platform Platform) []byte {
 			html {
 				height: 100vh;
 			}
+			pre {
+				margin: 0;
+			}
 			body {
 				top: 0;
 				left: 0
