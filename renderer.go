@@ -490,6 +490,47 @@ func (application App) render(production bool, platform Platform) []byte {
 				}
 				next_page = null;
 			};
+			
+			function `+OnPress+`(id, func) {
+				let element = get(id);
+				
+				let handler = function(event) {
+					func(event);
+				};
+				
+				let moved = false;
+				let point = [0, 0];
+				
+				element.ontouchstart = function(e) {
+					var changedTouch = event.changedTouches[0];
+						point[0]  = changedTouch.clientX;
+						point[1]  = changedTouch.clientY;
+				};
+				
+				element.ontouchmove = function(event) {
+					var changedTouch = event.changedTouches[0];
+					var elem = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
+								
+					if (elem != event.target) moved = true;
+								
+					let a = changedTouch.clientX - point[0];
+					let b = changedTouch.clientY - point[1];
+					if ((a*a + b*b) > 50*50) moved = true;
+				};
+				
+				element.ontouchend = function(ev) {
+					if (ev.stopPropagation) ev.stopPropagation(); 
+					ev.preventDefault(); 
+					if (moved) {
+						moved = false; 
+						return; 
+					}
+					ev = ev.changedTouches[0];
+					handler(ev);
+				};
+
+				element.onclick = handler;
+			}
 
 			var ActivePhotoSwipe = null;
 			

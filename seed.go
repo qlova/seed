@@ -222,40 +222,15 @@ func AddTo(parent Interface) Seed {
 	return seed
 }
 
+const OnPress = `op`
+
 //Run a script when this seed is clicked.
 func (seed Seed) OnClick(f func(Script)) {
 	seed.onclick = f
 	seed.OnReady(func(q Script) {
-		q.Javascript("{")
-			q.Javascript("let old_onclick = "+seed.Script(q).Element()+".ontouchend;")
-			q.Javascript(`let handler = function(event) {`)
+		q.Javascript(OnPress+"('"+seed.id+"', function(event) {")
 			f(q)
-			q.Javascript("if (old_onclick) old_onclick();")
-			q.Javascript(`};`)
-			
-			//q.Javascript("if (navigator.maxTouchPoints || 'ontouchstart' in document.documentElement) {")
-				q.Javascript(`let moved = false;`)
-				q.Javascript(`let point = [0, 0];`)
-				q.Javascript(seed.Script(q).Element()+`.ontouchstart = function(e) {
-	var changedTouch = event.changedTouches[0];
-		point[0]  = changedTouch.clientX;
-		point[1]  = changedTouch.clientY;
-};`)
-				q.Javascript(seed.Script(q).Element()+`.ontouchmove = function(event) {
-	var changedTouch = event.changedTouches[0];
-	var elem = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
-				
-	if (elem != event.target) moved = true;
-				
-	let a = changedTouch.clientX - point[0];
-	let b = changedTouch.clientY - point[1];
-	if ((a*a + b*b) > 50*50) moved = true;
-};`)
-				q.Javascript(seed.Script(q).Element()+`.ontouchend = function(ev) { if (ev.stopPropagation) ev.stopPropagation(); ev.preventDefault(); if (moved) { moved = false; return; } ev = ev.changedTouches[0]; handler(ev);  };`)
-			//q.Javascript("} else {")
-				q.Javascript(seed.Script(q).Element()+`.onclick = handler;`)
-			//q.Javascript(`}`)
-		q.Javascript("}")
+		q.Javascript("});")
 	})
 }
 
