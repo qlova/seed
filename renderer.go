@@ -238,7 +238,7 @@ func (application App) render(production bool, platform Platform) []byte {
 					goto(current_page);
 				}
 			}
-		})				
+		});		
 		`)
 	})
 	

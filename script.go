@@ -1,6 +1,5 @@
 package seed
 
-import qlova "github.com/qlova/script"
 import "github.com/qlova/seed/script"
 
 type Script = script.Script
@@ -42,7 +41,7 @@ func (seed Seed) SyncText(text *string) {
 	
 	seed.OnReady(func(q Script) {
 		q.Javascript(`setInterval(function() {`)
-			seed.Script(q).SetText(q.Call(wrapper).(qlova.String))
+			seed.Script(q).SetText(q.Call(wrapper).String())
 		q.Javascript(`}, 100)`)
 	})
 }

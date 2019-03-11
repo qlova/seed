@@ -24,7 +24,7 @@ type Script struct {
 type script struct {
 	qlova.Script
 
-	Go Go
+	//Go Go
 	js js
 }
 
@@ -136,7 +136,7 @@ func toJavascript(f func(q Script)) []byte {
 	var program = qlova.Program(func(q qlova.Script) {
 		var s = Script{&script{ Script:q }}
 		s.js.q = s
-		s.Go.Script = s
+		//s.Go.Script = s
 		f(s)
 	})
 	source := program.SourceCode(Javascript.Implementation{})
@@ -175,10 +175,10 @@ type ExportedFunction struct {
 
 var exports = make(map[string]reflect.Value)
 
-func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
+func (q Script) call(f interface{}, args ...qlova.Type) qlova.Value {
 	if name, ok := f.(string); ok && len(args) == 0 {
 		q.Raw("Javascript", language.Statement(name+`();`))
-		return nil
+		return qlova.Value{}
 	}
 
 	var name = fmt.Sprint(f)
@@ -215,14 +215,14 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Type {
 		switch value.Type().Out(0).Kind() {
 
 			case reflect.String:
-				return q.wrap("this.responseText")
+				return q.wrap("this.responseText").Value()
 
 			default:
 				panic(value.Type().String()+" Unimplemented")
 		}
 	}
 
-	return nil
+	return qlova.Value{}
 }
 
 func (q Script) Run(f Function, args ...qlova.Type) {
@@ -231,7 +231,7 @@ func (q Script) Run(f Function, args ...qlova.Type) {
 }
 
 //Export a Go function to Javascript. Don't use this for non-local apps! TODO enforce this
-func (q Script) Call(f interface{}, args ...qlova.Type) qlova.Type {
+func (q Script) Call(f interface{}, args ...qlova.Type) qlova.Value {
 	return q.call(f, args...)
 }
 
@@ -250,13 +250,15 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 
 	var in []reflect.Value
+	
+	var u = user.User{}.FromHandler(w, r)
 
 	var StartFrom = 0;
 	//The function can take an optional client as it's first argument.
 	if f.Type().NumIn() > 0 && f.Type().In(0) == reflect.TypeOf(user.User{}) {
 		StartFrom = 1;
 
-		in = append(in, reflect.ValueOf(user.User{}.FromHandler(w, r)))
+		in = append(in, reflect.ValueOf(u))
 
 	}
 
@@ -285,10 +287,15 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 
 	var results = f.Call(in)
+	
+	u.Close()
+	
 	if len(results) == 0 {
-		fmt.Fprint(w, "done")
 		return
 	}
+	
+	
+	
 	switch results[0].Kind() {
 
 		case reflect.String:

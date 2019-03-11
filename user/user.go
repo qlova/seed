@@ -18,6 +18,9 @@ type User struct {
 type user struct {
 	http.ResponseWriter
 	*http.Request
+	
+	//The pending update for the user.
+	Update
 }
 	
 func (user User) WriteString(s string) {
@@ -27,7 +30,12 @@ func (user User) WriteString(s string) {
 func (User) FromHandler(w http.ResponseWriter, r *http.Request) User {
 	return User{user:user{
 		Request: r,
-		ResponseWriter: w, 
+		ResponseWriter: w,
+		
+		Update: Update{
+			Document: make(map[string]string),
+			LocalStorage: make(map[string]string),
+		},
 	}}
 }
 
@@ -56,6 +64,14 @@ func (user User) Get(data Data) string {
 		return ""
 	}
 	return result.Value
+}
+
+func (user User) Close() {
+	if len(user.Update.Document) > 0 || len(user.Update.LocalStorage) > 0 {
+		json.NewEncoder(user.ResponseWriter).Encode(user.Update)
+	} else {
+		fmt.Fprint(user.ResponseWriter, "done")
+	}
 }
 
 var id int64 = 1;

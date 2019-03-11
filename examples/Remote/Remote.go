@@ -1,19 +1,15 @@
 package main
 
 import "github.com/qlova/seed"
-import . "github.com/qlova/script"
-
-func Callback() string {
-	return "You clicked me!"
-}
+import "github.com/qlova/seed/widgets/button"
 
 func main() {
-	var App = seed.Button()
-	App.SetText("Click me!")
+	var App = seed.NewApp("Remote Code")
 	
-	App.OnClick(func(q seed.Script) {
-		q.Get(App).SetText(q.Call(Callback).(String))
-	})
+	var Button = button.AddTo(App, "Click me!")
+		Button.OnClick(seed.Go(func(user seed.User) {
+			Button.For(user).SetText("You clicked me!")
+		}))
 	
 	App.Launch()
 }
