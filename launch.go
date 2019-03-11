@@ -36,12 +36,14 @@ func launch(hostport string) {
 	
 		
 	switch runtime.GOOS {
-	case "linux":
-		exec.Command("xdg-open", url).Run()
-	case "darwin":
-		exec.Command("open", url).Run()
-	case "windows":
-		r := strings.NewReplacer("&", "^&")
-		exec.Command("cmd", "/c", "start", r.Replace(url)).Run()
+		case "android":
+			exec.Command("am","start", "--user", "0", "-a", "android.intent.action.VIEW", "-d", url).Run()
+		case "linux":
+			exec.Command("xdg-open", url).Run()
+		case "darwin":
+			exec.Command("open", url).Run()
+		case "windows":
+			r := strings.NewReplacer("&", "^&")
+			exec.Command("cmd", "/c", "start", r.Replace(url)).Run()
 	}
 }
