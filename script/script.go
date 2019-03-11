@@ -23,7 +23,9 @@ type Script struct {
 
 type script struct {
 	qlova.Script
+
 	Go Go
+	js js
 }
 
 func (q Script) RawString(s qlova.String) string {
@@ -133,6 +135,7 @@ func ToJavascript(f func(q Script)) string {
 func toJavascript(f func(q Script)) []byte {
 	var program = qlova.Program(func(q qlova.Script) {
 		var s = Script{&script{ Script:q }}
+		s.js.q = s
 		s.Go.Script = s
 		f(s)
 	})
@@ -160,10 +163,6 @@ func (q Script) Query(query qlova.String) Element {
 
 func (element Element) Run(method string) {
 	element.q.Raw("Javascript", language.Statement(`document.querySelector(`+element.query+`).`+method+`();`))
-}
-
-func (q Script) Alert(message qlova.String) {
-	q.Javascript(`alert(`+raw(message)+`);`)
 }
 
 func (q Script) Back() {
