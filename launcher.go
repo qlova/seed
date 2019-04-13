@@ -44,6 +44,7 @@ func (launcher launcher) Handler() http.Handler {
 	var manifest = launcher.Manifest.Render()
 
 	var dynamic = launcher.App.DynamicHandler()
+	var custom = launcher.App.CustomHandler()
 
 	//var desktop = launcher.render(true, Desktop)
 
@@ -104,8 +105,8 @@ func (launcher launcher) Handler() http.Handler {
 
 		//Run custom handlers.
 		if request.URL.Path != "/" {
-			for _, handler := range launcher.Seed.handlers {
-				handler(response, request)
+			if custom != nil {
+				custom(response, request)
 			}
 			
 			if path.Ext(request.URL.Path) == "" {

@@ -2,8 +2,9 @@ package seed
 
 import "bytes"
 import "github.com/qlova/seed/style"
-
 import "net/http"
+
+
 type dynamicHandler struct {
 	id string
 	handler func(User)
@@ -23,6 +24,8 @@ type harvester struct {
 	
 	//Dynamic handlers
 	dynamicHandlers []dynamicHandler
+	
+	customHandlers []func(response http.ResponseWriter, request *http.Request)
 }
 
 func newHarvester() *harvester {
@@ -52,6 +55,11 @@ func (app *harvester) harvest(seed Seed) {
 			id: seed.id,
 			handler: seed.dynamicText,
 		})
+	}
+	
+	//Harvest Dynamic Handlers.
+	if seed.handlers != nil {
+		h.customHandlers = append(h.customHandlers, seed.handlers...)
 	}
 	
 	//Harvest Fonts.
@@ -119,6 +127,20 @@ func (app *harvester) DynamicHandler() (func(w http.ResponseWriter, r *http.Requ
 			w.Write([]byte(`":"`))
 			handler.handler(User{}.FromHandler(w, r))
 			w.Write([]byte(`"`))
+		}
+	}
+}
+
+func (app *harvester) CustomHandler() (func(w http.ResponseWriter, r *http.Request)) {
+	var h = app
+	
+	if len(h.customHandlers) == 0 {
+		return nil
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		for _, handler := range h.customHandlers {
+			handler(w, r)
 		}
 	}
 }

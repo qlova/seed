@@ -147,6 +147,9 @@ func toJavascript(f func(q Script)) []byte {
 	return source.Data
 }
 
+func (q Script) JS() js {
+	return q.js
+}
 
 func (q Script) Javascript(js string) {
 	q.Raw("Javascript", language.Statement(js))
