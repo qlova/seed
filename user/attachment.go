@@ -21,6 +21,30 @@ type Attachment struct {
 	files []multipart.File
 }
 
+func (a Attachment) Name() string {
+	if len(a.files) == 0  {
+		return ""
+	}
+
+	return a.heads[0].Filename
+}
+
+func (a Attachment) Open() io.Reader {
+	if len(a.files) == 0  {
+		return nil
+	}
+
+	return a.files[0]
+}
+
+func (a Attachment) Size() int64 {
+	if len(a.files) == 0  {
+		return 0
+	}
+
+	return a.heads[0].Size
+}
+
 //Retrieve the either the first attachment or if index is provided, the attachment at the specified index.
 //This can be used to recieve files from the user.
 func (user User) Attachment(index ...int) (attachment Attachment) {
