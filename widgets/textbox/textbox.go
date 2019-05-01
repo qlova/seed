@@ -15,6 +15,14 @@ func New() Widget {
 
 	widget.Align(0)
 
+	var save = script.NewString()
+	widget.OnChange(func(q seed.Script) {
+		q.Set(save, widget.Script(q).Value())
+	})
+	widget.OnReady(func(q seed.Script) {
+		widget.Script(q).SetValue(save.Script(q))
+	})
+
 	return  Widget{widget}
 }
 
