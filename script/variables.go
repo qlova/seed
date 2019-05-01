@@ -91,3 +91,18 @@ func (b Bool) Script(q Script) qlova.Bool {
 
 	return result 
 }
+
+type StringVar struct {
+	Variable
+}
+
+func NewString() StringVar {
+	return StringVar{NewVariable()}
+}
+
+func (s StringVar) Script(q Script) qlova.String {
+	var result = q.StringFromLanguageType(Javascript.String{
+		Expression: language.Statement(`window.localStorage.getItem("`+string(s.Variable)+`")`),
+	})
+	return result 
+}
