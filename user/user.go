@@ -66,6 +66,22 @@ func (user User) Get(data Data) string {
 	return result.Value
 }
 
+func (user User) Set(data Data, value string) {
+	http.SetCookie(user.ResponseWriter, &http.Cookie{
+		Name: string(data),
+		Value: value,
+		Secure: true,
+	})
+}
+
+func (user User) NotAuthorised() {
+	user.ResponseWriter.WriteHeader(401)
+}
+
+func (user User) Error() {
+	user.ResponseWriter.WriteHeader(500)
+}
+
 func (user User) Close() {
 	if len(user.Update.Document) > 0 || len(user.Update.LocalStorage) > 0 {
 		json.NewEncoder(user.ResponseWriter).Encode(user.Update)
