@@ -446,7 +446,7 @@ func (application App) render(production bool, platform Platform) []byte {
 
 		//Need to actually detect if we are running inside a dev environment or not!
 		//probably should check the request hostname in launcher to decide if we are in production or not.
-		if production {
+		if production && (application.rest != "") {
 			buffer.WriteString(`var host = "https://`+application.rest+`";`)
 		} else {
 			buffer.WriteString(`var host = "";`)
