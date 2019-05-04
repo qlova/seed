@@ -4,6 +4,7 @@ import "fmt"
 import "strings"
 import "strconv"
 import "net/http"
+import "bytes"
 
 import "github.com/qlova/seed/script"
 
@@ -146,8 +147,10 @@ func (f feeder) As(template Interface) Feed {
 		feeds[f.feed.handler] = handler
 	}
 
+	//The template onready callback.
+	var onready bytes.Buffer
+	template.Root().buildOnReady(0, &onready)
 	
-
 	//This is the refresh function of the feed, send a request to the server, recieve feed and populate children with the feed's data.
 	f.feed.OnReady(func(q Script) {
 		q.Javascript(f.feed.Script(q).Element()+".index = window.localStorage.getItem('"+f.feed.Script(q).ID+"_index') || '0';")
@@ -172,13 +175,19 @@ func (f feeder) As(template Interface) Feed {
 			
 			q.Javascript(f.feed.Script(q).Element()+`.innerHTML = "";`)
 			q.Javascript(`for (let i = 0; i < json.length; i++) {`)
-				q.Javascript(f.feed.Script(q).Element()+`.innerHTML += `+strconv.Quote(string(minified))+ReplaceList)
+				q.Javascript(f.feed.Script(q).Element()+`.innerHTML += `+strconv.Quote(string(minified))+ReplaceList+";")
+				
+				
+				
 			q.Javascript(`}`)
 
 			q.Javascript(`for (let i = 0; i < json.length; i++) {`)
 
 			q.Javascript(`get("`+template.Root().id+`-"+i).data = json[i];`)
 			q.Javascript(`get("`+template.Root().id+`-"+i).index = +i+1;`)
+			
+			//Run OnReady
+			q.Javascript("eval("+strconv.Quote(onready.String())+ReplaceList+");")
 			
 			//Figure out what content to replace.
 			for _, child := range template.Root().children {
