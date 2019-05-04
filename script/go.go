@@ -2,7 +2,7 @@ package script
 
 import qlova "github.com/qlova/script"
 
-func (q Script) Go(function interface{}, args ...qlova.Type) {
+func (q Script) Go(function interface{}, args ...qlova.Type) Promise {
 	var Promise = q.rpc(function, "undefined", args...)
 	q.Javascript(Promise.expression+`.then(function(response) {
 	let json = JSON.parse(response);
@@ -20,4 +20,5 @@ func (q Script) Go(function interface{}, args ...qlova.Type) {
 	}
 });
 	`)
+	return Promise
 }
