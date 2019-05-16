@@ -246,6 +246,7 @@ func (seed Seed) SlideInFrom(direction complex128) {
 		SecondTransform = "translateX(0)"
 	}
 
+	seed.Javascript(`if (!last_page) return;`)
 	seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
 	seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
 	seed.Javascript(seed.Element()+`.style.transform = "`+FirstTransform+`";`)

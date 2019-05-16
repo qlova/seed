@@ -459,11 +459,11 @@ func (application App) render(production bool, platform Platform) []byte {
 				return document.getElementById(id)
 			};
 
-			var last_page = "`+seed.id+`";
-			var current_page = "`+seed.id+`";
-			var next_page = "`+seed.id+`";
+			var last_page = null;
+			var current_page = null;
+			var next_page = null;
 			var goto = function(next_page_id) {
-				//if (animating) return;
+				if (animating) return;
 				if (current_page == next_page_id) return;
 				if (next_page == next_page_id) return;
 				next_page = next_page_id;
