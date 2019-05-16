@@ -22,6 +22,10 @@ func (v value) Bool() qlova.Bool {
 	return v.q.Script.ValueFromLanguageType(Javascript.Bit{Expression:language.Statement(v.raw)}).Bool()
 }
 
+func (q Script) Value(raw string) value {
+	return value{q, raw}
+}
+
 func (j js) Run(function string, args ...qlova.Type) {
 	
 	var converted string

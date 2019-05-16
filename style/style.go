@@ -350,6 +350,11 @@ func (style Style) SetOuterSpacingTop(value complex128) {
 	style.SetMarginTop(css.Decode(value))
 }
 
+//Set the symetrical spacing within this.
+func (style Style) SetOuterSpacingLeft(value complex128) {
+	style.SetMarginLeft(css.Decode(value))
+}
+
 //Set the offset from an attached side, call this after style.Attach().
 func (style Style) SetOffset(side complex128, offset complex128) {
 	switch side {

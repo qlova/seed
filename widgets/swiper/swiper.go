@@ -2,6 +2,12 @@ package swiper
 
 import "github.com/qlova/seed"
 import "github.com/qlova/seed/script"
+import qlova "github.com/qlova/script"
+
+type Direction int
+
+const Left Direction = -1
+const Right Direction = 1
 
 func init() {
 	seed.Embed("/swiper.js", []byte(Javascript))
@@ -63,4 +69,25 @@ func (w Widget) Script(q script.Script) Script {
 
 func (s Script) Update() {
 	s.Q.Javascript(s.Element()+".swiper.update();")
+}
+
+func (s Script) Reset() {
+	s.Q.Javascript(s.Element()+".swiper.slideTo(0, 0);")
+}
+
+func (s Script) Swipe(direction Direction) {
+	if direction == Left {
+		s.Q.Javascript(s.Element()+".swiper.slidePrev();")
+	}
+	if direction == Right {
+		s.Q.Javascript(s.Element()+".swiper.slideNext();")
+	}
+}
+
+func (s Script) Left() qlova.Bool {
+	return s.Q.Value(s.Element()+".swiper.isBeginning").Bool()
+}
+
+func (s Script) Right() qlova.Bool {
+	return s.Q.Value(s.Element()+".swiper.isEnd").Bool()
 }
