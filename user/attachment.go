@@ -29,7 +29,7 @@ func (a Attachment) Name() string {
 	return a.heads[0].Filename
 }
 
-func (a Attachment) Open() io.Reader {
+func (a Attachment) Open() io.ReadCloser {
 	if len(a.files) == 0  {
 		return nil
 	}
