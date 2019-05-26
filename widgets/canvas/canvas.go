@@ -1,5 +1,6 @@
 package canvas
 
+import qlova "github.com/qlova/script"
 import "github.com/qlova/seed"
 import "github.com/qlova/seed/gl"
 import "github.com/qlova/seed/script"
@@ -24,6 +25,7 @@ func AddTo(parent seed.Interface) Widget {
 	return widget
 }
 
+//Return an OpenGL context for this canvas.
 func (widget Widget) OpenGL() gl.Context {
 	return gl.NewContext(widget.Seed)
 }
@@ -38,4 +40,12 @@ func (w Widget) Script(q seed.Script) Script {
 
 func (s Script) OpenGL() webgl.Context {
 	return webgl.NewContext(s.Seed)
+}
+
+func (s Script) Width() qlova.Float {
+	return s.Q.Value(s.Element()+".scrollWidth").Float()
+}
+
+func (s Script) Height() qlova.Float {
+	return s.Q.Value(s.Element()+".scrollHeight").Float()
 }

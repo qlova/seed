@@ -22,6 +22,14 @@ func (v value) Bool() qlova.Bool {
 	return v.q.Script.ValueFromLanguageType(Javascript.Bit{Expression:language.Statement(v.raw)}).Bool()
 }
 
+func (v value) Float() qlova.Float {
+	return v.q.Script.ValueFromLanguageType(Javascript.Real{Expression:language.Statement(v.raw)}).Float()
+}
+
+func (v value) Native() qlova.Native {
+	return v.q.Script.NativeFromLanguageType(Javascript.Native{Expression:language.Statement(v.raw)})
+}
+
 func (q Script) Value(raw string) value {
 	return value{q, raw}
 }
