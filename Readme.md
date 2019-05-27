@@ -9,6 +9,14 @@ the executable can be dropped on a public facing web server in order to serve it
 Alternatively, the executable can be distributed to users directly and run
  as a local application (users must have a compatiable web-browser such as Chrome).
 
+## Features
+
+* Automatically manages pwa service workers, manifests and offline state.
+* Seamless client-server communication.
+* Generates minified & gzipped html, css and javascript.
+* Server-rendered by default.
+* **Optional** javascript/html/css (but you don't need it!)
+
 ## Installing
 
 You can install Qlovaseed using go get.
