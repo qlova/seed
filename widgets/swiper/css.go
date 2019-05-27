@@ -197,7 +197,7 @@ const CSS = `.swiper-container {
   display: none;
 }
 .swiper-pagination {
-  position: absolute;
+  position: relative;
   text-align: center;
   -webkit-transition: 300ms opacity;
   -o-transition: 300ms opacity;
