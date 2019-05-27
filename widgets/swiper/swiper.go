@@ -88,7 +88,7 @@ func (s Script) Reset() {
 }
 
 func (s Script) Goto(slide Slide) {
-	s.Q.Javascript(s.Element()+".swiper.slideTo("+fmt.Sprint(slide.index)+", 1);")
+	s.Q.Javascript(s.Element()+".swiper.slideTo("+fmt.Sprint(slide.index)+", 1000);")
 }
 
 func (s Script) Swipe(direction Direction) {
