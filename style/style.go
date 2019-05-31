@@ -3,7 +3,6 @@ package style
 import "image/color"
 import "github.com/qlova/seed/style/css"
 import "math"
-import "math/big"
 
 //The em unit represents the current font-size, therefore this unit is relative to the pixel-density of the device.
 const Em = css.Em

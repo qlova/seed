@@ -1,5 +1,6 @@
 package style
 
+import "math/big"
 import "github.com/qlova/seed/style/css"
 import "encoding/base64"
 
