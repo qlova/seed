@@ -40,3 +40,43 @@ Create a file called HelloWorld.go and paste in the following contents:
 ```
 
 In the same folder, run go build to create an executable of the app that you can run to see the app in action!
+
+## Widgets and Logic
+
+Create a file called MyApp.go and paste in the following contents:
+
+```
+	package main
+
+	import "github.com/qlova/seed"
+	
+	//Import a widget to use it, a list of widgets can be found in the widgets directory.
+	import "github.com/qlova/seed/widgets/button"
+
+	func main() {
+		var App = seed.NewApp("My App")
+
+		//In order to add a widget to your app, or container, use the package's AddTo method.
+		var ClientPowered = button.AddTo(App, "My callback runs on the client")
+		
+			ClientPowered.OnClick(func(q seed.Script) {
+				ClientPowered.Script(q).SetText(q.String("You clicked me!"))
+			})
+		
+		
+		var ServerPowered = button.AddTo(App, "My callback runs on the server")
+		
+			//You can style widgets with methods of the style package.
+			ServerPowered.SetColor(seed.RGB(100, 100, 0))
+		
+			ServerPowered.OnClick(seed.Go(func(user seed.User) {
+				ServerPowered.For(user).SetText("You clicked me!")
+			}))
+
+		App.Launch()
+	}
+```
+
+This example shows a quick glimpse on how powerful Qlovaseed can be. 
+
+Please remember, this framework is in development, it does not have a stable API and features are currently implemented as needed.
