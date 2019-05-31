@@ -325,7 +325,7 @@ func (style Style) SetInnerSpacing(x, y complex128) {
 	style.SetPaddingBottom(css.Decode(y))
 }
 
-//Set the symetrical spacing within this.
+//Set the symetrical spacing around this.
 func (style Style) SetOuterSpacing(x, y complex128) {
 	style.SetMarginLeft(css.Decode(x))
 	style.SetMarginRight(css.Decode(x))
@@ -334,14 +334,24 @@ func (style Style) SetOuterSpacing(x, y complex128) {
 	style.SetMarginBottom(css.Decode(y))
 }
 
-//Set the symetrical spacing within this.
+//Set spacing top, takes a em, vm, px or percentage value.
 func (style Style) SetOuterSpacingTop(value complex128) {
 	style.SetMarginTop(css.Decode(value))
 }
 
-//Set the symetrical spacing within this.
+//Set spacing left, takes a em, vm, px or percentage value.
 func (style Style) SetOuterSpacingLeft(value complex128) {
 	style.SetMarginLeft(css.Decode(value))
+}
+
+//Set spacing bottom, takes a em, vm, px or percentage value.
+func (style Style) SetOuterSpacingBottom(value complex128) {
+	style.SetMarginBottom(css.Decode(value))
+}
+
+//Set spacing right, takes a em, vm, px or percentage value.
+func (style Style) SetOuterSpacingRight(value complex128) {
+	style.SetMarginRight(css.Decode(value))
 }
 
 //Set the offset from an attached side, call this after style.Attach().

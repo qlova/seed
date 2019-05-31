@@ -1,5 +1,7 @@
 package swiper
 
+import "fmt"
+
 import "github.com/qlova/seed"
 import "github.com/qlova/seed/script"
 import qlova "github.com/qlova/script"
@@ -9,12 +11,20 @@ type Direction int
 const Left Direction = -1
 const Right Direction = 1
 
+type Slide struct {
+	index int
+
+	seed.Seed
+}
+
 func init() {
 	seed.Embed("/swiper.js", []byte(Javascript))
 	seed.Embed("/swiper.css", []byte(CSS))
 }
 
 type Widget struct {
+	slides int //The number of slides
+
 	seed.Seed
 	wrapper seed.Seed
 }
@@ -37,7 +47,7 @@ func New(images ...string) Widget {
 		q.Javascript(swiper.Script(q).Element()+`.swiper = new Swiper('#`+swiper.ID()+`', {pagination: {el: '#`+pagination.ID()+`'}});`)
 	})
 	
-	return Widget{swiper, wrapper}
+	return Widget{0, swiper, wrapper}
 }
 
 func AddTo(parent seed.Interface) Widget {
@@ -46,7 +56,7 @@ func AddTo(parent seed.Interface) Widget {
 	return Swiper
 }
 
-func (widget *Widget) NewSlide() seed.Seed {
+func (widget *Widget) NewSlide() Slide {
 	var seed = seed.AddTo(widget.wrapper)
 		seed.SetClass("swiper-slide")
 
@@ -56,7 +66,9 @@ func (widget *Widget) NewSlide() seed.Seed {
 	seed.Set("text-align", "center")
 	seed.Set("flex-direction", "column")
 
-	return seed
+	widget.slides++
+
+	return Slide{widget.slides-1, seed}
 }
 
 type Script struct {
@@ -73,6 +85,10 @@ func (s Script) Update() {
 
 func (s Script) Reset() {
 	s.Q.Javascript(s.Element()+".swiper.slideTo(0, 0);")
+}
+
+func (s Script) Goto(slide Slide) {
+	s.Q.Javascript(s.Element()+".swiper.slideTo("+fmt.Sprint(slide.index)+", 1000);")
 }
 
 func (s Script) Swipe(direction Direction) {
