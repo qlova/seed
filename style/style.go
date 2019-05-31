@@ -4,10 +4,14 @@ import "image/color"
 import "github.com/qlova/seed/style/css"
 import "math"
 import "math/big"
-import "encoding/base64"
 
+//The em unit represents the current font-size, therefore this unit is relative to the pixel-density of the device.
 const Em = css.Em
+
+//The px unit represents a single pixel on a screen, since screens can have different pixel-densities, it is recommended not to use this unit.
 const Px = css.Px
+
+//The vm unit is relative to the screen size, more specifically, it is a ratio of the smallest side of the screen.
 const Vm = css.Vm
 
 const Top = -1i
@@ -18,6 +22,8 @@ const Right = 1
 const Auto = math.MaxFloat64
 const Center = 0
 
+//A style is a set of visual indications of an element.
+//For example, colour, spacing & positioning.
 type Style struct {
 	css.Style
 
@@ -27,34 +33,14 @@ type Style struct {
 	scale *float64
 }
 
+//Return a new Style.
 func New() Style {
 	return Style{
 		Style: css.NewStyle(),
 	}
 }
 
-type Font struct {
-	name string
-	css.FontFace
-}
-
-var font_id int64 = 1;
-func NewFont(path string) Font {
-	
-	var id = base64.RawURLEncoding.EncodeToString(big.NewInt(font_id).Bytes())
-	font_id++
-	
-	var font = Font{
-		name: id,
-		FontFace: css.NewFontFace(id, path),
-	}
-
-	//Avoid invisisible text while webfonts are loading.
-	//font.FontFace.FontDisplay = css.Swap
-
-	return font
-}
-
+//Duplicate a style and return a copy of it.
 func (style Style) Copy() Style {
 	var OldStyleImplemenation = style.Stylable.(css.Implementation)
 	var NewStyleImplementation = make(css.Implementation, len(OldStyleImplemenation))
@@ -104,6 +90,7 @@ func (style *Style) update() {
 	}
 }
 
+//Return the style serialised as CSS properties.  
 func (style Style) Bytes() []byte {
 
 	style.update()
@@ -111,27 +98,29 @@ func (style Style) Bytes() []byte {
 	return style.Style.Bytes()
 }
 
+//Rotate the element by the given angle.
+//This overrrides any previous calls to Angle.
 func (style *Style) Rotate(angle float64) {
 	style.angle = &angle
 	style.update()
 }
+
+//Scale the element by the given scale.
+//This overrrides any previous calls to Scale.
 func (style *Style) Scale(scale float64) {
 	style.scale = &scale
 	style.update()
 }
 
+//Translate the element by the given x and y values.
+//This overrrides any previous calls to Translate.
 func (style *Style) Translate(x, y complex128) {
 	style.x = &x
 	style.y = &y
 	style.update()
 }
 
-//Set the symetrical spacing within this.
-func (style Style) SetFont(font Font) {
-	style.SetFontFamily(font.FontFace)
-}
-
-//Set the symetrical spacing within this.
+//Set the text of this element to be bold.
 func (style Style) SetBold() {
 	style.SetFontWeight(css.Bold)
 }
@@ -151,25 +140,25 @@ func (style Style) SetVisible() {
 	style.SetDisplay(css.Flex)
 }
 
-//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+//Set this element to behave like a column when rendering children (rendering them vertically).
 func (style Style) SetCol() {
 	style.SetFlexDirection(css.Column)
 	style.SetDisplay(css.InlineFlex)
 }
 
-//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+//Set this element to behave like a row when rendering children (rendering them horizontally).
 func (style Style) SetRow() {
 	style.SetFlexDirection(css.Row)
 	style.SetDisplay(css.InlineFlex)
 }
 
-//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+//Set the width and height as a percentage of it's parent. Takes em, vm, px or percentage values.
 func (style Style) SetSize(width, height complex128) {
 	style.SetWidth(css.Decode(width))
 	style.SetHeight(css.Decode(height))
 }
 
-//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+//Set the width and height as a percentage of it's parent. Takes em, vm, px or percentage values.
 func (style Style) SetMaxSize(width, height complex128) {
 	style.SetMaxWidth(css.Decode(width))
 	style.SetMaxHeight(css.Decode(height))
@@ -243,17 +232,17 @@ func (style Style) SetChildAlignment(align float64) {
 	}
 }
 
-//Set the text alignment, -1 is left, 0 is center and 1 is right
+//Set the color of this element.
 func (style Style) SetColor(color color.Color) {
 	style.SetBackgroundColor(css.Colour(color))
 }
 
-//Set the text alignment, -1 is left, 0 is center and 1 is right
+//Set the text color for this element.
 func (style Style) SetTextColor(color color.Color) {
 	style.Style.SetColor(css.Colour(color))
 }
 
-//Set the text alignment, -1 is left, 0 is center and 1 is right
+//Set the color of this element to be a gradient moving in direction from start color to end color.
 func (style Style) SetGradient(direction complex128, start, end color.Color) {
 	style.SetBackgroundImage(css.LinearGradient(math.Atan2(imag(direction), real(direction))+math.Pi/2, css.Colour(start), css.Colour(end)))
 }
@@ -273,12 +262,12 @@ func (style Style) DontShrink() {
 	style.SetFlexShrink(css.Number(0))
 }
 
-//This should not shrink to make space for other elements.
+//This shrink to make space for other elements.
 func (style Style) Shrink() {
 	style.SetFlexShrink(css.Number(1))
 }
 
-//Set where this attaches to, 0 0 is unattached, -1, 0 is attached to left, 1 1 is attached to bottom right etc.
+//Set where this attaches, eg. Top+Left, Botom+right etc
 func (style Style) SetAttach(attach complex64) {
 	switch real(attach) {
 		case -1:
@@ -304,7 +293,7 @@ func (style Style) SetAttach(attach complex64) {
 	}
 }
 
-//Set the rendering layer, this is the order that this will be rendered in.
+//Set this element to expand to take all available space.
 func (style Style) SetExpand(expand float64) {
 	style.SetFlexGrow(css.Number(expand))
 }
@@ -369,7 +358,7 @@ func (style Style) SetOffset(side complex128, offset complex128) {
 	}
 }
 
-//Set the symetrical spacing within this.
+//Remove the border from this element.
 func (style Style) SetBorderless() {
 	style.SetBorderLeftWidth(css.Zero)
 	style.SetBorderRightWidth(css.Zero)
@@ -378,7 +367,7 @@ func (style Style) SetBorderless() {
 	style.SetBorderBottomWidth(css.Zero)
 }
 
-//Set the symetrical spacing within this.
+//Set this element to have rounded corners of the specified radius.
 func (style Style) SetRoundedCorners(radius complex128) {
 	var value = css.Decode(radius)
 	
@@ -389,9 +378,7 @@ func (style Style) SetRoundedCorners(radius complex128) {
 	style.SetBorderTopLeftRadius(value)
 }
 
-//Set the width and height as a percentage of it's parent. A value of 0 means it is calculated automatically.
+//Specify that this style will be animated.
 func (style Style) WillAnimate() {
 	style.Set("will-change", "transform")
-	//style.Set("transform", "translateY(0)")
-	//style.Set("transition", "transform 0.5s")
 }
