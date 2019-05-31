@@ -20,23 +20,23 @@ Alternatively, the executable can be distributed to users directly and run
 ## Installing
 
 You can install Qlovaseed using go get.
-```
-	go get -u -v github.com/qlova/seed
+```sh
+go get -u -v github.com/qlova/seed
 ```
 
 ## Getting started
 
 Create a file called HelloWorld.go and paste in the following contents:
 
-```
-	package main
+```go
+package main
 
-	import "github.com/qlova/seed"
+import "github.com/qlova/seed"
 
-	func main() {
-		//Create a new app with Hello World as both the title and the content.
-		seed.NewApp("Hello World", "Hello World").Launch()
-	}
+func main() {
+	//Create a new app with Hello World as both the title and the content.
+	seed.NewApp("Hello World", "Hello World").Launch()
+}
 ```
 
 In the same folder, run go build to create an executable of the app that you can run to see the app in action!
@@ -45,36 +45,36 @@ In the same folder, run go build to create an executable of the app that you can
 
 Create a file called MyApp.go and paste in the following contents:
 
-```
-	package main
+```go
+package main
 
-	import "github.com/qlova/seed"
+import "github.com/qlova/seed"
+
+//Import a widget to use it, a list of widgets can be found in the widgets directory.
+import "github.com/qlova/seed/widgets/button"
+
+func main() {
+	var App = seed.NewApp("My App")
+
+	//In order to add a widget to your app, or container, use the package's AddTo method.
+	var ClientPowered = button.AddTo(App, "My callback runs on the client")
 	
-	//Import a widget to use it, a list of widgets can be found in the widgets directory.
-	import "github.com/qlova/seed/widgets/button"
+		ClientPowered.OnClick(func(q seed.Script) {
+			ClientPowered.Script(q).SetText(q.String("You clicked me!"))
+		})
+	
+	
+	var ServerPowered = button.AddTo(App, "My callback runs on the server")
+	
+		//You can style widgets with methods of the style package.
+		ServerPowered.SetColor(seed.RGB(100, 100, 0))
+	
+		ServerPowered.OnClick(seed.Go(func(user seed.User) {
+			ServerPowered.For(user).SetText("You clicked me!")
+		}))
 
-	func main() {
-		var App = seed.NewApp("My App")
-
-		//In order to add a widget to your app, or container, use the package's AddTo method.
-		var ClientPowered = button.AddTo(App, "My callback runs on the client")
-		
-			ClientPowered.OnClick(func(q seed.Script) {
-				ClientPowered.Script(q).SetText(q.String("You clicked me!"))
-			})
-		
-		
-		var ServerPowered = button.AddTo(App, "My callback runs on the server")
-		
-			//You can style widgets with methods of the style package.
-			ServerPowered.SetColor(seed.RGB(100, 100, 0))
-		
-			ServerPowered.OnClick(seed.Go(func(user seed.User) {
-				ServerPowered.For(user).SetText("You clicked me!")
-			}))
-
-		App.Launch()
-	}
+	App.Launch()
+}
 ```
 
 This example shows a quick glimpse on how powerful Qlovaseed can be. 
