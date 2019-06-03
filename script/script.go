@@ -24,7 +24,6 @@ type Script struct {
 type script struct {
 	qlova.Script
 
-	//Go Go
 	js js
 }
 
