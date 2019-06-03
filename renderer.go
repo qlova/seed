@@ -395,6 +395,48 @@ func (application App) render(production bool, platform Platform) []byte {
 			pre {
 				margin: 0;
 			}
+
+			<!-- TODO These animations should be added dynamically by seed/script/animation.go -->
+			@keyframes slideInFromLeft {
+				from { transform: translateX(-100%); }
+				to { transform: translateX(0); }
+			}
+
+			@keyframes slideInFromRight {
+				from { transform: translateX(100%); }
+				to { transform: translateX(0); }
+			}
+
+			@keyframes slideInFromTop {
+				from { transform: translateY(-100%); }
+				to { transform: translateY(0); }
+			}
+
+			@keyframes slideInFromBottom {
+				from { transform: translateY(100%); }
+				to { transform: translateY(0); }
+			}
+
+			@keyframes slideOutToLeft {
+				from { transform: translateX(0); }
+				to { transform: translateX(-100%); }
+			}
+
+			@keyframes slideOutToRight {
+				from { transform: translateX(); }
+				to { transform: translateX(100%); }
+			}
+
+			@keyframes slideOutToTop {
+				from { transform: translateY(0); }
+				to { transform: translateY(-100%); }
+			}
+
+			@keyframes slideOutToBottom {
+				from { transform: translateY(0); }
+				to { transform: translateY(100%); }
+			}
+			
 			body {
 				top: 0;
 				left: 0

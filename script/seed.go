@@ -222,87 +222,51 @@ func (seed Seed) OnClick(f func()) {
 
 //Animations
 func (seed Seed) SlideInFrom(direction complex128) {
-
-	var FirstTransform string
-	var SecondTransform string
-	
-	if direction == 1i {
-		FirstTransform = "translateY(100vh)"
-		SecondTransform = "translateY(0)"
+	if direction == -1i {
+		seed.Set("animation", "slideInFromTop .5s ease both")
 	}
 
-	if direction == -1i {
-		FirstTransform = "translateY(-100vh)"
-		SecondTransform = "translateY(0)"
+	if direction == 1i {
+		seed.Set("animation", "slideInFromBottom .5s ease both")
 	}
 
 	if direction == 1 {
-		FirstTransform = "translateX(100vw)"
-		SecondTransform = "translateX(0)"
+		seed.Set("animation", "slideInFromRight .5s ease both")
 	}
 
 	if direction == -1 {
-		FirstTransform = "translateX(-100vw)"
-		SecondTransform = "translateX(0)"
+		seed.Set("animation", "slideInFromLeft .5s ease both")
 	}
 
 	seed.Javascript(`if (!last_page) return;`)
 	seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
 	seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-	seed.Javascript(seed.Element()+`.style.transform = "`+FirstTransform+`";`)
-	seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 	seed.Javascript(`animating = true;`)
-	
-	seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-		seed.Javascript(seed.Element()+`.style.transform = "`+SecondTransform+`";`)
-		seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", ""); animating = false; }, 500);`)
-	seed.Javascript(`})});`)
+	seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(`+seed.Element()+`, "z-index", ""); animating = false; }, 500);`)
 }
 
 //Animations
-func (seed Seed) SlideOutFrom(direction complex128) {
-	/*seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
-	seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-	seed.Javascript(`set(`+seed.Element()+`, "position", "fixed");`)
-	seed.Javascript(`set(`+seed.Element()+`, "top", "0");`)
-	seed.Javascript(`set(`+seed.Element()+`, "left", "0");`)
-	seed.Javascript(`set(`+seed.Element()+`, "transition", "top 0.5s");`)
-	seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "top", "100vh"); }, 30);`)
-	seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "initial"); }, 500);`)*/
-
-	var FirstTransform string
-	var SecondTransform string
-	
-	if direction == 1i {
-		FirstTransform = "translateY(0)"
-		SecondTransform = "translateY(100vh)"
+func (seed Seed) SlideOutTo(direction complex128) {
+	if direction == -1i {
+		seed.Set("animation", "slideOutToTop .5s ease both")
 	}
 
-	if direction == -1i {
-		FirstTransform = "translateY(0)"
-		SecondTransform = "translateY(-100vh)"
+	if direction == 1i {
+		seed.Set("animation", "slideOutToBottom .5s ease both")
 	}
 
 	if direction == 1 {
-		FirstTransform = "translateX(0)"
-		SecondTransform = "translateX(100vw)"
+		seed.Set("animation", "slideOutToRight .5s ease both")
 	}
 
 	if direction == -1 {
-		FirstTransform = "translateX(0)"
-		SecondTransform = "translateX(-100vw)"
+		seed.Set("animation", "slideOutToLeft .5s ease both")
 	}
 
 	seed.Javascript(`set(`+seed.Element()+`, "display", "inline-flex");`)
 	seed.Javascript(`set(`+seed.Element()+`, "z-index", "50");`)
-	seed.Javascript(seed.Element()+`.style.transform = "`+FirstTransform+`";`)
-	seed.Javascript(seed.Element()+`.style.transition = "transform 0.5s";`)
 	seed.Javascript(`animating = true;`)
-	
-	seed.Javascript(`window.requestAnimationFrame(function() {window.requestAnimationFrame(function() {`)
-		seed.Javascript(seed.Element()+`.style.transform = "`+SecondTransform+`";`)
-		seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "");animating = false;  }, 500);`)
-	seed.Javascript(`})});`)
+	seed.Javascript(`setTimeout(function() { set(`+seed.Element()+`, "display", "none"); set(`+seed.Element()+`, "z-index", "");animating = false;  }, 500);`)
 }
 
 func (seed Seed) Translate(x, y Unit) {
