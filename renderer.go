@@ -396,6 +396,10 @@ func (application App) render(production bool, platform Platform) []byte {
 				margin: 0;
 			}
 
+			div {
+				position: relative;
+			}
+
 			<!-- TODO These animations should be added dynamically by seed/script/animation.go -->
 			@keyframes slideInFromLeft {
 				from { transform: translateX(-100%); }
