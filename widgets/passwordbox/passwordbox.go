@@ -1,4 +1,4 @@
-package textbox
+package passwordbox
 
 import "github.com/qlova/seed"
 
@@ -9,7 +9,7 @@ type Widget struct {
 func New() Widget {
 	widget := seed.New()
 	widget.SetTag("input")
-	widget.SetAttr(`type="password"`)
+	widget.SetAttributes(`type="password"`)
 	
 	widget.SetSize(seed.Auto, seed.Auto)
 
