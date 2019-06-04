@@ -40,6 +40,10 @@ func NewApp(args ...string) *App {
 	return &app
 }
 
+func (app *App) NewPage() Page {
+	return AddPageTo(app)
+}
+
 //Set the hostname of this app, this is where the app is expected to be hosted from.
 func (app *App) SetHost(name string) {
 	app.host = name
