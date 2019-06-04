@@ -3,6 +3,7 @@ package style
 import "image/color"
 import "github.com/qlova/seed/style/css"
 import "math"
+import "fmt"
 
 //The em unit represents the current font-size, therefore this unit is relative to the pixel-density of the device.
 const Em = css.Em
@@ -165,6 +166,18 @@ func (style Style) SetMaxSize(width, height complex128) {
 
 
 //Set the text alignment, -1 is left, 0 is center and 1 is right
+func (style Style) TextAlign(alignment float64) {
+	switch alignment {
+		case 0:
+			style.SetTextAlign(css.Center)
+		case -1:
+			style.SetTextAlign(css.Left)
+		case 1:
+			style.SetTextAlign(css.Right)
+	}
+}
+
+//Set the text alignment, -1 is left, 0 is center and 1 is right
 func (style Style) Align(alignment float64) {
 	switch alignment {
 		case 0:
@@ -243,7 +256,7 @@ func (style Style) SetTextColor(color color.Color) {
 
 //Set the color of this element to be a gradient moving in direction from start color to end color.
 func (style Style) SetGradient(direction complex128, start, end color.Color) {
-	style.SetBackgroundImage(css.LinearGradient(math.Atan2(imag(direction), real(direction))+math.Pi/2, css.Colour(start), css.Colour(end)))
+	style.SetBackgroundImage(css.LinearGradient(math.Atan2(-imag(direction), real(direction)), css.Colour(start), css.Colour(end)))
 }
 
 //Set the rendering layer, this is the order that this will be rendered in.
@@ -267,7 +280,7 @@ func (style Style) Shrink() {
 }
 
 //Set where this attaches, eg. Top+Left, Botom+right etc
-func (style Style) SetAttach(attach complex64) {
+func (style Style) SetAttach(attach complex128) {
 	switch real(attach) {
 		case -1:
 			style.SetLeft(css.Zero)
@@ -376,6 +389,15 @@ func (style Style) SetBorderless() {
 	style.SetBorderBottomWidth(css.Zero)
 }
 
+//Remove the border from this element.
+func (style Style) SetBorder(color color.Color, thickness int) {
+	style.Set("border-left-width", fmt.Sprint(thickness, "px"))
+	style.Set("border-right-width", fmt.Sprint(thickness, "px"))
+	style.Set("border-top-width", fmt.Sprint(thickness, "px"))
+	style.Set("border-bottom-width", fmt.Sprint(thickness, "px"))
+	style.SetBorderColor(css.Colour(color))
+}
+
 //Set this element to have rounded corners of the specified radius.
 func (style Style) SetRoundedCorners(radius complex128) {
 	var value = css.Decode(radius)
@@ -390,4 +412,51 @@ func (style Style) SetRoundedCorners(radius complex128) {
 //Specify that this style will be animated.
 func (style Style) WillAnimate() {
 	style.Set("will-change", "transform")
+}
+
+
+//Alias to style.SetSize(100, 100)
+func (style Style) Expand() {
+	style.SetSize(100, 100)
+}
+
+//Center this item along the axis of its container.
+func (style Style) Center() {
+	style.Set("align-self", "center")
+}
+
+//Center this item along the axis of its container.
+func (style Style) Fade(opacity float64) {
+	style.Style.SetOpacity(css.Number(opacity))
+}
+
+//Set where this attaches, eg. Top+Left, Botom+right etc
+func (style Style) AttachToParent(attachpoint complex128) {
+	switch real(attachpoint) {
+		case -1:
+			style.SetLeft(css.Zero)
+			style.SetPosition(css.Absolute)
+		case 0:
+			style.SetLeft(css.Initial)
+			style.SetRight(css.Initial)
+		case 1:
+			style.SetRight(css.Zero)
+			style.SetPosition(css.Absolute)
+	}
+	switch imag(attachpoint) {
+		case -1:
+			style.SetTop(css.Zero)
+			style.SetPosition(css.Absolute)
+		case 0:
+			style.SetTop(css.Initial)
+			style.SetBottom(css.Initial)
+		case 1:
+			style.SetBottom(css.Zero)
+			style.SetPosition(css.Absolute)
+	}
+}
+
+//Center this item along the axis of its container.
+func (style Style) RemoveGradient() {
+	style.Style.SetBackgroundImage(css.Unset)
 }
