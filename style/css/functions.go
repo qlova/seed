@@ -92,17 +92,17 @@ func Time(seconds float64) timeType {
 
 //Returns a CSS time.
 func Translate(x, y unitType) transformType {
-	return transformType(fmt.Sprint("translate(", x.String(), ",", y.String(),")"))
+	return transformType(fmt.Sprint("translate(", x.String(), ",", y.String(), ")"))
 }
 
 //Returns a CSS time.
 func TranslateX(x unitType) transformType {
-	return transformType(fmt.Sprint("translateX(", x.String(),")"))
+	return transformType(fmt.Sprint("translateX(", x.String(), ")"))
 }
 
 //Returns a CSS time.
-func TranslateY( y unitType) transformType {
-	return transformType(fmt.Sprint("translateY(", y.String(),")"))
+func TranslateY(y unitType) transformType {
+	return transformType(fmt.Sprint("translateY(", y.String(), ")"))
 }
 
 //Returns a CSS time.
@@ -138,7 +138,3 @@ func LinearGradient(direction float64, start, end colorValue) gradientType {
 
 var Linear animationTimingFunctionType = "linear"
 var EaseInOut animationTimingFunctionType = "ease-in-out"
-
-
-
-

@@ -10,13 +10,13 @@ type Widget struct {
 func New(values ...string) Widget {
 	widget := seed.New()
 	widget.SetTag("select")
-	
+
 	var content string
-	
+
 	for _, value := range values {
 		content += fmt.Sprint("<option value='", value, "'>", value, "</option>")
 	}
-	
+
 	widget.SetContent(content)
 
 	return Widget{widget}

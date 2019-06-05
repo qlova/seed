@@ -14,8 +14,8 @@ func New(amount ...complex128) Widget {
 	}
 
 	widget.SetUnshrinkable()
-	
-	return  Widget{widget}
+
+	return Widget{widget}
 }
 
 //Create a new Text widget and add it to the provided parent.
@@ -23,4 +23,4 @@ func AddTo(parent seed.Interface, amount ...complex128) Widget {
 	var widget = New(amount...)
 	parent.Root().Add(widget)
 	return widget
-} 
+}

@@ -12,7 +12,7 @@ type App struct {
 	*harvester
 
 	host, rest, pkg, tracking string
-	
+
 	hashes []string
 
 	onupdatefound func(Script)
@@ -20,13 +20,13 @@ type App struct {
 
 //Create a new application, accepts title and content arguments.
 func NewApp(args ...string) *App {
-	var app = App {
-		Seed: New(),
-		Manifest: manifest.New(),
-		Worker: service.NewWorker(),
+	var app = App{
+		Seed:      New(),
+		Manifest:  manifest.New(),
+		Worker:    service.NewWorker(),
 		harvester: newHarvester(),
 	}
-	
+
 	app.Seed.app = &app
 
 	if len(args) > 0 {
@@ -59,7 +59,7 @@ func (app *App) SetPackage(name string) {
 	app.pkg = name
 }
 
-//Add a hash of the certificate that you will sign your android app with. 
+//Add a hash of the certificate that you will sign your android app with.
 func (app *App) AddHash(name string) {
 	app.hashes = append(app.hashes, name)
 }

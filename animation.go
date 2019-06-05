@@ -22,7 +22,7 @@ func (animation Animation) Bytes() []byte {
 		animation[time](frame)
 
 		println(frame.Style.Style.Left().String())
-		
+
 		Keyframes[time] = frame.Style.Style
 	}
 	return Keyframes.Bytes()

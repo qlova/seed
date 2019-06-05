@@ -12,12 +12,12 @@ func New() Widget {
 	widget := seed.New()
 	widget.SetTag("input")
 	widget.SetAttributes("type='range'")
-	
+
 	widget.SetSize(seed.Auto, seed.Auto)
 
 	widget.Align(0)
 
-	return  Widget{widget}
+	return Widget{widget}
 }
 
 func AddTo(parent seed.Interface) Widget {
@@ -27,12 +27,11 @@ func AddTo(parent seed.Interface) Widget {
 }
 
 func (widget Widget) SetRequired() {
-	widget.SetAttributes(widget.Attributes()+" required")
+	widget.SetAttributes(widget.Attributes() + " required")
 }
 
-
 func (widget Widget) SetMax(max int) {
-	widget.SetAttributes(widget.Attributes()+" max='"+strconv.Itoa(max)+"'")
+	widget.SetAttributes(widget.Attributes() + " max='" + strconv.Itoa(max) + "'")
 }
 
 type Script struct {

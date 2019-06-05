@@ -11,9 +11,9 @@ type Widget struct {
 func New(url ...string) Widget {
 	widget := seed.New()
 	widget.SetTag("a")
-	
+
 	if len(url) > 0 {
-		widget.SetAttributes("href='"+url[0]+"'")
+		widget.SetAttributes("href='" + url[0] + "'")
 	} else {
 		widget.SetAttributes("href='#'")
 	}
@@ -36,5 +36,5 @@ func (w Widget) Script(q script.Script) Script {
 }
 
 func (widget Script) SetTarget(target String) {
-	widget.Q.Javascript(widget.Element()+`.href = `+string(target.LanguageType().Raw())+";")
+	widget.Q.Javascript(widget.Element() + `.href = ` + string(target.LanguageType().Raw()) + ";")
 }

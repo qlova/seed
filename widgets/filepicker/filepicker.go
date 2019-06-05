@@ -13,12 +13,12 @@ func New(types ...string) Widget {
 	widget.SetTag("Input")
 
 	if len(types) > 0 {
-		widget.SetAttributes(`type="file" accept="`+types[0]+`"`)
+		widget.SetAttributes(`type="file" accept="` + types[0] + `"`)
 	} else {
 		widget.SetAttributes(`type="file" accept="*"`)
 	}
 
-	return  Widget{widget}
+	return Widget{widget}
 }
 
 func AddTo(parent seed.Interface, types ...string) Widget {
@@ -36,7 +36,7 @@ func (w Widget) Script(q seed.Script) Script {
 }
 
 func (s Script) AttachTo(request string, index int) string {
-	
-	return "for (let i = 0; i < "+s.Element()+".files.length; i++) "+request+
-		`.append("attachment-`+strconv.Itoa(index)+`-"+(i+1), `+s.Element()+`.files[i], `+s.Element()+`.files[i].name);`
+
+	return "for (let i = 0; i < " + s.Element() + ".files.length; i++) " + request +
+		`.append("attachment-` + strconv.Itoa(index) + `-"+(i+1), ` + s.Element() + `.files[i], ` + s.Element() + `.files[i].name);`
 }

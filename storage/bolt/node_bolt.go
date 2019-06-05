@@ -20,9 +20,9 @@ func Open(path string) Node {
 
 // itob returns an 8-byte big endian representation of v.
 func itob(v uint64) []byte {
-    b := make([]byte, 8)
-    binary.BigEndian.PutUint64(b, v)
-    return b
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, v)
+	return b
 }
 
 func GetBucket(tx *bolt.Tx, view storage.View) *bolt.Bucket {
@@ -50,7 +50,7 @@ func (node Node) Create(view storage.View) bool {
 	var success bool
 
 	node.Update(func(tx *bolt.Tx) error {
-		
+
 		var bucket, err = tx.CreateBucketIfNotExists([]byte(view.Path[0]))
 		if err != nil {
 			return nil
@@ -103,7 +103,6 @@ func (node Node) Put(view storage.View, data []byte) []byte {
 
 	return id
 }
-
 
 func (node Node) Set(view storage.View, key []byte, data []byte) bool {
 
@@ -180,7 +179,7 @@ func (node Node) Read(view storage.View, key []byte, handler func(data []byte)) 
 
 func (node Node) ForEach(view storage.View, f func(key []byte, data []byte)) {
 	if len(view.Path) == 0 {
-			return
+		return
 	}
 
 	node.View(func(tx *bolt.Tx) error {
@@ -192,7 +191,7 @@ func (node Node) ForEach(view storage.View, f func(key []byte, data []byte)) {
 
 		bucket.ForEach(func(key []byte, data []byte) error {
 			f(key, data)
-			return nil		
+			return nil
 		})
 
 		return nil

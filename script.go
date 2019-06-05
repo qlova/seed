@@ -29,7 +29,7 @@ func NewFunction(f func(Script), names ...string) script.Function {
 func (seed Seed) Script(q Script) script.Seed {
 	return script.Seed{
 		ID: seed.id,
-		Q: q,
+		Q:  q,
 	}
 }
 
@@ -38,10 +38,10 @@ func (seed Seed) SyncText(text *string) {
 	var wrapper = func() string {
 		return *text
 	}
-	
+
 	seed.OnReady(func(q Script) {
 		q.Javascript(`setInterval(function() {`)
-			seed.Script(q).SetText(q.Call(wrapper).String())
+		seed.Script(q).SetText(q.Call(wrapper).String())
 		q.Javascript(`}, 100)`)
 	})
 }

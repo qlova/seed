@@ -5,14 +5,14 @@ import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/user"
 
 import (
-	"net/http"
-	"math/big"
 	"encoding/base64"
-	"strings"
 	"html"
+	"math/big"
+	"net/http"
+	"strings"
 
-	"path/filepath"
 	"os"
+	"path/filepath"
 )
 
 var Dir = filepath.Dir(os.Args[0])
@@ -69,40 +69,40 @@ type Seed struct {
 
 type seed struct {
 	style.Style
-	
-	id string
+
+	id               string
 	tag, attr, class string
-	children []Interface
-	
+	children         []Interface
+
 	styled bool
-	ready bool
-	
-	font style.Font
+	ready  bool
+
+	font      style.Font
 	animation Animation
-	
+
 	content []byte
-	page bool
-	
-	onclick func(Script)
+	page    bool
+
+	onclick  func(Script)
 	onchange func(Script)
-	onready func(Script)
-	
+	onready  func(Script)
+
 	parent Interface
-	
+
 	//This is a list of scripts that are needed by this seed.
 	//eg. []string{"jquery.js"}
 	scripts []string
 
 	handlers []func(w http.ResponseWriter, r *http.Request)
-	
+
 	dynamicText func(User)
 
 	Landscape, Portrait style.Style
 
 	desktop, mobile, tablet, watch, tv, native Seed
-	
+
 	app *App
-	
+
 	assets []Asset
 }
 
@@ -125,7 +125,6 @@ func (seed Seed) SetAttributes(attr string) {
 func (seed Seed) Attributes() string {
 	return seed.attr
 }
-
 
 func (seed Seed) AddTo(parent Interface) Seed {
 	parent.Root().Add(seed)
@@ -160,7 +159,6 @@ func (seed Seed) ReactNative() Seed {
 	return seed.native
 }
 
-
 //Return the seed itself, when embedded in a struct, this is good way to retrieve the original seed.
 func (seed Seed) Root() Seed {
 	return seed
@@ -177,30 +175,30 @@ func (seed Seed) Copy() Seed {
 	another.Style = another.Style.Copy()
 	another.Portrait = another.Portrait.Copy()
 	another.Landscape = another.Landscape.Copy()
-	
-	another.id =  base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
+
+	another.id = base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
 	id++
-	return Seed{ seed: &another }
+	return Seed{seed: &another}
 }
 
 //All seeds have a unique id.
-var id int64 = 1;
+var id int64 = 1
 
 var allSeeds = make(map[string]*seed)
 
 //Create and return a new seed.
 func New() Seed {
 	s := new(seed)
-	
+
 	//Seed identification is compressed to base64.
 	s.id = base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
 
 	if s.id[0] >= '0' && s.id[0] <= '9' {
-		s.id = "_"+s.id
+		s.id = "_" + s.id
 	}
-	
+
 	s.id = strings.Replace(s.id, "-", "__", -1)
-	
+
 	id++
 
 	s.Style = style.New()
@@ -212,8 +210,8 @@ func New() Seed {
 
 	//Intial style.
 	//seed.SetSize(100, 100)
-	
-	return Seed{seed:s}
+
+	return Seed{seed: s}
 }
 
 func AddTo(parent Interface) Seed {
@@ -228,8 +226,8 @@ const OnPress = `op`
 func (seed Seed) OnClick(f func(Script)) {
 	seed.onclick = f
 	seed.OnReady(func(q Script) {
-		q.Javascript(OnPress+"('"+seed.id+"', function(event) {")
-			f(q)
+		q.Javascript(OnPress + "('" + seed.id + "', function(event) {")
+		f(q)
 		q.Javascript("});")
 	})
 }
@@ -258,11 +256,11 @@ func (seed Seed) OnReady(f func(Script)) {
 func (seed Seed) OnPageEnter(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
-			q.Javascript("let old_enterpage = "+seed.Script(q).Element()+".enterpage;")
-			q.Javascript(seed.Script(q).Element()+".enterpage = function() {")
-			q.Javascript("if (old_enterpage) old_enterpage();")
-			f(q)
-			q.Javascript("};")
+		q.Javascript("let old_enterpage = " + seed.Script(q).Element() + ".enterpage;")
+		q.Javascript(seed.Script(q).Element() + ".enterpage = function() {")
+		q.Javascript("if (old_enterpage) old_enterpage();")
+		f(q)
+		q.Javascript("};")
 		q.Javascript("}")
 	})
 }
@@ -271,11 +269,11 @@ func (seed Seed) OnPageEnter(f func(Script)) {
 func (seed Seed) OnPageExit(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
-			q.Javascript("let old_exitpage = "+seed.Script(q).Element()+".exitpage;")
-			q.Javascript(seed.Script(q).Element()+".exitpage = function() {")
-			q.Javascript("if (old_exitpage) old_exitpage();")
-			f(q)
-			q.Javascript("};")
+		q.Javascript("let old_exitpage = " + seed.Script(q).Element() + ".exitpage;")
+		q.Javascript(seed.Script(q).Element() + ".exitpage = function() {")
+		q.Javascript("if (old_exitpage) old_exitpage();")
+		f(q)
+		q.Javascript("};")
 		q.Javascript("}")
 	})
 }
@@ -297,7 +295,7 @@ func (seed Seed) OnChange(f func(Script)) {
 
 //TODO Should be Internal.
 func (seed Seed) SetPlaceholder(placeholder string) {
-	seed.attr += " placeholder='"+placeholder+"' "
+	seed.attr += " placeholder='" + placeholder + "' "
 }
 
 func (seed Seed) Page() bool {
@@ -344,10 +342,10 @@ func (seed Seed) OnSwipeLeft(f func(Script)) {
 	seed.Require("hammer.js")
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
-			q.Javascript("let hammertime = new Hammer("+seed.Script(q).Element()+");")
-			q.Javascript(`hammertime.on("swipeleft", function() {`)
-			f(q)
-			q.Javascript("});")
+		q.Javascript("let hammertime = new Hammer(" + seed.Script(q).Element() + ");")
+		q.Javascript(`hammertime.on("swipeleft", function() {`)
+		f(q)
+		q.Javascript("});")
 		q.Javascript("}")
 	})
 }
@@ -357,10 +355,10 @@ func (seed Seed) OnSwipeRight(f func(Script)) {
 	seed.Require("hammer.js")
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
-			q.Javascript("let hammertime = new Hammer("+seed.Script(q).Element()+");")
-			q.Javascript(`hammertime.on("swiperight", function() {`)
-			f(q)
-			q.Javascript("});")
+		q.Javascript("let hammertime = new Hammer(" + seed.Script(q).Element() + ");")
+		q.Javascript(`hammertime.on("swiperight", function() {`)
+		f(q)
+		q.Javascript("});")
 		q.Javascript("}")
 	})
 }
@@ -369,10 +367,10 @@ func (seed Seed) OnSwipeRight(f func(Script)) {
 func (seed Seed) OnFocus(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
-			q.Javascript(`let onfocus = function(ev) {`)
-			f(q)
-			q.Javascript(`};`)
-			q.Javascript(seed.Script(q).Element()+`.onfocus = onfocus;`)
+		q.Javascript(`let onfocus = function(ev) {`)
+		f(q)
+		q.Javascript(`};`)
+		q.Javascript(seed.Script(q).Element() + `.onfocus = onfocus;`)
 		q.Javascript("}")
 	})
 }
@@ -381,10 +379,10 @@ func (seed Seed) OnFocus(f func(Script)) {
 func (seed Seed) OnInput(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
-			q.Javascript(`let oninput = function(ev) {`)
-			f(q)
-			q.Javascript(`};`)
-			q.Javascript(seed.Script(q).Element()+`.oninput = oninput;`)
+		q.Javascript(`let oninput = function(ev) {`)
+		f(q)
+		q.Javascript(`};`)
+		q.Javascript(seed.Script(q).Element() + `.oninput = oninput;`)
 		q.Javascript("}")
 	})
 }
@@ -393,10 +391,10 @@ func (seed Seed) OnInput(f func(Script)) {
 func (seed Seed) OnFocusLost(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
-			q.Javascript(`let onfocuslost = function(ev) {`)
-			f(q)
-			q.Javascript(`};`)
-			q.Javascript(seed.Script(q).Element()+`.onfocusout = onfocuslost;`)
+		q.Javascript(`let onfocuslost = function(ev) {`)
+		f(q)
+		q.Javascript(`};`)
+		q.Javascript(seed.Script(q).Element() + `.onfocusout = onfocuslost;`)
 		q.Javascript("}")
 	})
 }
@@ -405,10 +403,10 @@ func (seed Seed) OnFocusLost(f func(Script)) {
 func (seed Seed) OnLongPress(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
-			q.Javascript(`let onlongpress = function(ev) {ev.preventDefault()`)
-			f(q)
-			q.Javascript(`};`)
-			q.Javascript(seed.Script(q).Element()+`.addEventListener('long-press', onlongpress);`)
+		q.Javascript(`let onlongpress = function(ev) {ev.preventDefault()`)
+		f(q)
+		q.Javascript(`};`)
+		q.Javascript(seed.Script(q).Element() + `.addEventListener('long-press', onlongpress);`)
 		q.Javascript("}")
 	})
 }

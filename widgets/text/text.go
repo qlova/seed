@@ -20,19 +20,19 @@ func (text Widget) SetSize(s complex128) {
 func New(s ...string) Widget {
 	widget := seed.New()
 	widget.SetTag("span")
-	
+
 	widget.ReactNative().SetTag("Text")
-	
+
 	if len(s) > 0 {
 		widget.SetText(s[0])
 		widget.ReactNative().SetContent("Text")
 	}
-	
+
 	widget.SetSize(seed.Auto, seed.Auto)
 
 	widget.Align(0)
 
-	return  Widget{widget}
+	return Widget{widget}
 }
 
 //Create a new Text widget and add it to the provided parent.

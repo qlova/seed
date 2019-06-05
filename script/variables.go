@@ -18,11 +18,11 @@ type setable interface {
 type Variable string
 
 //All globals have a unique id.
-var global_id int64 = 1;
+var global_id int64 = 1
 
 func NewVariable() Variable {
 	//global identification is compressed to base64 and prefixed with g_.
-	var result = "g_"+base64.RawURLEncoding.EncodeToString(big.NewInt(global_id).Bytes())
+	var result = "g_" + base64.RawURLEncoding.EncodeToString(big.NewInt(global_id).Bytes())
 
 	global_id++
 
@@ -35,7 +35,7 @@ func (v Variable) raw() string {
 }
 
 func (q Script) Get(name Variable) qlova.String {
-	return q.wrap(`window.localStorage.getItem("`+string(name)+`")`)
+	return q.wrap(`window.localStorage.getItem("` + string(name) + `")`)
 }
 
 func (q Script) Set(name setable, value qlova.Type) {
@@ -43,13 +43,13 @@ func (q Script) Set(name setable, value qlova.Type) {
 
 	switch t := v.(type) {
 	case Javascript.String:
-		q.Javascript(`window.localStorage.setItem("`+name.raw()+`", `+string(t.Expression)+`);`)
+		q.Javascript(`window.localStorage.setItem("` + name.raw() + `", ` + string(t.Expression) + `);`)
 
 	case Javascript.Integer:
-		q.Javascript(`window.localStorage.setItem("`+name.raw()+`", (`+string(t.Expression)+`).toString());`)
+		q.Javascript(`window.localStorage.setItem("` + name.raw() + `", (` + string(t.Expression) + `).toString());`)
 
 	case Javascript.Bit:
-			q.Javascript(`window.localStorage.setItem("`+name.raw()+`", (`+string(t.Expression)+`).toString());`)
+		q.Javascript(`window.localStorage.setItem("` + name.raw() + `", (` + string(t.Expression) + `).toString());`)
 
 	default:
 		panic("Unimplemented")
@@ -67,7 +67,7 @@ func NewInt() Int {
 
 func (i Int) Script(q Script) qlova.Int {
 	return q.IntFromLanguageType(Javascript.Integer{
-		Expression: language.Statement(`(parseInt(window.localStorage.getItem("`+string(i.Variable)+`") || "0"))`),
+		Expression: language.Statement(`(parseInt(window.localStorage.getItem("` + string(i.Variable) + `") || "0"))`),
 	})
 }
 
@@ -81,15 +81,15 @@ func NewBool() Bool {
 
 func (b Bool) Script(q Script) qlova.Bool {
 	var result = q.BoolFromLanguageType(Javascript.Bit{
-		Expression: language.Statement(`(window.localStorage.getItem("`+string(b.Variable)+`") == "true")`),
+		Expression: language.Statement(`(window.localStorage.getItem("` + string(b.Variable) + `") == "true")`),
 	})
 
 	/*var extension = result.Extend()
-		extension.Setter = func(value language.Type) language.Statement {
-			return language.Statement(`window.localStorage.setItem("`+name.raw()+`", (`+string(t.Expression)+`).toString());`)
-		}*/
+	extension.Setter = func(value language.Type) language.Statement {
+		return language.Statement(`window.localStorage.setItem("`+name.raw()+`", (`+string(t.Expression)+`).toString());`)
+	}*/
 
-	return result 
+	return result
 }
 
 type StringVar struct {
@@ -102,7 +102,7 @@ func NewString() StringVar {
 
 func (s StringVar) Script(q Script) qlova.String {
 	var result = q.StringFromLanguageType(Javascript.String{
-		Expression: language.Statement(`window.localStorage.getItem("`+string(s.Variable)+`")`),
+		Expression: language.Statement(`window.localStorage.getItem("` + string(s.Variable) + `")`),
 	})
-	return result 
+	return result
 }

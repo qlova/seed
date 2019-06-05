@@ -1,9 +1,9 @@
 package seed
 
 import (
-	"path"
 	"bytes"
 	"fmt"
+	"path"
 )
 
 import "github.com/qlova/seed/script"
@@ -13,9 +13,9 @@ type Platform int
 
 const (
 	Default Platform = iota
-	
+
 	Desktop
- 	Mobile
+	Mobile
 	Tablet
 	Watch
 	Tv
@@ -97,9 +97,8 @@ func (seed Seed) buildStyleSheetForPortrait(platform Platform, sheet *style.Shee
 }
 
 //Replace this seed with its desktop version.
-	
 
-func (seed Seed) HTML(platform Platform) ([]byte) {
+func (seed Seed) HTML(platform Platform) []byte {
 	if short := seed.ShortCircuit(platform); short.seed != nil {
 		return short.HTML(platform)
 	}
@@ -107,7 +106,7 @@ func (seed Seed) HTML(platform Platform) ([]byte) {
 	//seed.postProduction()
 
 	var html bytes.Buffer
-	
+
 	html.WriteByte('<')
 	html.WriteString(seed.tag)
 	html.WriteByte(' ')
@@ -118,50 +117,50 @@ func (seed Seed) HTML(platform Platform) ([]byte) {
 	html.WriteString("id='")
 	html.WriteString(fmt.Sprint(seed.id))
 	html.WriteByte('\'')
-	
+
 	if seed.class != "" {
 		html.WriteString("class='")
 		html.WriteString(seed.class)
 		html.WriteByte('\'')
 	}
-	
+
 	if data := seed.Style.Bytes(); !seed.styled && data != nil {
 		html.WriteString(" style='")
 		html.Write(data)
 		html.WriteByte('\'')
 	}
-	
+
 	if seed.onclick != nil && seed.parent == nil {
 		html.WriteString(" onclick='")
 		html.WriteString(script.ToJavascript(seed.onclick))
 		html.WriteByte('\'')
 	}
-	
+
 	if seed.onchange != nil {
 		html.WriteString(" onchange='")
 		html.WriteString(script.ToJavascript(seed.onchange))
 		html.WriteByte('\'')
 	}
-	
+
 	html.WriteByte('>')
-	
+
 	if seed.content != nil {
 		html.Write(seed.content)
 	}
-	
+
 	for _, child := range seed.children {
 		html.Write(child.Root().Render(platform))
 	}
 
 	switch seed.tag {
-		case "input", "img", "br", "hr", "meta", "area", "base", "col", "embed", "link", "param", "source", "track", "wbr":
+	case "input", "img", "br", "hr", "meta", "area", "base", "col", "embed", "link", "param", "source", "track", "wbr":
 
-		default:
-			html.WriteString("</")
-			html.WriteString(seed.tag)
-			html.WriteByte('>')
+	default:
+		html.WriteString("</")
+		html.WriteString(seed.tag)
+		html.WriteByte('>')
 	}
-	
+
 	return html.Bytes()
 }
 
@@ -179,12 +178,12 @@ func (seed Seed) getScripts(platform Platform) []string {
 	for _, child := range seed.children {
 		scripts = append(scripts, child.Root().getScripts(platform)...)
 	}
-	
+
 	return scripts
 }
 
 func (seed Seed) Scripts(platform Platform) map[string]struct{} {
-	
+
 	var scripts = seed.getScripts(platform)
 	var uniques = make(map[string]struct{})
 
@@ -201,11 +200,11 @@ func (seed Seed) buildOnReady(platform Platform, buffer *bytes.Buffer) {
 		short.buildOnReady(platform, buffer)
 		return
 	}
-	
+
 	for _, child := range seed.children {
 		child.Root().buildOnReady(platform, buffer)
 	}
-	
+
 	if seed.onready != nil {
 		seed.ready = true
 		buffer.WriteByte('{')
@@ -214,13 +213,12 @@ func (seed Seed) buildOnReady(platform Platform, buffer *bytes.Buffer) {
 	}
 }
 
-
 func (seed Seed) BuildOnReady(platform Platform) []byte {
 	var buffer bytes.Buffer
 	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() {`)
-	
+
 	seed.buildOnReady(platform, &buffer)
-	
+
 	buffer.WriteString(`}, false);`)
 	return buffer.Bytes()
 }
@@ -241,7 +239,7 @@ func (application App) render(production bool, platform Platform) []byte {
 		});		
 		`)
 	})
-	
+
 	var style = seed.BuildStyleSheet(platform).Bytes()
 	var styleForLandscape = seed.BuildStyleSheetForLandscape(platform).Bytes()
 	var styleForPortrait = seed.BuildStyleSheetForPortrait(platform).Bytes()
@@ -257,7 +255,7 @@ func (application App) render(production bool, platform Platform) []byte {
 	if application.tracking != "" {
 		buffer.WriteString(`
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=`+application.tracking+`"></script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=` + application.tracking + `"></script>
 		<script>
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
@@ -267,7 +265,7 @@ func (application App) render(production bool, platform Platform) []byte {
 		</script>
 		`)
 	}
-		
+
 	if platform != Desktop {
 		buffer.WriteString(`
 			<meta name="apple-mobile-web-app-capable" content="yes">
@@ -275,31 +273,29 @@ func (application App) render(production bool, platform Platform) []byte {
 			
 		`)
 	}
-		
-	buffer.Write([]byte(`
-		<meta name="theme-color" content="`+application.Manifest.ThemeColor+`">
 
-		<title>`+application.Manifest.Name+`</title>
+	buffer.Write([]byte(`
+		<meta name="theme-color" content="` + application.Manifest.ThemeColor + `">
+
+		<title>` + application.Manifest.Name + `</title>
 
 		<link rel="manifest" href="/app.webmanifest">`))
-
-	
 
 	for i, icon := range application.Manifest.Icons {
 
 		//The first icon can be the Favicon.
 		if i == 0 {
-			buffer.WriteString(`<link rel="shortcut icon" type="image/png" href="`+icon.Source+`"/>`)
+			buffer.WriteString(`<link rel="shortcut icon" type="image/png" href="` + icon.Source + `"/>`)
 		}
-	
-		buffer.Write([]byte(`<link rel="apple-touch-icon" sizes="`+icon.Sizes+`" href="`+icon.Source+`">`))
+
+		buffer.Write([]byte(`<link rel="apple-touch-icon" sizes="` + icon.Sizes + `" href="` + icon.Source + `">`))
 	}
 
 	for script := range scripts {
-		if path.Ext(script) == ".js" { 
-			buffer.Write([]byte(`<script src="`+script+`"></script>`))
+		if path.Ext(script) == ".js" {
+			buffer.Write([]byte(`<script src="` + script + `"></script>`))
 		} else if path.Ext(script) == ".css" {
-			buffer.Write([]byte(`<link rel="stylesheet" href="`+script+`" />`))
+			buffer.Write([]byte(`<link rel="stylesheet" href="` + script + `" />`))
 		}
 	}
 
@@ -310,7 +306,7 @@ func (application App) render(production bool, platform Platform) []byte {
 					registration.onupdatefound = function() {
 						window.localStorage.setItem("update", "true");
 
-						` +script.ToJavascript(application.onupdatefound)+ `
+						` + script.ToJavascript(application.onupdatefound) + `
 					}
 				
 					console.log('ServiceWorker registration successful with scope: ', registration.scope);
@@ -350,7 +346,7 @@ func (application App) render(production bool, platform Platform) []byte {
 
 	buffer.Write(application.Fonts())
 	buffer.Write(application.Animations())
-	buffer.Write(style)	
+	buffer.Write(style)
 
 	buffer.WriteString(`@media screen and (orientation: landscape) {`)
 	buffer.Write(styleForLandscape)
@@ -360,21 +356,21 @@ func (application App) render(production bool, platform Platform) []byte {
 	buffer.Write(styleForPortrait)
 	buffer.WriteString(`}`)
 
-		buffer.Write([]byte(`
+	buffer.Write([]byte(`
 		</style>
 			
 		<style>			
 			`))
 
-		/*if platform == Desktop {
-			buffer.WriteString(`
-				::-webkit-scrollbar { 
-					display: none; 
-				}
-			`)
-		}*/
+	/*if platform == Desktop {
+		buffer.WriteString(`
+			::-webkit-scrollbar {
+				display: none;
+			}
+		`)
+	}*/
 
-		buffer.Write([]byte(`
+	buffer.Write([]byte(`
 			* {
 				-webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important; 
 				-webkit-focus-ring-color: rgba(255, 255, 255, 0) !important; 
@@ -457,9 +453,9 @@ func (application App) render(production bool, platform Platform) []byte {
 				width: 100vw;
 				`))
 
-				//We dont want people to select things on mobile.
-				if platform != Desktop {
-					buffer.WriteString(`
+	//We dont want people to select things on mobile.
+	if platform != Desktop {
+		buffer.WriteString(`
 						-webkit-touch-callout: none;
 						-webkit-user-select: none;
 						-khtml-user-select: none;
@@ -468,9 +464,9 @@ func (application App) render(production bool, platform Platform) []byte {
 						user-select: none;
 						-webkit-tap-highlight-color: transparent;
 					`)
-				}
-		
-				buffer.Write([]byte(`
+	}
+
+	buffer.Write([]byte(`
 				/* Some nice defaults for centering content. */
 				display: inline-flex;
 				align-items: center;
@@ -482,23 +478,23 @@ func (application App) render(production bool, platform Platform) []byte {
 		
 		<script>`))
 
-		if platform != Desktop {
-			buffer.WriteString(`
+	if platform != Desktop {
+		buffer.WriteString(`
 				//Some SERIOUS HACKS TO WORKAROUND APPLE'S BUGS.
 				//NO BOUNCE BUGS GODDAMMIT https://github.com/lazd/iNoBounce
 							(function(global){var startY=0;var enabled=false;var supportsPassiveOption=false;try{var opts=Object.defineProperty({},"passive",{get:function(){supportsPassiveOption=true}});window.addEventListener("test",null,opts)}catch(e){}var handleTouchmove=function(evt){var el=evt.target;var zoom=window.innerWidth/window.document.documentElement.clientWidth;if(evt.touches.length>1||zoom!==1){return}while(el!==document.body&&el!==document){var style=window.getComputedStyle(el);if(!style){break}if(el.nodeName==="INPUT"&&el.getAttribute("type")==="range"){return}var scrolling=style.getPropertyValue("-webkit-overflow-scrolling");var overflowY=style.getPropertyValue("overflow-y");var height=parseInt(style.getPropertyValue("height"),10);var isScrollable=scrolling==="touch"&&(overflowY==="auto"||overflowY==="scroll");var canScroll=el.scrollHeight>el.offsetHeight;if(isScrollable&&canScroll){var curY=evt.touches?evt.touches[0].screenY:evt.screenY;var isAtTop=startY<=curY&&el.scrollTop===0;var isAtBottom=startY>=curY&&el.scrollHeight-el.scrollTop===height;if(isAtTop||isAtBottom){evt.preventDefault()}return}el=el.parentNode}evt.preventDefault()};var handleTouchstart=function(evt){startY=evt.touches?evt.touches[0].screenY:evt.screenY};var enable=function(){window.addEventListener("touchstart",handleTouchstart,supportsPassiveOption?{passive:false}:false);window.addEventListener("touchmove",handleTouchmove,supportsPassiveOption?{passive:false}:false);enabled=true};var disable=function(){window.removeEventListener("touchstart",handleTouchstart,false);window.removeEventListener("touchmove",handleTouchmove,false);enabled=false};var isEnabled=function(){return enabled};var testDiv=document.createElement("div");document.documentElement.appendChild(testDiv);testDiv.style.WebkitOverflowScrolling="touch";var scrollSupport="getComputedStyle"in window&&window.getComputedStyle(testDiv)["-webkit-overflow-scrolling"]==="touch";document.documentElement.removeChild(testDiv);if(scrollSupport){enable()}var iNoBounce={enable:enable,disable:disable,isEnabled:isEnabled};if(typeof module!=="undefined"&&module.exports){module.exports=iNoBounce}if(typeof global.define==="function"){(function(define){define("iNoBounce",[],function(){return iNoBounce})})(global.define)}else{global.iNoBounce=iNoBounce}})(this);
 			`)
-		}
+	}
 
-		//Need to actually detect if we are running inside a dev environment or not!
-		//probably should check the request hostname in launcher to decide if we are in production or not.
-		if production && (application.rest != "") {
-			buffer.WriteString(`var host = "https://`+application.rest+`";`)
-		} else {
-			buffer.WriteString(`var host = "";`)
-		}
+	//Need to actually detect if we are running inside a dev environment or not!
+	//probably should check the request hostname in launcher to decide if we are in production or not.
+	if production && (application.rest != "") {
+		buffer.WriteString(`var host = "https://` + application.rest + `";`)
+	} else {
+		buffer.WriteString(`var host = "";`)
+	}
 
-		buffer.Write([]byte(`
+	buffer.Write([]byte(`
 			var animating = false;
 			
 			var get = function(id) {
@@ -537,7 +533,7 @@ func (application App) render(production bool, platform Platform) []byte {
 				next_page = null;
 			};
 			
-			function `+OnPress+`(id, func) {
+			function ` + OnPress + `(id, func) {
 				let element = get(id);
 				
 				let handler = function(event) {
@@ -650,8 +646,8 @@ func (application App) render(production bool, platform Platform) []byte {
 			
 		`))
 
-		if !production {
-			buffer.Write([]byte(`
+	if !production {
+		buffer.Write([]byte(`
 			var set = function(element, property, value) {
 				if (!(element.id in InternalStyleState)) {
 					InternalStyleState[element.id] = {};
@@ -800,7 +796,7 @@ func (application App) render(production bool, platform Platform) []byte {
 							let message = "#"+edit+" {";
 
 							if (edits[edit].text) {
-								message += "text: `+"`"+`"+get(edit).innerHTML+"`+"`"+`;";
+								message += "text: ` + "`" + `"+get(edit).innerHTML+"` + "`" + `;";
 								change = true;
 							}
 							
@@ -834,10 +830,10 @@ func (application App) render(production bool, platform Platform) []byte {
 				});
 			}
 			`))
-		}
+	}
 
-		if production {
-			buffer.Write([]byte(`
+	if production {
+		buffer.Write([]byte(`
 			var set = function(element, property, value) {
 				element.style[property] = value;
 			};
@@ -847,12 +843,12 @@ func (application App) render(production bool, platform Platform) []byte {
 								back();
 								history.pushState(null, null, document.URL);
 							});`))
-		}
+	}
 
-		buffer.Write(onready)
+	buffer.Write(onready)
 
-		if application.DynamicHandler() != nil {
-			buffer.WriteString(`
+	if application.DynamicHandler() != nil {
+		buffer.WriteString(`
 			var dynamic = new XMLHttpRequest();
 	
 			dynamic.onreadystatechange = function() {
@@ -866,17 +862,17 @@ func (application App) render(production bool, platform Platform) []byte {
 	
 			dynamic.open("GET", "/dynamic", true);
 			dynamic.send();`)
-		}
+	}
 
-		for name, function := range functions {
-			buffer.WriteString("function ")
-			buffer.WriteString(name)
-			buffer.WriteString("() {")
-			buffer.WriteString(script.ToJavascript(function))
-			buffer.WriteString("}")
-		}
+	for name, function := range functions {
+		buffer.WriteString("function ")
+		buffer.WriteString(name)
+		buffer.WriteString("() {")
+		buffer.WriteString(script.ToJavascript(function))
+		buffer.WriteString("}")
+	}
 
-		buffer.Write([]byte(`	
+	buffer.Write([]byte(`	
 				</script>
 				
 				</head><body>
@@ -887,11 +883,11 @@ func (application App) render(production bool, platform Platform) []byte {
 
 	</body></html>`))
 
-	
 	return buffer.Bytes()
 }
 
 var tail string
+
 func Tail(t string) {
 	tail += t
 }

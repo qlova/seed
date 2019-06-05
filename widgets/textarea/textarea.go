@@ -11,7 +11,7 @@ func New() Widget {
 	widget.SetTag("textarea")
 	widget.SetAttributes("data-gramm_editor=false")
 
-	return  Widget{widget}
+	return Widget{widget}
 }
 
 func AddTo(parent seed.Interface) Widget {
@@ -21,5 +21,5 @@ func AddTo(parent seed.Interface) Widget {
 }
 
 func (widget Widget) SetRequired() {
-	widget.SetAttributes(widget.Attributes()+" required")
+	widget.SetAttributes(widget.Attributes() + " required")
 }

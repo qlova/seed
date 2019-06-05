@@ -14,7 +14,7 @@ func New() Widget {
 	widget := seed.New()
 	widget.SetTag("form")
 	widget.SetAttributes(`onsubmit="return false;"`)
-	
+
 	widget.Stylable.Set("display", "flex")
 	widget.Stylable.Set("flex-direction", "column")
 
@@ -37,6 +37,6 @@ func (w Widget) Script(q script.Script) Script {
 
 func (widget Script) Invalid() Bool {
 	return widget.Q.BoolFromLanguageType(Javascript.Bit{
-		Expression: language.Statement("!"+widget.Element()+".reportValidity()"),
+		Expression: language.Statement("!" + widget.Element() + ".reportValidity()"),
 	})
 }

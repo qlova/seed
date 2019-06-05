@@ -15,7 +15,7 @@ func New(ratio ...float64) Widget {
 		widget.SetExpand(1)
 	}
 
-	return  Widget{widget}
+	return Widget{widget}
 }
 
 //Create a new Text widget and add it to the provided parent.
@@ -23,4 +23,4 @@ func AddTo(parent seed.Interface, ratio ...float64) Widget {
 	var widget = New(ratio...)
 	parent.Root().Add(widget)
 	return widget
-} 
+}

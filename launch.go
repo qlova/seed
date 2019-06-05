@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var browsers = []string {
+var browsers = []string{
 	"google-chrome",
 	"chromium",
 	"google-chrome-stable",
@@ -24,26 +24,25 @@ var browsers = []string {
 
 func launch(hostport string) {
 	var err error
-	
-	url := "http://localhost"+hostport
-	
+
+	url := "http://localhost" + hostport
+
 	for _, browser := range browsers {
 		err = exec.Command(browser, "--app="+url).Run()
 		if err == nil {
 			return
 		}
 	}
-	
-		
+
 	switch runtime.GOOS {
-		case "android":
-			exec.Command("am","start", "--user", "0", "-a", "android.intent.action.VIEW", "-d", url).Run()
-		case "linux":
-			exec.Command("xdg-open", url).Run()
-		case "darwin":
-			exec.Command("open", url).Run()
-		case "windows":
-			r := strings.NewReplacer("&", "^&")
-			exec.Command("cmd", "/c", "start", r.Replace(url)).Run()
+	case "android":
+		exec.Command("am", "start", "--user", "0", "-a", "android.intent.action.VIEW", "-d", url).Run()
+	case "linux":
+		exec.Command("xdg-open", url).Run()
+	case "darwin":
+		exec.Command("open", url).Run()
+	case "windows":
+		r := strings.NewReplacer("&", "^&")
+		exec.Command("cmd", "/c", "start", r.Replace(url)).Run()
 	}
 }

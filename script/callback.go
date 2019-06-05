@@ -9,7 +9,7 @@ type Attachable interface {
 func (q Script) Attach(attachables ...Attachable) callWithFormData {
 	var variable = Unique()
 
-	q.Javascript(`var `+variable+" = new FormData();")
+	q.Javascript(`var ` + variable + " = new FormData();")
 
 	for i, attachable := range attachables {
 		q.Javascript(attachable.AttachTo(variable, i+1))
@@ -20,9 +20,9 @@ func (q Script) Attach(attachables ...Attachable) callWithFormData {
 
 type callWithFormData struct {
 	formdata string
-	q Script
+	q        Script
 }
 
-func (c callWithFormData) Call(f interface{}, args ...qlova.Type) Promise {	
+func (c callWithFormData) Call(f interface{}, args ...qlova.Type) Promise {
 	return c.q.rpc(f, c.formdata, args...)
 }

@@ -9,7 +9,7 @@ type Widget struct {
 
 func New() Widget {
 	widget := column.New()
-	
+
 	widget.Set("position", "fixed")
 	widget.Set("left", "50%")
 	widget.Set("top", "50%")

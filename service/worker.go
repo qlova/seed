@@ -14,7 +14,7 @@ type Worker struct {
 
 func (worker Worker) Render() []byte {
 	var b bytes.Buffer
-	
+
 	b.WriteString(`self.addEventListener('install', function(event) {
 		self.skipWaiting();
   event.waitUntil(
@@ -32,7 +32,7 @@ func (worker Worker) Render() []byte {
 		}
 		i++
 	}
-	
+
 	b.WriteString(`]
       );
     })
@@ -56,6 +56,6 @@ async function cacheThenNetwork(event) {
     return networkResponse;
 }
 `)
-	
+
 	return b.Bytes()
 }

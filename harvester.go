@@ -4,27 +4,26 @@ import "bytes"
 import "github.com/qlova/seed/style"
 import "net/http"
 
-
 type dynamicHandler struct {
-	id string
+	id      string
 	handler func(User)
 }
 
-//A harvester collects the extracts the necessary information of the seed tree in order to render the application. 
+//A harvester collects the extracts the necessary information of the seed tree in order to render the application.
 type harvester struct {
 	//Assets associated with a seed.
 	assets []Asset
 
 	//Fonts associated with a seed (need special handling compared to assets).
 	fonts map[style.Font]struct{}
-	
+
 	//Animations and animation ids associated with a seed.
-	animations []Animation
+	animations     []Animation
 	animationNames []string
-	
+
 	//Dynamic handlers
 	dynamicHandlers []dynamicHandler
-	
+
 	customHandlers []func(response http.ResponseWriter, request *http.Request)
 }
 
@@ -37,7 +36,7 @@ func newHarvester() *harvester {
 //Do the harvesting.
 func (app *harvester) harvest(seed Seed) {
 	var h = app
-	
+
 	//Harvest Animations.
 	if seed.animation != nil {
 		h.animations = append(h.animations, seed.animation)
@@ -48,25 +47,25 @@ func (app *harvester) harvest(seed Seed) {
 	if seed.assets != nil {
 		h.assets = append(h.assets, seed.assets...)
 	}
-	
+
 	//Harvest Dynamic Handlers.
 	if seed.dynamicText != nil {
 		h.dynamicHandlers = append(h.dynamicHandlers, dynamicHandler{
-			id: seed.id,
+			id:      seed.id,
 			handler: seed.dynamicText,
 		})
 	}
-	
+
 	//Harvest Dynamic Handlers.
 	if seed.handlers != nil {
 		h.customHandlers = append(h.customHandlers, seed.handlers...)
 	}
-	
+
 	//Harvest Fonts.
 	if seed.font.FontFace.FontFamily != "" {
 		h.fonts[seed.font] = struct{}{}
 	}
-	
+
 	//Recursively harvest children.
 	for _, child := range seed.children {
 		h.harvest(child.Root())
@@ -76,7 +75,7 @@ func (app *harvester) harvest(seed Seed) {
 //Harvest and combine the results with the application.
 func (app *App) build() {
 	app.harvester.harvest(app.Root())
-	
+
 	//Index assets for the application.
 	for _, asset := range app.assets {
 		app.Assets[asset.path] = true
@@ -101,11 +100,11 @@ func (app *harvester) Fonts() []byte {
 //Return rendered animations.
 func (app *harvester) Animations() []byte {
 	var h = app
-	
+
 	var buffer bytes.Buffer
 
 	for i, animation := range h.animations {
-		buffer.WriteString("@keyframes "+h.animationNames[i]+" {")
+		buffer.WriteString("@keyframes " + h.animationNames[i] + " {")
 		buffer.Write(animation.Bytes())
 		buffer.WriteByte('}')
 	}
@@ -113,9 +112,9 @@ func (app *harvester) Animations() []byte {
 	return buffer.Bytes()
 }
 
-func (app *harvester) DynamicHandler() (func(w http.ResponseWriter, r *http.Request)) {
+func (app *harvester) DynamicHandler() func(w http.ResponseWriter, r *http.Request) {
 	var h = app
-	
+
 	if len(h.dynamicHandlers) == 0 {
 		return nil
 	}
@@ -131,9 +130,9 @@ func (app *harvester) DynamicHandler() (func(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-func (app *harvester) CustomHandler() (func(w http.ResponseWriter, r *http.Request)) {
+func (app *harvester) CustomHandler() func(w http.ResponseWriter, r *http.Request) {
 	var h = app
-	
+
 	if len(h.customHandlers) == 0 {
 		return nil
 	}

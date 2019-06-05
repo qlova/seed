@@ -1,8 +1,8 @@
 package seed
 
 import (
-	"net/http"
 	"log"
+	"net/http"
 	"os"
 	//"strings"
 	//"strconv"
@@ -19,7 +19,7 @@ var singleLocalConnection = false
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true //r.Header.Get("Origin") == "https://realmoforder.com"
-	},	
+	},
 }
 
 //This will be single threaded.
@@ -87,7 +87,7 @@ func (p PostProduction) Add(seed Seed, style string) {
 
 		table[property] = value
 	}
-	
+
 	p[seed.manifest.Name+">"+seed.manifest.Description] = table
 	post.Save()
 }
@@ -106,7 +106,7 @@ func (p PostProduction) Save() {
 		return
 	}
 }*/
- 
+
 func socket(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -114,7 +114,7 @@ func socket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
-	
+
 	for {
 		_, _, err := c.ReadMessage()
 		if err != nil {
@@ -124,7 +124,7 @@ func socket(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-		
+
 		/*var StyleModification = string(data)
 		if len(StyleModification) == 0 || StyleModification[0] != '#' {
 			continue
@@ -133,7 +133,7 @@ func socket(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(StyleModification)
 
 		var reader = bufio.NewReader(strings.NewReader(StyleModification))
-		
+
 		id, err := reader.ReadString('{')
 		if err != nil {
 			continue

@@ -3,9 +3,9 @@
 This package can be used to write web applications without the need for HTML, CSS or Javascript.
 
 	package main
-	
+
 	import "github.com/qlova/seed"
-	
+
 	func main() {
 		seed.NewApp("Hello World", "Hello World").Launch()
 	}
@@ -22,7 +22,7 @@ Then you can pass the deploy argument to your app. Make sure you have ssh instal
 	./App -deploy
 
   Android and IOS apps
-  
+
 You can export an .apk or .ipa of your application. These will need to be signed before being uploaded to an appstore.
 
 	./App -apk
@@ -66,7 +66,7 @@ Start by picking a page of the application and importing the widgets you need, y
 To use one of these widgets, import it at the top of your .go file.
 
 	package main
-	
+
 	import "github.com/qlova/seed"
 
 	import (
@@ -78,14 +78,14 @@ Now you can add widgets to your application and to other widgets like this.
 
 	func main() {
 		var App = seed.NewApp()
-		
+
 		var Row = row.AddTo(App)
-		
+
 		textbox.AddTo(Row)
-		
+
 		App.Launch()
 	}
-	
+
 All widgets have a AddTo(parent) method for clearly creating and adding the widget to a parent in a single line.
 They also have a New() method that returns the widget for more advanced purposes.
 

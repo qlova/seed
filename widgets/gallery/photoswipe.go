@@ -4,12 +4,11 @@ import "github.com/qlova/seed"
 import "github.com/qlova/seed/script"
 
 import (
+	"fmt"
+	"image"
 	_ "image/jpeg"
-    _ "image/png"
-    "os"
-    "fmt"
-    "image"
-    
+	_ "image/png"
+	"os"
 )
 
 func init() {
@@ -77,19 +76,19 @@ type Widget struct {
 }
 
 func getImageDimension(imagePath string) string {
-    file, err := os.Open(imagePath)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "%v\n", err)
-    }
+	file, err := os.Open(imagePath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+	}
 
-    image, _, err := image.DecodeConfig(file)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "%s: %v\n", imagePath, err)
-    }
+	image, _, err := image.DecodeConfig(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s: %v\n", imagePath, err)
+	}
 
 	file.Close()
-    
-    return fmt.Sprint("w:",image.Width,",h:", image.Height)
+
+	return fmt.Sprint("w:", image.Width, ",h:", image.Height)
 }
 
 //Returns gallery that displays 'local' images (in the assets directory).
@@ -99,21 +98,21 @@ func New(images ...string) Widget {
 	gallery.Require("photoswipe.js")
 	gallery.Require("photoswipe.css")
 	gallery.Require("photoswipe-ui.js")
-	
+
 	gallery.OnReady(func(q seed.Script) {
-		q.Javascript(gallery.Script(q).Element()+".items = [")
+		q.Javascript(gallery.Script(q).Element() + ".items = [")
 		for i, img := range images {
 
-			var dimensions = getImageDimension(seed.Dir+"/assets/"+img)
-		
-			q.Javascript(`{src:"`+img+`", `+dimensions+` }`)
+			var dimensions = getImageDimension(seed.Dir + "/assets/" + img)
+
+			q.Javascript(`{src:"` + img + `", ` + dimensions + ` }`)
 			if i < len(images)-1 {
 				q.Javascript(`,`)
 			}
 		}
 		q.Javascript("];")
 	})
-	
+
 	return Widget{gallery}
 }
 
@@ -132,5 +131,5 @@ func (w Widget) Script(q script.Script) Script {
 }
 
 func (widget Script) Open() {
-	widget.Q.Javascript(`ActivePhotoSwipe = new PhotoSwipe(document.querySelectorAll(".pswp")[0], PhotoSwipeUI_Default, `+widget.Element()+".items, {history:false}); ActivePhotoSwipe.init();")
+	widget.Q.Javascript(`ActivePhotoSwipe = new PhotoSwipe(document.querySelectorAll(".pswp")[0], PhotoSwipeUI_Default, ` + widget.Element() + ".items, {history:false}); ActivePhotoSwipe.init();")
 }

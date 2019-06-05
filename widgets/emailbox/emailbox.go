@@ -11,7 +11,7 @@ func New() Widget {
 	widget := textbox.New()
 	widget.SetAttributes(`type="email"`)
 
-	return  Widget{widget}
+	return Widget{widget}
 }
 
 func AddTo(parent seed.Interface) Widget {

@@ -1,20 +1,19 @@
 package seed
 
 import (
+	"log"
+	"net/http"
+	"os"
 	"path"
 	"path/filepath"
-	"os"
-	"log"
 	"strings"
-	"net/http"
-) 
+)
 
 //import ua "github.com/avct/uasurfer"
 import "github.com/NYTimes/gziphandler"
 
 import "github.com/qlova/seed/script"
 import "github.com/qlova/seed/user"
-
 
 type launcher struct {
 	App
@@ -23,15 +22,14 @@ type launcher struct {
 	Listen string
 }
 
-
 //Returns a http handler that serves this application.
 func (launcher launcher) Handler() http.Handler {
 	launcher.App.build()
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-    if err != nil {
+	if err != nil {
 		log.Fatal(err)
-    }
+	}
 
 	minified, err := mini(launcher.render(true, Default))
 	if err != nil {
@@ -57,11 +55,11 @@ func (launcher launcher) Handler() http.Handler {
 			response.Header().Set("Access-Control-Allow-Origin", "file://")
 		}
 		response.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	    response.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-	    if request.Method == "OPTIONS" {
-	   		return
-	   	}
-	
+		response.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		if request.Method == "OPTIONS" {
+			return
+		}
+
 		var local = strings.Contains(request.RemoteAddr, "[::1]")
 
 		//Editmode socket.
@@ -87,10 +85,10 @@ func (launcher launcher) Handler() http.Handler {
 
 		//Remote procedure calls.
 		if len(request.URL.Path) > 5 && request.URL.Path[:6] == "/call/" {
-			script.Handler(response, request, request.URL.Path[6:] )
+			script.Handler(response, request, request.URL.Path[6:])
 			return
 		}
-		
+
 		//Remote procedure calls.
 		if len(request.URL.Path) > 6 && request.URL.Path[:7] == "/feeds/" {
 			feedHandler(response, request, request.URL.Path[7:])
@@ -108,7 +106,7 @@ func (launcher launcher) Handler() http.Handler {
 			if custom != nil {
 				custom(response, request)
 			}
-			
+
 			if path.Ext(request.URL.Path) == "" {
 				return
 			}
@@ -117,18 +115,18 @@ func (launcher launcher) Handler() http.Handler {
 		if launcher.App.rest != "" && (request.URL.Host == launcher.App.rest || request.Host == launcher.App.rest) {
 			response.Write([]byte(string("This place is for computers")))
 			return
-			
+
 		}
 
 		if request.URL.Path == "/.well-known/assetlinks.json" && launcher.App.pkg != "" {
 			response.Header().Set("Content-Type", "application/json")
 			response.Write([]byte(`[{
   "relation": ["delegate_permission/common.handle_all_urls"],
-  "target" : { "namespace": "android_app", "package_name": "`+launcher.App.pkg+`",
+  "target" : { "namespace": "android_app", "package_name": "` + launcher.App.pkg + `",
                "sha256_cert_fingerprints": [`))
-			
+
 			for i, hash := range launcher.App.hashes {
-				response.Write([]byte("\""+hash+"\""))
+				response.Write([]byte("\"" + hash + "\""))
 				if i < len(launcher.App.hashes)-1 {
 					response.Write([]byte(`,`))
 				}
@@ -168,7 +166,7 @@ func (launcher launcher) Handler() http.Handler {
 		//Identify platform.
 		/*if os.Getenv("IGNORE_PLATFORM") == "" {
 			device := ua.Parse(request.UserAgent())
-	
+
 			if device.DeviceType == ua.DeviceComputer {
 				response.Write(desktop)
 				return
@@ -200,10 +198,10 @@ func (launcher launcher) Launch(port ...string) {
 		if launcher.Listen == "" {
 			launcher.Listen = ":1234"
 		}
-			
+
 		//Launch the app if possible.
 		go launch(launcher.Listen)
-	
+
 		http.ListenAndServe(launcher.Listen, nil)
 		return
 	}

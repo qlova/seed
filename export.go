@@ -13,17 +13,17 @@ const (
 func (app App) Export(t Target) {
 	if t == Website {
 		var dir = filepath.Dir(os.Args[0])
-				
+
 		os.Mkdir(dir+"/website", 0755)
 
-		var index, err = os.Create(dir+"/website/index.html")
+		var index, err = os.Create(dir + "/website/index.html")
 		if err != nil {
 			panic(err.Error())
 		}
 		defer index.Close()
 
 		for name, data := range embeddings {
-			var file, err = os.Create(dir+"/website/"+name)
+			var file, err = os.Create(dir + "/website/" + name)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -36,19 +36,18 @@ func (app App) Export(t Target) {
 		return
 	}
 
-
 	if t == ReactNative {
-		
+
 		var dir = filepath.Dir(os.Args[0])
-		
+
 		os.Mkdir(dir+"/native", 0755)
-		
-		var appjs, err = os.Create(dir+"/native/App.js")
+
+		var appjs, err = os.Create(dir + "/native/App.js")
 		if err != nil {
 			panic(err.Error())
 		}
 		defer appjs.Close()
-		
+
 		appjs.WriteString(`
 		import React, { Component } from 'react';
 import { LayoutAnimation, TextInput, Text, View, StyleSheet, UIManager } from 'react-native';
@@ -109,7 +108,7 @@ class SvgImage extends Component {
               props.style,
             ]}
             scrollEnabled={false}
-            source={{ html: `+"`"+`${firstHtml}${svgContent}${lastHtml}`+"`"+` }}
+            source={{ html: ` + "`" + `${firstHtml}${svgContent}${lastHtml}` + "`" + ` }}
           />
         </View>
       );
@@ -165,19 +164,17 @@ export default class App extends Component {
 	  
 	return ( <View style={{justifyContent: "center", alignItems: 'center', flex: 1}}>
 		`)
-		
-	appjs.Write(app.Root().JSX())
-		
-	appjs.WriteString(`
+
+		appjs.Write(app.Root().JSX())
+
+		appjs.WriteString(`
 	
 	</View>
 	);
   }
 }
 		`)
-		
-		
-		
+
 	} else {
 		panic("Invalid Export Target")
 	}

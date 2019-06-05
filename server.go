@@ -7,7 +7,7 @@ import (
 
 type embedding struct {
 	ContentType string
-	Data []byte
+	Data        []byte
 }
 
 var embeddings = make(map[string]embedding)
@@ -20,11 +20,11 @@ func Embed(name string, data []byte) {
 	}
 	if path.Ext(name) == ".css" {
 		ContentType = "text/css"
-	}		
-	
+	}
+
 	embeddings[name] = embedding{
 		ContentType: ContentType,
-		Data: data,
+		Data:        data,
 	}
 }
 
@@ -34,6 +34,6 @@ func embedded(w http.ResponseWriter, r *http.Request) bool {
 		w.Write(embedding.Data)
 		return true
 	}
-	
+
 	return false
 }

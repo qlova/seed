@@ -12,7 +12,7 @@ type Widget struct {
 
 func New() Widget {
 	widget := seed.New()
-	
+
 	widget.SetTag("canvas")
 	widget.SetSize(seed.Auto, seed.Auto)
 
@@ -43,9 +43,9 @@ func (s Script) OpenGL() webgl.Context {
 }
 
 func (s Script) Width() qlova.Float {
-	return s.Q.Value(s.Element()+".scrollWidth").Float()
+	return s.Q.Value(s.Element() + ".scrollWidth").Float()
 }
 
 func (s Script) Height() qlova.Float {
-	return s.Q.Value(s.Element()+".scrollHeight").Float()
+	return s.Q.Value(s.Element() + ".scrollHeight").Float()
 }

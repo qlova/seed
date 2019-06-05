@@ -9,7 +9,7 @@ func init() {
 }
 
 //Returns a full-featured map.
-func New() seed.Seed {	
+func New() seed.Seed {
 	var m = seed.New()
 
 	m.Require("leaflet.js")
@@ -17,11 +17,11 @@ func New() seed.Seed {
 
 	m.Stylable.Set("width", "100vw")
 	m.Stylable.Set("height", "100vh")
-	
+
 	m.OnReady(func(q seed.Script) {
-		q.Javascript(`let map = L.map("`+m.ID()+`", {center: [-36.2647, 174.7975], zoom: 13 }); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map); get("`+m.ID()+`").map = map;`)
+		q.Javascript(`let map = L.map("` + m.ID() + `", {center: [-36.2647, 174.7975], zoom: 13 }); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map); get("` + m.ID() + `").map = map;`)
 	})
-	
+
 	return m
 }
 

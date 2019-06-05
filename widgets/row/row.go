@@ -8,7 +8,7 @@ type Widget struct {
 
 func New() Widget {
 	widget := seed.New()
-	
+
 	widget.Stylable.Set("display", "flex")
 	widget.Stylable.Set("flex-direction", "row")
 	widget.Stylable.Set("flex-shrink", "1")

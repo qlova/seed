@@ -10,16 +10,16 @@ type Font struct {
 	css.FontFace
 }
 
-var font_id int64 = 1;
+var font_id int64 = 1
 
 //Create a new font based on the given font file path.
 func NewFont(path string) Font {
-	
+
 	var id = base64.RawURLEncoding.EncodeToString(big.NewInt(font_id).Bytes())
 	font_id++
-	
+
 	var font = Font{
-		name: id,
+		name:     id,
 		FontFace: css.NewFontFace(id, path),
 	}
 

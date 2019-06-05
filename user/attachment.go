@@ -1,17 +1,17 @@
 package user
 
 import (
-	"strconv"
+	"encoding/base64"
+	"io"
+	"io/ioutil"
+	"math/big"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"io"
-	"io/ioutil"
-	"encoding/base64"
-	"math/big"
+	"strconv"
 )
 
-var AttachmentDirectory = filepath.Dir(os.Args[0])+"/attachments"
+var AttachmentDirectory = filepath.Dir(os.Args[0]) + "/attachments"
 var AttachmentDirectoryLength = 1
 
 type Attachment struct {
@@ -22,7 +22,7 @@ type Attachment struct {
 }
 
 func (a Attachment) Name() string {
-	if len(a.files) == 0  {
+	if len(a.files) == 0 {
 		return ""
 	}
 
@@ -30,7 +30,7 @@ func (a Attachment) Name() string {
 }
 
 func (a Attachment) Open() io.ReadCloser {
-	if len(a.files) == 0  {
+	if len(a.files) == 0 {
 		return nil
 	}
 
@@ -38,7 +38,7 @@ func (a Attachment) Open() io.ReadCloser {
 }
 
 func (a Attachment) Size() int64 {
-	if len(a.files) == 0  {
+	if len(a.files) == 0 {
 		return 0
 	}
 
@@ -61,12 +61,12 @@ func (user User) Attachment(index ...int) (attachment Attachment) {
 
 	var j = 1
 	for {
-		file, header, err := user.Request.FormFile("attachment-"+strconv.Itoa(i)+"-"+strconv.Itoa(j))
+		file, header, err := user.Request.FormFile("attachment-" + strconv.Itoa(i) + "-" + strconv.Itoa(j))
 		if err != nil {
 			println("attachment-"+strconv.Itoa(i)+"-"+strconv.Itoa(j), err.Error())
 			return
 		}
-	
+
 		attachment.heads = append(attachment.heads, *header)
 		attachment.files = append(attachment.files, file)
 
@@ -77,12 +77,12 @@ func (user User) Attachment(index ...int) (attachment Attachment) {
 func init() {
 	os.MkdirAll(AttachmentDirectory, 0755)
 	files, _ := ioutil.ReadDir(AttachmentDirectory)
-	AttachmentDirectoryLength = len(files)+1
+	AttachmentDirectoryLength = len(files) + 1
 }
 
 //Return the attachment as file paths, the files will be written to disk if not already there.
 func (a Attachment) Paths() []string {
-	if a.files == nil  {
+	if a.files == nil {
 		return nil
 	}
 
@@ -92,13 +92,13 @@ func (a Attachment) Paths() []string {
 
 		var filename = base64.RawURLEncoding.EncodeToString(big.NewInt(int64(AttachmentDirectoryLength)).Bytes())
 		var extension = filepath.Ext(a.heads[i].Filename)
-		
-		output, err := os.Create(AttachmentDirectory+"/"+filename+extension)
+
+		output, err := os.Create(AttachmentDirectory + "/" + filename + extension)
 		if err != nil {
 			println(AttachmentDirectory+"/"+filename+extension, err.Error())
 			continue
 		}
-		
+
 		io.Copy(output, a.files[i])
 
 		output.Close()
@@ -111,7 +111,7 @@ func (a Attachment) Paths() []string {
 
 //Return the attachment as a file path, the file will be written to disk if not already there.
 func (a Attachment) Path() string {
-	if len(a.files) == 0  {
+	if len(a.files) == 0 {
 		return ""
 	}
 
@@ -119,16 +119,16 @@ func (a Attachment) Path() string {
 
 	var filename = base64.RawURLEncoding.EncodeToString(big.NewInt(int64(AttachmentDirectoryLength)).Bytes())
 	var extension = filepath.Ext(a.heads[i].Filename)
-	
-	output, err := os.Create(AttachmentDirectory+"/"+filename+extension)
+
+	output, err := os.Create(AttachmentDirectory + "/" + filename + extension)
 	if err != nil {
 		println(AttachmentDirectory+"/"+filename+extension, err.Error())
 		return ""
 	}
-	
+
 	io.Copy(output, a.files[i])
 
 	output.Close()
 
-	return AttachmentDirectory+"/"+filename+extension
+	return AttachmentDirectory + "/" + filename + extension
 }

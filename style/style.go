@@ -27,8 +27,8 @@ const Center = 0
 type Style struct {
 	css.Style
 
-	x *complex128
-	y *complex128
+	x     *complex128
+	y     *complex128
 	angle *float64
 	scale *float64
 }
@@ -44,7 +44,7 @@ func New() Style {
 func (style Style) Copy() Style {
 	var OldStyleImplemenation = style.Stylable.(css.Implementation)
 	var NewStyleImplementation = make(css.Implementation, len(OldStyleImplemenation))
-	
+
 	for key := range OldStyleImplemenation {
 		NewStyleImplementation[key] = OldStyleImplemenation[key]
 	}
@@ -59,7 +59,7 @@ func (style *Style) update() {
 	var transform = css.Rotate(0)
 	transform = ""
 	var changed bool
-	
+
 	if style.angle != nil {
 		transform += css.Rotate(*style.angle)
 		changed = true
@@ -73,7 +73,7 @@ func (style *Style) update() {
 
 		transform += css.Translate(css.Decode(*style.x), css.Decode(*style.y))
 		changed = true
-	
+
 	} else {
 		if style.y != nil {
 			transform += css.TranslateY(css.Decode(*style.y))
@@ -90,7 +90,7 @@ func (style *Style) update() {
 	}
 }
 
-//Return the style serialised as CSS properties.  
+//Return the style serialised as CSS properties.
 func (style Style) Bytes() []byte {
 
 	style.update()
@@ -164,83 +164,82 @@ func (style Style) SetMaxSize(width, height complex128) {
 	style.SetMaxHeight(css.Decode(height))
 }
 
-
 //Set the text alignment, -1 is left, 0 is center and 1 is right
 func (style Style) TextAlign(alignment float64) {
 	switch alignment {
-		case 0:
-			style.SetTextAlign(css.Center)
-		case -1:
-			style.SetTextAlign(css.Left)
-		case 1:
-			style.SetTextAlign(css.Right)
+	case 0:
+		style.SetTextAlign(css.Center)
+	case -1:
+		style.SetTextAlign(css.Left)
+	case 1:
+		style.SetTextAlign(css.Right)
 	}
 }
 
 //Set the text alignment, -1 is left, 0 is center and 1 is right
 func (style Style) Align(alignment float64) {
 	switch alignment {
-		case 0:
-			style.SetTextAlign(css.Center)
-			style.SetAlignSelf(css.Center)
-		case -1:
-			style.SetTextAlign(css.Left)
-			style.SetAlignSelf(css.FlexStart)
-		case 1:
-			style.SetTextAlign(css.Right)
-			style.SetAlignSelf(css.FlexEnd)
+	case 0:
+		style.SetTextAlign(css.Center)
+		style.SetAlignSelf(css.Center)
+	case -1:
+		style.SetTextAlign(css.Left)
+		style.SetAlignSelf(css.FlexStart)
+	case 1:
+		style.SetTextAlign(css.Right)
+		style.SetAlignSelf(css.FlexEnd)
 	}
 }
 
 //Set the text alignment, -1 is left, 0 is center and 1 is right
 func (style Style) AlignChildren(alignment float64) {
 	switch alignment {
-		case 0:
-			style.SetJustifyContent(css.Center)
-		case -1:
-			style.SetJustifyContent(css.FlexStart)
-		case 1:
-			style.SetJustifyContent(css.FlexEnd)
+	case 0:
+		style.SetJustifyContent(css.Center)
+	case -1:
+		style.SetJustifyContent(css.FlexStart)
+	case 1:
+		style.SetJustifyContent(css.FlexEnd)
 	}
 }
 
 //Set the text alignment, -1 is left, 0 is center and 1 is right
 func (style Style) SetAlignment(align float64) {
 	switch align {
-		case 0:
-			style.SetTextAlign(css.Center)
-			style.SetAlignSelf(css.Center)
-			//style.SetJustifySelf(css.Center)
-			style.Set("justify-self", "center")
-		case -1:
-			style.SetTextAlign(css.Left)
-			style.SetAlignSelf(css.FlexStart)
-			//style.SetJustifySelf(css.FlexStart)
-			style.Set("justify-self", "flex-start")
-		case 1:
-			style.SetTextAlign(css.Right)
-			style.SetAlignSelf(css.FlexEnd)
-			//style.SetJustifySelf(css.FlexEnd)
-			style.Set("justify-self", "flex-end")
+	case 0:
+		style.SetTextAlign(css.Center)
+		style.SetAlignSelf(css.Center)
+		//style.SetJustifySelf(css.Center)
+		style.Set("justify-self", "center")
+	case -1:
+		style.SetTextAlign(css.Left)
+		style.SetAlignSelf(css.FlexStart)
+		//style.SetJustifySelf(css.FlexStart)
+		style.Set("justify-self", "flex-start")
+	case 1:
+		style.SetTextAlign(css.Right)
+		style.SetAlignSelf(css.FlexEnd)
+		//style.SetJustifySelf(css.FlexEnd)
+		style.Set("justify-self", "flex-end")
 	}
 }
 
 //Set the text alignment, -1 is left, 0 is center and 1 is right
 func (style Style) SetChildAlignment(align float64) {
 	switch align {
-		case 0:
-			style.SetTextAlign(css.Center)
-			style.SetAlignContent(css.Center)
-			style.SetAlignItems(css.Center)
-			style.SetJustifyContent(css.Center)
-		case -1:
-			style.SetTextAlign(css.Left)
-			style.SetAlignContent(css.FlexStart)
-			style.SetJustifyContent(css.FlexStart)
-		case 1:
-			style.SetTextAlign(css.Right)
-			style.SetAlignContent(css.FlexEnd)
-			style.SetJustifyContent(css.FlexEnd)
+	case 0:
+		style.SetTextAlign(css.Center)
+		style.SetAlignContent(css.Center)
+		style.SetAlignItems(css.Center)
+		style.SetJustifyContent(css.Center)
+	case -1:
+		style.SetTextAlign(css.Left)
+		style.SetAlignContent(css.FlexStart)
+		style.SetJustifyContent(css.FlexStart)
+	case 1:
+		style.SetTextAlign(css.Right)
+		style.SetAlignContent(css.FlexEnd)
+		style.SetJustifyContent(css.FlexEnd)
 	}
 }
 
@@ -282,26 +281,26 @@ func (style Style) Shrink() {
 //Set where this attaches, eg. Top+Left, Botom+right etc
 func (style Style) SetAttach(attach complex128) {
 	switch real(attach) {
-		case -1:
-			style.SetLeft(css.Zero)
-			style.SetPosition(css.Fixed)
-		case 0:
-			style.SetLeft(css.Initial)
-			style.SetRight(css.Initial)
-		case 1:
-			style.SetRight(css.Zero)
-			style.SetPosition(css.Fixed)
+	case -1:
+		style.SetLeft(css.Zero)
+		style.SetPosition(css.Fixed)
+	case 0:
+		style.SetLeft(css.Initial)
+		style.SetRight(css.Initial)
+	case 1:
+		style.SetRight(css.Zero)
+		style.SetPosition(css.Fixed)
 	}
 	switch imag(attach) {
-		case -1:
-			style.SetTop(css.Zero)
-			style.SetPosition(css.Fixed)
-		case 0:
-			style.SetTop(css.Initial)
-			style.SetBottom(css.Initial)
-		case 1:
-			style.SetBottom(css.Zero)
-			style.SetPosition(css.Fixed)
+	case -1:
+		style.SetTop(css.Zero)
+		style.SetPosition(css.Fixed)
+	case 0:
+		style.SetTop(css.Initial)
+		style.SetBottom(css.Initial)
+	case 1:
+		style.SetBottom(css.Zero)
+		style.SetPosition(css.Fixed)
 	}
 }
 
@@ -332,7 +331,7 @@ func (style Style) SetNotScrollable() {
 func (style Style) SetInnerSpacing(x, y complex128) {
 	style.SetPaddingLeft(css.Decode(x))
 	style.SetPaddingRight(css.Decode(x))
-	
+
 	style.SetPaddingTop(css.Decode(y))
 	style.SetPaddingBottom(css.Decode(y))
 }
@@ -341,7 +340,7 @@ func (style Style) SetInnerSpacing(x, y complex128) {
 func (style Style) SetOuterSpacing(x, y complex128) {
 	style.SetMarginLeft(css.Decode(x))
 	style.SetMarginRight(css.Decode(x))
-	
+
 	style.SetMarginTop(css.Decode(y))
 	style.SetMarginBottom(css.Decode(y))
 }
@@ -369,14 +368,14 @@ func (style Style) SetOuterSpacingRight(value complex128) {
 //Set the offset from an attached side, call this after style.Attach().
 func (style Style) SetOffset(side complex128, offset complex128) {
 	switch side {
-		case Left:
-			style.SetLeft(css.Decode(offset))
-		case Right:
-			style.SetRight(css.Decode(offset))
-		case Top:
-			style.SetTop(css.Decode(offset))
-		case Bottom:
-			style.SetBottom(css.Decode(offset))
+	case Left:
+		style.SetLeft(css.Decode(offset))
+	case Right:
+		style.SetRight(css.Decode(offset))
+	case Top:
+		style.SetTop(css.Decode(offset))
+	case Bottom:
+		style.SetBottom(css.Decode(offset))
 	}
 }
 
@@ -384,7 +383,7 @@ func (style Style) SetOffset(side complex128, offset complex128) {
 func (style Style) SetBorderless() {
 	style.SetBorderLeftWidth(css.Zero)
 	style.SetBorderRightWidth(css.Zero)
-	
+
 	style.SetBorderTopWidth(css.Zero)
 	style.SetBorderBottomWidth(css.Zero)
 }
@@ -401,10 +400,10 @@ func (style Style) SetBorder(color color.Color, thickness int) {
 //Set this element to have rounded corners of the specified radius.
 func (style Style) SetRoundedCorners(radius complex128) {
 	var value = css.Decode(radius)
-	
+
 	style.SetBorderBottomLeftRadius(value)
 	style.SetBorderBottomRightRadius(value)
-	
+
 	style.SetBorderTopRightRadius(value)
 	style.SetBorderTopLeftRadius(value)
 }
@@ -413,7 +412,6 @@ func (style Style) SetRoundedCorners(radius complex128) {
 func (style Style) WillAnimate() {
 	style.Set("will-change", "transform")
 }
-
 
 //Alias to style.SetSize(100, 100)
 func (style Style) Expand() {
@@ -433,26 +431,26 @@ func (style Style) Fade(opacity float64) {
 //Set where this attaches, eg. Top+Left, Botom+right etc
 func (style Style) AttachToParent(attachpoint complex128) {
 	switch real(attachpoint) {
-		case -1:
-			style.SetLeft(css.Zero)
-			style.SetPosition(css.Absolute)
-		case 0:
-			style.SetLeft(css.Initial)
-			style.SetRight(css.Initial)
-		case 1:
-			style.SetRight(css.Zero)
-			style.SetPosition(css.Absolute)
+	case -1:
+		style.SetLeft(css.Zero)
+		style.SetPosition(css.Absolute)
+	case 0:
+		style.SetLeft(css.Initial)
+		style.SetRight(css.Initial)
+	case 1:
+		style.SetRight(css.Zero)
+		style.SetPosition(css.Absolute)
 	}
 	switch imag(attachpoint) {
-		case -1:
-			style.SetTop(css.Zero)
-			style.SetPosition(css.Absolute)
-		case 0:
-			style.SetTop(css.Initial)
-			style.SetBottom(css.Initial)
-		case 1:
-			style.SetBottom(css.Zero)
-			style.SetPosition(css.Absolute)
+	case -1:
+		style.SetTop(css.Zero)
+		style.SetPosition(css.Absolute)
+	case 0:
+		style.SetTop(css.Initial)
+		style.SetBottom(css.Initial)
+	case 1:
+		style.SetBottom(css.Zero)
+		style.SetPosition(css.Absolute)
 	}
 }
 

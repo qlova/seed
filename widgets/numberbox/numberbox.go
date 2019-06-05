@@ -10,8 +10,8 @@ type Widget struct {
 
 func New() Widget {
 	var TextBox = textbox.New()
-		TextBox.SetAttributes("type='number'")
-	
+	TextBox.SetAttributes("type='number'")
+
 	return Widget{TextBox}
 }
 

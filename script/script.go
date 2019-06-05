@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"reflect"
 
-	"strings"
-	"strconv"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 import "github.com/qlova/seed/user"
@@ -41,13 +41,12 @@ func (q Script) wrap(s string) qlova.String {
 	})
 }
 
-
 func (q Script) newSeed(tag string) Seed {
 	var variable = Unique()
-	q.Javascript(`let `+variable+` = document.createElement("`+tag+`");`)
+	q.Javascript(`let ` + variable + ` = document.createElement("` + tag + `");`)
 	var seed = Seed{
 		Native: variable,
-		Q: q,
+		Q:      q,
 	}
 	seed.Style = css.Style{Stylable: seed}
 	return seed
@@ -69,7 +68,7 @@ func (q Script) NewSeed(tag ...string) Seed {
 }
 
 func (q Script) Contains(text, match qlova.String) qlova.Bool {
-	return q.Script.BoolFromLanguageType(Javascript.Bit{Expression:language.Statement(raw(text)+`.includes(`+raw(match)+`)`)})
+	return q.Script.BoolFromLanguageType(Javascript.Bit{Expression: language.Statement(raw(text) + `.includes(` + raw(match) + `)`)})
 }
 
 /*func (q Script) After(promise script.Promise, f func(q Script)) {
@@ -81,13 +80,13 @@ func (q Script) Contains(text, match qlova.String) qlova.Bool {
 func (q Script) After(time float64, f func()) {
 	q.Javascript("setTimeout(function() {")
 	f()
-	q.Javascript("}, "+fmt.Sprint(time)+");")
+	q.Javascript("}, " + fmt.Sprint(time) + ");")
 }
 
 func (q Script) Every(time float64, f func()) {
 	q.Javascript("setInterval(function() {")
 	f()
-	q.Javascript("}, "+fmt.Sprint(time)+");")
+	q.Javascript("}, " + fmt.Sprint(time) + ");")
 }
 
 func (q Script) Restart() {
@@ -104,23 +103,23 @@ func (q Script) Restart() {
 func (q Script) LastPage() Page {
 	return Page{Seed{
 		ID: `"+last_page+"`,
-		Q: q,
+		Q:  q,
 	}}
 }
 
 func (q Script) NextPage() Page {
 	return Page{Seed{
 		ID: `"+next_page+"`,
-		Q: q,
+		Q:  q,
 	}}
 }
 
 func (q Script) UserData(name user.Data) qlova.String {
-	return q.wrap(`getCookie("`+string(name)+`");`)
+	return q.wrap(`getCookie("` + string(name) + `");`)
 }
 
 func (q Script) SetUserData(name user.Data, value qlova.String) {
-	q.Javascript(`setCookie("`+string(name)+`", `+raw(value)+`, 365);`)
+	q.Javascript(`setCookie("` + string(name) + `", ` + raw(value) + `, 365);`)
 }
 
 func ToJavascript(f func(q Script)) string {
@@ -133,7 +132,7 @@ func ToJavascript(f func(q Script)) string {
 
 func toJavascript(f func(q Script)) []byte {
 	var program = qlova.Program(func(q qlova.Script) {
-		var s = Script{&script{ Script:q }}
+		var s = Script{&script{Script: q}}
 		s.js.q = s
 		//s.Go.Script = s
 		f(s)
@@ -156,11 +155,11 @@ func (q Script) Javascript(js string) {
 
 type Element struct {
 	query string
-	q Script
+	q     Script
 }
 
 func (q Script) Query(query qlova.String) Element {
-	return Element{ query: raw(query), q:q }
+	return Element{query: raw(query), q: q}
 }
 
 func (element Element) Run(method string) {
@@ -192,22 +191,22 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Value {
 	}
 	exports[name] = value
 
-	var CallingString = `/call/`+name
+	var CallingString = `/call/` + name
 
-	var StartFrom = 0;
+	var StartFrom = 0
 	//The function can take an optional client as it's first argument.
 	if value.Type().NumIn() > 0 && value.Type().In(0) == reflect.TypeOf(user.User{}) {
-		StartFrom = 1;
+		StartFrom = 1
 	}
 
 	for i := StartFrom; i < value.Type().NumIn(); i++ {
 		switch value.Type().In(i).Kind() {
-			case reflect.String:
+		case reflect.String:
 
-				CallingString += `/_"+encodeURIComponent(`+raw(args[i-StartFrom].(qlova.String))+`)+"`
+			CallingString += `/_"+encodeURIComponent(` + raw(args[i-StartFrom].(qlova.String)) + `)+"`
 
-			default:
-				panic("Unimplemented: script.Run("+value.Type().String()+")")
+		default:
+			panic("Unimplemented: script.Run(" + value.Type().String() + ")")
 		}
 	}
 
@@ -216,11 +215,11 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Value {
 	if value.Type().NumOut() == 1 {
 		switch value.Type().Out(0).Kind() {
 
-			case reflect.String:
-				return q.wrap("this.responseText").Value()
+		case reflect.String:
+			return q.wrap("this.responseText").Value()
 
-			default:
-				panic(value.Type().String()+" Unimplemented")
+		default:
+			panic(value.Type().String() + " Unimplemented")
 		}
 	}
 
@@ -229,7 +228,7 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Value {
 
 func (q Script) Run(f Function, args ...qlova.Type) {
 	//.call(f, args...)
-	q.Javascript(string(f)+"();")
+	q.Javascript(string(f) + "();")
 }
 
 //Export a Go function to Javascript. Don't use this for non-local apps! TODO enforce this
@@ -252,13 +251,13 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 
 	var in []reflect.Value
-	
+
 	var u = user.User{}.FromHandler(w, r)
 
-	var StartFrom = 0;
+	var StartFrom = 0
 	//The function can take an optional client as it's first argument.
 	if f.Type().NumIn() > 0 && f.Type().In(0) == reflect.TypeOf(user.User{}) {
-		StartFrom = 1;
+		StartFrom = 1
 
 		in = append(in, reflect.ValueOf(u))
 
@@ -269,47 +268,42 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 		return
 	}
 
-
-
-
 	for i := StartFrom; i < f.Type().NumIn(); i++ {
 		switch f.Type().In(i).Kind() {
-			case reflect.String:
+		case reflect.String:
 
-				in = append(in, reflect.ValueOf(args[i+1-StartFrom][1:]))
+			in = append(in, reflect.ValueOf(args[i+1-StartFrom][1:]))
 
-			case reflect.Int:
-				var number, _ = strconv.Atoi(args[i+1-StartFrom][1:])
-				in = append(in, reflect.ValueOf(number))
+		case reflect.Int:
+			var number, _ = strconv.Atoi(args[i+1-StartFrom][1:])
+			in = append(in, reflect.ValueOf(number))
 
-			default:
-				println("unimplemented callHandler for "+f.Type().String())
-				return
+		default:
+			println("unimplemented callHandler for " + f.Type().String())
+			return
 		}
 	}
 
 	var results = f.Call(in)
-	
+
 	u.Close()
-	
+
 	if len(results) == 0 {
 		return
 	}
-	
-	
-	
+
 	switch results[0].Kind() {
 
-		case reflect.String:
-			if results[0].Interface().(string) == "" {
-				//Error
-				http.Error(w, "", 500)
-				return
-			}
-			fmt.Fprint(w, results[0].Interface())
+	case reflect.String:
+		if results[0].Interface().(string) == "" {
+			//Error
+			http.Error(w, "", 500)
+			return
+		}
+		fmt.Fprint(w, results[0].Interface())
 
-		default:
-			fmt.Println(results[0].Type().String(), " Unimplemented")
+	default:
+		fmt.Println(results[0].Type().String(), " Unimplemented")
 	}
 }
 

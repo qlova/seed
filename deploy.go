@@ -4,48 +4,48 @@ import (
 	"fmt"
 	"github.com/bramvdbogaerde/go-scp"
 	"golang.org/x/crypto/ssh"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"os/user"
 	"syscall"
-	"io/ioutil"
 
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 func (app *App) Deploy() error {
 	usr, err := user.Current()
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
 	//Use SSH keys if possible.
-	SSHPrivateKey, err := ioutil.ReadFile(usr.HomeDir+"/.ssh/id_rsa")
+	SSHPrivateKey, err := ioutil.ReadFile(usr.HomeDir + "/.ssh/id_rsa")
 	if err != nil {
-        return err
-    }
+		return err
+	}
 
-    //Parse private key:
-    signer, err := ssh.ParsePrivateKey(SSHPrivateKey)
+	//Parse private key:
+	signer, err := ssh.ParsePrivateKey(SSHPrivateKey)
 
-	var Host = app.host+":22"
-    var ClientConfig = &ssh.ClientConfig{
-   		User: "root",
-   
-   		Auth: []ssh.AuthMethod{
-   			ssh.PublicKeys(signer),
-   			ssh.PasswordCallback(func() (string, error) {
+	var Host = app.host + ":22"
+	var ClientConfig = &ssh.ClientConfig{
+		User: "root",
+
+		Auth: []ssh.AuthMethod{
+			ssh.PublicKeys(signer),
+			ssh.PasswordCallback(func() (string, error) {
 				fmt.Print("Enter Password: \r")
-			    bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
-			    password := string(bytePassword)
-			    fmt.Println()
-			    return password, err
-   			}),
-   		},
-   
-   		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-   	}
-	
+				bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
+				password := string(bytePassword)
+				fmt.Println()
+				return password, err
+			}),
+		},
+
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+	}
+
 	var client = scp.NewClient(Host, ClientConfig)
 
 	err = client.Connect()
@@ -55,12 +55,12 @@ func (app *App) Deploy() error {
 
 	//Compile for linux.
 	var cmd = exec.Command("go", "build", "-o", "server.build")
-		cmd.Dir = Dir
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		cmd.Env = append(os.Environ(),
-			"GOOS=linux",
-		)
+	cmd.Dir = Dir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Env = append(os.Environ(),
+		"GOOS=linux",
+	)
 
 	err = cmd.Run()
 	if err != nil {
@@ -85,7 +85,7 @@ func (app *App) Deploy() error {
 			return err
 		}
 
-		err = session.Run("rm /srv/https/"+app.host+"/"+app.host)
+		err = session.Run("rm /srv/https/" + app.host + "/" + app.host)
 		if err != nil {
 			return err
 		}
@@ -112,7 +112,7 @@ func (app *App) Deploy() error {
 			return err
 		}
 
-		err = session.Run("systemctl restart "+app.host)
+		err = session.Run("systemctl restart " + app.host)
 		if err != nil {
 			return err
 		}

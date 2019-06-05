@@ -8,11 +8,11 @@ type Widget struct {
 
 func New(text ...string) Widget {
 	widget := seed.New()
-	
+
 	widget.SetTag("button")
-	
+
 	widget.SetSize(seed.Auto, seed.Auto)
-	
+
 	if len(text) > 0 {
 		widget.SetText(text[0])
 	}

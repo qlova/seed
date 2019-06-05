@@ -15,17 +15,17 @@ type Widget struct {
 func New(text ...string) Widget {
 	widget := seed.New()
 	widget.SetTag("pre")
-	
+
 	if len(text) > 0 {
 		widget.SetText(text[0])
 	}
-	
+
 	widget.Require("ace.js")
-	
+
 	widget.OnReady(func(q seed.Script) {
-		q.Javascript(`let editor = ace.edit("`+widget.ID()+`"); editor.setShowPrintMargin(false); document.getElementById("`+widget.ID()+`").editor = editor;`)
+		q.Javascript(`let editor = ace.edit("` + widget.ID() + `"); editor.setShowPrintMargin(false); document.getElementById("` + widget.ID() + `").editor = editor;`)
 	})
-	
+
 	return Widget{widget}
 }
 
@@ -34,13 +34,12 @@ func AddTo(parent seed.Interface, path ...string) Widget {
 	var widget = New(path...)
 	parent.Root().Add(widget)
 	return widget
-} 
-
+}
 
 type Editor struct {
 	script.Seed
 }
 
 func (editor Editor) Open(f script.File) {
-	editor.Javascript(`var reader = new FileReader(); reader.onload = function(e) { var data = e.target.result; get("`+editor.ID+`").editor.setValue(data); }; reader.readAsText(`+f.Raw()+`);`)
+	editor.Javascript(`var reader = new FileReader(); reader.onload = function(e) { var data = e.target.result; get("` + editor.ID + `").editor.setValue(data); }; reader.readAsText(` + f.Raw() + `);`)
 }

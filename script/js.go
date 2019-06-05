@@ -10,24 +10,24 @@ type js struct {
 }
 
 type value struct {
-	q Script
+	q   Script
 	raw string
 }
 
 func (v value) String() qlova.String {
-	return v.q.Script.ValueFromLanguageType(Javascript.String{Expression:language.Statement(v.raw)}).String()
+	return v.q.Script.ValueFromLanguageType(Javascript.String{Expression: language.Statement(v.raw)}).String()
 }
 
 func (v value) Bool() qlova.Bool {
-	return v.q.Script.ValueFromLanguageType(Javascript.Bit{Expression:language.Statement(v.raw)}).Bool()
+	return v.q.Script.ValueFromLanguageType(Javascript.Bit{Expression: language.Statement(v.raw)}).Bool()
 }
 
 func (v value) Float() qlova.Float {
-	return v.q.Script.ValueFromLanguageType(Javascript.Real{Expression:language.Statement(v.raw)}).Float()
+	return v.q.Script.ValueFromLanguageType(Javascript.Real{Expression: language.Statement(v.raw)}).Float()
 }
 
 func (v value) Native() qlova.Native {
-	return v.q.Script.NativeFromLanguageType(Javascript.Native{Expression:language.Statement(v.raw)})
+	return v.q.Script.NativeFromLanguageType(Javascript.Native{Expression: language.Statement(v.raw)})
 }
 
 func (q Script) Value(raw string) value {
@@ -35,7 +35,7 @@ func (q Script) Value(raw string) value {
 }
 
 func (j js) Run(function string, args ...qlova.Type) {
-	
+
 	var converted string
 	for i, arg := range args {
 		converted += string(arg.LanguageType().Raw())
@@ -43,19 +43,19 @@ func (j js) Run(function string, args ...qlova.Type) {
 			converted += ","
 		}
 	}
-	
-	j.q.Javascript(function+"("+converted+");")
+
+	j.q.Javascript(function + "(" + converted + ");")
 }
 
 func (j js) Call(function string, args ...qlova.Type) value {
-	
+
 	var converted string
 	for i, arg := range args {
 		converted += string(arg.LanguageType().Raw())
-			converted += ","
+		converted += ","
 		if i <= len(args) {
 		}
 	}
-	
-	return value{j.q, function+"("+converted+")"}
+
+	return value{j.q, function + "(" + converted + ")"}
 }

@@ -9,15 +9,15 @@ type Page struct {
 }
 
 func (page Page) Goto() {
-	page.Javascript(`goto("`+page.ID+`");`)
+	page.Javascript(`goto("` + page.ID + `");`)
 }
 
 func (a Page) Equals(b Page) qlova.Bool {
 	return a.Q.BoolFromLanguageType(Javascript.Bit{
-		Expression: language.Statement(`("`+a.ID+`" == "`+b.ID+`")`),
+		Expression: language.Statement(`("` + a.ID + `" == "` + b.ID + `")`),
 	})
 }
 
 func (page Page) SetCurrent() {
-	page.Javascript(`current_page = `+page.ID+";")
+	page.Javascript(`current_page = ` + page.ID + ";")
 }

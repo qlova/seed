@@ -10,7 +10,7 @@ type Widget struct {
 func New() Widget {
 	widget := seed.New()
 	widget.SetTag("input")
-	
+
 	widget.SetSize(seed.Auto, seed.Auto)
 
 	widget.Align(0)
@@ -23,7 +23,7 @@ func New() Widget {
 		widget.Script(q).SetValue(save.Script(q))
 	})
 
-	return  Widget{widget}
+	return Widget{widget}
 }
 
 func AddTo(parent seed.Interface) Widget {
@@ -33,9 +33,8 @@ func AddTo(parent seed.Interface) Widget {
 }
 
 func (widget Widget) SetRequired() {
-	widget.SetAttributes(widget.Attributes()+" required")
+	widget.SetAttributes(widget.Attributes() + " required")
 }
-
 
 type Script struct {
 	script.Seed

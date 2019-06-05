@@ -29,9 +29,9 @@ func (m Map) Get(view View, key []byte) (data []byte) {
 
 //Access the data at key, this is performance optimised. The handler will not run if the key is invalid.
 func (m Map) Read(view View, key []byte, handler func(data []byte)) {
-	
+
 }
 
 func (m Map) ForEach(view View, function func(key []byte, data []byte)) {
-	
+
 }

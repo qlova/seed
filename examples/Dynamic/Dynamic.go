@@ -9,9 +9,9 @@ func Time(client seed.User) {
 
 func main() {
 	var App = seed.NewApp("Dynamic Time")
-	
+
 	var Text = seed.AddTo(App)
-		Text.SetDynamicText(Time)
+	Text.SetDynamicText(Time)
 
 	App.Launch()
 }

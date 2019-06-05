@@ -10,12 +10,12 @@ func New() Widget {
 	widget := seed.New()
 	widget.SetTag("input")
 	widget.SetAttributes(`type="password"`)
-	
+
 	widget.SetSize(seed.Auto, seed.Auto)
 
 	widget.Align(0)
 
-	return  Widget{widget}
+	return Widget{widget}
 }
 
 func AddTo(parent seed.Interface) Widget {

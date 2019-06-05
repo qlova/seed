@@ -17,7 +17,7 @@ func (style Style) AnimateOffset(duration float64, justdelay ...float64) {
 
 func (style Style) SetDelay(delay float64) {
 	style.SetAnimationDelay(css.Time(delay))
-} 
+}
 
 func (style Style) SetDuration(duration float64) {
 	style.SetAnimationDuration(css.Time(duration))

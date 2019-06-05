@@ -13,57 +13,57 @@ type UsagePattern string
 type DataType string
 type DrawMode string
 
-type Shader struct{
+type Shader struct {
 	qlova.Native
 }
 
-type Program struct{
+type Program struct {
 	qlova.Native
 }
 
-type Buffer struct{
+type Buffer struct {
 	qlova.Native
 }
 
-type Attribute struct{
+type Attribute struct {
 	qlova.Native
 }
 
 type Context struct {
 	GL string
-	Q script.Script
-	
-	ColorBufferBit BitField
-	VertexShader, FragmentShader ShaderType
+	Q  script.Script
+
+	ColorBufferBit                  BitField
+	VertexShader, FragmentShader    ShaderType
 	ArrayBuffer, ElementArrayBuffer BindingPoint
-	
+
 	StaticDraw UsagePattern
-	
+
 	Byte, Float DataType
-	
+
 	Triangles DrawMode
 }
 
 func NewContext(canvas script.Seed) Context {
 	var unique = script.Unique()
-	canvas.Q.Javascript(`let `+unique+` = `+canvas.Element()+`.getContext("webgl");`)
+	canvas.Q.Javascript(`let ` + unique + ` = ` + canvas.Element() + `.getContext("webgl");`)
 	return Context{
 		GL: unique,
-		Q: canvas.Q,
-		
+		Q:  canvas.Q,
+
 		ColorBufferBit: "COLOR_BUFFER_BIT",
-		
-		VertexShader: "VERTEX_SHADER",
+
+		VertexShader:   "VERTEX_SHADER",
 		FragmentShader: "FRAGMENT_SHADER",
-		
-		ArrayBuffer: "ARRAY_BUFFER",
+
+		ArrayBuffer:        "ARRAY_BUFFER",
 		ElementArrayBuffer: "ELEMENT_ARRAY_BUFFER",
-		
+
 		StaticDraw: "STATIC_DRAW",
-		
-		Byte: "BYTE",
+
+		Byte:  "BYTE",
 		Float: "FLOAT",
-		
+
 		Triangles: "TRIANGLES",
 	}
 }
@@ -73,7 +73,7 @@ func (ctx *Context) ClearColor(red, green, blue, alpha qlova.Float) {
 }
 
 func (ctx *Context) Clear(mask BitField) {
-	ctx.Q.Javascript(ctx.GL+`.clear(`+ctx.GL+"."+string(mask)+");")
+	ctx.Q.Javascript(ctx.GL + `.clear(` + ctx.GL + "." + string(mask) + ");")
 }
 
 func (ctx *Context) Viewport(x, y, w, h qlova.Float) {
@@ -82,7 +82,7 @@ func (ctx *Context) Viewport(x, y, w, h qlova.Float) {
 
 func (ctx *Context) CreateShader(T ShaderType) Shader {
 	return Shader{ctx.Q.NativeFromLanguageType(Javascript.Native{
-			Expression:ctx.GL+`.createShader(`+ctx.GL+"."+string(T)+");"}).Var()}
+		Expression: ctx.GL + `.createShader(` + ctx.GL + "." + string(T) + ");"}).Var()}
 }
 
 func (ctx *Context) ShaderSource(shader Shader, source qlova.String) {
@@ -95,7 +95,7 @@ func (ctx *Context) CompileShader(shader Shader) {
 
 func (ctx *Context) CreateProgram() Program {
 	return Program{ctx.Q.NativeFromLanguageType(Javascript.Native{
-			Expression:ctx.GL+`.createProgram();`}).Var()}
+		Expression: ctx.GL + `.createProgram();`}).Var()}
 }
 
 func (ctx *Context) AttachShader(program Program, shader Shader) {
@@ -112,20 +112,20 @@ func (ctx *Context) UseProgram(program Program) {
 
 func (ctx *Context) CreateBuffer() Buffer {
 	return Buffer{ctx.Q.NativeFromLanguageType(Javascript.Native{
-			Expression:ctx.GL+`.createBuffer();`}).Var()}
+		Expression: ctx.GL + `.createBuffer();`}).Var()}
 }
 
 func (ctx *Context) BindBuffer(target BindingPoint, buffer Buffer) {
-	ctx.Q.Javascript(ctx.GL+`.bindBuffer(`+ctx.GL+"."+string(target)+", "+buffer.LanguageType().Raw()+");")
+	ctx.Q.Javascript(ctx.GL + `.bindBuffer(` + ctx.GL + "." + string(target) + ", " + buffer.LanguageType().Raw() + ");")
 }
 
 func (ctx *Context) BufferData(target BindingPoint, data qlova.List, usage UsagePattern) {
-	
+
 	if _, ok := data.Subtype().LanguageType().(language.Real); !ok {
 		panic("Invalid data type")
 	}
-	
-	ctx.Q.Javascript(ctx.GL+`.bufferData(`+ctx.GL+"."+string(target)+", new Float32Array("+data.LanguageType().Raw()+"),"+ctx.GL+"."+string(usage)+");")
+
+	ctx.Q.Javascript(ctx.GL + `.bufferData(` + ctx.GL + "." + string(target) + ", new Float32Array(" + data.LanguageType().Raw() + ")," + ctx.GL + "." + string(usage) + ");")
 }
 
 func (ctx *Context) GetAttribLocation(program Program, attrib qlova.String) Attribute {
@@ -133,14 +133,14 @@ func (ctx *Context) GetAttribLocation(program Program, attrib qlova.String) Attr
 }
 
 func (ctx *Context) VertexAttribPointer(attribute Attribute, size qlova.Int, datatype DataType, normalized qlova.Bool, stride, offset qlova.Int) {
-	ctx.Q.Javascript(ctx.GL+`.vertexAttribPointer(`+
-		attribute.LanguageType().Raw()+","+
-		size.LanguageType().Raw()+","+
-		ctx.GL+"."+string(datatype)+","+
-		normalized.LanguageType().Raw()+","+
-		stride.LanguageType().Raw()+","+
-		offset.LanguageType().Raw()+","+
-	");")
+	ctx.Q.Javascript(ctx.GL + `.vertexAttribPointer(` +
+		attribute.LanguageType().Raw() + "," +
+		size.LanguageType().Raw() + "," +
+		ctx.GL + "." + string(datatype) + "," +
+		normalized.LanguageType().Raw() + "," +
+		stride.LanguageType().Raw() + "," +
+		offset.LanguageType().Raw() + "," +
+		");")
 }
 
 func (ctx *Context) EnableVertexAttribArray(attribute Attribute) {
@@ -148,9 +148,9 @@ func (ctx *Context) EnableVertexAttribArray(attribute Attribute) {
 }
 
 func (ctx *Context) DrawArrays(mode DrawMode, first, count qlova.Int) {
-	ctx.Q.Javascript(ctx.GL+`.drawArrays(`+
-		ctx.GL+"."+string(mode)+","+
-		first.LanguageType().Raw()+","+
-		count.LanguageType().Raw()+","+
-	");")
+	ctx.Q.Javascript(ctx.GL + `.drawArrays(` +
+		ctx.GL + "." + string(mode) + "," +
+		first.LanguageType().Raw() + "," +
+		count.LanguageType().Raw() + "," +
+		");")
 }

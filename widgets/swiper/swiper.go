@@ -41,12 +41,11 @@ func New(images ...string) Widget {
 
 	pagination := seed.AddTo(swiper)
 	pagination.SetClass("swiper-pagination")
-	
-	
+
 	swiper.OnReady(func(q seed.Script) {
-		q.Javascript(swiper.Script(q).Element()+`.swiper = new Swiper('#`+swiper.ID()+`', {pagination: {el: '#`+pagination.ID()+`'}});`)
+		q.Javascript(swiper.Script(q).Element() + `.swiper = new Swiper('#` + swiper.ID() + `', {pagination: {el: '#` + pagination.ID() + `'}});`)
 	})
-	
+
 	return Widget{0, swiper, wrapper}
 }
 
@@ -58,7 +57,7 @@ func AddTo(parent seed.Interface) Widget {
 
 func (widget *Widget) NewSlide() Slide {
 	var seed = seed.AddTo(widget.wrapper)
-		seed.SetClass("swiper-slide")
+	seed.SetClass("swiper-slide")
 
 	seed.Set("display", "flex")
 	seed.Set("align-items", "center")
@@ -68,7 +67,7 @@ func (widget *Widget) NewSlide() Slide {
 
 	widget.slides++
 
-	return Slide{widget.slides-1, seed}
+	return Slide{widget.slides - 1, seed}
 }
 
 type Script struct {
@@ -80,30 +79,30 @@ func (w Widget) Script(q script.Script) Script {
 }
 
 func (s Script) Update() {
-	s.Q.Javascript(s.Element()+".swiper.update();")
+	s.Q.Javascript(s.Element() + ".swiper.update();")
 }
 
 func (s Script) Reset() {
-	s.Q.Javascript(s.Element()+".swiper.slideTo(0, 0);")
+	s.Q.Javascript(s.Element() + ".swiper.slideTo(0, 0);")
 }
 
 func (s Script) Goto(slide Slide) {
-	s.Q.Javascript(s.Element()+".swiper.slideTo("+fmt.Sprint(slide.index)+", 1000);")
+	s.Q.Javascript(s.Element() + ".swiper.slideTo(" + fmt.Sprint(slide.index) + ", 1000);")
 }
 
 func (s Script) Swipe(direction Direction) {
 	if direction == Left {
-		s.Q.Javascript(s.Element()+".swiper.slidePrev();")
+		s.Q.Javascript(s.Element() + ".swiper.slidePrev();")
 	}
 	if direction == Right {
-		s.Q.Javascript(s.Element()+".swiper.slideNext();")
+		s.Q.Javascript(s.Element() + ".swiper.slideNext();")
 	}
 }
 
 func (s Script) Left() qlova.Bool {
-	return s.Q.Value(s.Element()+".swiper.isBeginning").Bool()
+	return s.Q.Value(s.Element() + ".swiper.isBeginning").Bool()
 }
 
 func (s Script) Right() qlova.Bool {
-	return s.Q.Value(s.Element()+".swiper.isEnd").Bool()
+	return s.Q.Value(s.Element() + ".swiper.isEnd").Bool()
 }

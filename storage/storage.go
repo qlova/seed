@@ -47,12 +47,10 @@ func (view JSON) ForEach(structure interface{}, f func(id []byte, value interfac
 
 	view.View.ForEach(func(key []byte, data []byte) {
 
-		
-
 		json.NewDecoder(bytes.NewReader(data)).Decode(shell)
-		
+
 		f(key, reflect.ValueOf(shell).Elem().Interface())
-		
+
 	})
 
 }
