@@ -14,7 +14,7 @@ Alternatively, the executable can be distributed to users directly and run
 * Automatically manages pwa service workers, manifests and offline state.
 * Seamless client-server communication.
 * Generates minified & gzipped html, css and javascript.
-* Server-rendered by default.
+* Prerendered by default.
 * **Optional** javascript/html/css (but you don't need it!)
 
 ## Installing
