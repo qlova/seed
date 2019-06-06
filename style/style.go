@@ -160,8 +160,8 @@ func (style Style) SetSize(width, height complex128) {
 
 //Set the width and height as a percentage of it's parent. Takes em, vm, px or percentage values.
 func (style Style) SetMaxSize(width, height complex128) {
-	style.SetMaxWidth(css.Decode(width))
-	style.SetMaxHeight(css.Decode(height))
+	style.Style.SetMaxWidth(css.Decode(width))
+	style.Style.SetMaxHeight(css.Decode(height))
 }
 
 //Set the text alignment, -1 is left, 0 is center and 1 is right
@@ -457,4 +457,12 @@ func (style Style) AttachToParent(attachpoint complex128) {
 //Center this item along the axis of its container.
 func (style Style) RemoveGradient() {
 	style.Style.SetBackgroundImage(css.Unset)
+}
+
+func (style Style) SetMaxWidth(width complex128) {
+	style.Style.SetMaxWidth(css.Decode(width))
+}
+
+func (style Style) SetMaxHeight(height complex128) {
+	style.Style.SetMaxHeight(css.Decode(height))
 }
