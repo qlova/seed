@@ -255,7 +255,7 @@ func (style Style) SetTextColor(color color.Color) {
 
 //Set the color of this element to be a gradient moving in direction from start color to end color.
 func (style Style) SetGradient(direction complex128, start, end color.Color) {
-	style.SetBackgroundImage(css.LinearGradient(math.Atan2(-imag(direction), real(direction)), css.Colour(start), css.Colour(end)))
+	style.SetBackgroundImage(css.LinearGradient(math.Atan2(imag(direction), real(direction))+math.Pi/2, css.Colour(start), css.Colour(end)))
 }
 
 //Set the rendering layer, this is the order that this will be rendered in.
