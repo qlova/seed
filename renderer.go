@@ -437,6 +437,16 @@ func (application App) render(production bool, platform Platform) []byte {
 				to { transform: translateY(100%); }
 			}
 			
+			@keyframes fadeOut {
+				from { opacity: 1; }
+				to { opacity: 0; }
+			}
+			
+			@keyframes fadeIn {
+				from { opacity: 0; }
+				to { opacity: 1; }
+			}
+			
 			body {
 				top: 0;
 				left: 0
@@ -500,12 +510,26 @@ func (application App) render(production bool, platform Platform) []byte {
 			var get = function(id) {
 				return document.getElementById(id)
 			};
+			
+			var goto_queue = [];
+			var animation_complete = function() {
+				animating = false;
+				
+				//Process goto queue.
+				let next = goto_queue.shift();
+				if (next != null) {
+					goto(next);
+				}
+			}
 
 			var last_page = null;
 			var current_page = null;
 			var next_page = null;
 			var goto = function(next_page_id) {
-				if (animating) return;
+				if (animating) {
+					goto_queue.push(next_page_id)
+					return;
+				}
 				if (current_page == next_page_id) return;
 				if (next_page == next_page_id) return;
 				next_page = next_page_id;

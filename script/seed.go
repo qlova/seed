@@ -222,6 +222,31 @@ func (seed Seed) OnClick(f func()) {
 }
 
 //Animations
+func (seed Seed) FadeOut() {
+	seed.Set("animation", "fadeOut .5s ease both")
+
+	seed.Javascript(`set(` + seed.Element() + `, "display", "inline-flex");`)
+	seed.Javascript(`set(` + seed.Element() + `, "z-index", "50");`)
+	seed.Javascript(`animating = true;`)
+	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "display", "none"); set(` + seed.Element() + `, "z-index", "");animation_complete();  }, 500);`)
+}
+
+func (seed Seed) FadeIn() {
+
+	seed.Javascript(`set(` + seed.Element() + `, "display", "none");`)
+
+	seed.Javascript(`setTimeout(function() { `)
+	seed.Set("animation", "fadeIn .5s ease both")
+	seed.Javascript(`set(` + seed.Element() + `, "display", "inline-flex");`)
+
+	seed.Javascript(`if (!last_page) return;`)
+	seed.Javascript(`set(get(last_page), "display", "none");`)
+	seed.Javascript(`animating = true;`)
+	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "z-index", ""); animation_complete(); }, 500);`)
+	seed.Javascript(`}, 500);`)
+}
+
+//Animations
 func (seed Seed) SlideInFrom(direction complex128) {
 	if direction == -1i {
 		seed.Set("animation", "slideInFromTop .5s ease both")
@@ -243,7 +268,7 @@ func (seed Seed) SlideInFrom(direction complex128) {
 	seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
 	seed.Javascript(`set(` + seed.Element() + `, "z-index", "50");`)
 	seed.Javascript(`animating = true;`)
-	seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(` + seed.Element() + `, "z-index", ""); animating = false; }, 500);`)
+	seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(` + seed.Element() + `, "z-index", ""); animation_complete(); }, 500);`)
 }
 
 //Animations
@@ -267,7 +292,7 @@ func (seed Seed) SlideOutTo(direction complex128) {
 	seed.Javascript(`set(` + seed.Element() + `, "display", "inline-flex");`)
 	seed.Javascript(`set(` + seed.Element() + `, "z-index", "50");`)
 	seed.Javascript(`animating = true;`)
-	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "display", "none"); set(` + seed.Element() + `, "z-index", "");animating = false;  }, 500);`)
+	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "display", "none"); set(` + seed.Element() + `, "z-index", "");animation_complete(); }, 500);`)
 }
 
 func (seed Seed) Translate(x, y Unit) {
