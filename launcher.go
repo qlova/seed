@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -14,6 +16,8 @@ import "github.com/NYTimes/gziphandler"
 
 import "github.com/qlova/seed/script"
 import "github.com/qlova/seed/user"
+
+import "github.com/fsnotify/fsnotify"
 
 type launcher struct {
 	App
@@ -60,8 +64,8 @@ func (launcher launcher) Handler() http.Handler {
 			return
 		}
 
-		var local = strings.Contains(request.RemoteAddr, "[::1]")
-
+		var local = strings.Contains(request.RemoteAddr, "[::1]") || strings.Contains(request.RemoteAddr, "127.0.0.1")
+		
 		//Editmode socket.
 		if request.URL.Path == "/socket" && local {
 			LocalClients++
@@ -182,9 +186,38 @@ func (launcher launcher) Handler() http.Handler {
 	}))
 }
 
+//This is a flag, that signals if the application is live or not.
+var Live bool
+func init() {
+	for _, arg := range os.Args {
+		if arg == "-live" {
+			Live = true
+		}
+	}
+}
+
+var defers []func()
+func Cleanup() {
+	for _, f := range defers {
+		f()
+	}
+}
+func Defer(f func()) {
+	defers = append(defers, f)
+}
+
+func init() {
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt, os.Kill)
+	go func() {
+		<-c
+		Cleanup()
+		os.Exit(1)
+	}()
+}
+
 func (launcher launcher) Launch(port ...string) {
 	if launcher.Seed.seed != nil {
-		http.Handle("/", launcher.Handler())
 
 		if len(port) > 0 {
 			launcher.Listen = port[0]
@@ -198,11 +231,98 @@ func (launcher launcher) Launch(port ...string) {
 		if launcher.Listen == "" {
 			launcher.Listen = ":1234"
 		}
+		
+		if !Live {
+			
+			//Launch the app if possible.
+			go launch(":10000")
+			
+			var Process = exec.Command(os.Args[0], "-live")
+				Process.Stdout = os.Stdout
+				Process.Start()
 
-		//Launch the app if possible.
-		go launch(launcher.Listen)
+			watcher, err := fsnotify.NewWatcher()
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer watcher.Close()
+			
+			var Compiler *exec.Cmd 
+			
+			Defer(func() {
+				if Process.Process != nil {
+					Process.Process.Kill()
+				}
+				if Compiler != nil && Compiler.Process != nil {
+					Compiler.Process.Kill()
+				}
+			})
 
-		http.ListenAndServe(launcher.Listen, nil)
+			var Compiling bool
+			
+			go func() {
+				for {
+					select {
+					case event, ok := <-watcher.Events:
+						if !ok {
+							return
+						}
+						//log.Println("event:", event)
+						if event.Op&fsnotify.Write == fsnotify.Write {
+							
+							if path.Ext(event.Name) == ".go" {
+							
+								if Compiling {
+									continue
+								}
+								
+								Compiler = exec.Command("go" ,"build", "-i", "-o", os.Args[0])
+								Compiling = true
+								go func() {
+									err := Compiler.Run()
+									if err == nil {
+										if Process.Process != nil {
+											Process.Process.Kill()
+										}
+										Process = exec.Command(os.Args[0], "-live")
+										Process.Stdout = os.Stdout
+										Process.Start()
+										
+										RELOADING = true
+										for _, socket  := range LocalSockets {
+											socket.WriteMessage(1, []byte("window.location.reload();"))
+										}
+									} else {
+										println(err.Error())
+									}
+									Compiling = false
+									
+								}()
+								
+							
+							}
+							
+						}
+					case err, ok := <-watcher.Errors:
+						if !ok {
+							return
+						}
+						log.Println("error:", err)
+					}
+				}
+			}()
+
+			err = watcher.Add(path.Dir(os.Args[0]))
+			if err != nil {
+				log.Fatal(err)
+			}
+			
+			proxy(launcher.Listen, ":10000")
+			
+		} else {
+			http.Handle("/", launcher.Handler())
+			http.ListenAndServe(launcher.Listen, nil)
+		}
 		return
 	}
 	panic("No seeds!")

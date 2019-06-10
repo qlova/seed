@@ -3,7 +3,6 @@ package seed
 import "bufio"
 import "os"
 import "bytes"
-import "fmt"
 import "strings"
 
 /*
@@ -11,12 +10,13 @@ import "strings"
 
 	SEED
 	SOON
+	
+	DEPRECIATED
 */
 
 func openIML(path string) map[string]string {
 	file, err := os.Open(path)
 	if err != nil {
-		fmt.Println(err)
 		return make(map[string]string)
 	}
 	defer file.Close()

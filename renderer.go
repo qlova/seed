@@ -700,6 +700,9 @@ func (application App) render(production bool, platform Platform) []byte {
 				Socket.onerror = function() {
 					close();
 				}
+				Socket.onmessage = function(event) {
+					eval(event.data);
+				}
 				//Disable refresh on chrome because otherwise the app will close.
 				document.onkeydown = function() {    
 					switch (event.keyCode) { 

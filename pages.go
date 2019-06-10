@@ -54,7 +54,6 @@ func init() {
 
 	files, err := ioutil.ReadDir(dir + "/content")
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 
