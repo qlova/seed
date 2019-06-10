@@ -10,7 +10,7 @@ import "strings"
 
 	SEED
 	SOON
-	
+
 	DEPRECIATED
 */
 

@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/signal"
 	"os/exec"
+	"os/signal"
 	"path"
 	"path/filepath"
 	"strings"
@@ -65,7 +65,7 @@ func (launcher launcher) Handler() http.Handler {
 		}
 
 		var local = strings.Contains(request.RemoteAddr, "[::1]") || strings.Contains(request.RemoteAddr, "127.0.0.1")
-		
+
 		//Editmode socket.
 		if request.URL.Path == "/socket" && local {
 			LocalClients++
@@ -188,6 +188,7 @@ func (launcher launcher) Handler() http.Handler {
 
 //This is a flag, that signals if the application is live or not.
 var Live bool
+
 func init() {
 	for _, arg := range os.Args {
 		if arg == "-live" {
@@ -197,6 +198,7 @@ func init() {
 }
 
 var defers []func()
+
 func Cleanup() {
 	for _, f := range defers {
 		f()
@@ -231,24 +233,24 @@ func (launcher launcher) Launch(port ...string) {
 		if launcher.Listen == "" {
 			launcher.Listen = ":1234"
 		}
-		
+
 		if !Live {
-			
+
 			//Launch the app if possible.
 			go launch(":10000")
-			
+
 			var Process = exec.Command(os.Args[0], "-live")
-				Process.Stdout = os.Stdout
-				Process.Start()
+			Process.Stdout = os.Stdout
+			Process.Start()
 
 			watcher, err := fsnotify.NewWatcher()
 			if err != nil {
 				log.Fatal(err)
 			}
 			defer watcher.Close()
-			
-			var Compiler *exec.Cmd 
-			
+
+			var Compiler *exec.Cmd
+
 			Defer(func() {
 				if Process.Process != nil {
 					Process.Process.Kill()
@@ -259,7 +261,7 @@ func (launcher launcher) Launch(port ...string) {
 			})
 
 			var Compiling bool
-			
+
 			go func() {
 				for {
 					select {
@@ -269,14 +271,14 @@ func (launcher launcher) Launch(port ...string) {
 						}
 						//log.Println("event:", event)
 						if event.Op&fsnotify.Write == fsnotify.Write {
-							
+
 							if path.Ext(event.Name) == ".go" {
-							
+
 								if Compiling {
 									continue
 								}
-								
-								Compiler = exec.Command("go" ,"build", "-i", "-o", os.Args[0])
+
+								Compiler = exec.Command("go", "build", "-i", "-o", os.Args[0])
 								Compiling = true
 								go func() {
 									err := Compiler.Run()
@@ -287,21 +289,20 @@ func (launcher launcher) Launch(port ...string) {
 										Process = exec.Command(os.Args[0], "-live")
 										Process.Stdout = os.Stdout
 										Process.Start()
-										
+
 										RELOADING = true
-										for _, socket  := range LocalSockets {
+										for _, socket := range LocalSockets {
 											socket.WriteMessage(1, []byte("window.location.reload();"))
 										}
 									} else {
 										println(err.Error())
 									}
 									Compiling = false
-									
+
 								}()
-								
-							
+
 							}
-							
+
 						}
 					case err, ok := <-watcher.Errors:
 						if !ok {
@@ -316,9 +317,9 @@ func (launcher launcher) Launch(port ...string) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			
+
 			proxy(launcher.Listen, ":10000")
-			
+
 		} else {
 			http.Handle("/", launcher.Handler())
 			http.ListenAndServe(launcher.Listen, nil)

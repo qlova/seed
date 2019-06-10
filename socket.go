@@ -117,16 +117,16 @@ func socket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
-	
+
 	LocalSockets[r.RemoteAddr] = c
-	
+
 	RELOADING = false
 
 	for {
 		_, _, err := c.ReadMessage()
 		if err != nil {
 			singleLocalConnection = LocalClients == 1
-			
+
 			if singleLocalConnection && !RELOADING {
 				Cleanup()
 				os.Exit(0)
