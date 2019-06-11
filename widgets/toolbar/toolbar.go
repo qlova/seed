@@ -16,8 +16,8 @@ func New() Widget {
 	widget.SetBottom(css.Zero)
 	widget.SetLeft(css.Zero)
 
-	widget.SetWidth(css.Number(100).Percent())
-	widget.SetHeight(css.Number(2).Em())
+	widget.SetWidth(100)
+	widget.SetHeight(2 * seed.Em)
 
 	widget.Set("justify-content", "space-evenly")
 
