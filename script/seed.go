@@ -228,7 +228,7 @@ func (seed Seed) FadeOut() {
 	seed.Javascript(`set(` + seed.Element() + `, "display", "inline-flex");`)
 	seed.Javascript(`set(` + seed.Element() + `, "z-index", "50");`)
 	seed.Javascript(`animating = true;`)
-	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "display", "none"); set(` + seed.Element() + `, "z-index", "");animation_complete();  }, 500);`)
+	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "display", "none"); set(` + seed.Element() + `, "animation", ""); set(` + seed.Element() + `, "z-index", "");animation_complete();  }, 500);`)
 }
 
 func (seed Seed) FadeIn() {
@@ -292,7 +292,7 @@ func (seed Seed) SlideOutTo(direction complex128) {
 	seed.Javascript(`set(` + seed.Element() + `, "display", "inline-flex");`)
 	seed.Javascript(`set(` + seed.Element() + `, "z-index", "50");`)
 	seed.Javascript(`animating = true;`)
-	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "display", "none"); set(` + seed.Element() + `, "z-index", "");animation_complete(); }, 500);`)
+	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "display", "none"); set(` + seed.Element() + `, "animation", ""); set(` + seed.Element() + `, "z-index", "");animation_complete(); }, 500);`)
 }
 
 func (seed Seed) Translate(x, y Unit) {
