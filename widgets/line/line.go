@@ -1,6 +1,8 @@
 package line
 
 import "github.com/qlova/seed"
+import "image/color"
+import "github.com/qlova/seed/style/css"
 
 type Widget struct {
 	seed.Seed
@@ -23,4 +25,8 @@ func AddTo(parent seed.Interface) Widget {
 	var widget = New()
 	parent.Root().Add(widget)
 	return widget
+}
+
+func (widget Widget) SetColor(c color.Color) {
+	widget.SetBorderColor(css.Colour(c))
 }
