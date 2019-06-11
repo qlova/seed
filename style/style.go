@@ -154,8 +154,8 @@ func (style Style) SetRow() {
 
 //Set the width and height as a percentage of it's parent. Takes em, vm, px or percentage values.
 func (style Style) SetSize(width, height complex128) {
-	style.SetWidth(css.Decode(width))
-	style.SetHeight(css.Decode(height))
+	style.SetWidth(width)
+	style.SetHeight(height)
 }
 
 //Set the width and height as a percentage of it's parent. Takes em, vm, px or percentage values.
@@ -314,6 +314,11 @@ func (style Style) SetContain() {
 	style.SetObjectFit(css.Contain)
 }
 
+//Make sure that this contains its aspect ratio.
+func (style Style) Clip() {
+	style.SetOverflow(css.Hidden)
+}
+
 //Set that this can be scrolled.
 func (style Style) SetScrollable() {
 	style.SetOverflow(css.Auto)
@@ -334,6 +339,26 @@ func (style Style) SetInnerSpacing(x, y complex128) {
 
 	style.SetPaddingTop(css.Decode(y))
 	style.SetPaddingBottom(css.Decode(y))
+}
+
+//Set spacing top, takes a em, vm, px or percentage value.
+func (style Style) SetInnerSpacingTop(value complex128) {
+	style.SetPaddingTop(css.Decode(value))
+}
+
+//Set spacing left, takes a em, vm, px or percentage value.
+func (style Style) SetInnerSpacingLeft(value complex128) {
+	style.SetPaddingLeft(css.Decode(value))
+}
+
+//Set spacing bottom, takes a em, vm, px or percentage value.
+func (style Style) SetInnerSpacingBottom(value complex128) {
+	style.SetPaddingBottom(css.Decode(value))
+}
+
+//Set spacing right, takes a em, vm, px or percentage value.
+func (style Style) SetInnerSpacingRight(value complex128) {
+	style.SetPaddingRight(css.Decode(value))
 }
 
 //Set the symetrical spacing around this.
@@ -465,4 +490,12 @@ func (style Style) SetMaxWidth(width complex128) {
 
 func (style Style) SetMaxHeight(height complex128) {
 	style.Style.SetMaxHeight(css.Decode(height))
+}
+
+func (style Style) SetWidth(width complex128) {
+	style.Style.SetWidth(css.Decode(width))
+}
+
+func (style Style) SetHeight(height complex128) {
+	style.Style.SetHeight(css.Decode(height))
 }

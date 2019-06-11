@@ -30,8 +30,8 @@ func NewPage() Page {
 	seed.SetPosition(css.Fixed)
 	seed.SetTop(css.Zero)
 	seed.SetLeft(css.Zero)
-	seed.SetWidth(css.Number(100).Vw())
-	seed.SetHeight(css.Number(100).Vh())
+	seed.Style.Style.SetWidth(css.Number(100).Vw())
+	seed.Style.Style.SetHeight(css.Number(100).Vh())
 
 	return Page{seed, nil}
 }
