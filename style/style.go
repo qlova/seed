@@ -454,6 +454,7 @@ func (style Style) Fade(opacity float64) {
 }
 
 //Set where this attaches, eg. Top+Left, Botom+right etc
+//For example, if the attachpoint is right, then this object's right side is attached to its parent's right side.
 func (style Style) AttachToParent(attachpoint complex128) {
 	switch real(attachpoint) {
 	case -1:
