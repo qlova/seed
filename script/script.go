@@ -115,7 +115,7 @@ func (q Script) NextPage() Page {
 }
 
 func (q Script) UserData(name user.Data) qlova.String {
-	return q.wrap(`getCookie("` + string(name) + `");`)
+	return q.wrap(`getCookie("` + string(name) + `")`)
 }
 
 func (q Script) SetUserData(name user.Data, value qlova.String) {
