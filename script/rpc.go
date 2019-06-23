@@ -18,7 +18,7 @@ type Promise struct {
 func (promise Promise) Then(f func()) Promise {
 	promise.q.Javascript(promise.expression + ".then(function(rpc_result) {")
 	f()
-	promise.q.Javascript("});")
+	promise.q.Javascript("}).catch(function(){});;")
 	return promise
 }
 

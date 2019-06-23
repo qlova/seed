@@ -5,6 +5,7 @@ import qlova "github.com/qlova/script"
 func (q Script) Go(function interface{}, args ...qlova.Type) Promise {
 	var Promise = q.rpc(function, "undefined", args...)
 	q.Javascript(Promise.expression + `.then(function(response) {
+	if (response.charAt(0) != "{") return;
 	let json = JSON.parse(response);
 	for (let update in json.Document) {
 		if (update.charAt(0) == "#") {
@@ -18,7 +19,7 @@ func (q Script) Go(function interface{}, args ...qlova.Type) Promise {
 	for (let update in json.LocalStorage) {
 		window.localStorage.setItem(update, json.LocalStorage[update]);
 	}
-});
+}).catch(function(){});
 	`)
 	return Promise
 }
