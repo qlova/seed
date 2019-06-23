@@ -5,13 +5,11 @@ import (
 	"strings"
 )
 
-import qlova "github.com/qlova/script"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/language/javascript"
 
 import "github.com/qlova/seed/style/css"
 
-type String = qlova.String
 type Object string
 
 type Expression struct {

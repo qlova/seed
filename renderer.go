@@ -515,6 +515,16 @@ func (application App) render(production bool, platform Platform) []byte {
 	}
 
 	buffer.Write([]byte(`
+			var geoLocation = null;
+			var requestGeoLocation = function (options) {
+				return new Promise(function (resolve, reject) {
+					navigator.geolocation.getCurrentPosition(function(position) {
+						geoLocation = position;
+						resolve(position);
+					}, reject, options);
+				});
+			}
+	
 			var animating = false;
 			
 			var get = function(id) {

@@ -71,15 +71,15 @@ func (i Int) Script(q Script) qlova.Int {
 	})
 }
 
-type Bool struct {
+type BoolVar struct {
 	Variable
 }
 
-func NewBool() Bool {
-	return Bool{NewVariable()}
+func NewBool() BoolVar {
+	return BoolVar{NewVariable()}
 }
 
-func (b Bool) Script(q Script) qlova.Bool {
+func (b BoolVar) Script(q Script) qlova.Bool {
 	var result = q.BoolFromLanguageType(Javascript.Bit{
 		Expression: language.Statement(`(window.localStorage.getItem("` + string(b.Variable) + `") == "true")`),
 	})
