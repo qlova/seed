@@ -21,3 +21,10 @@ func (a Page) Equals(b Page) qlova.Bool {
 func (page Page) SetCurrent() {
 	page.Javascript(`current_page = ` + page.ID + ";")
 }
+
+func (q Script) CurrentPage() Page {
+	return Page{Seed{
+		ID: `"+current_page+"`,
+		Q:  q,
+	}}
+}
