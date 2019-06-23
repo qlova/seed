@@ -6,7 +6,11 @@ import "encoding/hex"
 const White Hex = "#ffffff"
 
 func RGB(r, g, b uint8) color.Color {
-	return color.RGBA{R: r, G:g, B:b, A:255}
+	return color.RGBA{R: r, G: g, B: b, A: 255}
+}
+
+func RGBA(r, g, b, a uint8) color.Color {
+	return color.RGBA{R: r, G: g, B: b, A: a}
 }
 
 type Hex string

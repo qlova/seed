@@ -1,0 +1,9 @@
+language: go
+
+go:
+    - "1.12"
+
+notifications:
+    email:
+        recipients:
+            - splizard@splizard.com

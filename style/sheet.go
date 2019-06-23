@@ -1,19 +1,19 @@
 package style
- 
+
 import "github.com/qlova/seed/style/css"
- 
+
 import (
-	"strings"
 	"bytes"
+	"strings"
 )
- 
- //A stylesheet that produces optimally compressed CSS for Qlovaseed.
+
+//A stylesheet that produces optimally compressed CSS for Qlovaseed.
 type Sheet map[string][]string
 
 //Main optimisation method.
 func (sheet Sheet) Add(selector string, style css.Stylable) {
 	var properties = strings.Split(string(style.Bytes()), ";")
-	
+
 	for _, property := range properties {
 
 		if len(property) == 0 {
@@ -26,7 +26,7 @@ func (sheet Sheet) Add(selector string, style css.Stylable) {
 
 func (sheet Sheet) Get(selector string) css.Stylable {
 	var result = css.NewStyle()
-	
+
 	for style, selectors := range sheet {
 		for _, selector := range selectors {
 			if selector == selector {
@@ -35,11 +35,11 @@ func (sheet Sheet) Get(selector string) css.Stylable {
 			}
 		}
 	}
-	
+
 	if len(result.Stylable.(css.Implementation)) == 0 {
 		return nil
 	}
-	
+
 	return result
 }
 
@@ -71,7 +71,7 @@ func (sheet Sheet) Bytes() []byte {
 	var result bytes.Buffer
 
 	for selector, properties := range flipped {
-		
+
 		result.WriteString(selector)
 		result.WriteByte('{')
 		for _, property := range properties {

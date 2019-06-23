@@ -1,22 +1,104 @@
 package seed
 
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+import "github.com/qlova/seed/script"
 import "github.com/qlova/seed/style/css"
 
-var pages []Seed
+type Page struct {
+	Seed
 
-func Page() Seed {
-	return NewPage()
+	content map[string]string
 }
 
-func NewPage() Seed {
-	seed := Col()
-	
+func NewPage() Page {
+	seed := New()
+	seed.SetCol()
+
 	seed.page = true
-	
+	seed.class = "page"
+
 	seed.SetHidden()
 	seed.SetWillChange(css.Property.Display)
-	
-	pages = append(pages, seed)
-	
-	return seed
+
+	seed.SetPosition(css.Fixed)
+	seed.SetTop(css.Zero)
+	seed.SetLeft(css.Zero)
+	seed.Style.Style.SetWidth(css.Number(100).Vw())
+	seed.Style.Style.SetHeight(css.Number(100).Vh())
+
+	return Page{seed, nil}
+}
+
+type pages map[string]Page
+
+func (p pages) Get(key string) Page {
+	return p[key]
+}
+
+var Pages = make(pages)
+
+//We need to load all of the static pages.
+func init() {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	files, err := ioutil.ReadDir(dir + "/content")
+	if err != nil {
+		return
+	}
+
+	for _, file := range files {
+		if filepath.Ext(file.Name()) == ".page" {
+			var name = strings.Replace(file.Name(), ".page", "", 1)
+			Pages[name] = NewPage()
+			Pages[name] = Page{
+				Seed:    Pages[name].Seed,
+				content: openIML(dir + "/content/" + file.Name()),
+			}
+		}
+	}
+}
+
+func AddPageTo(parent Interface) Page {
+	var page = NewPage()
+	parent.Root().Add(page)
+	return page
+}
+
+func (page Page) Get(key string) string {
+	return page.content[key]
+}
+
+func (page Page) SyncVisibilityWith(seed Interface) {
+	var root = seed.Root()
+	page.OnPageEnter(func(q Script) {
+		root.Script(q).SetVisible()
+	})
+	page.OnPageExit(func(q Script) {
+		root.Script(q).SetHidden()
+	})
+}
+
+func (page Page) Script(q Script) script.Page {
+	return script.Page{page.Seed.Script(q)}
+}
+
+func (seed Seed) SetPage(page Page) {
+	seed.OnReady(func(q Script) {
+		q.Javascript(`if (window.localStorage.getItem("update")) {`)
+		q.Javascript(`window.localStorage.removeItem("update");`)
+		q.Javascript(`window.localStorage.removeItem("*CurrentPage");`)
+		q.Javascript(`}`)
+		q.Javascript(`if (!window.localStorage.getItem("*CurrentPage")) goto("` + page.id + `");`)
+	})
 }

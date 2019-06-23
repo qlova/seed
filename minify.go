@@ -22,11 +22,11 @@ func mini(data []byte) ([]byte, error) {
 	minifier.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
 	minifier.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
 	minifier.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
-	
+
 	minified, err := minifier.Bytes("text/html", data)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return minified, nil
 }
