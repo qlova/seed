@@ -71,6 +71,10 @@ func (q Script) ReturnValue() qlova.String {
 	return q.wrap("rpc_result")
 }
 
+func (q Script) Error() qlova.String {
+	return q.wrap("rpc_result.response")
+}
+
 //Call a Go function from within a script. The result is returned as a promise.
 func (q Script) ServerCall(f interface{}, args ...qlova.Type) Promise {
 	return q.rpc(f, "undefined", args...)
