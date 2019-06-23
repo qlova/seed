@@ -1,19 +1,5 @@
-//Makes the background of the page yellow.
+// +build !wasm
 
 package main
 
-import "fmt"
-import "syscall/js"
-import "github.com/qlova/seed/style/css"
-
-func main() {
-	var body = js.Global().Get("document").Get("body")
-	var style = css.StyleOf(body)
-
-	style.SetMargin(css.Zero)
-	style.SetWidth(css.Number(100).Vw())
-	style.SetHeight(css.Number(100).Vh())
-	style.SetBackgroundColor(css.LightGoldenRodYellow)
-
-	fmt.Println(style.BackgroundColor())
-}
+func main() {}
