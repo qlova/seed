@@ -375,6 +375,7 @@ func (application App) render(production bool, platform Platform) []byte {
 				-webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important; 
 				-webkit-focus-ring-color: rgba(255, 255, 255, 0) !important; 
 				outline: none !important;
+				flex-shrink: 0;
 			}
 
 			a {
@@ -385,8 +386,17 @@ func (application App) render(production bool, platform Platform) []byte {
 				margin-block-start: 0;
 				margin-block-end: 0;
 			}
+			
+			img {
+				object-fit: contain;
+			}
+			
 			html {
 				height: 100vh;
+				box-sizing: border-box;
+			}
+			*, *:before, *:after {
+				box-sizing: inherit;
 			}
 			pre {
 				margin: 0;
@@ -652,14 +662,16 @@ func (application App) render(production bool, platform Platform) []byte {
 			      } else {
 			        reject({
 			          status: this.status,
-			          statusText: xhr.statusText
+			          statusText: xhr.statusText,
+					 response: xhr.response
 			        });
 			      }
 			    };
 			    xhr.onerror = function () {
 			      reject({
 			        status: this.status,
-			        statusText: xhr.statusText
+			        statusText: xhr.statusText,
+			        response: xhr.response
 			      });
 			    };
 			    xhr.send(formdata);
@@ -672,6 +684,7 @@ func (application App) render(production bool, platform Platform) []byte {
 
 	if !production {
 		buffer.Write([]byte(`
+		
 			var set = function(element, property, value) {
 				if (!(element.id in InternalStyleState)) {
 					InternalStyleState[element.id] = {};
