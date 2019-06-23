@@ -106,12 +106,24 @@ type seed struct {
 	assets []Asset
 }
 
+func (seed Seed) MarshalText() ([]byte, error) {
+	return []byte("#"+seed.ID()), nil
+}
+
 func (seed Seed) ID() string {
 	return seed.id
 }
 
+func (seed Seed) Children() []Interface {
+	return seed.children
+}
+
 func (seed Seed) SetClass(class string) {
 	seed.class = class
+}
+
+func (seed Seed) Tag() string {
+	return seed.tag
 }
 
 func (seed Seed) SetTag(tag string) {
