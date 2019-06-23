@@ -212,6 +212,7 @@ func init() {
 		if arg == "-production" {
 			Production = true
 			user.Production = true
+			Live = true
 		}
 	}
 }
