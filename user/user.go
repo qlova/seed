@@ -85,7 +85,7 @@ func (user User) IsLocal() bool {
 	if Intranet.Match([]byte(request.RemoteAddr)) {
 		local = true
 	}
-	
+
 	return local
 }
 

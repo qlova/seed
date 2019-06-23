@@ -5,24 +5,23 @@ import (
 	"github.com/qlova/seeds/maps"
 )
 
-
 func main() {
 	var App = seed.NewApp("GeoLocation")
-	
+
 	var Maps = maps.AddTo(App, maps.Options{
 		Center: maps.Location{-36.8485, 174.7633}, //Default to Auckland, NZ
-		Zoom: 15,
+		Zoom:   15,
 	})
-	
+
 	App.OnReady(func(q seed.Script) {
 		var Maps = Maps.Script(q)
-		
+
 		q.RequestGeoLocation().Then(func() {
 			Maps.FlyTo(q.GeoLocation())
 		}).Catch(func() {
 			q.Alert(q.String("Could not determine location"))
 		})
 	})
-	
+
 	App.Launch()
 }

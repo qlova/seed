@@ -12,21 +12,21 @@ func main() {
 
 	var Camera = camera.AddTo(App)
 	Camera.SetSize(100, 100)
-	
-	var LastSnapshot = image.AddTo(App)
-		LastSnapshot.SetHidden()
-		LastSnapshot.SetAttach(seed.Bottom+seed.Right)
-		LastSnapshot.SetHeight(10)
-	
-	var Button = button.AddTo(App, "Take Picture")
-		Button.SetAttach(seed.Bottom+seed.Left)
-		Button.OnClick(func(q seed.Script) {
-			var Camera = Camera.Script(q)
-			var LastSnapshot = LastSnapshot.Script(q)
 
-			LastSnapshot.SetSource(Camera.Capture().Source())
-			LastSnapshot.SetVisible()
-		})
+	var LastSnapshot = image.AddTo(App)
+	LastSnapshot.SetHidden()
+	LastSnapshot.SetAttach(seed.Bottom + seed.Right)
+	LastSnapshot.SetHeight(10)
+
+	var Button = button.AddTo(App, "Take Picture")
+	Button.SetAttach(seed.Bottom + seed.Left)
+	Button.OnClick(func(q seed.Script) {
+		var Camera = Camera.Script(q)
+		var LastSnapshot = LastSnapshot.Script(q)
+
+		LastSnapshot.SetSource(Camera.Capture().Source())
+		LastSnapshot.SetVisible()
+	})
 
 	App.Launch()
 }

@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"path"
 	"path/filepath"
-	"strings"
 	"regexp"
+	"strings"
 )
 
 //import ua "github.com/avct/uasurfer"
@@ -57,7 +57,7 @@ func (launcher launcher) Handler() http.Handler {
 	if err != nil {
 		panic("invalid regexp!")
 	}
-	
+
 	return gziphandler.GzipHandler(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 		if origin := request.Header.Get("Origin"); origin == "https://"+launcher.App.host && origin != "" {
 			response.Header().Set("Access-Control-Allow-Origin", origin)

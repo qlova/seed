@@ -29,7 +29,7 @@ func NewApp(args ...string) *App {
 	}
 
 	app.Seed.app = &app
-	
+
 	app.SetSize(100, 100)
 	app.SetDisplay(css.Flex)
 	app.Align(0)

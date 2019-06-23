@@ -10,7 +10,6 @@ func (q Script) RequestGeoLocation() Promise {
 	}
 }
 
-
 func (q Script) GeoLocation() Location {
 	return Location{
 		q.Value("geoLocation").Native(),

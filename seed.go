@@ -107,7 +107,7 @@ type seed struct {
 }
 
 func (seed Seed) MarshalText() ([]byte, error) {
-	return []byte("#"+seed.ID()), nil
+	return []byte("#" + seed.ID()), nil
 }
 
 func (seed Seed) ID() string {
