@@ -1,7 +1,7 @@
 package main
 
 import "github.com/qlova/seed"
-import "github.com/qlova/seed/widgets/button"
+import "github.com/qlova/seeds/button"
 
 func main() {
 	var App = seed.NewApp("Dialogues")
