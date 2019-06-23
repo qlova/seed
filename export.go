@@ -2,15 +2,17 @@ package seed
 
 import "os"
 import "path/filepath"
+import "fmt"
 
-type Target int
+type TargetEnum int
 
 const (
-	ReactNative Target = iota
+	ReactNative TargetEnum = iota
+	Flutter
 	Website
 )
 
-func (app App) Export(t Target) {
+func (app App) Export(t TargetEnum) error {
 	if t == Website {
 		var dir = filepath.Dir(os.Args[0])
 
@@ -33,16 +35,84 @@ func (app App) Export(t Target) {
 		}
 
 		index.Write(app.render(true, Mobile))
-		return
+		return nil
+	}
+
+	if t == Flutter {
+
+		os.Mkdir(Dir+"/export/", 0755)
+		os.Mkdir(Dir+"/export/flutter", 0755)
+		os.Mkdir(Dir+"/export/flutter/lib", 0755)
+
+		config, err := os.Create(Dir + "/export/flutter/pubspec.yaml")
+		if err != nil {
+			return fmt.Errorf("could not export to flutter: %s", err)
+		}
+		defer config.Close()
+
+		config.WriteString(`name: app
+description: A new Flutter project.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  uses-material-design: true
+`)
+
+		dart, err := os.Create(Dir + "/export/flutter/lib/main.dart")
+		if err != nil {
+			return fmt.Errorf("could not export to flutter: %s", err)
+		}
+		defer dart.Close()
+
+		dart.WriteString(`import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatefulWidget {
+	@override
+	_MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Welcome to Flutter',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Welcome to Flutter'),
+        ),
+        body: Center(
+          child: Text('Hello World'),
+        ),
+      ),
+    );
+  }
+}		
+		`)
+		return nil
 	}
 
 	if t == ReactNative {
 
-		var dir = filepath.Dir(os.Args[0])
+		os.Mkdir(Dir+"/native", 0755)
 
-		os.Mkdir(dir+"/native", 0755)
-
-		var appjs, err = os.Create(dir + "/native/App.js")
+		var appjs, err = os.Create(Dir + "/native/App.js")
 		if err != nil {
 			panic(err.Error())
 		}
@@ -174,8 +244,10 @@ export default class App extends Component {
   }
 }
 		`)
-
+		return nil
 	} else {
 		panic("Invalid Export Target")
 	}
+
+	return fmt.Errorf("Invalid target")
 }

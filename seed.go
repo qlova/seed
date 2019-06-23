@@ -336,6 +336,11 @@ func (seed Seed) SetContent(data string) {
 }
 
 //Set the text content of the seed.
+func (seed Seed) Text() string {
+	return string(seed.content)
+}
+
+//Set the text content of the seed.
 func (seed Seed) SetText(data string) {
 	data = html.EscapeString(data)
 	data = strings.Replace(data, "\n", "<br>", -1)
