@@ -101,15 +101,18 @@ func (user User) NotAuthorised() {
 	user.ResponseWriter.WriteHeader(401)
 }
 
-func (user User) Error() {
+func (user User) Error(err ...string) {
 	user.ResponseWriter.WriteHeader(500)
+	for _, e := range err {
+		user.user.ResponseWriter.Write([]byte(e))
+	}
 }
 
 func (user User) Close() {
 	if len(user.Update.Document) > 0 || len(user.Update.LocalStorage) > 0 {
 		json.NewEncoder(user.ResponseWriter).Encode(user.Update)
 	} else {
-		fmt.Fprint(user.ResponseWriter, "done")
+		user.ResponseWriter.WriteHeader(http.StatusOK)
 	}
 }
 
