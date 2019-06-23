@@ -1,6 +1,7 @@
 package swiper
 
 import "fmt"
+import "encoding/json"
 
 import "github.com/qlova/seed"
 import "github.com/qlova/seed/script"
@@ -30,7 +31,7 @@ type Widget struct {
 }
 
 //Returns gallery that displays 'local' images (in the assets directory).
-func New(images ...string) Widget {
+func New(config ...Options) Widget {
 	swiper := seed.New()
 
 	swiper.Require("swiper.js")
@@ -41,16 +42,30 @@ func New(images ...string) Widget {
 
 	pagination := seed.AddTo(swiper)
 	pagination.SetClass("swiper-pagination")
+	
+	var options string
+	if len(config) > 0 {
+		
+		config[0].Pagination = PaginationOptions{
+			Element: pagination,
+		}
+		
+		var JSON, err = json.Marshal(config[0])
+		if err == nil {
+			options = string(JSON)
+		}
+	}
 
+	
 	swiper.OnReady(func(q seed.Script) {
-		q.Javascript(swiper.Script(q).Element() + `.swiper = new Swiper('#` + swiper.ID() + `', {pagination: {el: '#` + pagination.ID() + `'}});`)
+		q.Javascript(swiper.Script(q).Element() + `.swiper = new Swiper('#` + swiper.ID() + `', `+options+`);`)
 	})
 
 	return Widget{0, swiper, wrapper}
 }
 
-func AddTo(parent seed.Interface) Widget {
-	var Swiper = New()
+func AddTo(parent seed.Interface, config ...Options) Widget {
+	var Swiper = New(config...)
 	parent.Root().Add(Swiper)
 	return Swiper
 }
