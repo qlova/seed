@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"regexp"
+	"strings"
 )
 
 type User struct {
@@ -66,11 +68,32 @@ func (user User) Get(data Data) string {
 	return result.Value
 }
 
+var Intranet *regexp.Regexp
+
+func init() {
+	var err error
+	Intranet, err = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
+	if err != nil {
+		panic("invalid regexp!")
+	}
+}
+
+func (user User) IsLocal() bool {
+	var request = user.Request
+	var local = strings.Contains(request.RemoteAddr, "[::1]")
+
+	if Intranet.Match([]byte(request.RemoteAddr)) {
+		local = true
+	}
+	
+	return local
+}
+
 func (user User) Set(data Data, value string) {
 	http.SetCookie(user.ResponseWriter, &http.Cookie{
 		Name:   string(data),
 		Value:  value,
-		Secure: true,
+		Secure: !user.IsLocal(),
 	})
 }
 

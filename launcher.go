@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"regexp"
 )
 
 //import ua "github.com/avct/uasurfer"
@@ -52,6 +53,11 @@ func (launcher launcher) Handler() http.Handler {
 
 	var LocalClients = 0
 
+	intranet, err := regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
+	if err != nil {
+		panic("invalid regexp!")
+	}
+	
 	return gziphandler.GzipHandler(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 		if origin := request.Header.Get("Origin"); origin == "https://"+launcher.App.host && origin != "" {
 			response.Header().Set("Access-Control-Allow-Origin", origin)
@@ -65,6 +71,9 @@ func (launcher launcher) Handler() http.Handler {
 		}
 
 		var local = strings.Contains(request.RemoteAddr, "[::1]") || strings.Contains(request.RemoteAddr, "127.0.0.1")
+		if intranet.Match([]byte(request.RemoteAddr)) {
+			local = true
+		}
 
 		//Editmode socket.
 		if request.URL.Path == "/socket" && local {
