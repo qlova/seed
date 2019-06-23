@@ -4,6 +4,7 @@ import "fmt"
 import "os"
 import "github.com/qlova/seed/manifest"
 import "github.com/qlova/seed/service"
+import "github.com/qlova/seed/style/css"
 
 type App struct {
 	Seed
@@ -28,6 +29,11 @@ func NewApp(args ...string) *App {
 	}
 
 	app.Seed.app = &app
+	
+	app.SetSize(100, 100)
+	app.SetDisplay(css.Flex)
+	app.Align(0)
+	app.SetFlexDirection(css.Column)
 
 	if len(args) > 0 {
 		app.SetName(args[0])
