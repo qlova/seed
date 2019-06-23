@@ -1,4 +1,5 @@
-# ![logo](media/logo.png) Qlovaseed [![Godoc](https://godoc.org/github.com/qlova/seed?status.svg)](https://godoc.org/github.com/qlova/seed)  
+# ![logo](media/logo.png) Qlovaseed [![Godoc](https://godoc.org/github.com/qlova/seed?status.svg)](https://godoc.org/github.com/qlova/seed) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/qlova/seed)]
 
 Qlovaseed is a cross-platform Go framework for building apps.
 
