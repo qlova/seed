@@ -70,17 +70,21 @@ func (launcher launcher) Handler() http.Handler {
 			return
 		}
 
-		var local = strings.Contains(request.RemoteAddr, "[::1]") || strings.Contains(request.RemoteAddr, "127.0.0.1")
-		if intranet.Match([]byte(request.RemoteAddr)) {
-			local = true
-		}
+		var local bool
 
-		//Editmode socket.
-		if request.URL.Path == "/socket" && local {
-			LocalClients++
-			singleLocalConnection = LocalClients == 1
-			socket(response, request)
-			return
+		if !Production {
+			local = strings.Contains(request.RemoteAddr, "[::1]") || strings.Contains(request.RemoteAddr, "127.0.0.1")
+			if intranet.Match([]byte(request.RemoteAddr)) {
+				local = true
+			}
+
+			//Editmode socket.
+			if request.URL.Path == "/socket" && local {
+				LocalClients++
+				singleLocalConnection = LocalClients == 1
+				socket(response, request)
+				return
+			}
 		}
 
 		//Dynamic data.
@@ -196,12 +200,18 @@ func (launcher launcher) Handler() http.Handler {
 }
 
 //This is a flag, that signals if the application is live or not.
-var Live bool
+var Live, Production bool
 
 func init() {
 	for _, arg := range os.Args {
 		if arg == "-live" {
 			Live = true
+		}
+	}
+	for _, arg := range os.Args {
+		if arg == "-production" {
+			Production = true
+			user.Production = true
 		}
 	}
 }
@@ -243,7 +253,7 @@ func (launcher launcher) Launch(port ...string) {
 			launcher.Listen = ":1234"
 		}
 
-		if !Live {
+		if !Live && !Production {
 
 			//Launch the app if possible.
 			go launch(":10000")
