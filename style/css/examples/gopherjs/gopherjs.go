@@ -1,5 +1,4 @@
 //Makes the background of the page yellow.
-
 package main
 
 import "fmt"
