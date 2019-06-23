@@ -32,11 +32,19 @@ Create a file called HelloWorld.go and paste in the following contents:
 package main
 
 import "github.com/qlova/seed"
+import "github.com/qlova/seeds/text"
+import "github.com/qlova/seeds/expander"
 
 func main() {
-	//Create a new app with Hello World as both the title and the content.
-	seed.NewApp("Hello World", "Hello World").Launch()
+	var App = seed.NewApp("Hello World")
+
+	expander.AddTo(App)
+	text.AddTo(App, "Hello World")
+	expander.AddTo(App)
+
+	App.Launch()
 }
+
 ```
 
 In the same folder, run go build to create an executable of the app that you can run to see the app in action!
@@ -51,7 +59,7 @@ package main
 import "github.com/qlova/seed"
 
 //Import a widget to use it, a list of widgets can be found in the widgets directory.
-import "github.com/qlova/seed/widgets/button"
+import "github.com/qlova/seeds/button"
 
 func main() {
 	var App = seed.NewApp("My App")
@@ -77,6 +85,6 @@ func main() {
 }
 ```
 
-This example shows a quick glimpse on how powerful Qlovaseed can be. 
+This example shows a quick glimpse on how powerful Qlovaseed can be. You can find more widgets in the [seeds repository](https://github.com/qlova/seeds).
 
 Please remember, this framework is in development, it does not have a stable API and features are currently implemented as needed.
