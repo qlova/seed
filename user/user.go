@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type User struct {
@@ -80,7 +81,7 @@ func init() {
 
 func (user User) IsLocal() bool {
 	var request = user.Request
-	var local = strings.Contains(request.RemoteAddr, "[::1]")
+	var local = strings.Contains(request.RemoteAddr, "[::1]") || strings.Contains(request.RemoteAddr, "127.0.0.1")
 
 	if Intranet.Match([]byte(request.RemoteAddr)) {
 		local = true
@@ -91,9 +92,10 @@ func (user User) IsLocal() bool {
 
 func (user User) Set(data Data, value string) {
 	http.SetCookie(user.ResponseWriter, &http.Cookie{
-		Name:   string(data),
-		Value:  value,
-		Secure: !user.IsLocal(),
+		Name:    string(data),
+		Value:   value,
+		Secure:  !user.IsLocal(),
+		Expires: time.Now().Add(time.Hour * 24 * 365),
 	})
 }
 
