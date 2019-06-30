@@ -86,7 +86,7 @@ type seed struct {
 	onclick  func(Script)
 	onchange func(Script)
 	onready  func(Script)
-	
+
 	template bool
 
 	parent Interface

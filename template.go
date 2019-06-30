@@ -13,14 +13,14 @@ func NewTemplate() Template {
 func (template Template) render(q Script) string {
 	var seed = template.Seed
 
-	q.Javascript("let "+seed.id+" = document.createElement(\"")
+	q.Javascript("let " + seed.id + " = document.createElement(\"")
 	q.Javascript(seed.tag)
 	q.Javascript("\");")
 
-	q.Javascript(seed.id+".className = '"+seed.id+"';")
+	q.Javascript(seed.id + ".className = '" + seed.id + "';")
 
 	for _, child := range seed.children {
-		q.Javascript(seed.id+".appendChild("+Template{child.Root()}.render(q)+");")
+		q.Javascript(seed.id + ".appendChild(" + Template{child.Root()}.render(q) + ");")
 	}
 
 	return seed.id

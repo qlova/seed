@@ -40,9 +40,9 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
 	if data := seed.Style.Bytes(); data != nil {
 		seed.styled = true
 		if seed.template {
-			sheet.Add("."+seed.id,  seed.Style)
+			sheet.Add("."+seed.id, seed.Style)
 		} else {
-			sheet.Add("#"+seed.id,  seed.Style)
+			sheet.Add("#"+seed.id, seed.Style)
 		}
 	}
 	for _, child := range seed.children {
@@ -115,11 +115,11 @@ func (seed Seed) HTML(platform Platform) []byte {
 		return short.HTML(platform)
 	}
 	if seed.template {
-		
+
 		for _, child := range seed.children {
 			child.Root().Render(platform)
 		}
-		
+
 		return nil
 	}
 
@@ -192,7 +192,7 @@ func (seed Seed) getScripts(platform Platform) []string {
 	if short := seed.ShortCircuit(platform); short.seed != nil {
 		return short.getScripts(platform)
 	}
-	
+
 	if seed.template {
 		return nil
 	}
@@ -223,7 +223,7 @@ func (seed Seed) buildOnReady(platform Platform, buffer *bytes.Buffer) {
 		short.buildOnReady(platform, buffer)
 		return
 	}
-	
+
 	if seed.template {
 		return
 	}

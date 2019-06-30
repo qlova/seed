@@ -30,7 +30,7 @@ func (seed Seed) Script(q Script) script.Seed {
 	if seed.template {
 		return script.Seed{
 			Native: seed.id,
-			Q:  q,
+			Q:      q,
 		}
 	}
 	return script.Seed{
