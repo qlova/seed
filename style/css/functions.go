@@ -75,6 +75,16 @@ func (n numberType) Vh() unitType {
 	return unitType(n.String() + "vh")
 }
 
+//Returns ViewportMin units.
+func (n numberType) Vmin() unitType {
+	return unitType(n.String() + "vmin")
+}
+
+//Returns ViewportMax units.
+func (n numberType) Vmax() unitType {
+	return unitType(n.String() + "vmax")
+}
+
 //Returns a CSS number.
 func Number(number float64) numberType {
 	return numberType(fmt.Sprint(number))
