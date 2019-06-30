@@ -86,6 +86,8 @@ type seed struct {
 	onclick  func(Script)
 	onchange func(Script)
 	onready  func(Script)
+	
+	template bool
 
 	parent Interface
 
@@ -323,6 +325,9 @@ func (seed Seed) Require(script string) {
 func (seed Seed) Add(child Interface) {
 	seed.children = append(seed.children, child)
 	child.Root().parent = seed
+	if seed.template {
+		child.Root().template = true
+	}
 }
 
 //Add a handler to the seed, when this seed is launched as root, the handlers will be executed for each incomming request.

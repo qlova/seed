@@ -14,3 +14,7 @@ func (feed Feed) SetIndex(index String) {
 	feed.Q.Javascript(feed.Element() + ".index = " + raw(index) + ";")
 	feed.Q.Javascript(`window.localStorage.setItem("` + feed.ID + `_index", ` + raw(index) + `);`)
 }
+
+func (feed Feed) Data(key string) String {
+	return feed.wrap(`data["` + key + `"]`)
+}

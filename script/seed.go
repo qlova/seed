@@ -178,10 +178,6 @@ func (seed Seed) Location() String {
 	return seed.wrap(seed.Element() + `.href`)
 }
 
-func (seed Seed) Data(key string) String {
-	return seed.wrap(seed.Element() + `.data["` + key + `"]`)
-}
-
 //Return the index of this feeditem.
 func (seed Seed) Index() String {
 	return seed.wrap(seed.Element() + `.index`)

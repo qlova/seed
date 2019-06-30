@@ -27,6 +27,12 @@ func NewFunction(f func(Script), names ...string) script.Function {
 
 //Return a scriptable version of this seed.
 func (seed Seed) Script(q Script) script.Seed {
+	if seed.template {
+		return script.Seed{
+			Native: seed.id,
+			Q:  q,
+		}
+	}
 	return script.Seed{
 		ID: seed.id,
 		Q:  q,

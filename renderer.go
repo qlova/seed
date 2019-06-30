@@ -39,7 +39,11 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
 	//seed.postProduction()
 	if data := seed.Style.Bytes(); data != nil {
 		seed.styled = true
-		sheet.Add("#"+seed.id, seed.Style)
+		if seed.template {
+			sheet.Add("."+seed.id,  seed.Style)
+		} else {
+			sheet.Add("#"+seed.id,  seed.Style)
+		}
 	}
 	for _, child := range seed.children {
 		child.Root().buildStyleSheet(platform, sheet)
@@ -61,7 +65,11 @@ func (seed Seed) buildStyleSheetForLandscape(platform Platform, sheet *style.She
 	//seed.postProduction()
 	if data := seed.Landscape.Bytes(); data != nil {
 		seed.styled = true
-		sheet.Add("#"+seed.id, seed.Landscape)
+		if seed.template {
+			sheet.Add("."+seed.id, seed.Landscape)
+		} else {
+			sheet.Add("#"+seed.id, seed.Landscape)
+		}
 	}
 	for _, child := range seed.children {
 		child.Root().buildStyleSheetForLandscape(platform, sheet)
@@ -89,7 +97,11 @@ func (seed Seed) buildStyleSheetForPortrait(platform Platform, sheet *style.Shee
 	//seed.postProduction()
 	if data := seed.Portrait.Bytes(); data != nil {
 		seed.styled = true
-		sheet.Add("#"+seed.id, seed.Portrait)
+		if seed.template {
+			sheet.Add("."+seed.id, seed.Portrait)
+		} else {
+			sheet.Add("#"+seed.id, seed.Portrait)
+		}
 	}
 	for _, child := range seed.children {
 		child.Root().buildStyleSheetForPortrait(platform, sheet)
@@ -101,6 +113,14 @@ func (seed Seed) buildStyleSheetForPortrait(platform Platform, sheet *style.Shee
 func (seed Seed) HTML(platform Platform) []byte {
 	if short := seed.ShortCircuit(platform); short.seed != nil {
 		return short.HTML(platform)
+	}
+	if seed.template {
+		
+		for _, child := range seed.children {
+			child.Root().Render(platform)
+		}
+		
+		return nil
 	}
 
 	//seed.postProduction()
@@ -172,6 +192,10 @@ func (seed Seed) getScripts(platform Platform) []string {
 	if short := seed.ShortCircuit(platform); short.seed != nil {
 		return short.getScripts(platform)
 	}
+	
+	if seed.template {
+		return nil
+	}
 
 	var scripts = seed.scripts
 
@@ -183,7 +207,6 @@ func (seed Seed) getScripts(platform Platform) []string {
 }
 
 func (seed Seed) Scripts(platform Platform) map[string]struct{} {
-
 	var scripts = seed.getScripts(platform)
 	var uniques = make(map[string]struct{})
 
@@ -198,6 +221,10 @@ func (seed Seed) buildOnReady(platform Platform, buffer *bytes.Buffer) {
 
 	if short := seed.ShortCircuit(platform); short.seed != nil {
 		short.buildOnReady(platform, buffer)
+		return
+	}
+	
+	if seed.template {
 		return
 	}
 
