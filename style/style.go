@@ -404,6 +404,26 @@ func (style Style) SetOffset(side complex128, offset complex128) {
 	}
 }
 
+//Set the offset from an attached side, call this after style.Attach().
+func (style Style) SetOffsetTop(offset complex128) {
+	style.SetTop(css.Decode(offset))
+}
+
+//Set the offset from an attached side, call this after style.Attach().
+func (style Style) SetOffsetBottom(offset complex128) {
+	style.SetBottom(css.Decode(offset))
+}
+
+//Set the offset from an attached side, call this after style.Attach().
+func (style Style) SetOffsetLeft(offset complex128) {
+	style.SetLeft(css.Decode(offset))
+}
+
+//Set the offset from an attached side, call this after style.Attach().
+func (style Style) SetOffsetRight(offset complex128) {
+	style.SetRight(css.Decode(offset))
+}
+
 //Remove the border from this element.
 func (style Style) SetBorderless() {
 	style.SetBorderLeftWidth(css.Zero)
@@ -499,4 +519,8 @@ func (style Style) SetWidth(width complex128) {
 
 func (style Style) SetHeight(height complex128) {
 	style.Style.SetHeight(css.Decode(height))
+}
+
+func (style Style) Wrap() {
+	style.Style.SetFlexWrap(css.Wrap)
 }
