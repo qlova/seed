@@ -23,6 +23,10 @@ type Style struct {
 	Stylable
 }
 
+func (style *Style) CSS() *Style {
+	return style
+}
+
 //This is the internal set method used by properties.go
 func (style *Style) set(property string, value stringable) {
 	style.Stylable.Set(property, value.String())
