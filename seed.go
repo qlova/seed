@@ -326,13 +326,6 @@ func (seed Seed) OnChange(f func(Script)) {
 	}
 }
 
-//Review these methods:
-
-//TODO Should be Internal.
-func (seed Seed) SetPlaceholder(placeholder string) {
-	seed.attr += " placeholder='" + placeholder + "' "
-}
-
 func (seed Seed) Page() bool {
 	return seed.page
 }
