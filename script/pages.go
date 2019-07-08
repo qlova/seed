@@ -28,3 +28,8 @@ func (q Script) CurrentPage() Page {
 		Q:  q,
 	}}
 }
+
+//Clear the page history, you should call this after transitioning from a sign-in page.
+func (q Script) ClearHistory() {
+	q.Javascript(`goto_history = [];`)
+}
