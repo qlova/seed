@@ -533,6 +533,11 @@ func (style Style) SetHeight(height complex128) {
 func (style Style) Wrap() {
 	style.Style.SetFlexWrap(css.Wrap)
 }
+
+func (style Style) Stretch() {
+	style.Style.SetObjectFit(css.Cover)
+}
+
 type TintValue struct {
 	Filter string
 	Loss float64
