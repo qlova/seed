@@ -424,6 +424,18 @@ func (seed Seed) OnInput(f func(Script)) {
 }
 
 //Run a script when this seed is clicked.
+func (seed Seed) OnEnter(f func(Script)) {
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+		q.Javascript(`let onenter = function(ev) {if (ev.keyCode == 13 || ev.which == 13){`)
+		f(q)
+		q.Javascript(`}};`)
+		q.Javascript(seed.Script(q).Element() + `.onkeypress = onenter;`)
+		q.Javascript("}")
+	})
+}
+
+//Run a script when this seed is clicked.
 func (seed Seed) OnFocusLost(f func(Script)) {
 	seed.OnReady(func(q Script) {
 		q.Javascript("{")
