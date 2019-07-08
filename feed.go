@@ -36,7 +36,7 @@ func NewFeed(food interface{}) Feed {
 	var seed = New()
 	seed.SetSize(100, Auto)
 	seed.SetUnshrinkable()
-	
+
 	seed.SetDisplay(css.Flex)
 	seed.SetFlexDirection(css.Row)
 	seed.SetFlexWrap(css.Wrap)

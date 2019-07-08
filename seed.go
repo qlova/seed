@@ -59,7 +59,7 @@ func NewFont(path string) Font {
 	if font, ok := FontCache[path]; ok {
 		return font
 	}
-	
+
 	var font = Font{style.NewFont(path), path}
 	FontCache[path] = font
 	return font

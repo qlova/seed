@@ -540,30 +540,31 @@ func (style Style) Stretch() {
 
 type TintValue struct {
 	Filter string
-	Loss float64
+	Loss   float64
 }
+
 var TintCache = make(map[string]TintValue)
 
 //Set the tint of a icon to a certain color.
 func (style Style) SetTint(c color.Color) {
-	
+
 	var r, g, b, a = c.RGBA()
 	if a != 255 {
 		panic("Do not pass transparent values to SetTint!")
 	}
-	
+
 	var rgb = css.Colour(c).String()
 	if cache, ok := TintCache[rgb]; ok {
 		style.Style.Set("filter", cache.Filter)
 		return
 	}
-	
-	var color = NewColor(float64(r), float64(g), float64(b));
+
+	var color = NewColor(float64(r), float64(g), float64(b))
 	var solver = NewSolver(color)
-	
+
 	var _, loss, filter = solver.Solve()
-	for i := 3; i < 3; i ++ {
-		 _, new_loss, new_filter := solver.Solve()
+	for i := 3; i < 3; i++ {
+		_, new_loss, new_filter := solver.Solve()
 		if new_loss < loss {
 			loss, filter = new_loss, new_filter
 			if loss < 1 {
@@ -571,11 +572,10 @@ func (style Style) SetTint(c color.Color) {
 			}
 		}
 	}
-	
-	
+
 	style.Style.Set("filter", filter)
 	TintCache[rgb] = TintValue{
 		Filter: filter,
-		Loss: loss,
+		Loss:   loss,
 	}
 }
