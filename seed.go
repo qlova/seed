@@ -249,6 +249,16 @@ func (seed Seed) OnClick(f func(Script)) {
 	})
 }
 
+//Run a script when this seed is clicked, allows click to propagate to other scripts.
+func (seed Seed) OnClickThrough(f func(Script)) {
+	seed.onclick = f
+	seed.OnReady(func(q Script) {
+		q.Javascript(OnPress + "('" + seed.id + "', function(event) {")
+		f(q)
+		q.Javascript("}, true);")
+	})
+}
+
 //Shorthand for seed.OnClick(func(q seed.Script){ page.Script(q).Goto() })
 func (seed Seed) OnClickGoto(page Page) {
 	seed.OnClick(func(q Script) {

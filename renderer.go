@@ -618,7 +618,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			
 			};
 			
-			function ` + OnPress + `(id, func) {
+			function ` + OnPress + `(id, func, propagate) {
 				let element = get(id);
 				
 				let handler = function(event) {
@@ -646,7 +646,7 @@ func (application App) render(production bool, platform Platform) []byte {
 				};
 				
 				element.ontouchend = function(ev) {
-					if (ev.stopPropagation) ev.stopPropagation(); 
+					if (ev.stopPropagation && !propagate) ev.stopPropagation(); 
 					ev.preventDefault(); 
 					if (moved) {
 						moved = false; 
