@@ -142,6 +142,10 @@ func (seed Seed) Focus() {
 	seed.Javascript(seed.Element() + `.focus();`)
 }
 
+func (seed Seed) Blur() {
+	seed.Javascript(seed.Element() + `.blur();`)
+}
+
 func (seed Seed) Restart() {
 	seed.Javascript(seed.Element() + `.load();`)
 }
