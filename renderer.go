@@ -569,11 +569,18 @@ func (application App) render(production bool, platform Platform) []byte {
 					goto(next);
 				}
 			}
+			
+			var goto_history = [];
 
 			var last_page = null;
 			var current_page = null;
 			var next_page = null;
 			var goto = function(next_page_id) {
+			
+				if (get(next_page_id).className != "page" || next_page_id == "`+application.loadingPage.ID()+`") {
+					next_page_id = "`+application.startingPage.ID()+`"
+				}
+			
 				if (animating) {
 					goto_queue.push(next_page_id)
 					return;
@@ -591,7 +598,11 @@ func (application App) render(production bool, platform Platform) []byte {
 						}
 					}
 				}
-
+				
+				if (current_page != null) {
+					goto_history.push(current_page);
+				}
+				
 				let next_element = get(next_page_id);
 				if (next_element) {
 					set(next_element, 'display', 'inline-flex');
@@ -603,6 +614,8 @@ func (application App) render(production bool, platform Platform) []byte {
 					
 				}
 				next_page = null;
+				
+			
 			};
 			
 			function ` + OnPress + `(id, func) {
@@ -654,9 +667,12 @@ func (application App) render(production bool, platform Platform) []byte {
 					ActivePhotoSwipe.close();
 					return;
 				}
-			
+				if (goto_history.length == 0) return;
+		
+				let last_page = goto_history.pop();
 				if (last_page == null) return;
 				goto(last_page);
+				goto_history.pop();
 			};
 
 			function setCookie(cname, cvalue, exdays) {

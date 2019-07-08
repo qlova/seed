@@ -113,6 +113,9 @@ func (seed Seed) MarshalText() ([]byte, error) {
 }
 
 func (seed Seed) ID() string {
+	if seed.seed == nil {
+		return ""
+	}
 	return seed.id
 }
 
