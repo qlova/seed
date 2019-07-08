@@ -26,3 +26,7 @@ type callWithFormData struct {
 func (c callWithFormData) Call(f interface{}, args ...qlova.Type) Promise {
 	return c.q.rpc(f, c.formdata, args...)
 }
+
+func (c callWithFormData) Go(f interface{}, args ...qlova.Type) Promise {
+	return c.q.rpc(f, c.formdata, args...)
+}
