@@ -923,8 +923,6 @@ func (application App) render(production bool, platform Platform) []byte {
 							});`))
 	}
 
-	buffer.Write(onready)
-
 	if application.DynamicHandler() != nil {
 		buffer.WriteString(`
 			var dynamic = new XMLHttpRequest();
@@ -957,6 +955,11 @@ func (application App) render(production bool, platform Platform) []byte {
 			`))
 	buffer.Write(html)
 	buffer.WriteString(tail)
+	
+	buffer.Write([]byte(`<script>`))
+	buffer.Write(onready)
+	buffer.Write([]byte(`</script>`))
+	
 	buffer.Write([]byte(`
 
 	</body></html>`))
