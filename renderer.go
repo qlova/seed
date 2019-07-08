@@ -298,7 +298,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			<meta name="apple-mobile-web-app-capable" content="yes">
 			<meta name="apple-mobile-web-app-status-bar-style" content="black">
 			<meta name="mobile-web-app-capable" content="yes">
-			<meta name="apple-mobile-web-app-title" content="`+application.Manifest.Name+`" />
+			<meta name="apple-mobile-web-app-title" content="` + application.Manifest.Name + `" />
 		`)
 	}
 
@@ -577,8 +577,8 @@ func (application App) render(production bool, platform Platform) []byte {
 			var next_page = null;
 			var goto = function(next_page_id) {
 			
-				if (get(next_page_id).className != "page" || next_page_id == "`+application.loadingPage.ID()+`") {
-					next_page_id = "`+application.startingPage.ID()+`"
+				if (get(next_page_id).className != "page" || next_page_id == "` + application.loadingPage.ID() + `") {
+					next_page_id = "` + application.startingPage.ID() + `"
 				}
 			
 				if (animating) {
@@ -971,11 +971,11 @@ func (application App) render(production bool, platform Platform) []byte {
 			`))
 	buffer.Write(html)
 	buffer.WriteString(tail)
-	
+
 	buffer.Write([]byte(`<script>`))
 	buffer.Write(onready)
 	buffer.Write([]byte(`</script>`))
-	
+
 	buffer.Write([]byte(`
 
 	</body></html>`))

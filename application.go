@@ -17,8 +17,8 @@ type App struct {
 	hashes []string
 
 	onupdatefound func(Script)
-	
-	loadingPage Page
+
+	loadingPage  Page
 	startingPage Page
 }
 
@@ -45,7 +45,7 @@ func NewApp(args ...string) *App {
 	if len(args) > 1 {
 		app.SetContent(args[1])
 	}
-	
+
 	app.loadingPage = app.NewPage()
 	app.loadingPage.SetVisible()
 
