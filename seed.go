@@ -53,8 +53,16 @@ type Font struct {
 	path string
 }
 
+var FontCache = make(map[string]Font)
+
 func NewFont(path string) Font {
-	return Font{style.NewFont(path), path}
+	if font, ok := FontCache[path]; ok {
+		return font
+	}
+	
+	var font = Font{style.NewFont(path), path}
+	FontCache[path] = font
+	return font
 }
 
 func (seed Seed) SetFont(font Font) {
