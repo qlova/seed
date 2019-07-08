@@ -6,6 +6,8 @@ import "strconv"
 import "net/http"
 import "bytes"
 
+import "github.com/qlova/seed/style/css"
+
 import "github.com/qlova/seed/script"
 
 //Shuold this be stored in the harvester?
@@ -34,6 +36,10 @@ func NewFeed(food interface{}) Feed {
 	var seed = New()
 	seed.SetSize(100, Auto)
 	seed.SetUnshrinkable()
+	
+	seed.SetDisplay(css.Flex)
+	seed.SetFlexDirection(css.Row)
+	seed.SetFlexWrap(css.Wrap)
 
 	feed_id++
 
