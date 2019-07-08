@@ -599,8 +599,8 @@ func (application App) render(production bool, platform Platform) []byte {
 					}
 				}
 				
-				if (current_page != null) {
-					goto_history.push(current_page);
+				if (last_page != null) {
+					goto_history.push(last_page);
 				}
 				
 				let next_element = get(next_page_id);
@@ -668,10 +668,15 @@ func (application App) render(production bool, platform Platform) []byte {
 					return;
 				}
 				if (goto_history.length == 0) return;
-		
+				
+				
 				let last_page = goto_history.pop();
 				if (last_page == null) return;
+						
+				let old_length = goto_history.length;
+						
 				goto(last_page);
+				if (goto_history.length  > old_length)
 				goto_history.pop();
 			};
 
