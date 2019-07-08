@@ -17,6 +17,9 @@ type App struct {
 	hashes []string
 
 	onupdatefound func(Script)
+	
+	loadingPage Page
+	startingPage Page
 }
 
 //Create a new application, accepts title and content arguments.
@@ -42,12 +45,31 @@ func NewApp(args ...string) *App {
 	if len(args) > 1 {
 		app.SetContent(args[1])
 	}
+	
+	app.loadingPage = app.NewPage()
+	app.loadingPage.SetVisible()
 
 	return &app
 }
 
 func (app *App) NewPage() Page {
 	return AddPageTo(app)
+}
+
+func (app *App) SetPage(page Page) {
+	app.startingPage = page
+	app.loadingPage.OnReady(func(q Script) {
+		q.Javascript(`if (window.localStorage.getItem("update")) {`)
+		q.Javascript(`window.localStorage.removeItem("update");`)
+		q.Javascript(`window.localStorage.removeItem("*CurrentPage");`)
+		q.Javascript(`}`)
+		q.Javascript(`if (!window.localStorage.getItem("*CurrentPage")) goto("` + page.id + `");`)
+	})
+}
+
+//Return the loadingpage (like a splashscreen) for this app that displays while the app is loading.
+func (app *App) LoadingPage() Page {
+	return app.loadingPage
 }
 
 //Set the hostname of this app, this is where the app is expected to be hosted from.
