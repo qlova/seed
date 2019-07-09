@@ -4,6 +4,7 @@ import "image/color"
 import "encoding/hex"
 
 const White Hex = "#ffffff"
+const Black Hex = "#000000"
 
 func RGB(r, g, b uint8) color.Color {
 	return color.RGBA{R: r, G: g, B: b, A: 255}
