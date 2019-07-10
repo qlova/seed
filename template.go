@@ -1,5 +1,7 @@
 package seed
 
+import "github.com/qlova/seed/style/css"
+
 type Template struct {
 	Seed
 }
@@ -7,6 +9,11 @@ type Template struct {
 func NewTemplate() Template {
 	var seed = New()
 	seed.template = true
+
+	seed.SetDisplay(css.Flex)
+	seed.SetFlexDirection(css.Column)
+	seed.SetFlexWrap(css.Wrap)
+
 	return Template{seed}
 }
 
