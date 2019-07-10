@@ -318,3 +318,7 @@ func (script Script) Unit(unit complex128) Unit {
 		Expression: language.Statement(css.Decode(unit)),
 	}))
 }
+
+func (script Script) SetClipboard(text String) {
+	script.Javascript(`setClipboard(` + text.LanguageType().Raw() + `);`)
+}
