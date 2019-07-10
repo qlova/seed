@@ -583,6 +583,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			
 				if (get(next_page_id) == null || get(next_page_id).className != "page" || next_page_id == "` + application.loadingPage.ID() + `") {
 					next_page_id = "` + application.startingPage.ID() + `"
+					if (next_page_id == "") return;
 				}
 			
 				if (animating) {
@@ -982,6 +983,7 @@ func (application App) render(production bool, platform Platform) []byte {
 	buffer.WriteString(tail)
 
 	buffer.Write([]byte(`<script>`))
+	buffer.Write(application.StateHandlers())
 	buffer.Write(onready)
 	buffer.Write([]byte(`</script>`))
 

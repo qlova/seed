@@ -114,6 +114,12 @@ type seed struct {
 	app *App
 
 	assets []Asset
+
+	states map[State]func(Script)
+}
+
+func (seed Seed) Null() bool {
+	return seed.seed == nil
 }
 
 func (seed Seed) MarshalText() ([]byte, error) {

@@ -2,6 +2,7 @@ package seed
 
 import "bytes"
 import "github.com/qlova/seed/style"
+import "github.com/qlova/seed/script"
 import "net/http"
 
 type dynamicHandler struct {
@@ -25,11 +26,14 @@ type harvester struct {
 	dynamicHandlers []dynamicHandler
 
 	customHandlers []func(response http.ResponseWriter, request *http.Request)
+
+	stateHandlers map[State][]func(Script)
 }
 
 func newHarvester() *harvester {
 	return &harvester{
-		fonts: make(map[style.Font]struct{}),
+		fonts:         make(map[style.Font]struct{}),
+		stateHandlers: make(map[State][]func(Script)),
 	}
 }
 
@@ -54,6 +58,13 @@ func (app *harvester) harvest(seed Seed) {
 			id:      seed.id,
 			handler: seed.dynamicText,
 		})
+	}
+
+	//Harvest State Handlers.
+	if seed.states != nil {
+		for state, handler := range seed.states {
+			h.stateHandlers[state] = append(h.stateHandlers[state], handler)
+		}
 	}
 
 	//Harvest Dynamic Handlers.
@@ -128,6 +139,33 @@ func (app *harvester) DynamicHandler() func(w http.ResponseWriter, r *http.Reque
 			w.Write([]byte(`"`))
 		}
 	}
+}
+
+func (app *harvester) StateHandlers() []byte {
+	var h = app
+
+	var buffer bytes.Buffer
+
+	for state, handlers := range h.stateHandlers {
+		if state.not {
+			buffer.WriteString("function " + string(state.Variable) + "_unset() {")
+			buffer.Write([]byte(script.ToJavascript(func(q Script) {
+				q.Set(state, q.Bool(false))
+			})))
+		} else {
+			buffer.WriteString("function " + string(state.Variable) + "_set() {")
+			buffer.Write([]byte(script.ToJavascript(func(q Script) {
+				q.Set(state, q.Bool(true))
+			})))
+		}
+
+		for _, handler := range handlers {
+			buffer.Write([]byte(script.ToJavascript(handler)))
+		}
+		buffer.WriteByte('}')
+	}
+
+	return buffer.Bytes()
 }
 
 func (app *harvester) CustomHandler() func(w http.ResponseWriter, r *http.Request) {
