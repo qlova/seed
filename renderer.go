@@ -581,7 +581,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			var next_page = null;
 			var goto = function(next_page_id) {
 			
-				if (get(next_page_id).className != "page" || next_page_id == "` + application.loadingPage.ID() + `") {
+				if (get(next_page_id) == null || get(next_page_id).className != "page" || next_page_id == "` + application.loadingPage.ID() + `") {
 					next_page_id = "` + application.startingPage.ID() + `"
 				}
 			
