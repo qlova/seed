@@ -543,6 +543,10 @@ func (application App) render(production bool, platform Platform) []byte {
 	}
 
 	buffer.Write([]byte(`
+			window.onorientationchange = function() {
+				window.dispatchEvent(new Event('orientationchange'));
+			}
+	
 			var geoLocation = null;
 			var requestGeoLocation = function (options) {
 				return new Promise(function (resolve, reject) {
