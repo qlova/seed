@@ -426,7 +426,7 @@ func (application App) render(production bool, platform Platform) []byte {
 			*, *:before, *:after {
 				box-sizing: inherit;
 			}
-			pre {
+			pre, hr {
 				margin: 0;
 			}
 
