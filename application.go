@@ -46,13 +46,16 @@ func NewApp(args ...string) *App {
 		app.SetContent(args[1])
 	}
 
-	app.loadingPage = app.NewPage()
-	app.loadingPage.SetVisible()
-
 	return &app
 }
 
 func (app *App) NewPage() Page {
+
+	if app.loadingPage.Null() {
+		app.loadingPage = app.NewPage()
+		app.loadingPage.SetVisible()
+	}
+
 	return AddPageTo(app)
 }
 
