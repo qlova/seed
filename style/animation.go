@@ -29,7 +29,8 @@ func (style Style) Animate(duration float64, justdelay ...float64) {
 		delay = justdelay[0]
 	}
 
-	style.SetTransitionProperty((*css.Style).Transform)
+	//style.SetTransitionProperty((*css.Style).Transform)
+	style.Set("transition-property", "transform")
 	style.SetWillChange((*css.Style).Transform)
 
 	style.SetTransitionDuration(css.Time(duration))
