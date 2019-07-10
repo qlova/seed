@@ -30,7 +30,7 @@ func Decode(unit complex128) unitType {
 	}
 
 	if imag(unit) != 0 {
-		return unitType(fmt.Sprint(imag(unit), "em"))
+		return unitType(fmt.Sprint(imag(unit), "rem"))
 	} else {
 		return unitType(fmt.Sprint(real(unit), "%"))
 	}
