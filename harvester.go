@@ -2,6 +2,7 @@ package seed
 
 import "bytes"
 import "github.com/qlova/seed/style"
+import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/script"
 import "net/http"
 
@@ -28,12 +29,15 @@ type harvester struct {
 	customHandlers []func(response http.ResponseWriter, request *http.Request)
 
 	stateHandlers map[State][]func(Script)
+
+	screenSmallerThans map[Unit]style.Sheet
 }
 
 func newHarvester() *harvester {
 	return &harvester{
-		fonts:         make(map[style.Font]struct{}),
-		stateHandlers: make(map[State][]func(Script)),
+		fonts:              make(map[style.Font]struct{}),
+		stateHandlers:      make(map[State][]func(Script)),
+		screenSmallerThans: make(map[Unit]style.Sheet),
 	}
 }
 
@@ -75,6 +79,20 @@ func (app *harvester) harvest(seed Seed) {
 	//Harvest Fonts.
 	if seed.font.FontFace.FontFamily != "" {
 		h.fonts[seed.font] = struct{}{}
+	}
+
+	//Harvest mediaQueries.
+	if seed.screenSmallerThan != nil {
+		for unit, stile := range seed.screenSmallerThan {
+			if h.screenSmallerThans[unit] == nil {
+				h.screenSmallerThans[unit] = make(style.Sheet)
+			}
+			if seed.template {
+				h.screenSmallerThans[unit].Add("."+seed.id, stile)
+			} else {
+				h.screenSmallerThans[unit].Add("#"+seed.id, stile)
+			}
+		}
 	}
 
 	//Recursively harvest children.
@@ -139,6 +157,20 @@ func (app *harvester) DynamicHandler() func(w http.ResponseWriter, r *http.Reque
 			w.Write([]byte(`"`))
 		}
 	}
+}
+
+func (app *harvester) MediaQueries() []byte {
+	var h = app
+
+	var buffer bytes.Buffer
+
+	for unit, sheet := range h.screenSmallerThans {
+		buffer.WriteString("@media (max-width: " + string(css.Decode(unit)) + ") {")
+		buffer.Write(sheet.Bytes())
+		buffer.WriteString("}")
+	}
+
+	return buffer.Bytes()
 }
 
 func (app *harvester) StateHandlers() []byte {

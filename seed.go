@@ -109,6 +109,8 @@ type seed struct {
 
 	Landscape, Portrait style.Style
 
+	screenSmallerThan, screenGreaterThan map[Unit]style.Style
+
 	desktop, mobile, tablet, watch, tv, native Seed
 
 	app *App
@@ -116,6 +118,21 @@ type seed struct {
 	assets []Asset
 
 	states map[State]func(Script)
+}
+
+type Unit = complex128
+
+func (seed Seed) ScreenSmallerThan(unit Unit) style.Style {
+	if seed.screenSmallerThan == nil {
+		seed.screenSmallerThan = make(map[Unit]style.Style)
+	}
+
+	if s, ok := seed.screenSmallerThan[unit]; ok {
+		return s
+	}
+	var s = style.New()
+	seed.screenSmallerThan[unit] = s
+	return s
 }
 
 func (seed Seed) Null() bool {
@@ -207,6 +224,8 @@ func (seed Seed) Copy() Seed {
 	another.Portrait = another.Portrait.Copy()
 	another.Landscape = another.Landscape.Copy()
 
+	//TODO copy media queries?
+
 	another.id = base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
 	id++
 	return Seed{seed: &another}
@@ -291,32 +310,6 @@ func (seed Seed) OnReady(f func(Script)) {
 			f(q)
 		}
 	}
-}
-
-//Run a script when this page is entered/ongoto.
-func (seed Seed) OnPageEnter(f func(Script)) {
-	seed.OnReady(func(q Script) {
-		q.Javascript("{")
-		q.Javascript("let old_enterpage = " + seed.Script(q).Element() + ".enterpage;")
-		q.Javascript(seed.Script(q).Element() + ".enterpage = function() {")
-		q.Javascript("if (old_enterpage) old_enterpage();")
-		f(q)
-		q.Javascript("};")
-		q.Javascript("}")
-	})
-}
-
-//Run a script when this leaving this page (onleave).
-func (seed Seed) OnPageExit(f func(Script)) {
-	seed.OnReady(func(q Script) {
-		q.Javascript("{")
-		q.Javascript("let old_exitpage = " + seed.Script(q).Element() + ".exitpage;")
-		q.Javascript(seed.Script(q).Element() + ".exitpage = function() {")
-		q.Javascript("if (old_exitpage) old_exitpage();")
-		f(q)
-		q.Javascript("};")
-		q.Javascript("}")
-	})
 }
 
 //Run a script when this seed's value is changed by the user.

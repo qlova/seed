@@ -384,6 +384,8 @@ func (application App) render(production bool, platform Platform) []byte {
 	buffer.Write(styleForPortrait)
 	buffer.WriteString(`}`)
 
+	buffer.Write(application.MediaQueries())
+
 	buffer.Write([]byte(`
 		</style>
 			
