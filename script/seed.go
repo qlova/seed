@@ -110,7 +110,7 @@ func (seed Seed) SetDisplay(s String) {
 }
 
 func (seed Seed) SetVisible() {
-	seed.Javascript(`set(` + seed.Element() + `, "display", "inline-flex");`)
+	seed.Javascript(`set(` + seed.Element() + `, "display", "flex");`)
 }
 
 func (seed Seed) SetHidden() {
