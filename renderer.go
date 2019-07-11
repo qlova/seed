@@ -547,6 +547,17 @@ func (application App) render(production bool, platform Platform) []byte {
 		buffer.WriteString(`var host = "";`)
 	}
 
+	if production {
+		buffer.Write([]byte(`
+			function setCookie(cname, cvalue, exdays) {
+			  var d = new Date();
+			  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+			  var expires = "expires="+ d.toUTCString();
+			  document.cookie = cname + "=" + cvalue + ";" + expires + ";secure;path=/";
+			}
+		`))
+	}
+
 	buffer.Write([]byte(`
 			const setClipboard = str => {
 				const el = document.createElement('textarea');
@@ -707,13 +718,6 @@ func (application App) render(production bool, platform Platform) []byte {
 				if (goto_history.length  > old_length)
 				goto_history.pop();
 			};
-
-			function setCookie(cname, cvalue, exdays) {
-			  var d = new Date();
-			  d.setTime(d.getTime() + (exdays*24*60*60*1000));
-			  var expires = "expires="+ d.toUTCString();
-			  document.cookie = cname + "=" + cvalue + ";" + expires + ";secure;path=/";
-			}
 
 			function getCookie(cname) {
 			  var name = cname + "=";
@@ -1008,6 +1012,7 @@ func (application App) render(production bool, platform Platform) []byte {
 	buffer.Write([]byte(`<script>`))
 	buffer.Write(application.StateHandlers())
 	buffer.Write(onready)
+
 	buffer.Write([]byte(`</script>`))
 
 	buffer.Write([]byte(`
