@@ -163,6 +163,12 @@ func (app *harvester) StateHandlers() []byte {
 			buffer.Write([]byte(script.ToJavascript(handler)))
 		}
 		buffer.WriteByte('}')
+
+		buffer.Write([]byte(script.ToJavascript(func(q Script) {
+			q.If(state.Get(q), func() {
+				state.Set(q)
+			})
+		})))
 	}
 
 	return buffer.Bytes()

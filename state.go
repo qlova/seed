@@ -17,6 +17,25 @@ func (state State) Not() State {
 	return s
 }
 
+func (seed Seed) VisibleWhen(state State) {
+	seed.When(state, func(q Script) {
+		seed.Script(q).SetVisible()
+	})
+	seed.When(state.Not(), func(q Script) {
+		seed.Script(q).SetHidden()
+	})
+
+}
+
+func (seed Seed) HiddenWhen(state State) {
+	seed.When(state, func(q Script) {
+		seed.Script(q).SetHidden()
+	})
+	seed.When(state.Not(), func(q Script) {
+		seed.Script(q).SetVisible()
+	})
+}
+
 func (seed Seed) When(state State, f func(q Script)) {
 	if seed.states == nil {
 		seed.states = make(map[State]func(Script))
@@ -30,6 +49,18 @@ func (seed Seed) OnClickToggleState(state State) {
 	})
 }
 
+func (seed Seed) OnClickSetState(state State) {
+	seed.OnClick(func(q Script) {
+		state.Set(q)
+	})
+}
+
+func (seed Seed) OnClickUnsetState(state State) {
+	seed.OnClick(func(q Script) {
+		state.Unset(q)
+	})
+}
+
 func (state State) Toggle(q Script) {
 	q.If(state.Get(q), func() {
 		state.Unset(q)
@@ -39,21 +70,39 @@ func (state State) Toggle(q Script) {
 }
 
 func (state State) Get(q Script) script.Bool {
-	return state.Script(q)
+	if state.not {
+		return q.Not(state.Script(q))
+	} else {
+		return state.Script(q)
+	}
 }
 
 func (state State) Set(q Script) {
 	if state.not {
-		state.Unset(q)
-		return
+		q.Javascript(string(state.BoolVar.Variable) + `_unset();`)
+	} else {
+		q.Javascript(string(state.BoolVar.Variable) + `_set();`)
 	}
-	q.Javascript(string(state.BoolVar.Variable) + `_set();`)
 }
 
 func (state State) Unset(q Script) {
 	if state.not {
-		state.Set(q)
-		return
+		q.Javascript(string(state.BoolVar.Variable) + `_set();`)
+	} else {
+		q.Javascript(string(state.BoolVar.Variable) + `_unset();`)
 	}
-	q.Javascript(string(state.BoolVar.Variable) + `_unset();`)
+}
+
+func (state State) UnsetFor(u User) {
+	if state.not {
+		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], string(state.BoolVar.Variable)+`_set();`)
+	}
+	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], string(state.BoolVar.Variable)+`_unset();`)
+}
+
+func (state State) SetFor(u User) {
+	if state.not {
+		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], string(state.BoolVar.Variable)+`_unset();`)
+	}
+	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], string(state.BoolVar.Variable)+`_set();`)
 }
