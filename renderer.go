@@ -426,7 +426,7 @@ func (application App) render(production bool, platform Platform) []byte {
 				box-sizing: border-box;
 			}
 			*, *:before, *:after {
-				box-sizing: inherit;
+				box-sizing: border-box;
 			}
 			pre, hr {
 				margin: 0;
