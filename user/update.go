@@ -9,4 +9,7 @@ type Update struct {
 
 	//a mapping of local-storage updates.
 	LocalStorage map[string]string
+
+	//A list of js statements that will be evaluated.
+	Evaluations map[string][]string
 }

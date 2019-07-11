@@ -19,6 +19,12 @@ func (q Script) Go(function interface{}, args ...qlova.Type) Promise {
 	for (let update in json.LocalStorage) {
 		window.localStorage.setItem(update, json.LocalStorage[update]);
 	}
+
+	for (let namespace in json.Evaluations) {
+		for (let instruction of json.Evaluations[namespace]) {
+			eval(instruction);
+		}
+	}
 }).catch(function(){});
 	`)
 	return Promise

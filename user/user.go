@@ -39,6 +39,7 @@ func (User) FromHandler(w http.ResponseWriter, r *http.Request) User {
 		Update: Update{
 			Document:     make(map[string]string),
 			LocalStorage: make(map[string]string),
+			Evaluations:  make(map[string][]string),
 		},
 	}}
 }
@@ -101,7 +102,7 @@ func (user User) Error(err ...string) {
 }
 
 func (user User) Close() {
-	if len(user.Update.Document) > 0 || len(user.Update.LocalStorage) > 0 {
+	if len(user.Update.Document) > 0 || len(user.Update.LocalStorage) > 0 || len(user.Update.Evaluations) > 0 {
 		json.NewEncoder(user.ResponseWriter).Encode(user.Update)
 	} else {
 		user.ResponseWriter.WriteHeader(http.StatusOK)
