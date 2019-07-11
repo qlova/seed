@@ -92,3 +92,29 @@ func (page Page) SyncVisibilityWith(seed Interface) {
 func (page Page) Script(q Script) script.Page {
 	return script.Page{page.Seed.Script(q)}
 }
+
+//Run a script when this page is entered/ongoto.
+func (seed Page) OnPageEnter(f func(Script)) {
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+		q.Javascript("let old_enterpage = " + seed.Script(q).Element() + ".enterpage;")
+		q.Javascript(seed.Script(q).Element() + ".enterpage = function() {")
+		q.Javascript("if (old_enterpage) old_enterpage();")
+		f(q)
+		q.Javascript("};")
+		q.Javascript("}")
+	})
+}
+
+//Run a script when this leaving this page (onleave).
+func (seed Page) OnPageExit(f func(Script)) {
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+		q.Javascript("let old_exitpage = " + seed.Script(q).Element() + ".exitpage;")
+		q.Javascript(seed.Script(q).Element() + ".exitpage = function() {")
+		q.Javascript("if (old_exitpage) old_exitpage();")
+		f(q)
+		q.Javascript("};")
+		q.Javascript("}")
+	})
+}
