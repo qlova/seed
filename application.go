@@ -52,7 +52,7 @@ func NewApp(args ...string) *App {
 func (app *App) NewPage() Page {
 
 	if app.loadingPage.Null() {
-		app.loadingPage = app.NewPage()
+		app.loadingPage = AddPageTo(app)
 		app.loadingPage.SetVisible()
 	}
 
