@@ -5,7 +5,7 @@ The cross-platform Go framework for building apps.
 ## Features
 
 * Qlovaseed apps are optimised for low-data usage, fast loading times and smooth animations.
-* No need to install, just visit the URL and use app straight away. Save it to the homescreen for offline use
+* No need to install, just visit the URL and use app straight away. Save it to the homescreen for offline use.
 * Cross platform, develop, build and run these apps on almost any device. All with the same code.
 * Develop the frontend and backend of an app simultanously, the only 'Full Stack' framework of its kind. 
 
