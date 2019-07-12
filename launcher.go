@@ -46,7 +46,6 @@ func (launcher launcher) Handler() http.Handler {
 	var worker = launcher.App.Worker.Render()
 	var manifest = launcher.Manifest.Render()
 
-	var dynamic = launcher.App.DynamicHandler()
 	var custom = launcher.App.CustomHandler()
 
 	//var desktop = launcher.render(true, Desktop)
@@ -85,14 +84,6 @@ func (launcher launcher) Handler() http.Handler {
 				socket(response, request)
 				return
 			}
-		}
-
-		//Dynamic data.
-		if request.URL.Path == "/dynamic" && dynamic != nil {
-			response.Write([]byte("{"))
-			dynamic(response, request)
-			response.Write([]byte("}"))
-			return
 		}
 
 		//Is this an embedded resource? Imported libraries will add these.

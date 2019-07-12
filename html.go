@@ -15,6 +15,7 @@ func (app App) HTML() []byte {
 	var HTML = app.Seed.Render(app.platform)
 	var StateHandlers = app.StateHandlers()
 	var OnReady = app.OnReadyHandler()
+	var DynamicHandlers = app.DynamicHandlers()
 
 	var buffer bytes.Buffer
 	buffer.WriteString(`<!DOCTYPE html>`)
@@ -233,6 +234,7 @@ func (app App) HTML() []byte {
 
 	buffer.WriteString(`<script>`)
 	buffer.Write(StateHandlers)
+	buffer.Write(DynamicHandlers)
 	buffer.Write(OnReady)
 
 	buffer.WriteString(`</script>`)

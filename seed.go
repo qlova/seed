@@ -3,6 +3,7 @@ package seed
 import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/user"
+import "github.com/qlova/seed/script"
 
 import (
 	"encoding/base64"
@@ -105,7 +106,7 @@ type seed struct {
 
 	handlers []func(w http.ResponseWriter, r *http.Request)
 
-	dynamicText func(User)
+	dynamicText script.GlobalString
 
 	Landscape, Portrait style.Style
 
@@ -407,11 +408,6 @@ func (seed Seed) SetText(data string) {
 	data = strings.Replace(data, "  ", "&nbsp;", -1)
 	data = strings.Replace(data, "\t", "&emsp;", -1)
 	seed.content = []byte(data)
-}
-
-//Set the text content of the seed which will be dynamic at runtime.
-func (seed Seed) SetDynamicText(f func(User)) {
-	seed.dynamicText = f
 }
 
 //Shorthand for seed.OnClick(func(q seed.Script){ page.Script(q).Goto() })

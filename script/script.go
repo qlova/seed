@@ -29,6 +29,9 @@ type script struct {
 	js js
 
 	Dependencies Dependencies
+	
+	
+	Time time
 }
 
 func (q Script) Require(dependency string) {
@@ -192,6 +195,7 @@ func toJavascript(f func(q Script), dependencies Dependencies) []byte {
 			Dependencies: dependencies,
 		}}
 		s.js.q = s
+		s.Time.Script = s
 		//s.Go.Script = s
 		f(s)
 	})
