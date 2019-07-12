@@ -1,34 +1,26 @@
 # ![logo](media/logo.png) Qlovaseed [![Godoc](https://godoc.org/github.com/qlova/seed?status.svg)](https://godoc.org/github.com/qlova/seed) [![Go Report Card](https://goreportcard.com/badge/github.com/qlova/seed)](https://goreportcard.com/report/github.com/qlova/seed) [![Build Status](https://travis-ci.org/qlova/seed.svg?branch=master)](https://travis-ci.org/qlova/seed)
 
-Qlovaseed is a cross-platform Go framework for building apps.
-
-**Please Note:** Qlovaseed is currently very unstable and in heavy development.
-
-An app written in Qlovaseed spins up a http server to host the app, 
-the executable can be dropped on a public facing web server in order to serve it as a progressive webapp.
-Alternatively, the executable can be distributed to users directly and run
- as a local application (users must have a compatiable web-browser such as Chrome).
+The cross-platform Go framework for building apps.
 
 ## Features
 
-* Automatically manages pwa service workers, manifests and offline state.
-* Seamless client-server communication.
-* Generates minified & gzipped html, css and javascript.
-* Prerendered by default.
-* **Optional** javascript/html/css (but you don't need it!)
+* Qlovaseed apps are optimised for low-data usage, fast loading times and smooth animations.
+* No need to install, just visit the URL and use app straight away. Save it to the homescreen for offline use
+* Cross platform, develop, build and run these apps on almost any device. All with the same code.
+* Develop the frontend and backend of an app simultanously, the only 'Full Stack' framework of its kind. 
 
 ![showcase](media/showcase.jpg)
 
 ## Installing
 
-You can install Qlovaseed using go get.
+You can get Qlovaseed using go get.
 ```sh
 go get -u -v github.com/qlova/seed
 ```
 
 ## Getting started
 
-Create a file called HelloWorld.go and paste in the following contents:
+Create HelloWorld.go file and paste in the following contents:
 
 ```go
 package main
@@ -49,7 +41,7 @@ func main() {
 
 ```
 
-In the same folder, run go build to create an executable of the app that you can run to see the app in action!
+In the same folder, run 'go build' to create an executable for the app, run this to see the app in action!
 
 ## Widgets and Logic
 
@@ -89,4 +81,9 @@ func main() {
 
 This example shows a quick glimpse on how powerful Qlovaseed can be. You can find more widgets in the [seeds repository](https://github.com/qlova/seeds).
 
-Please remember, this framework is in development, it does not have a stable API and features are currently implemented as needed.
+## Themes
+
+A work in progress material theme can be found [here](https://github.com/qlova/theme/tree/master/material).
+Check the examples folder to learn how to use it.
+
+**Please remember**, this framework is in development, it does not have a stable API and features are currently implemented as required.
