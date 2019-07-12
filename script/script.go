@@ -21,10 +21,27 @@ type Script struct {
 	*script
 }
 
+type Dependencies map[string]struct{}
+
 type script struct {
 	qlova.Script
 
 	js js
+
+	Dependencies Dependencies
+}
+
+func (q Script) Require(dependency string) {
+
+	//Subdependencies.
+	if dependency == Goto {
+		q.Require(Get)
+	}
+
+	if _, ok := q.Dependencies[dependency]; ok {
+		return
+	}
+	q.Dependencies[dependency] = struct{}{}
 }
 
 func (q Script) RawString(s qlova.String) string {
@@ -114,29 +131,71 @@ func (q Script) NextPage() Page {
 	}}
 }
 
+const GetCookie = `
+	function getCookie(cname) {
+		var name = cname + "=";
+		var decodedCookie = decodeURIComponent(document.cookie);
+		var ca = decodedCookie.split(';');
+		for(var i = 0; i <ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0) == ' ') {
+			c = c.substring(1);
+		}
+		if (c.indexOf(name) == 0) {
+			return c.substring(name.length, c.length);
+		}
+		}
+		return "";
+	}
+`
+
 func (q Script) UserData(name user.Data) qlova.String {
+	q.Require(GetCookie)
 	return q.wrap(`getCookie("` + string(name) + `")`)
 }
 
+const SetCookie = `
+	function setCookie(cname, cvalue, exdays) {
+		var d = new Date();
+		d.setTime(d.getTime() + (exdays*24*60*60*1000));
+		var expires = "expires="+ d.toUTCString();
+		if (production) {
+			document.cookie = cname + "=" + cvalue + ";" + expires + ";secure;path=/";
+		} else {
+			document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+		}
+	}
+`
+
 func (q Script) SetUserData(name user.Data, value qlova.String) {
+	q.Require(SetCookie)
 	q.Javascript(`setCookie("` + string(name) + `", ` + raw(value) + `, 365);`)
 }
 
-func ToJavascript(f func(q Script)) string {
+func ToJavascript(f func(q Script), dep ...Dependencies) []byte {
 	if f == nil {
-		return ""
+		return nil
 	}
 
-	return string(toJavascript(f))
+	var dependencies Dependencies
+	if len(dep) > 0 {
+		dependencies = dep[0]
+	}
+
+	return toJavascript(f, dependencies)
 }
 
-func toJavascript(f func(q Script)) []byte {
+func toJavascript(f func(q Script), dependencies Dependencies) []byte {
 	var program = qlova.Program(func(q qlova.Script) {
-		var s = Script{&script{Script: q}}
+		var s = Script{&script{
+			Script:       q,
+			Dependencies: dependencies,
+		}}
 		s.js.q = s
 		//s.Go.Script = s
 		f(s)
 	})
+
 	source := program.SourceCode(Javascript.Implementation{})
 	if source.Error {
 		panic(source.ErrorMessage)
@@ -164,10 +223,6 @@ func (q Script) Query(query qlova.String) Element {
 
 func (element Element) Run(method string) {
 	element.q.Raw("Javascript", language.Statement(`document.querySelector(`+element.query+`).`+method+`();`))
-}
-
-func (q Script) Back() {
-	q.Javascript(`back();`)
 }
 
 type ExportedFunction struct {
@@ -210,6 +265,7 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Value {
 		}
 	}
 
+	q.Require(Request)
 	q.Raw("Javascript", language.Statement(`let request = new XMLHttpRequest(); request.open("POST", "`+CallingString+`"); request.onload = function() {`))
 
 	if value.Type().NumOut() == 1 {
@@ -319,6 +375,27 @@ func (script Script) Unit(unit complex128) Unit {
 	}))
 }
 
+const SetClipboard = `
+	const setClipboard = str => {
+		const el = document.createElement('textarea');
+		el.value = str;
+		el.setAttribute('readonly', '');
+		el.style.position = 'absolute';
+		el.style.left = '-9999px';
+		document.body.appendChild(el);
+		const selected =
+			document.getSelection().rangeCount > 0 ? document.getSelection().getRangeAt(0) : false;
+		el.select();
+		document.execCommand('copy');
+		document.body.removeChild(el);
+		if (selected) {
+			document.getSelection().removeAllRanges();
+			document.getSelection().addRange(selected);
+		}
+	};
+`
+
 func (script Script) SetClipboard(text String) {
-	script.Javascript(`setClipboard(` + text.LanguageType().Raw() + `);`)
+	script.Require(SetClipboard)
+	script.js.Run(`setClipboard`, text)
 }

@@ -4,7 +4,6 @@ import "fmt"
 import "strings"
 import "strconv"
 import "net/http"
-import "bytes"
 
 import "github.com/qlova/seed/style/css"
 
@@ -150,7 +149,7 @@ func (f feeder) As(template Template) Feed {
 		q.Javascript(`let request = new XMLHttpRequest(); request.open("GET", "/feeds/` + f.feed.handler + `"+index); request.onload = function() {`)
 		q.Javascript(`if (request.response.length <= 0) return;`)
 
-		q.Javascript(`let json = JSON.parse(request.response);`)
+		q.Javascript(`let json = JSON.parse(request.response); if(!json) return;`)
 
 		q.Javascript(f.feed.Script(q).Element() + `.data = json;`)
 		q.Javascript(f.feed.Script(q).Element() + `.innerHTML = "";`)
@@ -169,90 +168,6 @@ func (f feeder) As(template Template) Feed {
 		q.Javascript(f.feed.Script(q).Element() + ".onready();")
 		q.Javascript(`if (` + f.feed.Script(q).Element() + ".onrefresh) " + f.feed.Script(q).Element() + ".onrefresh();")
 
-	})
-
-	f.seed.Add(f.feed)
-
-	return f.feed
-
-	//Minify the template's HTML.
-	minified, err := mini(template.Root().HTML(Default))
-	if err != nil {
-		//Panic?
-	}
-
-	//We replace all of the id's with the items's index as a suffix.
-	var ReplaceList string = ".replace(/id=" + template.Root().id + "/g,'id=" + template.Root().id + "-'+i)"
-
-	//Each id needs to be replaced with an id with a unique suffix.
-	//TODO support recursion.
-	for _, child := range template.Root().children {
-		ReplaceList += ".replace(/id=" + child.Root().id + "/g,'id=" + child.Root().id + "-'+i)"
-	}
-
-	//TODO handle mutexes below.
-
-	//The template onready callback.
-	var onready bytes.Buffer
-	template.Root().buildOnReady(0, &onready)
-
-	//This is the refresh function of the feed, send a request to the server, recieve feed and populate children with the feed's data.
-	f.feed.OnReady(func(q Script) {
-		q.Javascript(f.feed.Script(q).Element() + ".index = window.localStorage.getItem('" + f.feed.Script(q).ID + "_index') || '0';")
-		//Call this refresh instead of onready?
-		q.Javascript(f.feed.Script(q).Element() + ".onready = function() {")
-
-		q.Javascript(`let index = "";`)
-
-		for parent := &f.feed; parent != nil; parent = parent.within {
-			if parent.within != nil {
-				q.Javascript(`index += "/"+(` + parent.Script(q).Element() + `.index || "0");`)
-			}
-		}
-
-		q.Javascript(`let request = new XMLHttpRequest(); request.open("GET", "/feeds/` + f.feed.handler + `"+index); request.onload = function() {`)
-		q.Javascript(`if (request.response.length <= 0) return;`)
-
-		q.Javascript(`let json = JSON.parse(request.response);`)
-
-		q.Javascript(f.feed.Script(q).Element() + `.data = json;`)
-
-		q.Javascript(f.feed.Script(q).Element() + `.innerHTML = "";`)
-		q.Javascript(`for (let i = 0; i < json.length; i++) {`)
-		q.Javascript(f.feed.Script(q).Element() + `.innerHTML += ` + strconv.Quote(string(minified)) + ReplaceList + ";")
-
-		q.Javascript(`}`)
-
-		q.Javascript(`for (let i = 0; i < json.length; i++) {`)
-
-		q.Javascript(`get("` + template.Root().id + `-"+i).data = json;`)
-		q.Javascript(`get("` + template.Root().id + `-"+i).index = +i+1;`)
-
-		//Run OnReady
-		q.Javascript("eval(" + strconv.Quote(onready.String()) + ReplaceList + ");")
-
-		//Figure out what content to replace.
-		for _, child := range template.Root().children {
-
-			var text = string(child.Root().content)
-			if len(text) < 2 {
-				continue
-			}
-
-			if text[0] == '{' && text[len(text)-1] == '}' {
-				text = text[1 : len(text)-1]
-				var id = child.Root().id
-
-				q.Javascript(`get("` + id + `-"+i).innerHTML = json[i]["` + text + `"];`)
-			}
-		}
-		q.Javascript(`}`)
-		//TODO do this properly.
-
-		q.Javascript(`}; request.send();`)
-		q.Javascript(`};`)
-		q.Javascript(f.feed.Script(q).Element() + ".onready();")
-		q.Javascript(`if (` + f.feed.Script(q).Element() + ".onrefresh) " + f.feed.Script(q).Element() + ".onrefresh();")
 	})
 
 	f.seed.Add(f.feed)

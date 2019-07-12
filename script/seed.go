@@ -41,7 +41,15 @@ type Seed struct {
 	Q          Script
 }
 
+const Set = `
+function set(element, property, value) {
+	element.style[property] = value;
+}
+`
+
 func (seed Seed) Set(property, value string) {
+	seed.Q.Require(Set)
+
 	property = dashes2camels(property)
 
 	seed.Javascript(`set(` + seed.Element() + `, "` + property + `", "` + value + `");`)
@@ -59,10 +67,19 @@ func (seed Seed) Bytes() []byte {
 	return nil
 }
 
+const Get = `
+	function get(id) {
+		return document.getElementById(id)
+	}
+`
+
 func (seed Seed) Element() string {
 	if seed.Native != "" {
 		return seed.Native
 	}
+
+	seed.Q.Require(Get)
+
 	return `get("` + seed.ID + `")`
 }
 

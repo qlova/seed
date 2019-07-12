@@ -13,6 +13,8 @@ github.com/qlova/script v0.0.0-20190623055358-1f7012f55890 h1:a/QsYlqExh0HA0cyNT
 github.com/qlova/script v0.0.0-20190623055358-1f7012f55890/go.mod h1:YpO1YP92ZoWeBqt5QsJ3XgZ/ZLDRkDFSMzZAiGQC0t4=
 github.com/qlova/seed v0.0.0-20190623053804-06f1939715bd h1:JHMbPnmELtCy0Fsbf5EaXdnqstVghPJtbCxru65RDPY=
 github.com/qlova/seed v0.0.0-20190623053804-06f1939715bd/go.mod h1:y8Hd/XMFnjcP6JSNgAFMEz4UXZAghIRQKX8dr35nVnY=
+github.com/qlova/seeds v0.0.0-20190711071647-0f546b01fe15 h1:+dLzVgadoz4GJP5Wvl78AfloSZ6RDO0d+tbkExDpqDw=
+github.com/qlova/seeds v0.0.0-20190711071647-0f546b01fe15/go.mod h1:Ebi1TXvnPLq570Ih8HtnAFY3oHDc0v6nHVf7l42q54Q=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/tdewolff/minify v2.3.6+incompatible h1:2hw5/9ZvxhWLvBUnHE06gElGYz+Jv9R4Eys0XUzItYo=

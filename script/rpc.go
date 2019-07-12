@@ -10,6 +10,42 @@ import "github.com/qlova/seed/user"
 import qlova "github.com/qlova/script"
 import "github.com/qlova/script/language"
 
+const Request = `
+function request (method, formdata, url, manual) {
+	if (url.charAt(0) == "/") url = host+url;
+
+	if (manual) {
+			var xhr = new XMLHttpRequest();
+			xhr.open(method, url);
+		return xhr;
+	}
+
+	return new Promise(function (resolve, reject) {
+	var xhr = new XMLHttpRequest();
+	xhr.open(method, url, true);
+	xhr.onload = function () {
+		if (this.status >= 200 && this.status < 300) {
+		resolve(xhr.response);
+		} else {
+		reject({
+			status: this.status,
+			statusText: xhr.statusText,
+			response: xhr.response
+		});
+		}
+	};
+	xhr.onerror = function () {
+		reject({
+		status: this.status,
+		statusText: xhr.statusText,
+		response: xhr.response
+		});
+	};
+	xhr.send(formdata);
+	});
+}
+`
+
 type Promise struct {
 	expression string
 	q          Script
@@ -62,6 +98,7 @@ func (q Script) rpc(f interface{}, formdata string, args ...qlova.Type) Promise 
 
 	var variable = Unique()
 
+	q.Require(Request)
 	q.Raw("Javascript", language.Statement(`let `+variable+` = request("POST", `+formdata+`, "`+CallingString+`");`))
 
 	return Promise{variable, q}

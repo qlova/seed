@@ -31,6 +31,10 @@ type harvester struct {
 	stateHandlers map[State][]func(Script)
 
 	screenSmallerThans map[Unit]style.Sheet
+
+	onReadyHandlers []func(Script)
+
+	dependencies script.Dependencies
 }
 
 func newHarvester() *harvester {
@@ -38,6 +42,8 @@ func newHarvester() *harvester {
 		fonts:              make(map[style.Font]struct{}),
 		stateHandlers:      make(map[State][]func(Script)),
 		screenSmallerThans: make(map[Unit]style.Sheet),
+
+		dependencies: make(script.Dependencies),
 	}
 }
 
@@ -95,6 +101,12 @@ func (app *harvester) harvest(seed Seed) {
 		}
 	}
 
+	//Harvest onready handlers
+	if seed.onready != nil && !seed.template {
+		seed.ready = true
+		h.onReadyHandlers = append(h.onReadyHandlers, seed.onready)
+	}
+
 	//Recursively harvest children.
 	for _, child := range seed.children {
 		h.harvest(child.Root())
@@ -122,6 +134,41 @@ func (app *harvester) Fonts() []byte {
 		buffer.Write(font.Bytes())
 		buffer.WriteByte('}')
 	}
+
+	return buffer.Bytes()
+}
+
+func (app *harvester) OnReadyHandler() []byte {
+	var h = app
+	var buffer bytes.Buffer
+
+	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() { goto_ready = true;`)
+
+	for _, handler := range h.onReadyHandlers {
+		buffer.WriteByte('{')
+		buffer.Write(script.ToJavascript(handler, h.dependencies))
+		buffer.WriteByte('}')
+	}
+
+	//TODO move this elsewhere.
+	buffer.WriteString(`
+		if (window.localStorage) {
+			if (!window.goto) return;
+			let current_page = window.localStorage.getItem('*CurrentPage');
+			if (current_page ) {
+				goto(current_page);
+
+				//clear history
+				last_page = null;
+				goto_history = [];
+
+				if (get(current_page) && get(current_page).enterpage)
+					get(current_page).enterpage();
+			}
+		}
+	`)
+
+	buffer.WriteString(`}, false);`)
 
 	return buffer.Bytes()
 }
@@ -192,7 +239,7 @@ func (app *harvester) StateHandlers() []byte {
 		}
 
 		for _, handler := range handlers {
-			buffer.Write([]byte(script.ToJavascript(handler)))
+			buffer.Write([]byte(script.ToJavascript(handler, h.dependencies)))
 		}
 		buffer.WriteByte('}')
 
