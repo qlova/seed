@@ -79,6 +79,10 @@ func (page Page) Get(key string) string {
 	return page.content[key]
 }
 
+func (page Page) SetBack(back Page) {
+	page.SetAttributes(page.Attributes() + ` data-back="` + back.ID() + `"`)
+}
+
 func (page Page) SyncVisibilityWith(seed Interface) {
 	var root = seed.Root()
 	page.OnPageEnter(func(q Script) {

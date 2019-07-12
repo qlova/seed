@@ -242,11 +242,12 @@ func (seed Seed) buildOnReady(platform Platform, buffer *bytes.Buffer) {
 
 func (seed Seed) BuildOnReady(platform Platform) []byte {
 	var buffer bytes.Buffer
-	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() {`)
+	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() { goto_ready = true;`)
 
 	seed.buildOnReady(platform, &buffer)
 
 	buffer.WriteString(`
+		
 		if (window.localStorage) {
 			let current_page = window.localStorage.getItem('*CurrentPage');
 			if (current_page) {
@@ -610,11 +611,16 @@ func (application App) render(production bool, platform Platform) []byte {
 			
 			var goto_history = [];
 
+			var goto_ready = false;
+
 			var last_page = null;
 			var current_page = null;
 			var next_page = null;
 			var goto = function(next_page_id) {
-			
+				if (!goto_ready) {
+					return;
+				}
+				
 				if (get(next_page_id) == null || get(next_page_id).className != "page" || next_page_id == "` + application.loadingPage.ID() + `") {
 					next_page_id = "` + application.startingPage.ID() + `"
 					if (next_page_id == "") return;
@@ -637,8 +643,14 @@ func (application App) render(production bool, platform Platform) []byte {
 						}
 					}
 				}
+
+				let fallback;
+				if (get(current_page)) {
+					fallback = get(current_page).dataset.back;
+				}
 				
-				if (last_page != null) {
+				
+				if (last_page != null && fallback != next_page_id) {
 					goto_history.push(last_page);
 				}
 				
@@ -706,11 +718,26 @@ func (application App) render(production bool, platform Platform) []byte {
 					ActivePhotoSwipe.close();
 					return;
 				}
-				if (goto_history.length == 0) return;
+
+				let noback = false;
+				let last_page;
 				
-				
-				let last_page = goto_history.pop();
-				if (last_page == null || last_page == "") return;
+				if (goto_history.length == 0) {
+					noback = true;
+				} else {
+					last_page  = goto_history.pop();
+					if (last_page == null || last_page == "") {
+						noback = true;
+					}
+				}
+
+				//Lol
+				let fallback = get(current_page).dataset.back; 
+				if (noback) {
+					if (fallback) goto(fallback);
+					return; 
+				}  
+
 						
 				let old_length = goto_history.length;
 						
