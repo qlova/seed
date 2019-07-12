@@ -58,7 +58,7 @@ package main
 
 import "github.com/qlova/seed"
 
-//Import a widget to use it, a list of widgets can be found in the widgets directory.
+//Import a seed to use it, a list of seeds can be found [here](https://github.com/qlova/seeds).
 import "github.com/qlova/seeds/button"
 
 func main() {
