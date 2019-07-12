@@ -272,7 +272,7 @@ func AddTo(parent Interface) Seed {
 
 const OnPress = `
 	function op(id, func, propagate) {
-		let element = get(id);
+		let element = document.getElementById(id);
 		
 		let handler = function(event) {
 			func(event);
