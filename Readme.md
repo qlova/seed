@@ -17,7 +17,7 @@ Alternatively, the executable can be distributed to users directly and run
 * Prerendered by default.
 * **Optional** javascript/html/css (but you don't need it!)
 
-![showcase](media/showcase.png)
+![showcase](media/showcase.jpg)
 
 ## Installing
 
