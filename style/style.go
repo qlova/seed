@@ -538,6 +538,19 @@ func (style Style) Stretch() {
 	style.Style.SetObjectFit(css.Cover)
 }
 
+func (style Style) SetSticky(attachpoint complex128) {
+	style.SetAttach(attachpoint)
+	style.Style.SetPosition(css.Sticky)
+}
+
+func (style Style) End() {
+	style.Style.SetAlignSelf(css.FlexEnd)
+}
+
+func (style Style) CenterChildren() {
+	style.AlignChildren(0)
+}
+
 type TintValue struct {
 	Filter string
 	Loss   float64
