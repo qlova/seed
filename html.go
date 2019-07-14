@@ -239,18 +239,18 @@ func (app App) HTML() []byte {
 	buffer.Write(HTML)
 	buffer.Write(app.Tail.Bytes())
 
-	buffer.WriteString(`<script>`)
-	buffer.Write(StateHandlers)
-	buffer.Write(DynamicHandlers)
-	buffer.Write(OnReady)
-
-	buffer.WriteString(`</script>`)
-
 	for script := range scripts {
 		if path.Ext(script) == ".js" {
 			buffer.Write([]byte(`<script src="` + script + `"></script>`))
 		}
 	}
+
+	buffer.WriteString(`<script>`)
+	buffer.Write(DynamicHandlers)
+	buffer.Write(StateHandlers)
+	buffer.Write(OnReady)
+
+	buffer.WriteString(`</script>`)
 
 	buffer.WriteString(`</body>`)
 	buffer.WriteString(`</html>`)
