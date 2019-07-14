@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/script"
-	
-	"github.com/qlova/seeds/text"
+
 	"github.com/qlova/seeds/button"
+	"github.com/qlova/seeds/text"
 )
 
 var Time = script.NewString()

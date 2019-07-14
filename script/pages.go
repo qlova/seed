@@ -92,7 +92,7 @@ const Goto = `
 		for (let element of get(next_page_id).parentElement.childNodes) {
 			if (element.classList.contains("page")) {
 				if (getComputedStyle(element).display != "none") {
-					set(element, 'display', 'none');						
+					element.style.display ='none';						
 					if (element.exitpage) element.exitpage();
 					last_page = element.id;
 				}
@@ -111,7 +111,7 @@ const Goto = `
 		
 		let next_element = get(next_page_id);
 		if (next_element) {
-			set(next_element, 'display', 'inline-flex');
+			next_element.style.display = 'inline-flex';
 			if (next_element.enterpage) next_element.enterpage();
 			current_page = next_page_id;
 

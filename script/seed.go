@@ -55,6 +55,14 @@ func (seed Seed) Set(property, value string) {
 	seed.Javascript(`set(` + seed.Element() + `, "` + property + `", "` + value + `");`)
 }
 
+func (seed Seed) SetDynamic(property, value string) {
+	seed.Q.Require(Set)
+
+	property = dashes2camels(property)
+
+	seed.Javascript(`set(` + seed.Element() + `, "` + property + `", ` + value + `);`)
+}
+
 func (seed Seed) Get(property string) string {
 
 	property = dashes2camels(property)

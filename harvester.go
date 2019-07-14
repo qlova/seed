@@ -4,10 +4,13 @@ import "bytes"
 import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/script"
+import "github.com/qlova/seed/internal"
 import "net/http"
 
 //A harvester collects the extracts the necessary information of the seed tree in order to render the application.
 type harvester struct {
+	Context internal.Context
+
 	//Assets associated with a seed.
 	assets []Asset
 
@@ -28,8 +31,6 @@ type harvester struct {
 	screenSmallerThans map[Unit]style.Sheet
 
 	onReadyHandlers []func(Script)
-
-	dependencies script.Dependencies
 }
 
 func newHarvester() *harvester {
@@ -37,9 +38,9 @@ func newHarvester() *harvester {
 		fonts:              make(map[style.Font]struct{}),
 		stateHandlers:      make(map[State][]func(Script)),
 		screenSmallerThans: make(map[Unit]style.Sheet),
-		dynamicHandlers: make(map[string][]func(Script)),
+		dynamicHandlers:    make(map[string][]func(Script)),
 
-		dependencies: make(script.Dependencies),
+		Context: internal.NewContext(),
 	}
 }
 
@@ -142,7 +143,7 @@ func (app *harvester) OnReadyHandler() []byte {
 
 	for _, handler := range h.onReadyHandlers {
 		buffer.WriteByte('{')
-		buffer.Write(script.ToJavascript(handler, h.dependencies))
+		buffer.Write(script.ToJavascript(handler, h.Context))
 		buffer.WriteByte('}')
 	}
 
@@ -188,12 +189,12 @@ func (app *harvester) DynamicHandlers() []byte {
 	var h = app
 
 	var buffer bytes.Buffer
-	
+
 	buffer.WriteString("var dynamic = {")
 	for dynamic, handlers := range h.dynamicHandlers {
 		buffer.WriteString("\"" + dynamic + "\": function() {")
 		for _, handler := range handlers {
-			buffer.Write([]byte(script.ToJavascript(handler, h.dependencies)))
+			buffer.Write([]byte(script.ToJavascript(handler, h.Context)))
 		}
 		buffer.WriteString("},")
 	}
@@ -201,7 +202,7 @@ func (app *harvester) DynamicHandlers() []byte {
 	for dynamic := range h.dynamicHandlers {
 		buffer.WriteString("dynamic[\"" + dynamic + "\"]();")
 	}
-	
+
 	return buffer.Bytes()
 }
 
@@ -238,7 +239,7 @@ func (app *harvester) StateHandlers() []byte {
 		}
 
 		for _, handler := range handlers {
-			buffer.Write([]byte(script.ToJavascript(handler, h.dependencies)))
+			buffer.Write([]byte(script.ToJavascript(handler, h.Context)))
 		}
 		buffer.WriteByte('}')
 

@@ -58,7 +58,7 @@ func NewApp(args ...string) *App {
 
 //Keep dependencies.
 func (app *App) ToJavascript(f func(Script)) []byte {
-	return script.ToJavascript(f, app.dependencies)
+	return script.ToJavascript(f, app.Context)
 }
 
 func (app *App) NewPage() Page {

@@ -196,7 +196,7 @@ func (app App) HTML() []byte {
 		}
 
 		//Dependencies
-		for script := range app.dependencies {
+		for script := range app.Context.Dependencies {
 			buffer.WriteString(script)
 		}
 	}
@@ -206,6 +206,13 @@ func (app App) HTML() []byte {
 	{
 		//Default css from css.go
 		buffer.WriteString(CSS)
+
+		//Dependencies
+		for animation, id := range app.Context.Animations {
+			buffer.WriteString(`@keyframes ` + id + " {")
+			buffer.Write(animation.Bytes())
+			buffer.WriteString(`}`)
+		}
 
 		buffer.Write(app.Fonts())
 		buffer.Write(app.Animations())
