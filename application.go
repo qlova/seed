@@ -2,8 +2,10 @@ package seed
 
 import "fmt"
 import "os"
+import "bytes"
 import "github.com/qlova/seed/manifest"
 import "github.com/qlova/seed/service"
+import "github.com/qlova/seed/script"
 import "github.com/qlova/seed/style/css"
 
 type App struct {
@@ -20,6 +22,11 @@ type App struct {
 
 	loadingPage  Page
 	startingPage Page
+
+	Head, Neck, Body, Tail bytes.Buffer
+
+	production bool
+	platform   Platform
 }
 
 //Create a new application, accepts title and content arguments.
@@ -47,6 +54,11 @@ func NewApp(args ...string) *App {
 	}
 
 	return &app
+}
+
+//Keep dependencies.
+func (app *App) ToJavascript(f func(Script)) []byte {
+	return script.ToJavascript(f, app.Context)
 }
 
 func (app *App) NewPage() Page {
@@ -97,7 +109,17 @@ func (app *App) AddHash(name string) {
 
 //Set the google analytics tracking code.
 func (app *App) SetTrackingCode(code string) {
-	app.tracking = code
+	app.Head.WriteString(`
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=` + code + `"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+		
+			gtag('config', 'UA-134084549-1');
+		</script>
+	`)
 }
 
 //TODO random port, can be set with enviromental variables.

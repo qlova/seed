@@ -3,6 +3,7 @@ package seed
 import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/user"
+import "github.com/qlova/seed/script"
 
 import (
 	"encoding/base64"
@@ -105,7 +106,7 @@ type seed struct {
 
 	handlers []func(w http.ResponseWriter, r *http.Request)
 
-	dynamicText func(User)
+	dynamicText script.GlobalString
 
 	Landscape, Portrait style.Style
 
@@ -270,13 +271,55 @@ func AddTo(parent Interface) Seed {
 	return seed
 }
 
-const OnPress = `op`
+const OnPress = `
+	function op(id, func, propagate) {
+		let element = document.getElementById(id);
+		
+		let handler = function(event) {
+			func(event);
+		};
+		
+		let moved = false;
+		let point = [0, 0];
+		
+		element.ontouchstart = function(e) {
+			var changedTouch = event.changedTouches[0];
+				point[0]  = changedTouch.clientX;
+				point[1]  = changedTouch.clientY;
+		};
+		
+		element.ontouchmove = function(event) {
+			var changedTouch = event.changedTouches[0];
+			var elem = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
+						
+			if (elem != event.target) moved = true;
+						
+			let a = changedTouch.clientX - point[0];
+			let b = changedTouch.clientY - point[1];
+			if ((a*a + b*b) > 50*50) moved = true;
+		};
+		
+		element.ontouchend = function(ev) {
+			if (ev.stopPropagation && !propagate) ev.stopPropagation(); 
+			ev.preventDefault(); 
+			if (moved) {
+				moved = false; 
+				return; 
+			}
+			ev = ev.changedTouches[0];
+			handler(ev);
+		};
+
+		element.onclick = handler;
+	}
+`
 
 //Run a script when this seed is clicked.
 func (seed Seed) OnClick(f func(Script)) {
 	seed.onclick = f
 	seed.OnReady(func(q Script) {
-		q.Javascript(OnPress + "('" + seed.id + "', function(event) {")
+		q.Require(OnPress)
+		q.Javascript("op('" + seed.id + "', function(event) {")
 		f(q)
 		q.Javascript("});")
 	})
@@ -286,7 +329,8 @@ func (seed Seed) OnClick(f func(Script)) {
 func (seed Seed) OnClickThrough(f func(Script)) {
 	seed.onclick = f
 	seed.OnReady(func(q Script) {
-		q.Javascript(OnPress + "('" + seed.id + "', function(event) {")
+		q.Require(OnPress)
+		q.Javascript("op('" + seed.id + "', function(event) {")
 		f(q)
 		q.Javascript("}, true);")
 	})
@@ -314,15 +358,14 @@ func (seed Seed) OnReady(f func(Script)) {
 
 //Run a script when this seed's value is changed by the user.
 func (seed Seed) OnChange(f func(Script)) {
-	if seed.onchange == nil {
-		seed.onchange = f
-	} else {
-		var old = seed.onchange
-		seed.onchange = func(q Script) {
-			old(q)
-			f(q)
-		}
-	}
+	seed.OnReady(func(q Script) {
+		q.Javascript("{")
+		q.Javascript(`let onchange = function(ev) {`)
+		f(q)
+		q.Javascript(`};`)
+		q.Javascript(seed.Script(q).Element() + `.onchange = onchange;`)
+		q.Javascript("}")
+	})
 }
 
 func (seed Seed) Page() bool {
@@ -365,11 +408,6 @@ func (seed Seed) SetText(data string) {
 	data = strings.Replace(data, "  ", "&nbsp;", -1)
 	data = strings.Replace(data, "\t", "&emsp;", -1)
 	seed.content = []byte(data)
-}
-
-//Set the text content of the seed which will be dynamic at runtime.
-func (seed Seed) SetDynamicText(f func(User)) {
-	seed.dynamicText = f
 }
 
 //Shorthand for seed.OnClick(func(q seed.Script){ page.Script(q).Goto() })
@@ -446,9 +484,14 @@ func (seed Seed) OnFocusLost(f func(Script)) {
 	})
 }
 
+const LongPress = `
+!function(t,e){"use strict";function n(){this.dispatchEvent(new CustomEvent("long-press",{bubbles:!0,cancelable:!0})),clearTimeout(o)}var o=null,u="ontouchstart"in t||navigator.MaxTouchPoints>0||navigator.msMaxTouchPoints>0,s=u?"touchstart":"mousedown",i=u?"touchcancel":"mouseout",a=u?"touchend":"mouseup",c=u?"touchmove":"mousemove";"initCustomEvent"in e.createEvent("CustomEvent")&&(t.CustomEvent=function(t,n){n=n||{bubbles:!1,cancelable:!1,detail:void 0};var o=e.createEvent("CustomEvent");return o.initCustomEvent(t,n.bubbles,n.cancelable,n.detail),o},t.CustomEvent.prototype=t.Event.prototype),e.addEventListener(s,function(t){var e=t.target,u=parseInt(e.getAttribute("data-long-press-delay")||"500",10);o=setTimeout(n.bind(e),u)}),e.addEventListener(a,function(t){clearTimeout(o)}),e.addEventListener(i,function(t){clearTimeout(o)}),e.addEventListener(c,function(t){clearTimeout(o)})}(this,document);
+`
+
 //Run a script when this seed is clicked.
 func (seed Seed) OnLongPress(f func(Script)) {
 	seed.OnReady(func(q Script) {
+		q.Require(LongPress)
 		q.Javascript("{")
 		q.Javascript(`let onlongpress = function(ev) {ev.preventDefault()`)
 		f(q)

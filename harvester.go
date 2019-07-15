@@ -4,15 +4,13 @@ import "bytes"
 import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/script"
+import "github.com/qlova/seed/internal"
 import "net/http"
-
-type dynamicHandler struct {
-	id      string
-	handler func(User)
-}
 
 //A harvester collects the extracts the necessary information of the seed tree in order to render the application.
 type harvester struct {
+	Context internal.Context
+
 	//Assets associated with a seed.
 	assets []Asset
 
@@ -24,13 +22,15 @@ type harvester struct {
 	animationNames []string
 
 	//Dynamic handlers
-	dynamicHandlers []dynamicHandler
+	dynamicHandlers map[string][]func(Script)
 
 	customHandlers []func(response http.ResponseWriter, request *http.Request)
 
 	stateHandlers map[State][]func(Script)
 
 	screenSmallerThans map[Unit]style.Sheet
+
+	onReadyHandlers []func(Script)
 }
 
 func newHarvester() *harvester {
@@ -38,6 +38,9 @@ func newHarvester() *harvester {
 		fonts:              make(map[style.Font]struct{}),
 		stateHandlers:      make(map[State][]func(Script)),
 		screenSmallerThans: make(map[Unit]style.Sheet),
+		dynamicHandlers:    make(map[string][]func(Script)),
+
+		Context: internal.NewContext(),
 	}
 }
 
@@ -57,10 +60,10 @@ func (app *harvester) harvest(seed Seed) {
 	}
 
 	//Harvest Dynamic Handlers.
-	if seed.dynamicText != nil {
-		h.dynamicHandlers = append(h.dynamicHandlers, dynamicHandler{
-			id:      seed.id,
-			handler: seed.dynamicText,
+	if seed.dynamicText.Variable != "" {
+		var index = string(seed.dynamicText.Variable)
+		h.dynamicHandlers[index] = append(h.dynamicHandlers[index], func(q Script) {
+			seed.Script(q).SetText(seed.dynamicText.Script(q))
 		})
 	}
 
@@ -95,6 +98,12 @@ func (app *harvester) harvest(seed Seed) {
 		}
 	}
 
+	//Harvest onready handlers
+	if seed.onready != nil && !seed.template {
+		seed.ready = true
+		h.onReadyHandlers = append(h.onReadyHandlers, seed.onready)
+	}
+
 	//Recursively harvest children.
 	for _, child := range seed.children {
 		h.harvest(child.Root())
@@ -126,6 +135,41 @@ func (app *harvester) Fonts() []byte {
 	return buffer.Bytes()
 }
 
+func (app *harvester) OnReadyHandler() []byte {
+	var h = app
+	var buffer bytes.Buffer
+
+	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() { goto_ready = true;`)
+
+	for _, handler := range h.onReadyHandlers {
+		buffer.WriteByte('{')
+		buffer.Write(script.ToJavascript(handler, h.Context))
+		buffer.WriteByte('}')
+	}
+
+	//TODO move this elsewhere.
+	buffer.WriteString(`
+		if (window.localStorage) {
+			if (!window.goto) return;
+			let current_page = window.localStorage.getItem('*CurrentPage');
+			if (current_page ) {
+				goto(current_page);
+
+				//clear history
+				last_page = null;
+				goto_history = [];
+
+				if (get(current_page) && get(current_page).enterpage)
+					get(current_page).enterpage();
+			}
+		}
+	`)
+
+	buffer.WriteString(`}, false);`)
+
+	return buffer.Bytes()
+}
+
 //Return rendered animations.
 func (app *harvester) Animations() []byte {
 	var h = app
@@ -141,22 +185,25 @@ func (app *harvester) Animations() []byte {
 	return buffer.Bytes()
 }
 
-func (app *harvester) DynamicHandler() func(w http.ResponseWriter, r *http.Request) {
+func (app *harvester) DynamicHandlers() []byte {
 	var h = app
 
-	if len(h.dynamicHandlers) == 0 {
-		return nil
+	var buffer bytes.Buffer
+
+	buffer.WriteString("var dynamic = {")
+	for dynamic, handlers := range h.dynamicHandlers {
+		buffer.WriteString("\"" + dynamic + "\": function() {")
+		for _, handler := range handlers {
+			buffer.Write([]byte(script.ToJavascript(handler, h.Context)))
+		}
+		buffer.WriteString("},")
+	}
+	buffer.WriteString("};")
+	for dynamic := range h.dynamicHandlers {
+		buffer.WriteString("dynamic[\"" + dynamic + "\"]();")
 	}
 
-	return func(w http.ResponseWriter, r *http.Request) {
-		for _, handler := range h.dynamicHandlers {
-			w.Write([]byte(`"`))
-			w.Write([]byte(handler.id))
-			w.Write([]byte(`":"`))
-			handler.handler(User{}.FromHandler(w, r))
-			w.Write([]byte(`"`))
-		}
-	}
+	return buffer.Bytes()
 }
 
 func (app *harvester) MediaQueries() []byte {
@@ -192,7 +239,7 @@ func (app *harvester) StateHandlers() []byte {
 		}
 
 		for _, handler := range handlers {
-			buffer.Write([]byte(script.ToJavascript(handler)))
+			buffer.Write([]byte(script.ToJavascript(handler, h.Context)))
 		}
 		buffer.WriteByte('}')
 

@@ -41,31 +41,31 @@ func (q Script) Get(name Variable) qlova.String {
 func (q Script) Set(name setable, value qlova.Type) {
 	var v = value.LanguageType()
 
-	switch t := v.(type) {
+	var s = value.LanguageType().Raw()
+
+	switch v.(type) {
 	case Javascript.String:
-		q.Javascript(`window.localStorage.setItem("` + name.raw() + `", ` + string(t.Expression) + `);`)
 
-	case Javascript.Integer:
-		q.Javascript(`window.localStorage.setItem("` + name.raw() + `", (` + string(t.Expression) + `).toString());`)
-
-	case Javascript.Bit:
-		q.Javascript(`window.localStorage.setItem("` + name.raw() + `", (` + string(t.Expression) + `).toString());`)
+	case Javascript.Integer, Javascript.Bit:
+		s = s + ".toString()"
 
 	default:
 		panic("Unimplemented")
 	}
 
+	q.Javascript(`window.localStorage.setItem("` + name.raw() + `", ` + s + `);`)
+	q.Javascript(`if (dynamic["` + name.raw() + `"]) dynamic["` + name.raw() + `"](` + s + `);`)
 }
 
-type Int struct {
+type GlobalInt struct {
 	Variable
 }
 
-func NewInt() Int {
-	return Int{NewVariable()}
+func NewInt() GlobalInt {
+	return GlobalInt{NewVariable()}
 }
 
-func (i Int) Script(q Script) qlova.Int {
+func (i GlobalInt) Script(q Script) Int {
 	return q.IntFromLanguageType(Javascript.Integer{
 		Expression: language.Statement(`(parseInt(window.localStorage.getItem("` + string(i.Variable) + `") || "0"))`),
 	})
@@ -92,15 +92,15 @@ func (b BoolVar) Script(q Script) qlova.Bool {
 	return result
 }
 
-type StringVar struct {
+type GlobalString struct {
 	Variable
 }
 
-func NewString() StringVar {
-	return StringVar{NewVariable()}
+func NewString() GlobalString {
+	return GlobalString{NewVariable()}
 }
 
-func (s StringVar) Script(q Script) qlova.String {
+func (s GlobalString) Script(q Script) qlova.String {
 	var result = q.StringFromLanguageType(Javascript.String{
 		Expression: language.Statement(`window.localStorage.getItem("` + string(s.Variable) + `")`),
 	})

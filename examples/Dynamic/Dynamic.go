@@ -1,17 +1,25 @@
 package main
 
-import "time"
-import "github.com/qlova/seed"
+import (
+	"github.com/qlova/seed"
+	"github.com/qlova/seed/script"
 
-func Time(client seed.User) {
-	client.WriteString(time.Now().Format("3:04:05PM"))
-}
+	"github.com/qlova/seeds/button"
+	"github.com/qlova/seeds/text"
+)
+
+var Time = script.NewString()
 
 func main() {
-	var App = seed.NewApp("Dynamic Time")
+	var App = seed.NewApp("Dynamic")
 
-	var Text = seed.AddTo(App)
-	Text.SetDynamicText(Time)
+	for i := 0; i < 3; i++ {
+		text.AddTo(App).SetDynamicText(Time)
+	}
+
+	button.AddTo(App, "Click Me!").OnClick(func(q seed.Script) {
+		q.Set(Time, q.Time.Now().String())
+	})
 
 	App.Launch()
 }

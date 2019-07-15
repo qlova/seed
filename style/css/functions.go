@@ -121,6 +121,11 @@ func Rotate(angle float64) transformType {
 }
 
 //Returns a CSS time.
+func RotateX(angle float64) transformType {
+	return transformType(fmt.Sprint("rotateX(", angle, "rad)"))
+}
+
+//Returns a CSS time.
 func Scale(x, y float64) transformType {
 	return transformType(fmt.Sprint("scale(", x, ",", y, ")"))
 }

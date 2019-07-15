@@ -24,7 +24,9 @@ func New() Manifest {
 	var manifest Manifest
 	manifest.StartUrl = "."
 	manifest.Display = "standalone"
-	manifest.BackgroundColor = "#fff"
+	manifest.BackgroundColor = "#ffffff"
+	manifest.ThemeColor = "#ffffff"
+	manifest.Icons = []Icon{}
 	return manifest
 }
 

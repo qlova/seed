@@ -8,6 +8,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gorilla/websocket v1.4.0
 	github.com/qlova/script v0.0.0-20190623055358-1f7012f55890
+	github.com/qlova/seeds v0.0.0-20190711071647-0f546b01fe15
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4
