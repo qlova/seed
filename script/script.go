@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+import "github.com/qlova/seed/internal"
 import "github.com/qlova/seed/user"
 
 import "github.com/qlova/seed/style/css"
@@ -21,16 +22,11 @@ type Script struct {
 	*script
 }
 
-type Dependencies map[string]struct{}
-
 type script struct {
+	internal.Context
 	qlova.Script
 
-	js js
-
-	Dependencies Dependencies
-	
-	
+	js   js
 	Time time
 }
 
@@ -175,24 +171,24 @@ func (q Script) SetUserData(name user.Data, value qlova.String) {
 	q.Javascript(`setCookie("` + string(name) + `", ` + raw(value) + `, 365);`)
 }
 
-func ToJavascript(f func(q Script), dep ...Dependencies) []byte {
+func ToJavascript(f func(q Script), ctx ...internal.Context) []byte {
 	if f == nil {
 		return nil
 	}
 
-	var dependencies Dependencies
-	if len(dep) > 0 {
-		dependencies = dep[0]
+	var context internal.Context
+	if len(ctx) > 0 {
+		context = ctx[0]
 	}
 
-	return toJavascript(f, dependencies)
+	return toJavascript(f, context)
 }
 
-func toJavascript(f func(q Script), dependencies Dependencies) []byte {
+func toJavascript(f func(q Script), context internal.Context) []byte {
 	var program = qlova.Program(func(q qlova.Script) {
 		var s = Script{&script{
-			Script:       q,
-			Dependencies: dependencies,
+			Script:  q,
+			Context: context,
 		}}
 		s.js.q = s
 		s.Time.Script = s

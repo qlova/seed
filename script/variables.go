@@ -40,32 +40,32 @@ func (q Script) Get(name Variable) qlova.String {
 
 func (q Script) Set(name setable, value qlova.Type) {
 	var v = value.LanguageType()
-	
+
 	var s = value.LanguageType().Raw()
 
 	switch v.(type) {
 	case Javascript.String:
 
 	case Javascript.Integer, Javascript.Bit:
-		s = s+".toString()"
+		s = s + ".toString()"
 
 	default:
 		panic("Unimplemented")
 	}
 
 	q.Javascript(`window.localStorage.setItem("` + name.raw() + `", ` + s + `);`)
-	q.Javascript(`if (dynamic["`+name.raw()+`"]) dynamic["`+name.raw()+`"](`+s+`);`)
+	q.Javascript(`if (dynamic["` + name.raw() + `"]) dynamic["` + name.raw() + `"](` + s + `);`)
 }
 
-type Int struct {
+type GlobalInt struct {
 	Variable
 }
 
-func NewInt() Int {
-	return Int{NewVariable()}
+func NewInt() GlobalInt {
+	return GlobalInt{NewVariable()}
 }
 
-func (i Int) Script(q Script) qlova.Int {
+func (i GlobalInt) Script(q Script) Int {
 	return q.IntFromLanguageType(Javascript.Integer{
 		Expression: language.Statement(`(parseInt(window.localStorage.getItem("` + string(i.Variable) + `") || "0"))`),
 	})

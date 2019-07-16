@@ -16,5 +16,5 @@ func (q time) Now() Time {
 }
 
 func (time Time) String() String {
-	return time.Q.Value(time.LanguageType().Raw()+".toString()").String()
+	return time.Q.Value(time.LanguageType().Raw() + ".toString()").String()
 }

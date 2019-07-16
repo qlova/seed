@@ -5,6 +5,9 @@ import "encoding/hex"
 
 const White Hex = "#ffffff"
 const Black Hex = "#000000"
+const Red Hex = "#ff0000"
+const Green Hex = "#00ff00"
+const Blue Hex = "#0000ff"
 
 func RGB(r, g, b uint8) color.Color {
 	return color.RGBA{R: r, G: g, B: b, A: 255}

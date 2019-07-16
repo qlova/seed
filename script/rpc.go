@@ -1,7 +1,12 @@
 package script
 
 import (
-	"fmt"
+	//Global ids.
+	"encoding/base64"
+	"math/big"
+)
+
+import (
 	"reflect"
 )
 
@@ -65,10 +70,14 @@ func (promise Promise) Catch(f func()) Promise {
 	return promise
 }
 
+var rpc_id int64 = 0
+
 func (q Script) rpc(f interface{}, formdata string, args ...qlova.Type) Promise {
 
 	//Get a unique string reference for f.
-	var name = fmt.Sprint(f)
+	var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpc_id).Bytes())
+
+	rpc_id++
 
 	var value = reflect.ValueOf(f)
 

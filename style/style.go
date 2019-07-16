@@ -30,6 +30,7 @@ type Style struct {
 	x     *complex128
 	y     *complex128
 	angle *float64
+	rx    *float64
 	scale *float64
 }
 
@@ -64,6 +65,12 @@ func (style *Style) update() {
 		transform += css.Rotate(*style.angle)
 		changed = true
 	}
+
+	if style.rx != nil {
+		transform += css.RotateX(*style.rx)
+		changed = true
+	}
+
 	if style.scale != nil {
 		transform += css.Scale(*style.scale, *style.scale)
 		changed = true
@@ -102,6 +109,13 @@ func (style Style) Bytes() []byte {
 //This overrrides any previous calls to Angle.
 func (style *Style) Rotate(angle float64) {
 	style.angle = &angle
+	style.update()
+}
+
+//Rotate the element by the given angle.
+//This overrrides any previous calls to Angle.
+func (style *Style) RotateX(angle float64) {
+	style.rx = &angle
 	style.update()
 }
 
@@ -549,6 +563,14 @@ func (style Style) End() {
 
 func (style Style) CenterChildren() {
 	style.AlignChildren(0)
+}
+
+func (style Style) SetOpacity(opacity float64) {
+	style.CSS().SetOpacity(css.Number(opacity))
+}
+
+func (style Style) SetAnimationReverse() {
+	style.SetAnimationDirection(css.Reverse)
 }
 
 type TintValue struct {
