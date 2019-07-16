@@ -72,13 +72,21 @@ func (app *App) NewPage() Page {
 }
 
 func (app *App) SetPage(page Page) {
+	
+	
+	if app.loadingPage.Null() {
+		app.loadingPage = AddPageTo(app)
+		app.loadingPage.SetVisible()
+	}
+	
 	app.startingPage = page
 	app.loadingPage.OnReady(func(q Script) {
 		q.Javascript(`if (window.localStorage.getItem("update")) {`)
 		q.Javascript(`window.localStorage.removeItem("update");`)
 		q.Javascript(`window.localStorage.removeItem("*CurrentPage");`)
 		q.Javascript(`}`)
-		q.Javascript(`if (!window.localStorage.getItem("*CurrentPage")) goto("` + page.id + `");`)
+		q.Javascript(`if (!window.localStorage.getItem("*CurrentPage"))`)
+		page.Script(q).Goto()
 	})
 }
 

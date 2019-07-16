@@ -272,9 +272,7 @@ func AddTo(parent Interface) Seed {
 }
 
 const OnPress = `
-	function op(id, func, propagate) {
-		let element = document.getElementById(id);
-		
+	function op(element, func, propagate) {
 		let handler = function(event) {
 			func(event);
 		};
@@ -319,7 +317,7 @@ func (seed Seed) OnClick(f func(Script)) {
 	seed.onclick = f
 	seed.OnReady(func(q Script) {
 		q.Require(OnPress)
-		q.Javascript("op('" + seed.id + "', function(event) {")
+		q.Javascript("op(" + seed.Script(q).Element() + ", function(event) {")
 		f(q)
 		q.Javascript("});")
 	})
@@ -379,6 +377,10 @@ func (seed Seed) Require(script string) {
 
 //Add a child seed to this seed.
 func (seed Seed) Add(child Interface) {
+	if child.Root().template {
+		child = child.Root().children[0]
+	}
+	
 	seed.children = append(seed.children, child)
 	child.Root().parent = seed
 	if seed.template {
