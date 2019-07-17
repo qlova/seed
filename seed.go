@@ -377,10 +377,6 @@ func (seed Seed) Require(script string) {
 
 //Add a child seed to this seed.
 func (seed Seed) Add(child Interface) {
-	if child.Root().template {
-		child = child.Root().children[0]
-	}
-	
 	seed.children = append(seed.children, child)
 	child.Root().parent = seed
 	if seed.template {
