@@ -337,6 +337,7 @@ func (style Style) Clip() {
 func (style Style) SetScrollable() {
 	style.SetOverflowY(css.Auto)
 	style.SetOverflowX(css.Hidden)
+	style.Compress()
 	style.Set("-webkit-overflow-scrolling", "touch")
 	style.Set("-webkit-overscroll-behavior", "contain")
 	style.Set("overscroll-behavior", "contain")
@@ -481,9 +482,9 @@ func (style Style) WillAnimate() {
 	style.Set("will-change", "transform")
 }
 
-//Alias to style.SetSize(100, 100)
+//Alias to style.SetExpand(1)
 func (style Style) Expand() {
-	style.SetSize(100, 100)
+	style.SetExpand(1)
 }
 
 //Center this item along the axis of its container.
@@ -571,6 +572,10 @@ func (style Style) SetOpacity(opacity float64) {
 
 func (style Style) SetAnimationReverse() {
 	style.SetAnimationDirection(css.Reverse)
+}
+
+func (style Style) Compress() {
+	style.SetFlexShrink(css.Number(1))
 }
 
 type TintValue struct {
