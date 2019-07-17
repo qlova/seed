@@ -2,6 +2,7 @@ package seed
 
 import "github.com/qlova/seed/script"
 
+type Bool = script.Bool
 type Script = script.Script
 
 func NewVariable() script.Variable {
