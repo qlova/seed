@@ -22,7 +22,7 @@ const CSS = `
 	}
 	
 	html {
-		height: 100vh;
+		height: 100%;
 		box-sizing: border-box;
 	}
 	*, *:before, *:after {

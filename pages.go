@@ -26,12 +26,13 @@ func NewPage() Page {
 
 	seed.SetHidden()
 	seed.SetWillChange(css.Property.Display)
+	seed.SetWillChange(css.Property.Transform)
 
 	seed.SetPosition(css.Fixed)
 	seed.SetTop(css.Zero)
 	seed.SetLeft(css.Zero)
 	seed.Style.Style.SetWidth(css.Number(100).Vw())
-	seed.Style.Style.SetHeight(css.Number(100).Vh())
+	seed.Style.SetHeight(100)
 
 	return Page{seed, nil}
 }

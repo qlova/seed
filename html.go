@@ -23,7 +23,7 @@ func (app App) HTML() []byte {
 	buffer.WriteString(`<head>`)
 
 	//Ensure the screen size matches the device size, disable zoom.
-	buffer.WriteString(`<meta name="viewport" content="viewport-fit=cover, height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">`)
+	buffer.WriteString(`<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">`)
 
 	//This is a webapp.
 	buffer.WriteString(`
