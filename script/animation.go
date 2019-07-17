@@ -6,9 +6,14 @@ import "github.com/qlova/seed/style/css"
 type Animation = internal.Animation
 
 func (seed Seed) SetAnimation(animation *Animation) {
+	if animation == nil {
+		seed.Set("animation-name", "")
+		return
+	}
 	var name = seed.Q.Context.Animation(animation)
 	seed.Set("animation-name", name)
 	seed.Set("animation-direction", "normal")
+	seed.Set("animation-fill-mode", "forwards")
 }
 
 func (seed Seed) SetAnimationReverse() {

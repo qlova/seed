@@ -72,13 +72,12 @@ func (app *App) NewPage() Page {
 }
 
 func (app *App) SetPage(page Page) {
-	
-	
+
 	if app.loadingPage.Null() {
 		app.loadingPage = AddPageTo(app)
 		app.loadingPage.SetVisible()
 	}
-	
+
 	app.startingPage = page
 	app.loadingPage.OnReady(func(q Script) {
 		q.Javascript(`if (window.localStorage.getItem("update")) {`)

@@ -126,7 +126,7 @@ const Goto = `
 func (page Page) Goto() {
 	var q = page.Q
 	q.Require(Goto)
-	q.Javascript("goto('"+page.ID+"');")
+	q.Javascript("goto('" + page.ID + "');")
 }
 
 func (a Page) Equals(b Page) qlova.Bool {
