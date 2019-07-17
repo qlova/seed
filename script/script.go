@@ -35,6 +35,7 @@ func (q Script) Require(dependency string) {
 	//Subdependencies.
 	if dependency == Goto {
 		q.Require(Get)
+		q.Require(Set)
 	}
 
 	if _, ok := q.Dependencies[dependency]; ok {
