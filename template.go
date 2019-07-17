@@ -24,6 +24,10 @@ func (template Template) render(q Script) string {
 	q.Javascript(seed.tag)
 	q.Javascript("\");")
 
+	if seed.content != nil {
+		q.Javascript(seed.id + ".innerHTML = '" + string(seed.content) + "';")
+	}
+
 	q.Javascript(seed.id + ".className = '" + seed.id + "';")
 
 	for _, child := range seed.children {
@@ -40,6 +44,12 @@ func (template Template) scripts(q Script) {
 		q.Javascript("{")
 		seed.onready(q)
 		q.Javascript("};")
+	}
+
+	for _, child := range seed.children {
+		var template = Template{child.Root()}
+		template.template = true
+		template.scripts(q)
 	}
 }
 
