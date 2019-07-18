@@ -101,6 +101,27 @@ var SlideLeft = Transition{
 	},
 }
 
+var SlideRight = Transition{
+	In: &Animation{
+		0: func(frame Frame) {
+			frame.Translate(-100, 0)
+		},
+
+		100: func(frame Frame) {
+			frame.Translate(0, 0)
+		},
+	},
+	Out: &Animation{
+		0: func(frame Frame) {
+			frame.Translate(0, 0)
+		},
+
+		100: func(frame Frame) {
+			frame.Translate(-100, 0)
+		},
+	},
+}
+
 func setTransitionIn(Page script.Page, trans Transition) {
 	var q = Page.Q
 
