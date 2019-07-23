@@ -558,6 +558,10 @@ func (style Style) SetSticky(attachpoint complex128) {
 	style.Style.SetPosition(css.Sticky)
 }
 
+func (style Style) Start() {
+	style.Style.SetAlignSelf(css.FlexStart)
+}
+
 func (style Style) End() {
 	style.Style.SetAlignSelf(css.FlexEnd)
 }

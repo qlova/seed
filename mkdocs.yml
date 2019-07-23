@@ -1,0 +1,6 @@
+site_name: Qlovaseed
+
+nav:
+    - Home: index.md
+
+theme: readthedocs
