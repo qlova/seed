@@ -16,7 +16,7 @@ import "github.com/qlova/seed/style/css"
 import qlova "github.com/qlova/script"
 
 import "github.com/qlova/script/language"
-import "github.com/qlova/script/language/javascript"
+import Javascript "github.com/qlova/script/language/javascript"
 
 type Script struct {
 	*script
@@ -195,6 +195,7 @@ func toJavascript(f func(q Script), context internal.Context) []byte {
 		s.Time.Script = s
 		//s.Go.Script = s
 		f(s)
+		s.Require(Set)
 	})
 
 	source := program.SourceCode(Javascript.Implementation{})
