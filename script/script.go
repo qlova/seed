@@ -195,7 +195,6 @@ func toJavascript(f func(q Script), context internal.Context) []byte {
 		s.Time.Script = s
 		//s.Go.Script = s
 		f(s)
-		s.Require(Set)
 	})
 
 	source := program.SourceCode(Javascript.Implementation{})
