@@ -23,5 +23,12 @@ func (h Hex) RGBA() (r, g, b, a uint32) {
 	var c [4]byte
 	c[3] = 255
 	hex.Decode(c[:], []byte(h[1:]))
-	return uint32(c[0]), uint32(c[1]), uint32(c[2]), uint32(c[3])
+	r, g, b, a = uint32(c[0]), uint32(c[1]), uint32(c[2]), uint32(c[3])
+	if a != 255 {
+		r = uint32((float64(r) / 255) * 65535)
+		g = uint32((float64(g) / 255) * 65535)
+		b = uint32((float64(b) / 255) * 65535)
+		a = uint32((float64(a) / 255) * 65535)
+	}
+	return
 }
