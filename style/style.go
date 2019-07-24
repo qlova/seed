@@ -5,6 +5,8 @@ import "github.com/qlova/seed/style/css"
 import "math"
 import "fmt"
 
+type Unit = complex128
+
 //The em unit represents the current font-size, therefore this unit is relative to the pixel-density of the device.
 const Em = css.Em
 
@@ -149,9 +151,15 @@ func (style Style) SetHidden() {
 	style.SetDisplay(css.None)
 }
 
+//Set this to be hidden.
+func (style Style) SetInvisible() {
+	style.SetVisibility(css.Hidden)
+}
+
 //Set this to be visible.
 func (style Style) SetVisible() {
 	style.SetDisplay(css.Flex)
+	style.SetVisibility(css.Visible)
 }
 
 //Set this element to behave like a column when rendering children (rendering them vertically).

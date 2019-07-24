@@ -3,12 +3,11 @@ package script
 import (
 	"fmt"
 	"strings"
+
+	"github.com/qlova/script/language"
+	Javascript "github.com/qlova/script/language/javascript"
+	"github.com/qlova/seed/style/css"
 )
-
-import "github.com/qlova/script/language"
-import "github.com/qlova/script/language/javascript"
-
-import "github.com/qlova/seed/style/css"
 
 type Object string
 
@@ -68,6 +67,16 @@ func (seed Seed) Get(property string) string {
 	property = dashes2camels(property)
 
 	return string(`getComputedStyle(` + seed.Element() + `).` + property)
+}
+
+//Data returns the data associated with this seed.
+func (seed Seed) Data(property String) String {
+	return seed.Q.Value(fmt.Sprint(seed.Element(), ".dataset[", property.LanguageType().Raw(), "]")).String()
+}
+
+//SetData sets string Data associated with this seed.
+func (seed Seed) SetData(property, data String) {
+	seed.Q.Javascript(fmt.Sprint(seed.Element(), ".dataset[", property.LanguageType().Raw(), "] = ", data.LanguageType().Raw()))
 }
 
 //TODO
@@ -132,10 +141,6 @@ func (seed Seed) SetLeft(s String) {
 
 func (seed Seed) SetDisplay(s String) {
 	seed.Javascript(`set(` + seed.Element() + `, "display", ` + raw(s) + `);`)
-}
-
-func (seed Seed) SetVisible() {
-	seed.Javascript(`set(` + seed.Element() + `, "display", "flex");`)
 }
 
 func (seed Seed) SetHidden() {
