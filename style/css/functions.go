@@ -139,13 +139,14 @@ func Skew(x, y float64) transformType {
 func Colour(c go_color.Color) colorType {
 	var r, g, b, a = c.RGBA()
 	if a != 255 {
-		c := fmt.Sprint("rgba(", float64(r)/65535*255, ",", float64(g)/65535*255, ",", float64(b)/65535*255, ",", float64(a)/65535, ")")
-		//println(c)
+		c := fmt.Sprint("rgba(", (float64(r)/65535)*255, ",", (float64(g)/65535)*255, ",", (float64(b)/65535)*255, ",", float64(a)/65535, ")")
 		return colorType(c)
 	} else {
 		return colorType(fmt.Sprint("rgb(", r, ",", g, ",", b, ")"))
 	}
 }
+
+type ColorValue = colorType
 
 func LinearGradient(direction float64, start, end colorValue) gradientType {
 	return gradientType(fmt.Sprint("linear-gradient(", direction, "rad,", start, ",", end, ")"))
