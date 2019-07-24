@@ -19,6 +19,7 @@ import (
 var Dir = filepath.Dir(os.Args[0])
 
 type User = user.User
+type Shadow = style.Shadow
 
 //Return a reference to a new type of user data, this is small data that is used to identify the user.
 func UserData() user.Data {
