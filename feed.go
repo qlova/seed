@@ -70,8 +70,7 @@ func (feed Feed) OnRefresh(f func(Script)) {
 	feed.OnReady(func(q Script) {
 		q.Javascript(feed.Script(q).Element() + ".onrefresh = function() {")
 		f(q)
-		q.Javascript("}); ")
-		q.Javascript(feed.Script(q).Element() + ".onrefresh()")
+		q.Javascript("};")
 	})
 }
 
@@ -163,10 +162,11 @@ func (f feeder) As(template Template) Feed {
 		q.Javascript(`}`)
 		//TODO do this properly.
 
+		q.Javascript(`if (` + f.feed.Script(q).Element() + ".onrefresh) " + f.feed.Script(q).Element() + ".onrefresh();")
+
 		q.Javascript(`}; request.send();`)
 		q.Javascript(`};`)
 		q.Javascript(f.feed.Script(q).Element() + ".onready();")
-		q.Javascript(`if (` + f.feed.Script(q).Element() + ".onrefresh) " + f.feed.Script(q).Element() + ".onrefresh();")
 
 	})
 
