@@ -1,8 +1,10 @@
 package script
 
-import qlova "github.com/qlova/script"
-import "github.com/qlova/script/language"
-import "github.com/qlova/script/language/javascript"
+import (
+	qlova "github.com/qlova/script"
+	"github.com/qlova/script/language"
+	Javascript "github.com/qlova/script/language/javascript"
+)
 
 type Page struct {
 	Seed
@@ -71,7 +73,21 @@ const Goto = `
 	var last_page = null;
 	var current_page = null;
 	var next_page = null;
+
+	var going_to = null;
+
 	var goto = function(next_page_id) {
+		if (!going_to) {
+			setTimeout(function() {
+				actual_goto(going_to);
+				going_to = null;
+			}, 1)
+		}
+		going_to = next_page_id;
+	}
+	
+	var actual_goto = function(next_page_id) {
+		//We are still waiting for the app to load.
 		if (!goto_ready) {
 			return;
 		}

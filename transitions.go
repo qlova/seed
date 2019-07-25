@@ -142,10 +142,11 @@ func setTransitionIn(Page script.Page, trans Transition) {
 		Page.SetAnimationDuration(q.Float(0.5))
 		Page.SetAnimationIterations(q.Int(1))
 
+		Page.Javascript(`let last=last_page; if (!last) return;`)
 		Page.Javascript(`set(get(last), "display", "inline-flex");`)
 		Page.Javascript(`set(` + Page.Element() + `, "z-index", "50");`)
 		Page.Javascript(`animating = true;`)
-		Page.Javascript(`setTimeout(function() { set(get(last), "display", "none"); set(` + Page.Element() + `, "z-index", ""); animation_complete(); }, 500);`)
+		Page.Javascript(`setTimeout(function() { set(get(last), "animation", ""); set(get(last), "display", "none"); set(` + Page.Element() + `, "z-index", ""); animation_complete(); }, 500);`)
 	}
 }
 
@@ -180,7 +181,6 @@ func (page Page) SetTransition(trans Transition) {
 	if trans.In != nil || !trans.When.Null() {
 		page.OnPageEnter(func(q Script) {
 			var Page = page.Script(q)
-			Page.Javascript(`let last=last_page; if (!last) return;`)
 			setTransitionIn(Page, trans)
 		})
 	}
