@@ -79,14 +79,6 @@ func (app *App) SetPage(page Page) {
 	}
 
 	app.startingPage = page
-	app.loadingPage.OnReady(func(q Script) {
-		q.Javascript(`if (window.localStorage.getItem("update")) {`)
-		q.Javascript(`window.localStorage.removeItem("update");`)
-		q.Javascript(`window.localStorage.removeItem("*CurrentPage");`)
-		q.Javascript(`}`)
-		q.Javascript(`if (!window.localStorage.getItem("*CurrentPage"))`)
-		page.Script(q).Goto()
-	})
 }
 
 //Return the loadingpage (like a splashscreen) for this app that displays while the app is loading.

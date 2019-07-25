@@ -247,8 +247,38 @@ func (app App) HTML() []byte {
 
 	buffer.WriteString(`<script>`)
 	buffer.Write(DynamicHandlers)
-	buffer.Write(StateHandlers)
+	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() {`)
 	buffer.Write(OnReady)
+	buffer.Write(StateHandlers)
+	buffer.WriteString(`
+		goto_ready = true;
+		if (window.localStorage) {
+
+			if (window.localStorage.getItem("update")) {
+				window.localStorage.removeItem("update");
+				window.localStorage.removeItem("*CurrentPage");
+			}
+
+			if (!window.goto) return;
+			let current_page = window.localStorage.getItem('*CurrentPage');
+			if (current_page ) {
+				goto(current_page);
+
+				//clear history
+				last_page = null;
+				goto_history = [];
+
+				if (get(current_page) && get(current_page).enterpage)
+					get(current_page).enterpage();
+			} else {
+				goto(starting_page);
+			}
+		} else {
+			goto(starting_page);
+		}
+	`)
+
+	buffer.WriteString(`}, false);`)
 
 	buffer.WriteString(`</script>`)
 

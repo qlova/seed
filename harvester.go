@@ -46,6 +46,7 @@ func newHarvester() *harvester {
 
 //Do the harvesting.
 func (app *harvester) harvest(seed Seed) {
+
 	var h = app
 
 	//Harvest Animations.
@@ -139,33 +140,11 @@ func (app *harvester) OnReadyHandler() []byte {
 	var h = app
 	var buffer bytes.Buffer
 
-	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() { goto_ready = true;`)
-
 	for _, handler := range h.onReadyHandlers {
 		buffer.WriteByte('{')
 		buffer.Write(script.ToJavascript(handler, h.Context))
 		buffer.WriteByte('}')
 	}
-
-	//TODO move this elsewhere.
-	buffer.WriteString(`
-		if (window.localStorage) {
-			if (!window.goto) return;
-			let current_page = window.localStorage.getItem('*CurrentPage');
-			if (current_page ) {
-				goto(current_page);
-
-				//clear history
-				last_page = null;
-				goto_history = [];
-
-				if (get(current_page) && get(current_page).enterpage)
-					get(current_page).enterpage();
-			}
-		}
-	`)
-
-	buffer.WriteString(`}, false);`)
 
 	return buffer.Bytes()
 }
