@@ -27,6 +27,10 @@ func launch(hostport string) {
 
 	url := "http://localhost" + hostport
 
+	if launch_native(url) == nil {
+		return
+	}
+
 	for _, browser := range browsers {
 		err = exec.Command(browser, "--app="+url).Run()
 		if err == nil {
