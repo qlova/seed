@@ -21,7 +21,7 @@ Now you can build a HelloWorld application.
 In Qlovaseed, seeds are used that will grow into the application.
 More information on seeds will be covered later in the documentation.
 
-```
+```go
 package main
 
 import (
@@ -56,7 +56,8 @@ func main() {
 ```
 
 On the commandline, run this to build the app:
-```
+
+```sh
 	go build
 ```
 
