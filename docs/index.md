@@ -6,12 +6,12 @@ Qlovaseed is an app-development framework for Go, this means you can use it to d
 
 * Desktop applications
 * Mobile applications.
-* Progresive webapps. 
+* Progressive webapps. 
 
 Let's get started. To use Qlovaseed you will need Go installed.
 You can get Go [here](https://golang.org/dl/)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/16ZOmBmqJ0s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/16ZOmBmqJ0s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
 
 Run this in a commandline to update/install Qlovaseed:
 
