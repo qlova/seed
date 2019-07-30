@@ -11,6 +11,8 @@ Qlovaseed is an app-development framework for Go, this means you can use it to d
 Let's get started. To use Qlovaseed you will need Go installed.
 You can get Go [here](https://golang.org/dl/)
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/16ZOmBmqJ0s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 Run this in a commandline to update/install Qlovaseed:
 
 ```sh
@@ -21,6 +23,7 @@ Now you can build a HelloWorld application.
 In Qlovaseed, seeds are used that will grow into the application.
 More information on seeds will be covered later in the documentation.
 
+Create a folder called HelloWorld and create a file inside called HelloWorld.go, paste in the following:
 ```go
 package main
 
