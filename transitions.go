@@ -138,11 +138,12 @@ func setTransitionIn(Page script.Page, trans Transition) {
 	}
 
 	if trans.In != nil {
+		Page.Javascript(`let last=last_page; if (!last || last == loading_page) return;`)
+
 		Page.SetAnimation(trans.In)
 		Page.SetAnimationDuration(q.Float(0.5))
 		Page.SetAnimationIterations(q.Int(1))
 
-		Page.Javascript(`let last=last_page; if (!last) return;`)
 		Page.Javascript(`set(get(last), "display", "inline-flex");`)
 		Page.Javascript(`set(` + Page.Element() + `, "z-index", "50");`)
 		Page.Javascript(`animating = true;`)

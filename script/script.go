@@ -106,10 +106,6 @@ func (q Script) Every(time float64, f func()) {
 	q.Javascript("}, " + fmt.Sprint(time) + ");")
 }
 
-func (q Script) Restart() {
-	q.Javascript("window.location.reload();")
-}
-
 /*func (q Script) Get(seed Interface) *script.Seed {
 	return &script.Seed{
 		ID: seed.GetSeed().id,

@@ -128,28 +128,44 @@ func (app App) HTML() []byte {
 
 		//ServiceWorker OnUpdateFound
 		buffer.WriteString(`
+
 			if ('serviceWorker' in navigator) {
 				navigator.serviceWorker.register('/index.js').then(function(registration) {
 
 					registration.onupdatefound = function() {
-						if (!window.localStorage.getItem("update")) {
-							window.localStorage.setItem("update", "false");
-							return;
-						}
-						window.localStorage.setItem("update", "true");
-						
-						//Clear all unnamed variables because they could have changed!
-						//Unamed variables have a 'g_' prefix.
-						for (let i in localStorage) {
-							let item = window.localStorage[i];
-							if (item.substring && item.substring(0, 3) == "g_") {
-								window.localStorage.removeItem(i);
-							}
-						}
-		`)
-		buffer.Write(app.ToJavascript(app.onupdatefound))
 
+						registration.installing.onstatechange = function(event) {
+							switch (event.target.state) {
+								case 'installed':
+									if (navigator.serviceWorker.controller) {
+
+										if (!window.localStorage.getItem("updated")) {
+											window.localStorage.setItem("updated", "true");
+											return;
+										}
+										if (window.localStorage.getItem("updating")) {
+											return;
+										}
+										
+										//Clear all unnamed variables because they could have changed!
+										//Unamed variables have a 'g_' prefix.
+										for (let i in localStorage) {
+											let item = window.localStorage[i];
+											if (item.substring && item.substring(0, 3) == "g_") {
+												window.localStorage.removeItem(i);
+											}
+										}
+
+
+										`)
+		buffer.Write(app.ToJavascript(app.onupdatefound))
 		buffer.WriteString(`
+										
+									} else {
+										
+									}
+							}
+						};
 					}
 				}, function(err) {
 					
@@ -253,11 +269,14 @@ func (app App) HTML() []byte {
 	buffer.WriteString(`
 		goto_ready = true;
 		if (window.localStorage) {
-
-			if (window.localStorage.getItem("update")) {
-				window.localStorage.removeItem("update");
-				window.localStorage.removeItem("*CurrentPage");
+			if (window.localStorage.getItem("updating")) {
+				window.localStorage.removeItem("updating");
+				last_page = null;
+				goto(starting_page);
+				return;
 			}
+			
+
 
 			if (!window.goto) return;
 			let current_page = window.localStorage.getItem('*CurrentPage');
