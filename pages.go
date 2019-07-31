@@ -98,6 +98,19 @@ func (page Page) Script(q Script) script.Page {
 	return script.Page{page.Seed.Script(q)}
 }
 
+//OnBack is triggered before the back action is triggered, return q.Bool(true) to prevent default behaviour.
+func (page Page) OnBack(f func(q Script)) {
+	page.OnReady(func(q Script) {
+		q.Javascript("{")
+		q.Javascript("let old_onback = " + page.Script(q).Element() + ".onback;")
+		q.Javascript(page.Script(q).Element() + ".onback = function() {")
+		q.Javascript("if (old_onback) old_onback();")
+		f(q)
+		q.Javascript("};")
+		q.Javascript("}")
+	})
+}
+
 //Run a script when this page is entered/ongoto.
 func (seed Page) OnPageEnter(f func(Script)) {
 	seed.OnReady(func(q Script) {

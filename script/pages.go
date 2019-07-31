@@ -18,6 +18,9 @@ function back() {
 	}
 	
 	if (!window.goto) return;
+
+	let onback = get(current_page).onback;
+	if (onback) if (onback()) return;
 	
 	let noback = false;
 	let last_page;
