@@ -132,6 +132,15 @@ func (seed Seed) HTML(platform Platform) []byte {
 		html.WriteString(seed.attr)
 		html.WriteByte(' ')
 	}
+
+	for attribute, value := range seed.Element.Attributes {
+		html.WriteString(string(attribute))
+		html.WriteByte('=')
+		html.WriteByte('\'')
+		html.WriteString(value)
+		html.WriteByte('\'')
+	}
+
 	html.WriteString("id='")
 	html.WriteString(fmt.Sprint(seed.id))
 	html.WriteByte('\'')

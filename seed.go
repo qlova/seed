@@ -4,6 +4,7 @@ import "github.com/qlova/seed/style/css"
 import "github.com/qlova/seed/style"
 import "github.com/qlova/seed/user"
 import "github.com/qlova/seed/script"
+import HTML "github.com/qlova/seed/html"
 
 import (
 	"encoding/base64"
@@ -78,11 +79,14 @@ type Seed struct {
 }
 
 type seed struct {
+	HTML.Element
 	style.Style
 
 	id               string
 	tag, attr, class string
 	children         []Interface
+
+	attributes map[string]string
 
 	styled bool
 	ready  bool

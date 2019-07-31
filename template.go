@@ -30,6 +30,10 @@ func (template Template) render(q Script) string {
 
 	q.Javascript(seed.id + ".className = '" + seed.id + "';")
 
+	for attribute, value := range seed.Element.Attributes {
+		q.Javascript(seed.id + ".setAttribute('" + string(attribute) + "', '" + value + "');")
+	}
+
 	for _, child := range seed.children {
 		q.Javascript(seed.id + ".appendChild(" + Template{child.Root()}.render(q) + ");")
 	}
