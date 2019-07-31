@@ -8,7 +8,7 @@ import (
 
 import qlova "github.com/qlova/script"
 import "github.com/qlova/script/language"
-import "github.com/qlova/script/language/javascript"
+import Javascript "github.com/qlova/script/language/javascript"
 
 type setable interface {
 	raw() string
@@ -34,8 +34,8 @@ func (v Variable) raw() string {
 	return string(v)
 }
 
-func (q Script) Get(name Variable) qlova.String {
-	return q.wrap(`window.localStorage.getItem("` + string(name) + `")`)
+func (q Script) Get(name setable) qlova.String {
+	return q.wrap(`window.localStorage.getItem("` + string(name.raw()) + `")`)
 }
 
 func (q Script) Set(name setable, value qlova.Type) {
