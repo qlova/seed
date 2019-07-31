@@ -11,7 +11,8 @@ func NewWorker() Worker {
 
 //Worker is a service worker.
 type Worker struct {
-	Assets map[string]bool
+	Version string
+	Assets  map[string]bool
 }
 
 func (worker Worker) renderMap(b *bytes.Buffer, mapping map[string]bool) {
@@ -31,6 +32,10 @@ func (worker Worker) renderMap(b *bytes.Buffer, mapping map[string]bool) {
 //Render the service worker to JS.
 func (worker Worker) Render() []byte {
 	var b bytes.Buffer
+
+	b.WriteString(`const version = "`)
+	b.WriteString(worker.Version)
+	b.WriteString(`";`)
 
 	b.WriteString(`self.addEventListener('install', function(event) {
 		self.skipWaiting();
