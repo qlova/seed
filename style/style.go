@@ -485,6 +485,16 @@ func (style Style) SetRoundedCorners(radius complex128) {
 	style.SetBorderTopLeftRadius(value)
 }
 
+//RemoveRoundedCorners removes any rounded corner specification for this element.
+func (style Style) RemoveRoundedCorners() {
+
+	style.SetBorderBottomLeftRadius(css.Unset)
+	style.SetBorderBottomRightRadius(css.Unset)
+
+	style.SetBorderTopRightRadius(css.Unset)
+	style.SetBorderTopLeftRadius(css.Unset)
+}
+
 //Specify that this style will be animated.
 func (style Style) WillAnimate() {
 	style.Set("will-change", "transform")
