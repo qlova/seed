@@ -128,10 +128,10 @@ func (app App) HTML() []byte {
 
 		//ServiceWorker OnUpdateFound
 		buffer.WriteString(`
-
+			let ServiceWorker_Registration = null;
 			if ('serviceWorker' in navigator) {
 				navigator.serviceWorker.register('/index.js').then(function(registration) {
-
+					ServiceWorker_Registration = registration;
 					registration.onupdatefound = function() {
 
 						registration.installing.onstatechange = function(event) {
@@ -271,9 +271,6 @@ func (app App) HTML() []byte {
 		if (window.localStorage) {
 			if (window.localStorage.getItem("updating")) {
 				window.localStorage.removeItem("updating");
-				last_page = null;
-				goto(starting_page);
-				return;
 			}
 			
 

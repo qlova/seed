@@ -44,6 +44,11 @@ func (q Script) Update() {
 	q.Javascript(`setTimeout(update, 100);`)
 }
 
+//CheckForUpdates checks for an update.
+func (q Script) CheckForUpdates() {
+	q.Javascript(`ServiceWorker_Registration.update();`)
+}
+
 //Restart peforms a hard reboot of the app.
 func (q Script) Restart() {
 	q.Javascript("window.location.reload();")
