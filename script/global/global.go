@@ -22,6 +22,11 @@ func (ref Reference) String() string {
 	return ref.string
 }
 
+//Set is a set method that should be called whenever the parent value is set.
+func (ref Reference) Set(q script.Script) {
+	q.Javascript(`if (dynamic["` + ref.string + `"]) dynamic["` + ref.string + `"]();`)
+}
+
 //New returns a new globl variable reference.
 func New(name ...string) Reference {
 	if len(name) > 0 {
@@ -54,6 +59,7 @@ func (i Int) Get(q script.Script) script.Int {
 //Set the global.Int to be script.Int
 func (i Int) Set(q script.Script, value script.Int) {
 	q.Javascript(`window.localStorage.setItem("` + i.string + `", ` + value.LanguageType().Raw() + `.toString());`)
+	Reference(i).Set(q)
 }
 
 //String is a global Integer.
@@ -74,6 +80,7 @@ func (s String) Get(q script.Script) script.String {
 //Set the global.String to be script.String
 func (s String) Set(q script.Script, value script.String) {
 	q.Javascript(`window.localStorage.setItem("` + s.string + `", ` + value.LanguageType().Raw() + `);`)
+	Reference(s).Set(q)
 }
 
 //Bool is a global Boolean.
@@ -94,4 +101,5 @@ func (b Bool) Get(q script.Script) script.Bool {
 //Set the global.Bool to be script.Bool
 func (b Bool) Set(q script.Script, value script.Bool) {
 	q.Javascript(`window.localStorage.setItem("` + b.string + `", ` + value.LanguageType().Raw() + `);`)
+	Reference(b).Set(q)
 }

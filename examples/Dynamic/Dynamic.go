@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/script/global"
 
 	"github.com/qlova/seeds/button"
 	"github.com/qlova/seeds/text"
 )
 
-var Time = script.NewString()
+var Time = global.NewString()
 
 func main() {
 	var App = seed.NewApp("Dynamic")
@@ -18,7 +18,7 @@ func main() {
 	}
 
 	button.AddTo(App, "Click Me!").OnClick(func(q seed.Script) {
-		q.Set(Time, q.Time.Now().String())
+		Time.Set(q, q.Time.Now().String())
 	})
 
 	App.Launch()
