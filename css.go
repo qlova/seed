@@ -36,56 +36,23 @@ const CSS = `
 		position: relative;
 	}
 
-	<!-- TODO These animations should be added dynamically by seed/script/animation.go -->
-	@keyframes slideInFromLeft {
-		from { transform: translateX(-100%); }
-		to { transform: translateX(0); }
+	#install_instructions {
+		position: fixed;
+		display: flex;
+		left: 0px;
+		top: 0px;
+		width: 100vw;
+		flex-wrap: wrap;
+		height: 100vh;
+		background-color: white;
+		align-content: center;
+		justify-content: center;
+		align-items: center;
+		justify-items: center;
+		font-family: sans-serif;
+		color: #343333;
 	}
 
-	@keyframes slideInFromRight {
-		from { transform: translateX(100%); }
-		to { transform: translateX(0); }
-	}
-
-	@keyframes slideInFromTop {
-		from { transform: translateY(-100%); }
-		to { transform: translateY(0); }
-	}
-
-	@keyframes slideInFromBottom {
-		from { transform: translateY(100%); }
-		to { transform: translateY(0); }
-	}
-
-	@keyframes slideOutToLeft {
-		from { transform: translateX(0); }
-		to { transform: translateX(-100%); }
-	}
-
-	@keyframes slideOutToRight {
-		from { transform: translateX(); }
-		to { transform: translateX(100%); }
-	}
-
-	@keyframes slideOutToTop {
-		from { transform: translateY(0); }
-		to { transform: translateY(-100%); }
-	}
-
-	@keyframes slideOutToBottom {
-		from { transform: translateY(0); }
-		to { transform: translateY(100%); }
-	}
-	
-	@keyframes fadeOut {
-		from { opacity: 1; }
-		to { opacity: 0; }
-	}
-	
-	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
-	}
 	
 	body {
 		top: 0;

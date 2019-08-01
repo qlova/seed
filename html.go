@@ -5,7 +5,7 @@ import (
 	"path"
 )
 
-//Returns rendered html of the entire app.
+//HTML returns rendered html of the entire app.
 func (app App) HTML() []byte {
 	var Style = app.BuildStyleSheet(0).Bytes()
 	var Portrait = app.BuildStyleSheetForPortrait(0).Bytes()
@@ -128,6 +128,14 @@ func (app App) HTML() []byte {
 
 		//ServiceWorker OnUpdateFound
 		buffer.WriteString(`
+			let AddToHomeScreenEvent = null;
+			window.addEventListener('beforeinstallprompt', (e) => {
+				// Prevent Chrome 76 and later from showing the mini-infobar
+				e.preventDefault();
+				// Stash the event so it can be triggered later.
+				AddToHomeScreenEvent = e;
+			});
+
 			let ServiceWorker_Registration = null;
 			if ('serviceWorker' in navigator) {
 				navigator.serviceWorker.register('/index.js').then(function(registration) {
