@@ -1,20 +1,20 @@
 package seed
 
-import "github.com/qlova/seed/style/css"
-import "github.com/qlova/seed/style"
-import "github.com/qlova/seed/user"
-import "github.com/qlova/seed/script"
-import HTML "github.com/qlova/seed/html"
-
 import (
+	"github.com/qlova/seed/script/global"
+	"github.com/qlova/seed/style"
+	"github.com/qlova/seed/style/css"
+	"github.com/qlova/seed/user"
+
 	"encoding/base64"
 	"html"
 	"math/big"
 	"net/http"
-	"strings"
-
 	"os"
 	"path/filepath"
+	"strings"
+
+	HTML "github.com/qlova/seed/html"
 )
 
 var Dir = filepath.Dir(os.Args[0])
@@ -111,7 +111,7 @@ type seed struct {
 
 	handlers []func(w http.ResponseWriter, r *http.Request)
 
-	dynamicText script.GlobalString
+	dynamicText global.String
 
 	Landscape, Portrait style.Style
 

@@ -1,15 +1,26 @@
 package seed
 
-import "github.com/qlova/seed/script"
+import (
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/script/global"
+)
 
+//State is a boolean state that can propogate effects to seeds.
 type State struct {
-	script.BoolVar
+	global.Bool
 	not bool
 }
 
-func NewState() State {
-	return State{script.NewBool(), false}
+//NewState returns a new globally unique state.
+func NewState(name ...string) State {
+	if len(name) > 0 {
+		return State{global.NewBool("state_" + name[0]), false}
+	}
+	return State{global.NewBool(), false}
 }
+
+//Installed is active whenever the app is installed to the device.
+var Installed = NewState("installed")
 
 func (state State) Not() State {
 	var s = state
@@ -71,38 +82,42 @@ func (state State) Toggle(q Script) {
 
 func (state State) Get(q Script) script.Bool {
 	if state.not {
-		return q.Not(state.Script(q))
+		return q.Not(state.Bool.Get(q))
 	} else {
-		return state.Script(q)
+		return state.Bool.Get(q)
 	}
 }
 
 func (state State) Set(q Script) {
+	var reference = global.Reference(state.Bool).String()
 	if state.not {
-		q.Javascript(string(state.BoolVar.Variable) + `_unset();`)
+		q.Javascript(reference + `_unset();`)
 	} else {
-		q.Javascript(string(state.BoolVar.Variable) + `_set();`)
+		q.Javascript(reference + `_set();`)
 	}
 }
 
 func (state State) Unset(q Script) {
+	var reference = global.Reference(state.Bool).String()
 	if state.not {
-		q.Javascript(string(state.BoolVar.Variable) + `_set();`)
+		q.Javascript(reference + `_set();`)
 	} else {
-		q.Javascript(string(state.BoolVar.Variable) + `_unset();`)
+		q.Javascript(reference + `_unset();`)
 	}
 }
 
 func (state State) UnsetFor(u User) {
+	var reference = global.Reference(state.Bool).String()
 	if state.not {
-		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], string(state.BoolVar.Variable)+`_set();`)
+		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], reference+`_set();`)
 	}
-	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], string(state.BoolVar.Variable)+`_unset();`)
+	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], reference+`_unset();`)
 }
 
 func (state State) SetFor(u User) {
+	var reference = global.Reference(state.Bool).String()
 	if state.not {
-		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], string(state.BoolVar.Variable)+`_unset();`)
+		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], reference+`_unset();`)
 	}
-	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], string(state.BoolVar.Variable)+`_set();`)
+	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], reference+`_set();`)
 }

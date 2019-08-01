@@ -1,11 +1,15 @@
 package seed
 
-import "bytes"
-import "github.com/qlova/seed/style"
-import "github.com/qlova/seed/style/css"
-import "github.com/qlova/seed/script"
-import "github.com/qlova/seed/internal"
-import "net/http"
+import (
+	"bytes"
+	"net/http"
+
+	"github.com/qlova/seed/internal"
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/script/global"
+	"github.com/qlova/seed/style"
+	"github.com/qlova/seed/style/css"
+)
 
 //A harvester collects the extracts the necessary information of the seed tree in order to render the application.
 type harvester struct {
@@ -61,10 +65,9 @@ func (app *harvester) harvest(seed Seed) {
 	}
 
 	//Harvest Dynamic Handlers.
-	if seed.dynamicText.Variable != "" {
-		var index = string(seed.dynamicText.Variable)
-		h.dynamicHandlers[index] = append(h.dynamicHandlers[index], func(q Script) {
-			seed.Script(q).SetText(seed.dynamicText.Script(q))
+	if reference := global.Reference(seed.dynamicText).String(); reference != "" {
+		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], func(q Script) {
+			seed.Script(q).SetText(seed.dynamicText.Get(q))
 		})
 	}
 
@@ -205,15 +208,16 @@ func (app *harvester) StateHandlers() []byte {
 	var buffer bytes.Buffer
 
 	for state, handlers := range h.stateHandlers {
+		var reference = global.Reference(state.Bool).String()
 		if state.not {
-			buffer.WriteString("function " + string(state.Variable) + "_unset() {")
+			buffer.WriteString("function " + reference + "_unset() {")
 			buffer.Write([]byte(script.ToJavascript(func(q Script) {
-				q.Set(state, q.Bool(false))
+				state.Bool.Set(q, q.Bool(false))
 			})))
 		} else {
-			buffer.WriteString("function " + string(state.Variable) + "_set() {")
+			buffer.WriteString("function " + reference + "_set() {")
 			buffer.Write([]byte(script.ToJavascript(func(q Script) {
-				q.Set(state, q.Bool(true))
+				state.Bool.Set(q, q.Bool(true))
 			})))
 		}
 

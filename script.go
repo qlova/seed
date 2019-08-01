@@ -5,10 +5,6 @@ import "github.com/qlova/seed/script"
 type Bool = script.Bool
 type Script = script.Script
 
-func NewVariable() script.Variable {
-	return script.NewVariable()
-}
-
 var functions = make(map[string]func(Script))
 
 //Define a new function that can be called from any Script context.

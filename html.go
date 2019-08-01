@@ -265,6 +265,11 @@ func (app App) HTML() []byte {
 	buffer.Write(DynamicHandlers)
 	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() {`)
 	buffer.Write(OnReady)
+
+	buffer.WriteString(`
+		window.localStorage.setItem("global_state_installed", (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone));
+	`)
+
 	buffer.Write(StateHandlers)
 	buffer.WriteString(`
 		goto_ready = true;
