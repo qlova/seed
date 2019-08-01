@@ -210,12 +210,12 @@ func (app *harvester) StateHandlers() []byte {
 	for state, handlers := range h.stateHandlers {
 		var reference = global.Reference(state.Bool).String()
 		if state.not {
-			buffer.WriteString("function " + reference + "_unset() {")
+			buffer.WriteString("window." + reference + "_unset = function() {")
 			buffer.Write([]byte(script.ToJavascript(func(q Script) {
 				state.Bool.Set(q, q.Bool(false))
 			})))
 		} else {
-			buffer.WriteString("function " + reference + "_set() {")
+			buffer.WriteString("window." + reference + "_set = function () {")
 			buffer.Write([]byte(script.ToJavascript(func(q Script) {
 				state.Bool.Set(q, q.Bool(true))
 			})))
@@ -225,6 +225,7 @@ func (app *harvester) StateHandlers() []byte {
 			buffer.Write([]byte(script.ToJavascript(handler, h.Context)))
 		}
 		buffer.WriteByte('}')
+		buffer.WriteByte(';')
 
 		buffer.Write([]byte(script.ToJavascript(func(q Script) {
 			q.If(state.Get(q), func() {
