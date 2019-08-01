@@ -303,7 +303,7 @@ func (launcher launcher) Launch(port ...string) {
 
 										RELOADING = true
 										for _, socket := range LocalSockets {
-											socket.WriteMessage(1, []byte("window.location.reload();"))
+											socket.WriteMessage(1, []byte("update();"))
 										}
 									} else {
 										println(err.Error())
