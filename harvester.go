@@ -227,6 +227,9 @@ func (app *harvester) StateHandlers() []byte {
 		buffer.WriteByte('}')
 		buffer.WriteByte(';')
 
+	}
+
+	for state := range h.stateHandlers {
 		buffer.Write([]byte(script.ToJavascript(func(q Script) {
 			q.If(state.Get(q), func() {
 				state.Set(q)
