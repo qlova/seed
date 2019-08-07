@@ -362,6 +362,8 @@ func (style Style) SetFullyScrollable() {
 //Set that this cannot be scrolled.
 func (style Style) SetNotScrollable() {
 	style.SetOverflow(css.Hidden)
+	style.SetOverflowX(css.Hidden)
+	style.SetOverflowY(css.Hidden)
 }
 
 //Set the symetrical spacing within this.
@@ -553,6 +555,14 @@ func (style Style) SetMaxWidth(width complex128) {
 
 func (style Style) SetMaxHeight(height complex128) {
 	style.Style.SetMaxHeight(css.Decode(height))
+}
+
+func (style Style) SetMinWidth(width complex128) {
+	style.Style.SetMinWidth(css.Decode(width))
+}
+
+func (style Style) SetMinHeight(height complex128) {
+	style.Style.SetMinHeight(css.Decode(height))
 }
 
 func (style Style) SetWidth(width complex128) {
