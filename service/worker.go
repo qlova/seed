@@ -49,7 +49,9 @@ func (worker Worker) Render() []byte {
 
 	b.WriteString(`]
       );
-    })
+    }).catch(function(e) {
+		console.log("Couldn't install because: ", e);
+	})
   );
 });
 
