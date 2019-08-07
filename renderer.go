@@ -177,6 +177,10 @@ func (seed Seed) HTML(platform Platform) []byte {
 		html.Write(seed.content)
 	}
 
+	if seed.Element.HTML != nil {
+		html.Write(seed.Element.HTML)
+	}
+
 	for _, child := range seed.children {
 		html.Write(child.Root().Render(platform))
 	}
