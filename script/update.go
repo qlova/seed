@@ -86,8 +86,8 @@ const InstallJS = `
 		} else if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
 			text.innerText = "Open this app in Safari to install it";
 			instructions.appendChild(text);
-		} else {
-			alert("Sorry it looks like we cannot install this app to your device, you can continue using it in the browser.");
+		} else {       
+			alert("Sorry, it looks like we cannot install this app to your device, you can continue using it in the browser.");
 			return;
 		}
 
