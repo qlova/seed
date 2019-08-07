@@ -44,9 +44,7 @@ function back() {
 			
 	let old_length = goto_history.length;
 			
-	goto(last_page);
-	if (goto_history.length  > old_length)
-	goto_history.pop();
+	goto(last_page, true);
 }
 `
 
@@ -79,17 +77,17 @@ const Goto = `
 
 	var going_to = null;
 
-	var goto = function(next_page_id) {
+	var goto = function(next_page_id, private) {
 		if (!going_to) {
 			setTimeout(function() {
-				actual_goto(going_to);
+				actual_goto(going_to, private);
 				going_to = null;
 			}, 1)
 		}
 		going_to = next_page_id;
 	}
 	
-	var actual_goto = function(next_page_id) {
+	var actual_goto = function(next_page_id, private) {
 		//We are still waiting for the app to load.
 		if (!goto_ready) {
 			return;
@@ -125,7 +123,7 @@ const Goto = `
 		
 		
 		if (last_page != null && fallback != next_page_id) {
-			goto_history.push(last_page);
+			if (!private) goto_history.push(last_page);
 		}
 		
 		let next_element = get(next_page_id);
@@ -148,6 +146,12 @@ func (page Page) Goto() {
 	q.Javascript("goto('" + page.ID + "');")
 }
 
+func (page Page) PrivateGoto() {
+	var q = page.Q
+	q.Require(Goto)
+	q.Javascript("goto('" + page.ID + "', true);")
+}
+
 func (a Page) Equals(b Page) qlova.Bool {
 	return a.Q.BoolFromLanguageType(Javascript.Bit{
 		Expression: language.Statement(`("` + a.ID + `" == "` + b.ID + `")`),
@@ -165,7 +169,12 @@ func (q Script) CurrentPage() Page {
 	}}
 }
 
-//Clear the page history, you should call this after transitioning from a sign-in page.
+//ClearHistory clears the page history, you should call this after transitioning from a sign-in page.
 func (q Script) ClearHistory() {
 	q.Javascript(`goto_history = [];`)
+}
+
+//PushHistory pushes the page to history.
+func (q Script) PushHistory(page Page) {
+	q.Javascript(`goto_history.push('` + page.ID + `');`)
 }
