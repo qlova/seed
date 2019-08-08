@@ -17,7 +17,7 @@ import "github.com/qlova/script/language"
 
 const Request = `
 function request (method, formdata, url, manual) {
-	ServiceWorker_Registration.update();
+	if (ServiceWorker_Registration) ServiceWorker_Registration.update();
 
 	if (url.charAt(0) == "/") url = host+url;
 
