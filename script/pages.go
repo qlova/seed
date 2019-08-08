@@ -78,16 +78,22 @@ const Goto = `
 	var going_to = null;
 
 	var goto = function(next_page_id, private) {
+		//We are still waiting for the app to load.
+		if (!goto_ready) {
+			return;
+		}
+
 		if (!going_to) {
 			setTimeout(function() {
 				actual_goto(going_to, private);
-				going_to = null;
+				
 			}, 1)
 		}
 		going_to = next_page_id;
 	}
 	
 	var actual_goto = function(next_page_id, private) {
+		going_to = null;
 		//We are still waiting for the app to load.
 		if (!goto_ready) {
 			return;
