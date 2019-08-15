@@ -91,8 +91,12 @@ func (state State) Get(q Script) script.Bool {
 func (state State) Set(q Script) {
 	var reference = global.Reference(state.Bool).String()
 	if state.not {
+		state.Bool.Set(q, q.False())
+		q.Javascript(`if (window.` + reference + `_unset)`)
 		q.Javascript(reference + `_unset();`)
 	} else {
+		state.Bool.Set(q, q.True())
+		q.Javascript(`if (window.` + reference + `_set)`)
 		q.Javascript(reference + `_set();`)
 	}
 }
@@ -100,8 +104,12 @@ func (state State) Set(q Script) {
 func (state State) Unset(q Script) {
 	var reference = global.Reference(state.Bool).String()
 	if state.not {
+		state.Bool.Set(q, q.True())
+		q.Javascript(`if (window.` + reference + `_set)`)
 		q.Javascript(reference + `_set();`)
 	} else {
+		state.Bool.Set(q, q.False())
+		q.Javascript(`if (window.` + reference + `_unset)`)
 		q.Javascript(reference + `_unset();`)
 	}
 }
@@ -109,15 +117,15 @@ func (state State) Unset(q Script) {
 func (state State) UnsetFor(u User) {
 	var reference = global.Reference(state.Bool).String()
 	if state.not {
-		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], reference+`_set();`)
+		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], `if (window.`+reference+`_set)`+reference+`_set();`)
 	}
-	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], reference+`_unset();`)
+	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], `if (window.`+reference+`_unset)`+reference+`_unset();`)
 }
 
 func (state State) SetFor(u User) {
 	var reference = global.Reference(state.Bool).String()
 	if state.not {
-		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], reference+`_unset();`)
+		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], `if (window.`+reference+`_unset)`+reference+`_unset();`)
 	}
-	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], reference+`_set();`)
+	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], `if (window.`+reference+`_set)`+reference+`_set();`)
 }
