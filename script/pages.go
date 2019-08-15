@@ -36,10 +36,11 @@ function back() {
 
 	//Lol
 	let fallback = get(current_page).dataset.back; 
-	if (noback) {
-		if (fallback) goto(fallback);
-		return; 
-	}  
+	if (fallback) {
+		goto(fallback);
+		return;
+	}
+
 
 			
 	let old_length = goto_history.length;
