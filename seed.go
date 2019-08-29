@@ -126,6 +126,11 @@ type seed struct {
 	states map[State]func(Script)
 }
 
+//Is returns true if a and b are the same seed.
+func (seed Seed) Is(b Interface) bool {
+	return seed.seed == b.Root().seed
+}
+
 type Unit = complex128
 
 func (seed Seed) ScreenSmallerThan(unit Unit) style.Style {
