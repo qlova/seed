@@ -1,13 +1,19 @@
 package load
 
 import (
+	"bytes"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 
+	"archive/tar"
+
 	"github.com/mholt/archiver"
 	"github.com/qlova/seed"
+
+	"github.com/qlova/seed/load/pencil"
 )
 
 //File scans a Pencil file and returns it as an app.
@@ -55,10 +61,44 @@ func File(name string) *seed.App {
 			os.Exit(1)
 		}
 
-		fmt.Println(f.Name())
+		fmt.Println(f.Header.(*tar.Header).Name)
 	}
 
-	os.Exit(0)
+	var App = seed.NewApp()
 
-	return seed.NewApp(name)
+	var document pencil.Document
+	var decoder = xml.NewDecoder(bytes.NewReader(project["content.xml"]))
+	err = decoder.Decode(&document)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	//For each page in the document.
+	for _, page := range document.Pages.Page {
+		var SeedPage = App.NewPage()
+
+		var Container = seed.AddTo(SeedPage)
+		Container.SetSize(100, 100)
+		Container.SetScrollable()
+
+		App.SetPage(SeedPage)
+
+		var p pencil.Page
+		var decoder = xml.NewDecoder(bytes.NewReader(project[page.Href]))
+		err = decoder.Decode(&p)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+
+		//fmt.Println(string(project[page.Href]))
+
+		var SVG = seed.AddTo(Container)
+		SVG.SetTag("svg")
+		SVG.Set("viewBox", fmt.Sprint("0 0 ", p.Width(), " ", p.Height()))
+		SVG.Set("preserveAspectRatio", "meet")
+		SVG.Set("preserveAspectRatio", "xMidYMin meet")
+		SVG.SetContent(string(p.Content.Data))
+	}
+
+	return App
 }

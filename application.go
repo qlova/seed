@@ -1,12 +1,15 @@
 package seed
 
-import "fmt"
-import "os"
-import "bytes"
-import "github.com/qlova/seed/manifest"
-import "github.com/qlova/seed/service"
-import "github.com/qlova/seed/script"
-import "github.com/qlova/seed/style/css"
+import (
+	"bytes"
+	"fmt"
+	"os"
+
+	"github.com/qlova/seed/manifest"
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/service"
+	"github.com/qlova/seed/style/css"
+)
 
 type App struct {
 	Seed
@@ -79,6 +82,10 @@ func (app *App) SetPage(page Page) {
 	}
 
 	app.startingPage = page
+
+	app.OnReady(func(q Script) {
+		q.Require(script.Goto)
+	})
 }
 
 //Return the loadingpage (like a splashscreen) for this app that displays while the app is loading.
