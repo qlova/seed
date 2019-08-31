@@ -1,7 +1,6 @@
 package seed
 
 import (
-	"github.com/qlova/seed/script/global"
 	"github.com/qlova/seed/style"
 	"github.com/qlova/seed/style/css"
 	"github.com/qlova/seed/user"
@@ -81,6 +80,7 @@ type Seed struct {
 type seed struct {
 	HTML.Element
 	style.Style
+	dynamic
 
 	id               string
 	tag, attr, class string
@@ -110,8 +110,6 @@ type seed struct {
 	scripts []string
 
 	handlers []func(w http.ResponseWriter, r *http.Request)
-
-	dynamicText global.String
 
 	Landscape, Portrait style.Style
 

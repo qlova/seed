@@ -65,9 +65,14 @@ func (app *harvester) harvest(seed Seed) {
 	}
 
 	//Harvest Dynamic Handlers.
-	if reference := global.Reference(seed.dynamicText).String(); reference != "" {
+	if reference := global.Reference(seed.dynamic.Text).String(); reference != "" {
 		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], func(q Script) {
-			seed.Script(q).SetText(seed.dynamicText.Get(q))
+			seed.Script(q).SetText(seed.dynamic.Text.Get(q))
+		})
+	}
+	if reference := global.Reference(seed.dynamic.Source).String(); reference != "" {
+		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], func(q Script) {
+			seed.Script(q).SetSource(seed.dynamic.Source.Get(q))
 		})
 	}
 
