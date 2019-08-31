@@ -41,6 +41,10 @@ func (template Template) render(q Script) string {
 	return seed.id
 }
 
+func (seed Seed) Template() {
+	seed.template = true
+}
+
 func (template Template) scripts(q Script) {
 	var seed = template.Seed
 
