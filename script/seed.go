@@ -121,7 +121,17 @@ func (seed Seed) wrap(s string) String {
 }
 
 func (seed Seed) SetText(s String) {
-	seed.Javascript(seed.Element() + `.textContent = ` + raw(s) + `;`)
+	seed.Q.Require(`function formatText(s) {
+		let div = document.createElement('div');
+		div.innerText = s;
+		s = div.innerHTML;
+
+		s.replace("\n", "<br>");
+		s.replace(" ", "&nbsp;");
+		s.replace("\t", "&emsp;");
+		return s;
+}`)
+	seed.Javascript(seed.Element() + `.innerHTML = formatText(` + raw(s) + `);`)
 }
 
 func (seed Seed) SetPath(s String) {

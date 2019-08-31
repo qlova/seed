@@ -411,7 +411,7 @@ func (seed Seed) Text() string {
 func (seed Seed) SetText(data string) {
 	data = html.EscapeString(data)
 	data = strings.Replace(data, "\n", "<br>", -1)
-	data = strings.Replace(data, "  ", "&nbsp;", -1)
+	data = strings.Replace(data, " ", "&nbsp;", -1)
 	data = strings.Replace(data, "\t", "&emsp;", -1)
 	seed.content = []byte(data)
 }
