@@ -2,6 +2,7 @@ package script
 
 import (
 	"fmt"
+	"image/color"
 	"math"
 
 	qlova "github.com/qlova/script"
@@ -12,12 +13,22 @@ type Color struct {
 	String
 }
 
+func (q Script) Color(c color.Color) Color {
+	r, g, b, a := c.RGBA()
+	return Color{q.String(fmt.Sprint("rgba(", r, ",", g, ",", b, ",", a, ")"))}
+}
+
 func (q Script) Hex(s string) Color {
 	return Color{q.String(s)}
 }
 
 func (seed Seed) Hidden() qlova.Bool {
 	return seed.Q.Value(`(getComputedStyle(` + seed.Element() + `, null).display == "none")`).Bool()
+}
+
+//SetColor sets the color of this seed.
+func (seed Seed) SetColor(c Color) {
+	seed.Set("background-color", `"+`+c.LanguageType().Raw()+`+"`)
 }
 
 //SetInvisible causes the seed to still take up space but be hidden from view.
