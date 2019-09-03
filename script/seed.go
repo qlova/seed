@@ -127,7 +127,7 @@ func (seed Seed) SetText(s String) {
 		s = div.innerHTML;
 
 		s.replace("\n", "<br>");
-		s.replace(" ", "&nbsp;");
+		s.replace("  ", "&nbsp;&nbsp;");
 		s.replace("\t", "&emsp;");
 		return s;
 }`)
