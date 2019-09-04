@@ -10,6 +10,10 @@ type embedding struct {
 	Data        []byte
 }
 
+func GetEmbeddings() map[string]embedding {
+	return embeddings
+}
+
 var embeddings = make(map[string]embedding)
 
 func Embed(name string, data []byte) {

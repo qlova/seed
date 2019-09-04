@@ -127,6 +127,8 @@ func (app *App) build() {
 	for _, asset := range app.assets {
 		app.Assets[asset.path] = true
 	}
+
+	app.built = true
 }
 
 //Return rendered fonts.

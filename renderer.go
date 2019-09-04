@@ -230,6 +230,13 @@ func (seed Seed) Scripts(platform Platform) map[string]struct{} {
 	return uniques
 }
 
+func (app App) Render(platform Platform) []byte {
+	if !app.built {
+		app.build()
+	}
+	return app.render(true, platform)
+}
+
 //Return a fully fully rendered application in HTML for the seed.
 func (app App) render(production bool, platform Platform) []byte {
 	if production {

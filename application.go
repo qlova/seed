@@ -30,6 +30,8 @@ type App struct {
 
 	production bool
 	platform   Platform
+
+	built bool
 }
 
 //Create a new application, accepts title and content arguments.
