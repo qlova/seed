@@ -1,20 +1,11 @@
 package seed
 
-import (
-	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"strings"
-)
-
 import "github.com/qlova/seed/script"
 import "github.com/qlova/seed/style/css"
 
 type Page struct {
 	Seed
-
-	content map[string]string
+	tags map[string]bool
 }
 
 func NewPage() Page {
@@ -28,11 +19,12 @@ func NewPage() Page {
 	seed.SetWillChange(css.Property.Display)
 	seed.SetWillChange(css.Property.Transform)
 
-	seed.SetPosition(css.Fixed)
+	seed.SetPosition(css.Absolute)
 	seed.SetTop(css.Zero)
 	seed.SetLeft(css.Zero)
-	seed.Style.Style.SetWidth(css.Number(100).Vw())
-	seed.Style.SetHeight(100)
+	//seed.Style.Style.SetWidth(css.Number(100).Vw())
+	//seed.Style.SetHeight(100)*/
+	seed.Style.SetSize(100, 100)
 
 	return Page{seed, nil}
 }
@@ -45,39 +37,14 @@ func (p pages) Get(key string) Page {
 
 var Pages = make(pages)
 
-//We need to load all of the static pages.
-func init() {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	files, err := ioutil.ReadDir(dir + "/content")
-	if err != nil {
-		return
-	}
-
-	for _, file := range files {
-		if filepath.Ext(file.Name()) == ".page" {
-			var name = strings.Replace(file.Name(), ".page", "", 1)
-			Pages[name] = NewPage()
-			Pages[name] = Page{
-				Seed:    Pages[name].Seed,
-				content: openIML(dir + "/content/" + file.Name()),
-			}
-		}
-	}
+func (seed Seed) NewPage() Page {
+	return AddPageTo(seed)
 }
 
 func AddPageTo(parent Interface) Page {
 	var page = NewPage()
 	parent.Root().Add(page)
 	return page
-}
-
-func (page Page) Get(key string) string {
-	return page.content[key]
 }
 
 func (page Page) SetBack(back Page) {
