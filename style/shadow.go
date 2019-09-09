@@ -17,3 +17,8 @@ type Shadow struct {
 func (style Style) SetShadow(shadow Shadow) {
 	style.Set("box-shadow", fmt.Sprint(css.Decode(shadow.X), " ", css.Decode(shadow.Y), " ", css.Decode(shadow.Blur), " ", css.Decode(shadow.Spread), " ", css.Colour(shadow.Color)))
 }
+
+//SetTextShadow sets the elements text style to match the Shadow defintion.
+func (style Style) SetTextShadow(shadow Shadow) {
+	style.Set("text-shadow", fmt.Sprint(css.Decode(shadow.X), " ", css.Decode(shadow.Y), " ", css.Decode(shadow.Blur), " ", css.Colour(shadow.Color)))
+}
