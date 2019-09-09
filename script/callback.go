@@ -2,11 +2,13 @@ package script
 
 import qlova "github.com/qlova/script"
 
+//Attachable is a something that can be attached to a Go call.
 type Attachable interface {
 	AttachTo(request string, index int) string
 }
 
-func (q Script) Attach(attachables ...Attachable) callWithFormData {
+//Attach attaches Attachables and returns an AttachCall.
+func (q Script) Attach(attachables ...Attachable) Attached {
 	var variable = Unique()
 
 	q.Javascript(`var ` + variable + " = new FormData();")
@@ -15,18 +17,16 @@ func (q Script) Attach(attachables ...Attachable) callWithFormData {
 		q.Javascript(attachable.AttachTo(variable, i+1))
 	}
 
-	return callWithFormData{variable, q}
+	return Attached{variable, q}
 }
 
-type callWithFormData struct {
+//Attached has attachments and these will be passed to the Go function that is called.
+type Attached struct {
 	formdata string
 	q        Script
 }
 
-func (c callWithFormData) Call(f interface{}, args ...qlova.Type) Promise {
-	return c.q.rpc(f, c.formdata, args...)
-}
-
-func (c callWithFormData) Go(f interface{}, args ...qlova.Type) Promise {
+//Go calls a Go function f, with args. Returns a promise.
+func (c Attached) Go(f interface{}, args ...qlova.Type) Promise {
 	return c.q.rpc(f, c.formdata, args...)
 }

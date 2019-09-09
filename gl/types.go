@@ -108,5 +108,5 @@ func (buffer *Buffer) Bind(target BufferTarget) {
 //ShaderType is a type of shader.
 type ShaderType uint8
 
-//BitField is used by gl.
+//BitField specifies a buffer bit field type.
 type BitField uint8

@@ -9,17 +9,6 @@ import (
 	"github.com/qlova/seed/style/css"
 )
 
-type Object string
-
-type Expression struct {
-	seed       Seed
-	expression string
-}
-
-func (p Promise) Raw() string {
-	return p.expression
-}
-
 func dashes2camels(s string) string {
 	var camel string
 	var parts = strings.Split(s, "-")
@@ -33,6 +22,7 @@ func dashes2camels(s string) string {
 	return camel
 }
 
+//Seed is the script interface to a seed.Seed
 type Seed struct {
 	css.Style
 
@@ -40,12 +30,14 @@ type Seed struct {
 	Q          Script
 }
 
+//Set is the required JS code for setting styles.
 const Set = `
 function set(element, property, value) {
 	element.style[property] = value;
 }
 `
 
+//Set sets the CSS style property to value.
 func (seed Seed) Set(property, value string) {
 	seed.Q.Require(Set)
 
@@ -54,6 +46,7 @@ func (seed Seed) Set(property, value string) {
 	seed.Javascript(`set(` + seed.Element() + `, "` + property + `", "` + value + `");`)
 }
 
+//SetDynamic sets the CSS style property to dynamic value.
 func (seed Seed) SetDynamic(property, value string) {
 	seed.Q.Require(Set)
 
@@ -62,6 +55,7 @@ func (seed Seed) SetDynamic(property, value string) {
 	seed.Javascript(`set(` + seed.Element() + `, "` + property + `", ` + value + `);`)
 }
 
+//Get returns the CSS property of this seed.
 func (seed Seed) Get(property string) string {
 
 	property = dashes2camels(property)
@@ -79,11 +73,12 @@ func (seed Seed) SetData(property, data String) {
 	seed.Q.Javascript(fmt.Sprint(seed.Element(), ".dataset[", property.LanguageType().Raw(), "] = ", data.LanguageType().Raw()))
 }
 
-//TODO
+//Bytes TODO this is unimplemented.
 func (seed Seed) Bytes() []byte {
-	return nil
+	panic("unimplemented")
 }
 
+//Get is the required JS code for getting seeds.
 const Get = `
 	function get(id) {
 		let element = document.getElementById(id);
@@ -100,6 +95,7 @@ const Get = `
 	}
 `
 
+//Element returns the seed as an HTML element.
 func (seed Seed) Element() string {
 	if seed.Native != "" {
 		return seed.Native
@@ -110,18 +106,25 @@ func (seed Seed) Element() string {
 	return `get("` + seed.ID + `")`
 }
 
+//Javascript is shorthand for seed.Q.Javascript
 func (seed Seed) Javascript(js string) {
-	seed.Q.Raw("Javascript", language.Statement(js))
+	seed.Q.Javascript(language.Statement(js))
 }
 
-type File Expression
+//File is a script interface to a file type.
+type File struct {
+	Q Script
+	Native
+}
 
+//Type returns the type of the file.
 func (f File) Type() String {
-	return f.seed.wrap(f.expression + `.type`)
+	return f.Q.Value(f.LanguageType().Raw() + `.type`).String()
 }
 
+//Name returns the name of the file.
 func (f File) Name() String {
-	return f.seed.wrap(f.expression + `.name`)
+	return f.Q.Value(f.LanguageType().Raw() + `.name`).String()
 }
 
 func (seed Seed) wrap(s string) String {
@@ -130,6 +133,7 @@ func (seed Seed) wrap(s string) String {
 	})
 }
 
+//SetText sets the text of the string.
 func (seed Seed) SetText(s String) {
 	seed.Q.Require(`function formatText(s) {
 		let div = document.createElement('div');
@@ -144,118 +148,120 @@ func (seed Seed) SetText(s String) {
 	seed.Javascript(seed.Element() + `.innerHTML = formatText(` + raw(s) + `);`)
 }
 
+//SetPath sets the resource source/path of the seed.
 func (seed Seed) SetPath(s String) {
 	seed.Javascript(seed.Element() + `.src = ` + raw(s) + `;`)
 }
+
+//SetSource sets the resource source/path of the seed.
 func (seed Seed) SetSource(s String) {
 	seed.Javascript(seed.Element() + `.src = ` + raw(s) + `;`)
 }
 
+//SetHTML sets the HTML of the seed.
 func (seed Seed) SetHTML(s String) {
 	seed.Javascript(seed.Element() + `.innerHTML = ` + raw(s) + `;`)
 }
 
-func (seed Seed) SetLeft(s String) {
-	seed.Javascript(`set(` + seed.Element() + `, "left", ` + raw(s) + `);`)
-}
-
-func (seed Seed) SetDisplay(s String) {
-	seed.Javascript(`set(` + seed.Element() + `, "display", ` + raw(s) + `);`)
-}
-
+//SetHidden sets the seed to be hidden.
 func (seed Seed) SetHidden() {
 	seed.Javascript(`set(` + seed.Element() + `, "display", "none");`)
 }
 
+//Click simulates a click on this seed.
 func (seed Seed) Click() {
 	seed.Javascript(seed.Element() + `.click();`)
 }
 
 var unique int
 
+//Unique returns a unique string suitable for variable names.
 func Unique() string {
 	unique++
 	return fmt.Sprint("unique_", unique)
 }
 
+//Play calls play on the seed and returns the resulting promise.
 func (seed Seed) Play() Promise {
 	var variable = Unique()
 	seed.Javascript(`let ` + variable + ` = ` + seed.Element() + `.play();`)
 	return Promise{q: seed.Q, expression: variable}
 }
 
+//Pause calls pause on the seed and returns the resulting promise.
 func (seed Seed) Pause() {
 	seed.Javascript(seed.Element() + `.pause();`)
 }
 
+//Focus focuses the seed for input.
 func (seed Seed) Focus() {
 	seed.Javascript(seed.Element() + `.focus();`)
 }
 
+//Blur removes focus from the seed.
 func (seed Seed) Blur() {
 	seed.Javascript(seed.Element() + `.blur();`)
 }
 
+//Restart calls the load method on the seed.
 func (seed Seed) Restart() {
 	seed.Javascript(seed.Element() + `.load();`)
 }
 
-func (seed Seed) Left() String {
-	return seed.wrap(seed.Element() + `.style.left`)
+//Width returns the width of the seed.
+func (seed Seed) Width() Unit {
+	return seed.Q.Value(`getComputedStyle(get("` + seed.ID + `")).width`).Unit()
 }
 
-func (seed Seed) Width() String {
-	return seed.wrap(`getComputedStyle(get("` + seed.ID + `")).width`)
-}
-
+//SetValue sets the input value of the seed.
 func (seed Seed) SetValue(value String) {
 	seed.Javascript(seed.Element() + `.value = ` + raw(value) + `;`)
 }
 
+//SetPlaceholder sets the input placeholder of the seed.
 func (seed Seed) SetPlaceholder(value String) {
 	seed.Javascript(seed.Element() + `.placeholder = ` + raw(value) + `;`)
 }
 
+//SetClass sets the class name of this seed.
 func (seed Seed) SetClass(value String) {
 	seed.Javascript(seed.Element() + `.className = ` + raw(value) + `;`)
 }
 
+//Value returns the input value of this seed.
 func (seed Seed) Value() String {
 	return seed.wrap(seed.Element() + `.value`)
 }
 
+//Text returns the text of this seed.
 func (seed Seed) Text() String {
 	return seed.wrap(seed.Element() + `.innerText`)
 }
 
-func (seed Seed) Location() String {
+//URL returns the url/link of this seed.
+func (seed Seed) URL() String {
 	return seed.wrap(seed.Element() + `.href`)
 }
 
-//Return the index of this feeditem.
+//Index returns the index of this feeditem.
 func (seed Seed) Index() String {
 	return seed.wrap(seed.Element() + `.index`)
 }
 
+//HTML returns the HTML of this seed.
 func (seed Seed) HTML() String {
 	return seed.wrap(seed.Element() + `.innerHTML`)
 }
 
+//File returns the first file of this seed.
 func (seed Seed) File() File {
-	return File{seed: seed, expression: seed.Element() + `.files[0]`}
+	return File{seed.Q, seed.Q.NativeFromLanguageType(Javascript.Native{
+		Expression: seed.Element() + `.files[0]`}).Var()}
 }
 
-func (seed Seed) Display() String {
-	return seed.wrap(seed.Element() + `.style.display`)
-}
-
-//Temporary method DEPRECIATED
-func (f File) Raw() string {
-	return f.expression
-}
-
+//Load sets the resource location of this seed to the specified file.
 func (seed Seed) Load(f File) {
-	seed.Javascript(seed.Element() + `.src = window.URL.createObjectURL(` + f.expression + `);`)
+	seed.Javascript(seed.Element() + `.src = window.URL.createObjectURL(` + f.LanguageType().Raw() + `);`)
 }
 
 //Add a child seed to this seed.
@@ -263,91 +269,19 @@ func (seed Seed) Add(child Seed) {
 	seed.Javascript(seed.Element() + `.appendChild(` + child.Element() + `);`)
 }
 
+//OnClick sets the onclick event of this seed.
 func (seed Seed) OnClick(f func()) {
 	seed.Javascript(seed.Element() + `.onclick = function() {`)
 	f()
 	seed.Javascript(`};`)
 }
 
-//Animations
-func (seed Seed) FadeOut() {
-	seed.Set("animation", "fadeOut .5s ease both")
-
-	seed.Javascript(`set(` + seed.Element() + `, "display", "inline-flex");`)
-	seed.Javascript(`set(` + seed.Element() + `, "z-index", "50");`)
-	seed.Javascript(`animating = true;`)
-	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "display", "none"); set(` + seed.Element() + `, "animation", ""); set(` + seed.Element() + `, "z-index", "");animation_complete();  }, 500);`)
-}
-
-func (seed Seed) FadeIn() {
-
-	seed.Javascript(`set(` + seed.Element() + `, "display", "none");`)
-
-	seed.Javascript(`setTimeout(function() { `)
-	seed.Set("animation", "fadeIn .5s ease both")
-	seed.Javascript(`set(` + seed.Element() + `, "display", "inline-flex");`)
-
-	seed.Javascript(`if (!last_page) return;`)
-	seed.Javascript(`set(get(last_page), "display", "none");`)
-	seed.Javascript(`animating = true;`)
-	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "z-index", ""); animation_complete(); }, 500);`)
-	seed.Javascript(`}, 500);`)
-}
-
-//Animations
-func (seed Seed) SlideInFrom(direction complex128) {
-	if direction == -1i {
-		seed.Set("animation", "slideInFromTop .5s ease both")
-	}
-
-	if direction == 1i {
-		seed.Set("animation", "slideInFromBottom .5s ease both")
-	}
-
-	if direction == 1 {
-		seed.Set("animation", "slideInFromRight .5s ease both")
-	}
-
-	if direction == -1 {
-		seed.Set("animation", "slideInFromLeft .5s ease both")
-	}
-
-	seed.Javascript(`if (!last_page) return;`)
-	seed.Javascript(`set(get(last_page), "display", "inline-flex");`)
-	seed.Javascript(`set(` + seed.Element() + `, "z-index", "50");`)
-	seed.Javascript(`animating = true;`)
-	seed.Javascript(`setTimeout(function() { set(get(last_page), "display", "none"); set(` + seed.Element() + `, "z-index", ""); animation_complete(); }, 500);`)
-}
-
-//Animations
-func (seed Seed) SlideOutTo(direction complex128) {
-	if direction == -1i {
-		seed.Set("animation", "slideOutToTop .5s ease both")
-	}
-
-	if direction == 1i {
-		seed.Set("animation", "slideOutToBottom .5s ease both")
-	}
-
-	if direction == 1 {
-		seed.Set("animation", "slideOutToRight .5s ease both")
-	}
-
-	if direction == -1 {
-		seed.Set("animation", "slideOutToLeft .5s ease both")
-	}
-
-	seed.Javascript(`set(` + seed.Element() + `, "display", "inline-flex");`)
-	seed.Javascript(`set(` + seed.Element() + `, "z-index", "50");`)
-	seed.Javascript(`animating = true;`)
-	seed.Javascript(`setTimeout(function() { set(` + seed.Element() + `, "display", "none"); set(` + seed.Element() + `, "animation", ""); set(` + seed.Element() + `, "z-index", "");animation_complete(); }, 500);`)
-}
-
+//Translate sets the transform of this seed to the specified translation.
 func (seed Seed) Translate(x, y Unit) {
 	seed.Javascript(seed.Element() + `.style.transform = "translate(` + x.Raw() + "," + y.Raw() + `)";`)
 }
 
-//Filter runs a function on each child of the seed.
+//Filter runs a function on each child of this seed.
 func (seed Seed) Filter(f func(child Seed)) {
 	seed.Q.Javascript(`for (let i = 0; i < ` + seed.Element() + `.children.length; i++) {`)
 	f(Seed{

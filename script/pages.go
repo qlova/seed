@@ -6,10 +6,12 @@ import (
 	Javascript "github.com/qlova/script/language/javascript"
 )
 
+//Page is a script interface to seed.Page.
 type Page struct {
 	Seed
 }
 
+//Back is the JS code needed for back functionality.
 const Back = `
 function back() {
 	if (ActivePhotoSwipe) {
@@ -49,11 +51,13 @@ function back() {
 }
 `
 
+//Back returns to the last page on the stack. Popping the current page.
 func (q Script) Back() {
 	q.Require(Back)
 	q.js.Run(`back`)
 }
 
+//Goto is the JS code for goto (page switching) support.
 const Goto = `
 	var animating = false;
 
@@ -172,28 +176,33 @@ const Goto = `
 	};
 `
 
+//Goto goes to the specified page.
 func (page Page) Goto() {
 	var q = page.Q
 	q.Require(Goto)
 	q.Javascript("goto('" + page.ID + "');")
 }
 
+//PrivateGoto goes to the specified page without pushing to the stack.
 func (page Page) PrivateGoto() {
 	var q = page.Q
 	q.Require(Goto)
 	q.Javascript("goto('" + page.ID + "', true);")
 }
 
-func (a Page) Equals(b Page) qlova.Bool {
-	return a.Q.BoolFromLanguageType(Javascript.Bit{
-		Expression: language.Statement(`("` + a.ID + `" == "` + b.ID + `")`),
+//Equals returns true if page is equal to b.
+func (page Page) Equals(b Page) qlova.Bool {
+	return page.Q.BoolFromLanguageType(Javascript.Bit{
+		Expression: language.Statement(`("` + page.ID + `" == "` + b.ID + `")`),
 	})
 }
 
+//SetCurrent sets the current page to this page. This is a low-level API and shouldn't be called. Use Goto instead.
 func (page Page) SetCurrent() {
 	page.Javascript(`current_page = ` + page.ID + ";")
 }
 
+//CurrentPage returns the current page.
 func (q Script) CurrentPage() Page {
 	return Page{Seed{
 		ID: `"+current_page+"`,
@@ -209,4 +218,20 @@ func (q Script) ClearHistory() {
 //PushHistory pushes the page to history.
 func (q Script) PushHistory(page Page) {
 	q.Javascript(`goto_history.push('` + page.ID + `');`)
+}
+
+//LastPage returns the last page.
+func (q Script) LastPage() Page {
+	return Page{Seed{
+		ID: `"+last_page+"`,
+		Q:  q,
+	}}
+}
+
+//NextPage returns the next page.
+func (q Script) NextPage() Page {
+	return Page{Seed{
+		ID: `"+next_page+"`,
+		Q:  q,
+	}}
 }

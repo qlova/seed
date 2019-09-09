@@ -1,5 +1,6 @@
 package script
 
+//Feed is a seed.Feed, containing feed data.
 type Feed struct {
 	Seed
 }

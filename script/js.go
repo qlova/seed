@@ -2,7 +2,7 @@ package script
 
 import qlova "github.com/qlova/script"
 import "github.com/qlova/script/language"
-import "github.com/qlova/script/language/javascript"
+import Javascript "github.com/qlova/script/language/javascript"
 
 //A nice interface to the Javascript world.
 type js struct {
@@ -30,6 +30,11 @@ func (v value) Native() qlova.Native {
 	return v.q.Script.NativeFromLanguageType(Javascript.Native{Expression: language.Statement(v.raw)})
 }
 
+func (v value) Unit() Unit {
+	return Unit(v.String())
+}
+
+//Value wraps a JS string as a value that can be cast to script.Type.
 func (q Script) Value(raw string) value {
 	return value{q, raw}
 }

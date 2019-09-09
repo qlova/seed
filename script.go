@@ -37,7 +37,7 @@ func (seed Seed) Script(q Script) script.Seed {
 }
 
 //Set the text content of the seed.
-func (seed Seed) SyncText(text *string) {
+/*func (seed Seed) SyncText(text *string) {
 	var wrapper = func() string {
 		return *text
 	}
@@ -47,4 +47,4 @@ func (seed Seed) SyncText(text *string) {
 		seed.Script(q).SetText(q.Call(wrapper).String())
 		q.Javascript(`}, 100)`)
 	})
-}
+}*/
