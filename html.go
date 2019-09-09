@@ -136,6 +136,14 @@ func (app App) HTML() []byte {
 				AddToHomeScreenEvent = e;
 			});
 
+			Promise.prototype.delay = function (ms) {
+				return new Promise(resolve => {
+					window.setTimeout(this.then.bind(this, resolve), ms);
+				});
+			}
+
+			onready = {};
+
 			let ServiceWorker_Registration = null;
 			if ('serviceWorker' in navigator) {
 				navigator.serviceWorker.register('/index.js').then(function(registration) {
@@ -154,6 +162,8 @@ func (app App) HTML() []byte {
 										if (window.localStorage.getItem("updating")) {
 											return;
 										}
+
+										console.log("updating");
 										
 										//Clear all unnamed variables because they could have changed!
 										//Unamed variables have a 'g_' prefix.

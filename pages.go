@@ -5,7 +5,6 @@ import "github.com/qlova/seed/style/css"
 
 type Page struct {
 	Seed
-	tags map[string]bool
 }
 
 func NewPage() Page {
@@ -15,7 +14,6 @@ func NewPage() Page {
 	seed.page = true
 	seed.class = "page"
 
-	seed.SetHidden()
 	seed.SetWillChange(css.Property.Display)
 	seed.SetWillChange(css.Property.Transform)
 
@@ -26,7 +24,15 @@ func NewPage() Page {
 	//seed.Style.SetHeight(100)*/
 	seed.Style.SetSize(100, 100)
 
-	return Page{seed, nil}
+	return Page{seed}
+}
+
+//SetTag sets a tag associated with this page.
+func (page Page) SetTag(name string) {
+	if page.tags == nil {
+		page.tags = make(map[string]bool)
+	}
+	page.tags[name] = true
 }
 
 type pages map[string]Page
@@ -78,28 +84,16 @@ func (page Page) OnBack(f func(q Script)) {
 	})
 }
 
-//Run a script when this page is entered/ongoto.
-func (seed Page) OnPageEnter(f func(Script)) {
-	seed.OnReady(func(q Script) {
-		q.Javascript("{")
-		q.Javascript("let old_enterpage = " + seed.Script(q).Element() + ".enterpage;")
-		q.Javascript(seed.Script(q).Element() + ".enterpage = function() {")
-		q.Javascript("if (old_enterpage) old_enterpage();")
+//OnPageEnter runs a script when this page is entered/ongoto.
+func (page Page) OnPageEnter(f func(Script)) {
+	page.On("pageenter", func(q Script) {
 		f(q)
-		q.Javascript("};")
-		q.Javascript("}")
 	})
 }
 
-//Run a script when this leaving this page (onleave).
-func (seed Page) OnPageExit(f func(Script)) {
-	seed.OnReady(func(q Script) {
-		q.Javascript("{")
-		q.Javascript("let old_exitpage = " + seed.Script(q).Element() + ".exitpage;")
-		q.Javascript(seed.Script(q).Element() + ".exitpage = function() {")
-		q.Javascript("if (old_exitpage) old_exitpage();")
+//OnPageExit runs a script when leaving this page (onleave).
+func (page Page) OnPageExit(f func(Script)) {
+	page.On("pageexit", func(q Script) {
 		f(q)
-		q.Javascript("};")
-		q.Javascript("}")
 	})
 }

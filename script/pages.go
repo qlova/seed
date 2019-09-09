@@ -78,6 +78,8 @@ const Goto = `
 
 	var going_to = null;
 
+	var goto_exitpromise = null;
+
 	var goto = function(next_page_id, private) {
 		//We are still waiting for the app to load.
 		if (!goto_ready) {
@@ -99,26 +101,45 @@ const Goto = `
 		if (!goto_ready) {
 			return;
 		}
+
+		let template = get(next_page_id+":template");
 		
-		if (get(next_page_id) == null || get(next_page_id).className != "page" || next_page_id == loading_page) {
+		if (template == null || next_page_id == loading_page) {
+			console.error("invalid page ", next_page_id);
 			next_page_id = starting_page;
 			if (next_page_id == "") return;
+
+			template = get(starting_page+":template");
 		}
 	
 		if (animating) {
 			goto_queue.push(next_page_id)
 			return;
 		}
+
 		if (current_page == next_page_id) return;
 		if (next_page == next_page_id) return;
 		next_page = next_page_id;
 
-		for (let element of get(next_page_id).parentElement.childNodes) {
+		for (let element of template.parentElement.childNodes) {
 			if (element.classList.contains("page")) {
 				if (getComputedStyle(element).display != "none") {
-					element.style.display ='none';						
-					if (element.exitpage) element.exitpage();
+					var resolve = function() {
+						set(element, "animation", "")
+						set(element, "z-index", "")
+						get(element.id+":template").content.appendChild(element);
+					};
 					last_page = element.id;
+
+					if (element.onpageexit) {
+						element.onpageexit();
+						if (goto_exitpromise) {
+							goto_exitpromise.then(resolve);
+							goto_exitpromise = null;
+							break;
+						}
+					}
+					resolve();
 				}
 			}
 		}
@@ -132,17 +153,21 @@ const Goto = `
 		if (last_page != null && fallback != next_page_id) {
 			if (!private) goto_history.push(last_page);
 		}
-		
-		let next_element = get(next_page_id);
-		if (next_element) {
-			next_element.style.display = 'inline-flex';
-			if (next_element.enterpage) next_element.enterpage();
-			current_page = next_page_id;
 
-			//Persistence.
-			window.localStorage.setItem('*CurrentPage', next_page_id);
-			
+		template.parentElement.appendChild(template.content);
+
+		let child = get(next_page_id);
+		if (onready[child.id]) {
+			onready[child.id]();
+			delete onready[child.id];
 		}
+		
+		if (child.onpageenter) child.onpageenter();
+		current_page = next_page_id;
+
+		//Persistence.
+		window.localStorage.setItem('*CurrentPage', next_page_id);
+			
 		next_page = null;
 	};
 `

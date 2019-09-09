@@ -101,6 +101,8 @@ type seed struct {
 	onchange func(Script)
 	onready  func(Script)
 
+	on map[string]func(Script)
+
 	template bool
 
 	parent Interface
@@ -122,6 +124,24 @@ type seed struct {
 	assets []Asset
 
 	states map[State]func(Script)
+
+	tags map[string]bool
+}
+
+//On runs a script callback when the specified event is fired.
+func (seed Seed) On(event string, callback func(Script)) {
+	if seed.on == nil {
+		seed.on = make(map[string]func(Script))
+	}
+
+	if original, ok := seed.on[event]; ok {
+		seed.on[event] = func(q Script) {
+			original(q)
+			callback(q)
+		}
+		return
+	}
+	seed.on[event] = callback
 }
 
 //Is returns true if a and b are the same seed.

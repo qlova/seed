@@ -8,7 +8,9 @@ type Transition struct {
 	In  *Animation
 	Out *Animation
 
-	When       Page
+	When    Page
+	WhenTag string
+
 	Then, Else *Transition
 }
 
@@ -127,7 +129,9 @@ func setTransitionIn(Page script.Page, trans Transition) {
 
 	if !trans.When.Null() {
 		q.If(q.LastPage().Equals(trans.When.Script(q)), func() {
-			setTransitionIn(Page, *trans.Then)
+			if trans.Then != nil {
+				setTransitionIn(Page, *trans.Then)
+			}
 			q.Return()
 		})
 		if trans.Else != nil {
@@ -135,11 +139,26 @@ func setTransitionIn(Page script.Page, trans Transition) {
 			q.Return()
 			return
 		}
+		return
+	}
+
+	if trans.WhenTag != "" {
+		q.Javascript(`if (` + q.LastPage().Element() + ` == null) return;`)
+		q.If(q.Value(q.LastPage().Element()+".classList.contains('"+trans.WhenTag+"')").Bool(), func() {
+			if trans.Then != nil {
+				setTransitionIn(Page, *trans.Then)
+			}
+			q.Return()
+		})
+		if trans.Else != nil {
+			setTransitionIn(Page, *trans.Else)
+			q.Return()
+			return
+		}
+		return
 	}
 
 	if trans.In != nil {
-		Page.Javascript(`let last=last_page; if (!last || last == loading_page) return;`)
-
 		Page.SetAnimation(trans.In)
 		Page.SetAnimationDuration(q.Float(0.5))
 		Page.SetAnimationIterations(q.Int(1))
@@ -147,7 +166,7 @@ func setTransitionIn(Page script.Page, trans Transition) {
 		Page.Javascript(`set(get(last), "display", "inline-flex");`)
 		Page.Javascript(`set(` + Page.Element() + `, "z-index", "50");`)
 		Page.Javascript(`animating = true;`)
-		Page.Javascript(`setTimeout(function() { set(get(last), "animation", ""); set(get(last), "display", "none"); set(` + Page.Element() + `, "z-index", ""); animation_complete(); }, 500);`)
+		Page.Javascript(`setTimeout(animation_complete, 500);`)
 	}
 }
 
@@ -156,7 +175,23 @@ func setTransitionOut(Page script.Page, trans Transition) {
 
 	if !trans.When.Null() {
 		q.If(q.NextPage().Equals(trans.When.Script(q)), func() {
-			setTransitionOut(Page, *trans.Then)
+			if trans.Then != nil {
+				setTransitionOut(Page, *trans.Then)
+			}
+			q.Return()
+		})
+		if trans.Else != nil {
+			setTransitionOut(Page, *trans.Else)
+			q.Return()
+			return
+		}
+	}
+
+	if trans.WhenTag != "" {
+		q.If(q.Value(q.LastPage().Element()+".classList.contains('"+trans.WhenTag+"')").Bool(), func() {
+			if trans.Then != nil {
+				setTransitionOut(Page, *trans.Then)
+			}
 			q.Return()
 		})
 		if trans.Else != nil {
@@ -174,22 +209,22 @@ func setTransitionOut(Page script.Page, trans Transition) {
 		Page.Javascript(`set(` + Page.Element() + `, "display", "inline-flex");`)
 		Page.Javascript(`set(` + Page.Element() + `, "z-index", "50");`)
 		Page.Javascript(`animating = true;`)
-		Page.Javascript(`setTimeout(function() { set(` + Page.Element() + `, "display", "none"); set(` + Page.Element() + `, "animation", ""); set(` + Page.Element() + `, "z-index", "");animation_complete(); }, 500);`)
+		Page.Javascript(`goto_exitpromise = Promise.resolve().delay(500).then(function() {set(` + Page.Element() + `, "animation", ""); set(` + Page.Element() + `, "z-index", "");animation_complete(); });`)
 	}
 }
 
 func (page Page) SetTransition(trans Transition) {
-	if trans.In != nil || !trans.When.Null() {
+	if trans.In != nil || !trans.When.Null() || trans.WhenTag != "" {
 		page.OnPageEnter(func(q Script) {
 			var Page = page.Script(q)
+			Page.Javascript(`let last=last_page; if (!last || last == loading_page) return;`)
 			setTransitionIn(Page, trans)
 		})
 	}
-	if trans.Out != nil || !trans.When.Null() {
+	if trans.Out != nil || !trans.When.Null() || trans.WhenTag != "" {
 		page.OnPageExit(func(q Script) {
 			var Page = page.Script(q)
 			setTransitionOut(Page, trans)
-
 		})
 	}
 }

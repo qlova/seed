@@ -34,7 +34,7 @@ type harvester struct {
 
 	screenSmallerThans map[Unit]style.Sheet
 
-	onReadyHandlers []func(Script)
+	onReadyHandlers [][]byte
 }
 
 func newHarvester() *harvester {
@@ -46,6 +46,46 @@ func newHarvester() *harvester {
 
 		Context: internal.NewContext(),
 	}
+}
+
+func (app *harvester) harvestOnReady(seed Seed) []byte {
+
+	var h = app
+
+	var buffer bytes.Buffer
+
+	//Harvest onready handlers
+	if !seed.ready && (seed.onready != nil || seed.page) && !seed.template {
+		seed.ready = true
+
+		if seed.page {
+			buffer.WriteString("onready['")
+			buffer.WriteString(seed.id)
+			buffer.WriteString("'] = function() {")
+		}
+
+		buffer.Write(script.ToJavascript(seed.onready, h.Context))
+
+		//TODO sort?
+		for event, handler := range seed.on {
+			buffer.Write(script.ToJavascript(func(q Script) {
+				q.Javascript(seed.Script(q).Element() + ".on" + event + " = function() {")
+				handler(q)
+				q.Javascript("};")
+			}, h.Context))
+		}
+
+		if seed.page {
+			//Recursively harvest children.
+			for _, child := range seed.children {
+				buffer.Write(h.harvestOnReady(child.Root()))
+			}
+
+			buffer.WriteString("};")
+		}
+	}
+
+	return buffer.Bytes()
 }
 
 //Do the harvesting.
@@ -107,11 +147,7 @@ func (app *harvester) harvest(seed Seed) {
 		}
 	}
 
-	//Harvest onready handlers
-	if seed.onready != nil && !seed.template {
-		seed.ready = true
-		h.onReadyHandlers = append(h.onReadyHandlers, seed.onready)
-	}
+	h.onReadyHandlers = append(h.onReadyHandlers, h.harvestOnReady(seed))
 
 	//Recursively harvest children.
 	for _, child := range seed.children {
@@ -151,9 +187,7 @@ func (app *harvester) OnReadyHandler() []byte {
 	var buffer bytes.Buffer
 
 	for _, handler := range h.onReadyHandlers {
-		buffer.WriteByte('{')
-		buffer.Write(script.ToJavascript(handler, h.Context))
-		buffer.WriteByte('}')
+		buffer.Write(handler)
 	}
 
 	return buffer.Bytes()

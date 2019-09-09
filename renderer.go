@@ -125,6 +125,12 @@ func (seed Seed) HTML(platform Platform) []byte {
 
 	var html bytes.Buffer
 
+	if seed.page {
+		html.WriteString("<template id='")
+		html.WriteString(fmt.Sprint(seed.id))
+		html.WriteString(":template'>")
+	}
+
 	html.WriteByte('<')
 	html.WriteString(seed.tag)
 	html.WriteByte(' ')
@@ -148,6 +154,12 @@ func (seed Seed) HTML(platform Platform) []byte {
 	if seed.class != "" {
 		html.WriteString("class='")
 		html.WriteString(seed.class)
+
+		for tag := range seed.tags {
+			html.WriteByte(' ')
+			html.WriteString(tag)
+		}
+
 		html.WriteByte('\'')
 	}
 
@@ -192,6 +204,10 @@ func (seed Seed) HTML(platform Platform) []byte {
 		html.WriteString("</")
 		html.WriteString(seed.tag)
 		html.WriteByte('>')
+	}
+
+	if seed.page {
+		html.WriteString("</template>")
 	}
 
 	return html.Bytes()

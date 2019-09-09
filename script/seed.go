@@ -86,7 +86,17 @@ func (seed Seed) Bytes() []byte {
 
 const Get = `
 	function get(id) {
-		return document.getElementById(id)
+		let element = document.getElementById(id);
+		if (element) return element;
+		
+		//Check the templates
+		let templates = document.querySelectorAll('template');
+		for (let template of templates) {
+			element = template.content.getElementById(id);
+			if (element) return element;
+		}
+
+		return null;
 	}
 `
 
