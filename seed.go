@@ -4,6 +4,7 @@ import (
 	"github.com/qlova/seed/style"
 	"github.com/qlova/seed/style/css"
 	"github.com/qlova/seed/user"
+	"gopkg.in/russross/blackfriday.v2"
 
 	"encoding/base64"
 	"html"
@@ -434,6 +435,11 @@ func (seed Seed) SetText(data string) {
 	data = strings.Replace(data, "  ", "&nbsp;&nbsp;", -1)
 	data = strings.Replace(data, "\t", "&emsp;", -1)
 	seed.content = []byte(data)
+}
+
+//SetMarkdown sets the content of the seed in markdown format.
+func (seed Seed) SetMarkdown(data string) {
+	seed.content = blackfriday.Run([]byte(data))
 }
 
 //Shorthand for seed.OnClick(func(q seed.Script){ page.Script(q).Goto() })
