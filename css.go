@@ -12,11 +12,6 @@ const CSS = `
 		text-decoration: none;
 	}
 	
-	p {
-		margin-block-start: 0;
-		margin-block-end: 0;
-	}
-	
 	img {
 		object-fit: contain;
 	}
