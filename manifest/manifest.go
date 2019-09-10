@@ -86,6 +86,8 @@ func getImageDimension(imagePath string) string {
 
 //SetIcon sets the icon for the application to be the image at the given path.
 func (manifest *Manifest) SetIcon(path string) {
+	manifest.Icons = nil
+
 	var icon Icon
 	icon.Source = path
 	icon.Sizes = getImageDimension("assets/" + path)
