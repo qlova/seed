@@ -97,6 +97,7 @@ type seed struct {
 
 	content []byte
 	page    bool
+	splash  bool
 
 	onclick  func(Script)
 	onchange func(Script)
@@ -408,6 +409,7 @@ func (seed Seed) Require(script string) {
 func (seed Seed) Add(child Interface) {
 	seed.children = append(seed.children, child)
 	child.Root().parent = seed
+	child.Root().app = seed.app
 	if seed.template {
 		child.Root().template = true
 	}

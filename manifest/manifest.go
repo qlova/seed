@@ -3,7 +3,14 @@ package manifest
 import (
 	"encoding/json"
 	"fmt"
+	"image"
 	"image/color"
+
+	//Need image support for working with mainfest icons.
+	_ "image/jpeg"
+	_ "image/png"
+
+	"os"
 )
 
 //Icon is an app-manifest icon.
@@ -61,11 +68,27 @@ func (manifest *Manifest) SetDescription(description string) {
 	manifest.Description = description
 }
 
+func getImageDimension(imagePath string) string {
+	file, err := os.Open(imagePath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+	}
+
+	image, _, err := image.DecodeConfig(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s: %v\n", imagePath, err)
+	}
+
+	file.Close()
+
+	return fmt.Sprint(image.Width, "x", image.Height)
+}
+
 //SetIcon sets the icon for the application to be the image at the given path.
 func (manifest *Manifest) SetIcon(path string) {
 	var icon Icon
 	icon.Source = path
-	icon.Sizes = "192x192"
+	icon.Sizes = getImageDimension("assets/" + path)
 
 	manifest.Icons = append(manifest.Icons, icon)
 }

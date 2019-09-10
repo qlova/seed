@@ -129,6 +129,10 @@ const Goto = `
 			if (element.classList.contains("page")) {
 				if (getComputedStyle(element).display != "none") {
 					var resolve = function() {
+						if (element.id == loading_page) {
+							set(element, "display", "none")
+							return;
+						}
 						set(element, "animation", "")
 						set(element, "z-index", "")
 						get(element.id+":template").content.appendChild(element);

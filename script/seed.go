@@ -80,15 +80,27 @@ func (seed Seed) Bytes() []byte {
 
 //Get is the required JS code for getting seeds.
 const Get = `
+	let get_cache = {};
 	function get(id) {
+		if (id in get_cache) {
+			return get_cache[id];
+		}
+
 		let element = document.getElementById(id);
-		if (element) return element;
+		
+		if (element) {
+			get_cache[id] = element;
+			return element;
+		}
 		
 		//Check the templates
 		let templates = document.querySelectorAll('template');
 		for (let template of templates) {
 			element = template.content.getElementById(id);
-			if (element) return element;
+			if (element) {
+				get_cache[id] = element;
+				return element;
+			}
 		}
 
 		return null;

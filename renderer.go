@@ -125,7 +125,7 @@ func (seed Seed) HTML(platform Platform) []byte {
 
 	var html bytes.Buffer
 
-	if seed.page {
+	if seed.page && !seed.splash {
 		html.WriteString("<template id='")
 		html.WriteString(fmt.Sprint(seed.id))
 		html.WriteString(":template'>")
@@ -206,7 +206,13 @@ func (seed Seed) HTML(platform Platform) []byte {
 		html.WriteByte('>')
 	}
 
-	if seed.page {
+	if seed.page && !seed.splash {
+		var onready = seed.app.harvestOnReadyPage(seed)
+
+		html.WriteString("<script>")
+		html.Write(onready)
+		html.WriteString("</script>")
+
 		html.WriteString("</template>")
 	}
 

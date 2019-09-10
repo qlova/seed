@@ -13,6 +13,8 @@ import (
 
 //A harvester collects the extracts the necessary information of the seed tree in order to render the application.
 type harvester struct {
+	app *App
+
 	Context internal.Context
 
 	//Assets associated with a seed.
@@ -48,41 +50,47 @@ func newHarvester() *harvester {
 	}
 }
 
+func (app *harvester) harvestOnReadyPage(seed Seed) []byte {
+	var buffer bytes.Buffer
+
+	buffer.WriteString("onready['")
+	buffer.WriteString(seed.id)
+	buffer.WriteString("'] = function() {")
+
+	seed.page = false
+	buffer.Write(app.harvestOnReady(seed))
+	seed.page = true
+
+	buffer.WriteString("};")
+
+	return buffer.Bytes()
+}
+
 func (app *harvester) harvestOnReady(seed Seed) []byte {
+	if seed.page && !seed.splash {
+		return nil
+	}
 
 	var h = app
 
 	var buffer bytes.Buffer
 
+	//TODO sort?
+	for event, handler := range seed.on {
+		buffer.Write(script.ToJavascript(func(q Script) {
+			q.Javascript(seed.Script(q).Element() + ".on" + event + " = function() {")
+			handler(q)
+			q.Javascript("};")
+		}, h.Context))
+	}
+
 	//Harvest onready handlers
-	if !seed.ready && (seed.onready != nil || seed.page) && !seed.template {
-		seed.ready = true
-
-		if seed.page {
-			buffer.WriteString("onready['")
-			buffer.WriteString(seed.id)
-			buffer.WriteString("'] = function() {")
-		}
-
+	if (seed.onready != nil) && !seed.template {
 		buffer.Write(script.ToJavascript(seed.onready, h.Context))
+	}
 
-		//TODO sort?
-		for event, handler := range seed.on {
-			buffer.Write(script.ToJavascript(func(q Script) {
-				q.Javascript(seed.Script(q).Element() + ".on" + event + " = function() {")
-				handler(q)
-				q.Javascript("};")
-			}, h.Context))
-		}
-
-		if seed.page {
-			//Recursively harvest children.
-			for _, child := range seed.children {
-				buffer.Write(h.harvestOnReady(child.Root()))
-			}
-
-			buffer.WriteString("};")
-		}
+	for _, child := range seed.children {
+		buffer.Write(h.harvestOnReady(child.Root()))
 	}
 
 	return buffer.Bytes()
@@ -147,8 +155,6 @@ func (app *harvester) harvest(seed Seed) {
 		}
 	}
 
-	h.onReadyHandlers = append(h.onReadyHandlers, h.harvestOnReady(seed))
-
 	//Recursively harvest children.
 	for _, child := range seed.children {
 		h.harvest(child.Root())
@@ -158,6 +164,7 @@ func (app *harvester) harvest(seed Seed) {
 //Harvest and combine the results with the application.
 func (app *App) build() {
 	app.harvester.harvest(app.Root())
+	app.harvester.app = app
 
 	//Index assets for the application.
 	for _, asset := range app.assets {
@@ -186,9 +193,7 @@ func (app *harvester) OnReadyHandler() []byte {
 	var h = app
 	var buffer bytes.Buffer
 
-	for _, handler := range h.onReadyHandlers {
-		buffer.Write(handler)
-	}
+	buffer.Write(h.harvestOnReady(app.app.Root()))
 
 	return buffer.Bytes()
 }

@@ -1,8 +1,10 @@
 package seed
 
-import "github.com/qlova/seed/script"
+import (
+	"math"
 
-import "math"
+	"github.com/qlova/seed/script"
+)
 
 type Transition struct {
 	In  *Animation
@@ -124,6 +126,40 @@ var SlideRight = Transition{
 	},
 }
 
+var beginTransition = `function beginInTransition(element, animation, duration) {
+	let last=last_page; if (!last || last == loading_page) return;
+
+	set(element, "animation-name", animation);
+	set(element, "animation-direction", "normal");
+	set(element, "animation-fill-mode", "forwards");
+	set(element, "animation-duration", duration);
+	set(element, "animation-iteration-count", 1);
+
+	set(element, "z-index", "50");
+	animating = true;
+	setTimeout(function() {
+		set(element, "animation", ""); 
+		set(element, "z-index", "");
+		animation_complete();
+	}, 500);
+}
+function beginOutTransition(element, animation, duration) {
+	let last=last_page; if (!last || last == loading_page) return;
+
+	set(element, "animation-name", animation);
+	set(element, "animation-direction", "normal");
+	set(element, "animation-fill-mode", "forwards");
+	set(element, "animation-duration", duration);
+	set(element, "animation-iteration-count", 1);
+	
+	goto_exitpromise = Promise.resolve().delay(500).then(function() {
+		set(element, "animation", ""); 
+		set(element, "z-index", "");
+		animation_complete(); 
+	});
+}
+`
+
 func setTransitionIn(Page script.Page, trans Transition) {
 	var q = Page.Q
 
@@ -159,14 +195,8 @@ func setTransitionIn(Page script.Page, trans Transition) {
 	}
 
 	if trans.In != nil {
-		Page.SetAnimation(trans.In)
-		Page.SetAnimationDuration(q.Float(0.5))
-		Page.SetAnimationIterations(q.Int(1))
-
-		Page.Javascript(`set(get(last), "display", "inline-flex");`)
-		Page.Javascript(`set(` + Page.Element() + `, "z-index", "50");`)
-		Page.Javascript(`animating = true;`)
-		Page.Javascript(`setTimeout(animation_complete, 500);`)
+		q.Require(beginTransition)
+		q.Javascript(`beginInTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.In) + `', '0.5s');`)
 	}
 }
 
@@ -202,14 +232,8 @@ func setTransitionOut(Page script.Page, trans Transition) {
 	}
 
 	if trans.Out != nil {
-		Page.SetAnimation(trans.Out)
-		Page.SetAnimationDuration(q.Float(0.5))
-		Page.SetAnimationIterations(q.Int(1))
-
-		Page.Javascript(`set(` + Page.Element() + `, "display", "inline-flex");`)
-		Page.Javascript(`set(` + Page.Element() + `, "z-index", "50");`)
-		Page.Javascript(`animating = true;`)
-		Page.Javascript(`goto_exitpromise = Promise.resolve().delay(500).then(function() {set(` + Page.Element() + `, "animation", ""); set(` + Page.Element() + `, "z-index", "");animation_complete(); });`)
+		q.Require(beginTransition)
+		q.Javascript(`beginOutTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.Out) + `', '0.5s');`)
 	}
 }
 
@@ -217,7 +241,6 @@ func (page Page) SetTransition(trans Transition) {
 	if trans.In != nil || !trans.When.Null() || trans.WhenTag != "" {
 		page.OnPageEnter(func(q Script) {
 			var Page = page.Script(q)
-			Page.Javascript(`let last=last_page; if (!last || last == loading_page) return;`)
 			setTransitionIn(Page, trans)
 		})
 	}

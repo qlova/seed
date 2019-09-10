@@ -17,6 +17,8 @@ type App struct {
 	service.Worker
 	*harvester
 
+	description string
+
 	host, rest, pkg, tracking string
 
 	hashes []string
@@ -52,10 +54,11 @@ func NewApp(args ...string) *App {
 
 	if len(args) > 0 {
 		app.SetName(args[0])
+		app.description = args[0]
 	}
 
 	if len(args) > 1 {
-		app.SetContent(args[1])
+		app.description = args[1]
 	}
 
 	return &app
@@ -70,7 +73,7 @@ func (app *App) NewPage() Page {
 
 	if app.loadingPage.Null() {
 		app.loadingPage = AddPageTo(app)
-		app.loadingPage.SetVisible()
+		app.loadingPage.splash = true
 	}
 
 	return AddPageTo(app)
@@ -80,7 +83,7 @@ func (app *App) SetPage(page Page) {
 
 	if app.loadingPage.Null() {
 		app.loadingPage = AddPageTo(app)
-		app.loadingPage.SetVisible()
+		app.loadingPage.splash = true
 	}
 
 	app.startingPage = page
@@ -88,6 +91,11 @@ func (app *App) SetPage(page Page) {
 	app.OnReady(func(q Script) {
 		q.Require(script.Goto)
 	})
+}
+
+//SetDescription sets the description of your app.
+func (app *App) SetDescription(description string) {
+	app.description = description
 }
 
 //Return the loadingpage (like a splashscreen) for this app that displays while the app is loading.

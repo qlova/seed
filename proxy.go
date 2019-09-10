@@ -61,6 +61,8 @@ func proxy(from, to string) {
 		proxy.ServeHTTP(response, request)
 	}))
 
+	//TLS support?
+
 	err = http.ListenAndServe(to, nil)
 	if err != nil {
 		println(err.Error())

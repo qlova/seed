@@ -1,6 +1,8 @@
 package css
 
-import "bytes"
+import (
+	"bytes"
+)
 
 type unicodeRange string
 
@@ -12,6 +14,7 @@ type FontFace struct {
 	FontStretch  fontStretchValue
 	FontStyle    fontStyleValue
 	FontWeight   fontWeightValue
+	FontDisplay  fontDisplayValue
 	UnicodeRange unicodeRange
 }
 
@@ -20,8 +23,9 @@ func (font FontFace) String() string   { return font.FontFamily }
 
 func NewFontFace(name string, src string) FontFace {
 	return FontFace{
-		FontFamily: name,
-		Src:        urlType("url(" + src + ")"),
+		FontFamily:  name,
+		Src:         urlType("url(" + src + ")"),
+		FontDisplay: Swap,
 	}
 }
 
@@ -39,6 +43,8 @@ func (font FontFace) Set(property, value string) {
 		font.FontWeight = fontWeightType(value)
 	case "unicode-range":
 		font.UnicodeRange = unicodeRange(value)
+	case "font-display":
+		font.FontDisplay = fontDisplayType(value)
 	}
 }
 
@@ -56,6 +62,8 @@ func (font FontFace) Get(property string) string {
 		return font.FontWeight.String()
 	case "unicode-range":
 		return font.UnicodeRange.String()
+	case "font-display":
+		return font.FontDisplay.String()
 	}
 	return ""
 }
@@ -71,26 +79,32 @@ func (font FontFace) Bytes() []byte {
 	buffer.WriteByte(';')
 
 	if font.FontStretch != nil {
-		buffer.WriteString("font-stretch")
+		buffer.WriteString("font-stretch: ")
 		buffer.WriteString(font.FontStretch.String())
 		buffer.WriteByte(';')
 	}
 
 	if font.FontStyle != nil {
-		buffer.WriteString("font-style")
+		buffer.WriteString("font-style: ")
 		buffer.WriteString(font.FontStyle.String())
 		buffer.WriteByte(';')
 	}
 
 	if font.FontWeight != nil {
-		buffer.WriteString("font-weight")
+		buffer.WriteString("font-weight: ")
 		buffer.WriteString(font.FontWeight.String())
 		buffer.WriteByte(';')
 	}
 
 	if font.UnicodeRange.String() != "" {
-		buffer.WriteString("unicode-range")
+		buffer.WriteString("unicode-range: ")
 		buffer.WriteString(font.UnicodeRange.String())
+		buffer.WriteByte(';')
+	}
+
+	if font.FontDisplay.String() != "" {
+		buffer.WriteString("font-display: ")
+		buffer.WriteString(font.FontDisplay.String())
 		buffer.WriteByte(';')
 	}
 

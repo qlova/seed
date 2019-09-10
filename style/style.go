@@ -476,7 +476,7 @@ func (style Style) SetBorder(color color.Color, thickness int) {
 	style.SetBorderColor(css.Colour(color))
 }
 
-//Set this element to have rounded corners of the specified radius.
+//SetRoundedCorners sets this element to have rounded corners of the specified radius.
 func (style Style) SetRoundedCorners(radius complex128) {
 	var value = css.Decode(radius)
 
@@ -485,6 +485,14 @@ func (style Style) SetRoundedCorners(radius complex128) {
 
 	style.SetBorderTopRightRadius(value)
 	style.SetBorderTopLeftRadius(value)
+}
+
+//SetRoundedCornersBottom sets this element to have rounded corners of the specified radius.
+func (style Style) SetRoundedCornersBottom(radius complex128) {
+	var value = css.Decode(radius)
+
+	style.SetBorderBottomLeftRadius(value)
+	style.SetBorderBottomRightRadius(value)
 }
 
 //RemoveRoundedCorners removes any rounded corner specification for this element.

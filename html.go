@@ -11,8 +11,8 @@ func (app App) HTML() []byte {
 	var Portrait = app.BuildStyleSheetForPortrait(0).Bytes()
 	var Landscape = app.BuildStyleSheetForLandscape(0).Bytes()
 
-	var scripts = app.Scripts(app.platform)
 	var HTML = app.Seed.Render(app.platform)
+	var scripts = app.Scripts(app.platform)
 	var StateHandlers = app.StateHandlers()
 	var OnReady = app.OnReadyHandler()
 	var DynamicHandlers = app.DynamicHandlers()
@@ -23,7 +23,9 @@ func (app App) HTML() []byte {
 	buffer.WriteString(`<head>`)
 
 	//Ensure the screen size matches the device size, disable zoom.
-	buffer.WriteString(`<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">`)
+	buffer.WriteString(`<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">`)
+
+	buffer.WriteString(`<meta name="Description" content="` + app.description + `">`)
 
 	//This is a webapp.
 	buffer.WriteString(`
@@ -53,7 +55,7 @@ func (app App) HTML() []byte {
 
 	for script := range scripts {
 		if path.Ext(script) == ".css" {
-			buffer.Write([]byte(`<link rel="stylesheet" href="` + script + `" />`))
+			buffer.Write([]byte(`<link rel="preload" href="` + script + `" as="style" onload="this.onload=null;this.rel='stylesheet'">`))
 		}
 	}
 
@@ -264,6 +266,12 @@ func (app App) HTML() []byte {
 	}
 	buffer.WriteString(`</style>`)
 
+	for script := range scripts {
+		if path.Ext(script) == ".js" {
+			buffer.Write([]byte(`<script src="` + script + `" defer></script>`))
+		}
+	}
+
 	//User modified head can go here.
 	buffer.Write(app.Head.Bytes())
 	buffer.WriteString(`</head>`)
@@ -272,12 +280,6 @@ func (app App) HTML() []byte {
 	buffer.Write(app.Neck.Bytes())
 	buffer.Write(HTML)
 	buffer.Write(app.Tail.Bytes())
-
-	for script := range scripts {
-		if path.Ext(script) == ".js" {
-			buffer.Write([]byte(`<script src="` + script + `"></script>`))
-		}
-	}
 
 	buffer.WriteString(`<script>`)
 	buffer.Write(DynamicHandlers)
@@ -295,21 +297,20 @@ func (app App) HTML() []byte {
 			if (window.localStorage.getItem("updating")) {
 				window.localStorage.removeItem("updating");
 			}
-			
-
 
 			if (!window.goto) return;
-			let current_page = window.localStorage.getItem('*CurrentPage');
-			if (current_page ) {
-				goto(current_page);
+			let saved_page = window.localStorage.getItem('*CurrentPage');
+			if (saved_page) {
+				goto(saved_page);
 
 				//clear history
 				last_page = null;
 				goto_history = [];
 
-				if (get(current_page) && get(current_page).enterpage)
-					get(current_page).enterpage();
+				if (get(saved_page) && get(saved_page).enterpage)
+					get(saved_page).enterpage();
 			} else {
+				current_page = loading_page;
 				goto(starting_page);
 			}
 		} else {
