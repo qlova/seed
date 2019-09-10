@@ -86,6 +86,13 @@ func (launcher launcher) Handler() http.Handler {
 			}
 		}
 
+		if request.URL.Path == "/Qlovaseed.png" {
+			response.Header().Set("Content-Type", "image/png")
+			icon, _ := fsByte(false, "/Qlovaseed.png")
+			response.Write(icon)
+			return
+		}
+
 		//Is this an embedded resource? Imported libraries will add these.
 		if embedded(response, request) {
 			return
