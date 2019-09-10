@@ -82,9 +82,53 @@ func (promise Promise) Catch(f func()) Promise {
 	return promise
 }
 
+//Args is a mapping from strings to script types.
+type Args map[string]qlova.Type
+
+//Attachable is a something that can be attached to a Go call.
+type Attachable interface {
+	AttachTo(request string, index int) string
+}
+
+//Attach attaches Attachables and returns an AttachCall.
+func (q Script) Attach(attachables ...Attachable) Attached {
+	var variable = Unique()
+
+	q.Javascript(`var ` + variable + " = new FormData();")
+
+	for i, attachable := range attachables {
+		q.Javascript(attachable.AttachTo(variable, i+1))
+	}
+
+	return Attached{variable, q, nil}
+}
+
+//Attached has attachments and these will be passed to the Go function that is called.
+type Attached struct {
+	formdata string
+	q        Script
+	args     Args
+}
+
+//Go calls a Go function f, with args. Returns a promise.
+func (c Attached) Go(f interface{}, args ...qlova.Type) Promise {
+	return c.q.rpc(f, c.formdata, c.args, args...)
+}
+
+//With adds arguments to the attached call.
+func (c Attached) With(args Args) Attached {
+	c.args = args
+	return c
+}
+
+//With adds arguments to the attached call.
+func (q Script) With(args Args) Attached {
+	return Attached{"", q, args}
+}
+
 var rpcID int64
 
-func (q Script) rpc(f interface{}, formdata string, args ...qlova.Type) Promise {
+func (q Script) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type) Promise {
 
 	//Get a unique string reference for f.
 	var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
@@ -118,6 +162,16 @@ func (q Script) rpc(f interface{}, formdata string, args ...qlova.Type) Promise 
 	}
 
 	var variable = Unique()
+
+	if nargs != nil {
+		if formdata == "" {
+			formdata = Unique()
+			q.Javascript(formdata + ` = new FormData();`)
+		}
+		for key, value := range nargs {
+			q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, ` + value.LanguageType().Raw() + `);`)
+		}
+	}
 
 	q.Require(Request)
 	q.Raw("Javascript", language.Statement(`let `+variable+` = request("POST", `+formdata+`, "`+CallingString+`");`))
@@ -192,9 +246,6 @@ func (q Script) call(f interface{}, args ...qlova.Type) qlova.Value {
 
 //Handler returns a handler for handling remote procedure calls.
 func Handler(w http.ResponseWriter, r *http.Request, call string) {
-
-	fmt.Println(r.URL)
-
 	var args = strings.Split(call, "/")
 	if len(args) == 0 {
 		return

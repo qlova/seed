@@ -48,11 +48,6 @@ func (a Attachment) Size() int64 {
 //Retrieve the either the first attachment or if index is provided, the attachment at the specified index.
 //This can be used to recieve files from the user.
 func (user User) Attachment(index ...int) (attachment Attachment) {
-	err := user.Request.ParseForm()
-	if err != nil {
-		println(err.Error())
-		return
-	}
 
 	var i = 1
 	if len(index) > 0 {

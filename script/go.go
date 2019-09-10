@@ -4,7 +4,7 @@ import qlova "github.com/qlova/script"
 
 //Go calls a Go function with the provided arguments.
 func (q Script) Go(function interface{}, args ...qlova.Type) Promise {
-	var Promise = q.rpc(function, "undefined", args...)
+	var Promise = q.rpc(function, "undefined", nil, args...)
 	q.Javascript(Promise.expression + `.then(function(response) {
 	if (response.charAt(0) != "{") return;
 	let json = JSON.parse(response);

@@ -4,6 +4,7 @@ import "github.com/qlova/seed/script"
 
 type Bool = script.Bool
 type Script = script.Script
+type Args = script.Args
 
 var functions = make(map[string]func(Script))
 
