@@ -11,6 +11,11 @@ type State struct {
 	not bool
 }
 
+//Null returns true if this is a null state.
+func (state State) Null() bool {
+	return global.Reference(state.Bool).String() == ""
+}
+
 //NewState returns a new globally unique state.
 func NewState(name ...string) State {
 	if len(name) > 0 {
