@@ -172,7 +172,6 @@ func setTransitionIn(Page script.Page, trans Transition) {
 		})
 		if trans.Else != nil {
 			setTransitionIn(Page, *trans.Else)
-			q.Return()
 			return
 		}
 		return
@@ -188,7 +187,6 @@ func setTransitionIn(Page script.Page, trans Transition) {
 		})
 		if trans.Else != nil {
 			setTransitionIn(Page, *trans.Else)
-			q.Return()
 			return
 		}
 		return
@@ -212,7 +210,6 @@ func setTransitionOut(Page script.Page, trans Transition) {
 		})
 		if trans.Else != nil {
 			setTransitionOut(Page, *trans.Else)
-			q.Return()
 			return
 		}
 	}
@@ -226,7 +223,6 @@ func setTransitionOut(Page script.Page, trans Transition) {
 		})
 		if trans.Else != nil {
 			setTransitionOut(Page, *trans.Else)
-			q.Return()
 			return
 		}
 	}
