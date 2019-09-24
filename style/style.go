@@ -336,6 +336,11 @@ func (style Style) SetContain() {
 	style.SetObjectFit(css.Contain)
 }
 
+//SetZoomable sets the style to be zoomable on touch screens.
+func (style Style) SetZoomable() {
+	style.Set("touch-action", "pinch-zoom")
+}
+
 //Make sure that this contains its aspect ratio.
 func (style Style) Clip() {
 	style.SetOverflow(css.Hidden)

@@ -72,11 +72,13 @@ func getImageDimension(imagePath string) string {
 	file, err := os.Open(imagePath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return "512x512"
 	}
 
 	image, _, err := image.DecodeConfig(file)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s: %v\n", imagePath, err)
+		return "512x512"
 	}
 
 	file.Close()

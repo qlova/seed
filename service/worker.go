@@ -68,7 +68,9 @@ async function cacheThenNetwork(event) {
 
 	//Get the request from the network.
 	try {
-		const NetworkReponse = await fetch(request.url+"?="+Math.random(), {cache: "no-store"});
+		let clone = request.clone();
+		clone.url = request.url+"?="+Math.random();
+		const NetworkReponse = await fetch(clone, {cache: "no-store"});
 		if (request.method == "GET" && NetworkReponse.status == 200) {
 			const dynamic = await caches.open("dynamic");
 			dynamic.put(request, NetworkReponse.clone());
