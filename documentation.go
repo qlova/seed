@@ -1,6 +1,5 @@
 /*
-
-This package can be used to write web applications without the need for HTML, CSS or Javascript.
+Package seed can be used to write web applications without the need for HTML, CSS or Javascript.
 
 	package main
 

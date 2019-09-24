@@ -7,8 +7,10 @@ import (
 
 import "github.com/qlova/seed/style"
 
+//Platform is a platform type.
 type Platform int
 
+//List of potential platforms.
 const (
 	Default Platform = iota
 
@@ -21,6 +23,7 @@ const (
 	Xbox
 )
 
+//ShortCircuit returns the actual seed for the given platform.
 func (seed Seed) ShortCircuit(platform Platform) Seed {
 	if platform == Desktop && seed.desktop.seed != nil {
 		return seed.desktop
@@ -48,6 +51,7 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
 	}
 }
 
+//BuildStyleSheet builds the seeds stylesheet.
 func (seed Seed) BuildStyleSheet(platform Platform) style.Sheet {
 	var stylesheet = make(style.Sheet)
 	seed.buildStyleSheet(platform, &stylesheet)
@@ -74,12 +78,14 @@ func (seed Seed) buildStyleSheetForLandscape(platform Platform, sheet *style.She
 	}
 }
 
+//BuildStyleSheetForLandscape builds the seeds's style sheet for landscape.
 func (seed Seed) BuildStyleSheetForLandscape(platform Platform) style.Sheet {
 	var stylesheet = make(style.Sheet)
 	seed.buildStyleSheetForLandscape(platform, &stylesheet)
 	return stylesheet
 }
 
+//BuildStyleSheetForPortrait builds the seeds's style sheet for portrait.
 func (seed Seed) BuildStyleSheetForPortrait(platform Platform) style.Sheet {
 	var stylesheet = make(style.Sheet)
 	seed.buildStyleSheetForPortrait(platform, &stylesheet)
@@ -106,8 +112,7 @@ func (seed Seed) buildStyleSheetForPortrait(platform Platform, sheet *style.Shee
 	}
 }
 
-//Replace this seed with its desktop version.
-
+//HTML returns this seed rendered as HTML.
 func (seed Seed) HTML(platform Platform) []byte {
 	if short := seed.ShortCircuit(platform); short.seed != nil {
 		return short.HTML(platform)
@@ -219,6 +224,7 @@ func (seed Seed) HTML(platform Platform) []byte {
 	return html.Bytes()
 }
 
+//Render returns this seed rendered to bytes.
 func (seed Seed) Render(platform Platform) []byte {
 	return seed.HTML(platform)
 }
@@ -241,6 +247,7 @@ func (seed Seed) getScripts(platform Platform) []string {
 	return scripts
 }
 
+//Scripts returns the scripts of this seed.
 func (seed Seed) Scripts(platform Platform) map[string]struct{} {
 	var scripts = seed.getScripts(platform)
 	var uniques = make(map[string]struct{})
@@ -252,6 +259,7 @@ func (seed Seed) Scripts(platform Platform) map[string]struct{} {
 	return uniques
 }
 
+//Render renders the app to bytes.
 func (app App) Render(platform Platform) []byte {
 	if !app.built {
 		app.build()
@@ -267,10 +275,4 @@ func (app App) render(production bool, platform Platform) []byte {
 	app.platform = platform
 
 	return app.HTML()
-}
-
-var tail string
-
-func Tail(t string) {
-	tail += t
 }

@@ -12,7 +12,7 @@ import "github.com/qlova/seed/script"
 //Shuold this be stored in the harvester?
 var feeds = make(map[string]func(User) Food)
 
-//A feed is used to transfer dynamic repeatable data from the server to the application.
+//Feed is used to transfer dynamic repeatable data from the server to the application.
 //For example, a news feed, a blog, comments etc.
 type Feed struct {
 	Seed
@@ -27,10 +27,13 @@ type Feed struct {
 	handler string
 }
 
+//Food is what powers the Feed.
 type Food interface{}
 
-var feed_id = 0
+var feedID = 0
 
+//NewFeed returns a new feed.
+//It accepts a function that returns Food.
 func NewFeed(food interface{}) Feed {
 	var seed = New()
 	seed.SetSize(100, Auto)
@@ -40,16 +43,17 @@ func NewFeed(food interface{}) Feed {
 	seed.SetFlexDirection(css.Row)
 	seed.SetFlexWrap(css.Wrap)
 
-	feed_id++
+	feedID++
 
 	return Feed{
 		Seed: seed,
 		food: food,
 
-		handler: fmt.Sprint(feed_id),
+		handler: fmt.Sprint(feedID),
 	}
 }
 
+//NewFeedWithin returns a feed within another feed.
 func NewFeedWithin(parent Feed, food interface{}) Feed {
 	var feed = NewFeed(food)
 	feed.within = &parent
@@ -57,7 +61,7 @@ func NewFeedWithin(parent Feed, food interface{}) Feed {
 	return feed
 }
 
-//Refresh the feeds content from the server.
+//Script returns a script interface to the feed.
 func (feed Feed) Script(q Script) script.Feed {
 	return script.Feed{script.Seed{
 		ID: feed.id,
@@ -65,7 +69,7 @@ func (feed Feed) Script(q Script) script.Feed {
 	}}
 }
 
-//Run a script when this feed refreshes.
+//OnRefresh runs the provided script when this feed refreshes.
 func (feed Feed) OnRefresh(f func(Script)) {
 	feed.OnReady(func(q Script) {
 		q.Javascript(feed.Script(q).Element() + ".onrefresh = function() {")
@@ -74,22 +78,22 @@ func (feed Feed) OnRefresh(f func(Script)) {
 	})
 }
 
-//Associate this feed to a parent, call .As(template_seed) in order to display the feed.
-func (feed Feed) AddTo(parent Interface) feeder {
-	return feeder{
+//AddTo associate this feed to a parent, call Feeder.As(template_seed) in order to display the feed.
+func (feed Feed) AddTo(parent Interface) Feeder {
+	return Feeder{
 		feed: feed,
 		seed: parent.Root(),
 	}
 }
 
-//A feeder is a feed builder.
-type feeder struct {
+//Feeder is a feed builder.
+type Feeder struct {
 	feed Feed
 	seed Seed
 }
 
-//Add this feed to the parent as described in the template.
-func (f feeder) As(template Template) Feed {
+//As adds this feed to the parent as described in the template.
+func (f Feeder) As(template Template) Feed {
 	f.seed.Add(template)
 
 	//Subfeed.

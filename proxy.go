@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var LocalClients = 0
+var localClients = 0
 
 func proxy(from, to string) {
 
@@ -35,11 +35,11 @@ func proxy(from, to string) {
 
 		//Editmode socket.
 		if request.URL.Path == "/socket" && local {
-			RELOADING = false
+			reloading = false
 
-			LocalClients++
-			println(LocalClients)
-			singleLocalConnection = LocalClients == 1
+			localClients++
+			println(localClients)
+			singleLocalConnection = localClients == 1
 			socket(response, request)
 			return
 		}
@@ -52,8 +52,8 @@ func proxy(from, to string) {
 		var local = strings.Contains(request.RemoteAddr, "[::1]")
 		//Editmode socket.
 		if request.URL.Path == "/socket" && local {
-			LocalClients++
-			singleLocalConnection = LocalClients == 1
+			localClients++
+			singleLocalConnection = localClients == 1
 			socket(response, request)
 			return
 		}

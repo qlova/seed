@@ -10,12 +10,14 @@ type embedding struct {
 	Data        []byte
 }
 
+//GetEmbeddings is an internal function.
 func GetEmbeddings() map[string]embedding {
 	return embeddings
 }
 
 var embeddings = make(map[string]embedding)
 
+//Embed embeds an asset with the specified name and data.
 func Embed(name string, data []byte) {
 	var ContentType string
 

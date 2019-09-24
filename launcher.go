@@ -197,8 +197,11 @@ func (launcher launcher) Handler() http.Handler {
 	}))
 }
 
-//This is a flag, that signals if the application is live or not.
-var Live, Production bool
+//Live signals if the application is live or not.
+var Live bool
+
+//Production signals if the application is in production or not.
+var Production bool
 
 func init() {
 	for _, arg := range os.Args {
@@ -217,12 +220,12 @@ func init() {
 
 var defers []func()
 
-func Cleanup() {
+func cleanup() {
 	for _, f := range defers {
 		f()
 	}
 }
-func Defer(f func()) {
+func deferFunction(f func()) {
 	defers = append(defers, f)
 }
 
@@ -231,7 +234,7 @@ func init() {
 	signal.Notify(c, os.Interrupt, os.Kill)
 	go func() {
 		<-c
-		Cleanup()
+		cleanup()
 		os.Exit(1)
 	}()
 }
@@ -269,7 +272,7 @@ func (launcher launcher) Launch(port ...string) {
 
 			var Compiler *exec.Cmd
 
-			Defer(func() {
+			deferFunction(func() {
 				if Process.Process != nil {
 					Process.Process.Kill()
 				}
@@ -308,8 +311,8 @@ func (launcher launcher) Launch(port ...string) {
 										Process.Stdout = os.Stdout
 										Process.Start()
 
-										RELOADING = true
-										for _, socket := range LocalSockets {
+										reloading = true
+										for _, socket := range localSockets {
 											socket.WriteMessage(1, []byte("update();"))
 										}
 									} else {

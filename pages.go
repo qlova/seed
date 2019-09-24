@@ -3,10 +3,12 @@ package seed
 import "github.com/qlova/seed/script"
 import "github.com/qlova/seed/style/css"
 
+//Page is a page of an app, or seed.
 type Page struct {
 	Seed
 }
 
+//NewPage returns a new Page.
 func NewPage() Page {
 	seed := New()
 	seed.SetCol()
@@ -41,22 +43,24 @@ func (p pages) Get(key string) Page {
 	return p[key]
 }
 
-var Pages = make(pages)
-
+//NewPage returns a NewPage attached to a given seed.
 func (seed Seed) NewPage() Page {
 	return AddPageTo(seed)
 }
 
+//AddPageTo adds a page to a parent.
 func AddPageTo(parent Interface) Page {
 	var page = NewPage()
 	parent.Root().Add(page)
 	return page
 }
 
+//SetBack sets the page that this page should go to when a back button is pressed.
 func (page Page) SetBack(back Page) {
 	page.SetAttributes(page.Attributes() + ` data-back="` + back.ID() + `"`)
 }
 
+//SyncVisibilityWith sets the given seed to be visible when the page is visible and hidden when the page is hidden.
 func (page Page) SyncVisibilityWith(seed Interface) {
 	var root = seed.Root()
 	page.OnPageEnter(func(q Script) {
@@ -67,6 +71,7 @@ func (page Page) SyncVisibilityWith(seed Interface) {
 	})
 }
 
+//Script returns a script interface to the page.
 func (page Page) Script(q Script) script.Page {
 	return script.Page{page.Seed.Script(q)}
 }

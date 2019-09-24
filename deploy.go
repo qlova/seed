@@ -2,17 +2,19 @@ package seed
 
 import (
 	"fmt"
-	"github.com/bramvdbogaerde/go-scp"
-	"golang.org/x/crypto/ssh"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"os/user"
 	"syscall"
 
+	"github.com/bramvdbogaerde/go-scp"
+	"golang.org/x/crypto/ssh"
+
 	"golang.org/x/crypto/ssh/terminal"
 )
 
+//Deploy is depreciated and should not be used.
 func (app *App) Deploy() error {
 	usr, err := user.Current()
 	if err != nil {

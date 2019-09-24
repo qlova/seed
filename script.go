@@ -2,13 +2,20 @@ package seed
 
 import "github.com/qlova/seed/script"
 
-type Bool = script.Bool
-type Script = script.Script
-type Args = script.Args
+type (
+	//Bool aliases to the script.Bool type.
+	Bool = script.Bool
+
+	//Script aliases to the script.Bool type.
+	Script = script.Script
+
+	//Args aliases to the script.Args type.
+	Args = script.Args
+)
 
 var functions = make(map[string]func(Script))
 
-//Define a new function that can be called from any Script context.
+//NewFunction defines a new function that can be called from any Script context.
 func NewFunction(f func(Script), names ...string) script.Function {
 	var name string
 	if len(names) > 0 {
@@ -23,7 +30,7 @@ func NewFunction(f func(Script), names ...string) script.Function {
 	return script.Function(name)
 }
 
-//Return a scriptable version of this seed.
+//Script returns a scriptable version of this seed.
 func (seed Seed) Script(q Script) script.Seed {
 	if seed.template {
 		return script.Seed{
@@ -36,16 +43,3 @@ func (seed Seed) Script(q Script) script.Seed {
 		Q:  q,
 	}
 }
-
-//Set the text content of the seed.
-/*func (seed Seed) SyncText(text *string) {
-	var wrapper = func() string {
-		return *text
-	}
-
-	seed.OnReady(func(q Script) {
-		q.Javascript(`setInterval(function() {`)
-		seed.Script(q).SetText(q.Call(wrapper).String())
-		q.Javascript(`}, 100)`)
-	})
-}*/

@@ -27,7 +27,7 @@ func launch(hostport string) {
 
 	url := "http://localhost" + hostport
 
-	if launch_native(url) == nil {
+	if launchNative(url) == nil {
 		return
 	}
 

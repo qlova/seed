@@ -3,6 +3,8 @@ package seed
 import "bytes"
 import "fmt"
 
+//JSX returns ReactNative JSX for this seed.
+//Please note that this is purely expreimental and mostly doesn't work.
 func (seed Seed) JSX() []byte {
 	var jsx bytes.Buffer
 	var native = seed.ReactNative()

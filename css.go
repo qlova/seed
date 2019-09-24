@@ -1,5 +1,6 @@
 package seed
 
+//CSS is the bundled, default css that is packaged with Qlovaseed.
 const CSS = `
 	* {
 		-webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important; 

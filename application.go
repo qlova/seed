@@ -11,6 +11,7 @@ import (
 	"github.com/qlova/seed/style/css"
 )
 
+//App is an entire app, with multiple pages and/or seeds.
 type App struct {
 	Seed
 	manifest.Manifest
@@ -36,7 +37,7 @@ type App struct {
 	built bool
 }
 
-//Create a new application, accepts title and content arguments.
+//NewApp creates a new application. The first string argument is the name, the second is a description of the app.
 func NewApp(args ...string) *App {
 	var app = App{
 		Seed:      New(),
@@ -69,11 +70,13 @@ func NewApp(args ...string) *App {
 	return &app
 }
 
-//Keep dependencies.
+//ToJavascript converts a Script function into javascript bytes.
 func (app *App) ToJavascript(f func(Script)) []byte {
 	return script.ToJavascript(f, app.Context)
 }
 
+//NewPage creates and returns a new page for the app.
+//If this is the first page created this way, it will also create a loading "splash" page.
 func (app *App) NewPage() Page {
 
 	if app.loadingPage.Null() {
@@ -84,12 +87,11 @@ func (app *App) NewPage() Page {
 	return AddPageTo(app)
 }
 
+//SetPage sets the default starting page for this App.
+//This page will be presented after the app has finished loading.
 func (app *App) SetPage(page Page) {
 
-	if app.loadingPage.Null() {
-		app.loadingPage = AddPageTo(app)
-		app.loadingPage.splash = true
-	}
+	app.LoadingPage()
 
 	app.startingPage = page
 
@@ -103,32 +105,44 @@ func (app *App) SetDescription(description string) {
 	app.description = description
 }
 
-//Return the loadingpage (like a splashscreen) for this app that displays while the app is loading.
+//LoadingPage returns the loadingpage (like a splashscreen) for this app that displays while the app is loading.
 func (app *App) LoadingPage() Page {
+
+	if app.loadingPage.Null() {
+		app.loadingPage = AddPageTo(app)
+		app.loadingPage.splash = true
+	}
+
 	return app.loadingPage
 }
 
-//Set the hostname of this app, this is where the app is expected to be hosted from.
+//SetHost sets the hostname of this app, this is where the app is expected to be hosted from.
+//ie. "app.example.com"
 func (app *App) SetHost(name string) {
 	app.host = name
 }
 
-//Set the REST hostname of this app, this is where the app will serve and request API calls.
+//SetRest sets the REST hostname of this app, this is where the app will serve and request API calls.
+//By default this will be relative to the current location of the app, however you may want to change this.
+//ie. "api.example.com"
 func (app *App) SetRest(name string) {
 	app.rest = name
 }
 
-//Set the package name of this application on android.
+//SetPackage sets the package name of this application on android.
+//By default it will be set to the reverse of the hostname.
+//ie. "com.example.app"
 func (app *App) SetPackage(name string) {
 	app.pkg = name
 }
 
-//Add a hash of the certificate that you will sign your android app with.
+//AddHash allows you to add a hash of the certificate that you will sign your android app with.
+//This is useful for Deep linking and assetlinks.json will be automatically served.
 func (app *App) AddHash(name string) {
 	app.hashes = append(app.hashes, name)
 }
 
-//Set the google analytics tracking code.
+//SetTrackingCode adds a google analytics tracking code to the app.
 func (app *App) SetTrackingCode(code string) {
 	app.Head.WriteString(`
 		<!-- Global site tag (gtag.js) - Google Analytics -->
@@ -143,7 +157,9 @@ func (app *App) SetTrackingCode(code string) {
 	`)
 }
 
-//TODO random port, can be set with enviromental variables.
+//Launch launches the app and attempts to open it with a local browser if possible.
+//This method is suitable for launching the app in development and in production.
+//However, to actually launch the app in production, a -production flag needs to passed to the app.
 func (app *App) Launch(listen ...string) error {
 
 	if len(os.Args) == 2 && os.Args[1] == "-deploy" {
@@ -159,6 +175,7 @@ func (app *App) Launch(listen ...string) error {
 	return nil
 }
 
+//OnUpdateFound will be called when an update is found for the app.
 func (app *App) OnUpdateFound(f func(Script)) {
 	app.onupdatefound = f
 }

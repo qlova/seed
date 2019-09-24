@@ -6,6 +6,7 @@ import (
 	"github.com/qlova/seed/script"
 )
 
+//Transition is a transisition between pages.
 type Transition struct {
 	In  *Animation
 	Out *Animation
@@ -16,6 +17,7 @@ type Transition struct {
 	Then, Else *Transition
 }
 
+//Fade is a transition.
 var Fade = Transition{
 	In: &Animation{
 		0: func(frame Frame) {
@@ -37,14 +39,17 @@ var Fade = Transition{
 	},
 }
 
+//FadeIn is a transition.
 var FadeIn = Transition{
 	In: Fade.In,
 }
 
+//FadeOut is a transition.
 var FadeOut = Transition{
 	In: Fade.Out,
 }
 
+//Flip is a transition.
 var Flip = Transition{
 	Out: &Animation{
 		0: func(frame Frame) {
@@ -59,10 +64,12 @@ var Flip = Transition{
 	},
 }
 
+//FlipOut is a transition.
 var FlipOut = Transition{
 	Out: Flip.Out,
 }
 
+//SlideUp is a transition.
 var SlideUp = Transition{
 	In: &Animation{
 		0: func(frame Frame) {
@@ -84,6 +91,7 @@ var SlideUp = Transition{
 	},
 }
 
+//SlideLeft is a transition.
 var SlideLeft = Transition{
 	In: &Animation{
 		0: func(frame Frame) {
@@ -105,6 +113,7 @@ var SlideLeft = Transition{
 	},
 }
 
+//SlideRight is a transition.
 var SlideRight = Transition{
 	In: &Animation{
 		0: func(frame Frame) {
@@ -237,6 +246,7 @@ func setTransitionOut(Page script.Page, trans Transition) {
 	}
 }
 
+//SetTransition sets a page transition for the page.
 func (page Page) SetTransition(trans Transition) {
 	if trans.In != nil || !trans.When.Null() || trans.WhenTag != "" {
 		page.OnPageEnter(func(q Script) {

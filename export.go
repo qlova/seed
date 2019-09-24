@@ -4,14 +4,18 @@ import "os"
 import "path/filepath"
 import "fmt"
 
+//TargetEnum is an experimental target type.
 type TargetEnum int
 
+//Purely experimental targets for Qlovaseed.
 const (
 	ReactNative TargetEnum = iota
 	Flutter
 	Website
 )
 
+//Export is a method for investigating experimental export targets.
+//This should not be used naively.
 func (app App) Export(t TargetEnum) error {
 	if t == Website {
 		var dir = filepath.Dir(os.Args[0])
@@ -245,9 +249,6 @@ export default class App extends Component {
 }
 		`)
 		return nil
-	} else {
-		panic("Invalid Export Target")
 	}
-
-	return fmt.Errorf("Invalid target")
+	panic("Invalid Export Target")
 }

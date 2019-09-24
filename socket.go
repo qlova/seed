@@ -107,8 +107,8 @@ func (p PostProduction) Save() {
 	}
 }*/
 
-var LocalSockets = make(map[string]*websocket.Conn)
-var RELOADING = false
+var localSockets = make(map[string]*websocket.Conn)
+var reloading = false
 
 func socket(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -118,21 +118,21 @@ func socket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	LocalSockets[r.RemoteAddr] = c
+	localSockets[r.RemoteAddr] = c
 
-	RELOADING = false
+	reloading = false
 
 	for {
 		_, _, err := c.ReadMessage()
 		if err != nil {
-			singleLocalConnection = LocalClients == 1
+			singleLocalConnection = localClients == 1
 
-			if singleLocalConnection && !RELOADING {
-				Cleanup()
+			if singleLocalConnection && !reloading {
+				cleanup()
 				os.Exit(0)
 			} else {
-				delete(LocalSockets, r.RemoteAddr)
-				LocalClients--
+				delete(localSockets, r.RemoteAddr)
+				localClients--
 				return
 			}
 		}
