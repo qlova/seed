@@ -73,6 +73,11 @@ func (app App) HTML() []byte {
 				window.dispatchEvent(new Event('orientationchange'));
 			}
 
+			//Disable Rightclick.
+			document.addEventListener("contextmenu", function (e) {
+				e.preventDefault();
+			}, false);
+
 			var ActivePhotoSwipe = null;
 		`)
 
