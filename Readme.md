@@ -16,6 +16,8 @@ The cross-platform Go framework for building apps.
  Write your app in Go, export the frontend as a native app.
  Android-only. IOS support planned.
 
+[Examples](examples)
+
 ![showcase](media/showcase.jpg)
 
 ## Installing
