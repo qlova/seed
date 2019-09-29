@@ -4,19 +4,19 @@ import "math/big"
 import "github.com/qlova/seed/style/css"
 import "encoding/base64"
 
-//A font, a style definition for how text should be rendered.
+//Font is a style definition for how text should be rendered.
 type Font struct {
 	name string
 	css.FontFace
 }
 
-var font_id int64 = 1
+var fontID int64 = 1
 
-//Create a new font based on the given font file path.
+//NewFont creates a new font based on the given font file path.
 func NewFont(path string) Font {
 
-	var id = base64.RawURLEncoding.EncodeToString(big.NewInt(font_id).Bytes())
-	font_id++
+	var id = base64.RawURLEncoding.EncodeToString(big.NewInt(fontID).Bytes())
+	fontID++
 
 	var font = Font{
 		name:     id,
@@ -29,7 +29,7 @@ func NewFont(path string) Font {
 	return font
 }
 
-//Set the font used by this element.
+//SetFont sets the font used by this element.
 func (style Style) SetFont(font Font) {
 	style.SetFontFamily(font.FontFace)
 }

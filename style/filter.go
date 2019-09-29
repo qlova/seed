@@ -15,27 +15,27 @@ func random() float64 {
 
 type matrix [9]float64
 
-type Color struct {
+type rgb struct {
 	R, G, B float64
 }
 
-func NewColor(r, g, b float64) *Color {
-	var color = new(Color)
+func newRGB(r, g, b float64) *rgb {
+	var color = new(rgb)
 	color.set(r, g, b)
 	return color
 }
 
-func (color *Color) String() string {
+func (color *rgb) String() string {
 	return fmt.Sprintf("rgb(%v, %v, %v)", math.Round(color.R), math.Round(color.G), math.Round(color.B))
 }
 
-func (color *Color) set(r, g, b float64) {
+func (color *rgb) set(r, g, b float64) {
 	color.R = color.clamp(r)
 	color.G = color.clamp(g)
 	color.B = color.clamp(b)
 }
 
-func (color *Color) hueRotate(angle float64) {
+func (color *rgb) hueRotate(angle float64) {
 	angle = angle / 180.0 * math.Pi
 	var sin = math.Sin(angle)
 	var cos = math.Cos(angle)
@@ -53,7 +53,7 @@ func (color *Color) hueRotate(angle float64) {
 	})
 }
 
-func (color *Color) grayscale(value float64) {
+func (color *rgb) grayscale(value float64) {
 	color.multiply(matrix{
 		0.2126 + 0.7874*(1-value),
 		0.7152 - 0.7152*(1-value),
@@ -67,7 +67,7 @@ func (color *Color) grayscale(value float64) {
 	})
 }
 
-func (color *Color) sepia(value float64) {
+func (color *rgb) sepia(value float64) {
 	color.multiply(matrix{
 		0.393 + 0.607*(1-value),
 		0.769 - 0.769*(1-value),
@@ -81,7 +81,7 @@ func (color *Color) sepia(value float64) {
 	})
 }
 
-func (color *Color) saturate(value float64) {
+func (color *rgb) saturate(value float64) {
 	color.multiply(matrix{
 		0.213 + 0.787*value,
 		0.715 - 0.715*value,
@@ -95,34 +95,34 @@ func (color *Color) saturate(value float64) {
 	})
 }
 
-func (color *Color) multiply(m matrix) {
+func (color *rgb) multiply(m matrix) {
 	var newR = color.clamp(color.R*m[0] + color.G*m[1] + color.B*m[2])
 	var newG = color.clamp(color.R*m[3] + color.G*m[4] + color.B*m[5])
 	var newB = color.clamp(color.R*m[6] + color.G*m[7] + color.B*m[8])
 	color.set(newR, newG, newB)
 }
 
-func (color *Color) brightness(value float64) {
+func (color *rgb) brightness(value float64) {
 	color.linear(value, 0)
 }
 
-func (color *Color) contrast(value float64) {
+func (color *rgb) contrast(value float64) {
 	color.linear(value, -(0.5*value)+0.5)
 }
 
-func (color *Color) linear(slope, intercept float64) {
+func (color *rgb) linear(slope, intercept float64) {
 	color.R = color.clamp(color.R*slope + intercept*255)
 	color.G = color.clamp(color.G*slope + intercept*255)
 	color.B = color.clamp(color.B*slope + intercept*255)
 }
 
-func (color *Color) invert(value float64) {
+func (color *rgb) invert(value float64) {
 	color.R = color.clamp((value + color.R/255*(1-2*value)) * 255)
 	color.G = color.clamp((value + color.G/255*(1-2*value)) * 255)
 	color.B = color.clamp((value + color.B/255*(1-2*value)) * 255)
 }
 
-func (color *Color) hsl() struct{ H, S, L float64 } {
+func (color *rgb) hsl() struct{ H, S, L float64 } {
 	var r = color.R / 255
 	var g = color.G / 255
 	var b = color.B / 255
@@ -164,7 +164,7 @@ func (color *Color) hsl() struct{ H, S, L float64 } {
 	}
 }
 
-func (color *Color) clamp(value float64) float64 {
+func (color *rgb) clamp(value float64) float64 {
 	if value > 255 {
 		value = 255
 	} else if value < 0 {
@@ -173,28 +173,28 @@ func (color *Color) clamp(value float64) float64 {
 	return value
 }
 
-type Solver struct {
-	target      *Color
+type solver struct {
+	target      *rgb
 	targetHSL   struct{ H, S, L float64 }
-	reusedColor *Color
+	reusedColor *rgb
 }
 
-func NewSolver(target *Color) *Solver {
-	return &Solver{
+func newSolver(target *rgb) *solver {
+	return &solver{
 		target:      target,
 		targetHSL:   target.hsl(),
-		reusedColor: NewColor(0, 0, 0),
+		reusedColor: newRGB(0, 0, 0),
 	}
 }
 
-func (solver *Solver) Solve() (values [6]float64, loss float64, filter string) {
+func (solver *solver) Solve() (values [6]float64, loss float64, filter string) {
 	values, loss = solver.solveNarrow(solver.solveWide())
 	filter = solver.css(values)
 
 	return values, loss, filter
 }
 
-func (solver *Solver) solveWide() (values [6]float64, loss float64) {
+func (solver *solver) solveWide() (values [6]float64, loss float64) {
 	var A = 5.0
 	var c = 15.0
 	var a = [6]float64{50, 180, 18000, 600, 1.2, 1.2}
@@ -203,24 +203,24 @@ func (solver *Solver) solveWide() (values [6]float64, loss float64) {
 
 	for i := 0; bestLoss > 25 && i < 3; i++ {
 		var initial = [6]float64{50, 20, 3750, 50, 100, 100}
-		var result_values, result_loss = solver.spsa(A, a, c, initial, 1000)
-		if result_loss < bestLoss {
-			bestLoss = result_loss
-			values = result_values
+		var resultValues, resultLoss = solver.spsa(A, a, c, initial, 1000)
+		if resultLoss < bestLoss {
+			bestLoss = resultLoss
+			values = resultValues
 		}
 	}
 	return values, bestLoss
 }
 
-func (solver *Solver) solveNarrow(wide_values [6]float64, wide_loss float64) (values [6]float64, loss float64) {
-	var A = wide_loss
+func (solver *solver) solveNarrow(wideValues [6]float64, wideLoss float64) (values [6]float64, loss float64) {
+	var A = wideLoss
 	var c = 2.0
 	var A1 = A + 1
 	var a = [6]float64{0.25 * A1, 0.25 * A1, A1, 0.25 * A1, 0.2 * A1, 0.2 * A1}
-	return solver.spsa(A, a, c, wide_values, 500)
+	return solver.spsa(A, a, c, wideValues, 500)
 }
 
-func (solver *Solver) spsa(A float64, a [6]float64, c float64, values [6]float64, iters int) (best [6]float64, loss float64) {
+func (solver *solver) spsa(A float64, a [6]float64, c float64, values [6]float64, iters int) (best [6]float64, loss float64) {
 	var alpha = 1.0
 	var gamma = 0.16666666666666666
 
@@ -281,7 +281,7 @@ func (solver *Solver) spsa(A float64, a [6]float64, c float64, values [6]float64
 	return best, bestLoss
 }
 
-func (solver *Solver) loss(filters [6]float64) float64 {
+func (solver *solver) loss(filters [6]float64) float64 {
 	var color = solver.reusedColor
 	color.set(0, 0, 0)
 
@@ -301,7 +301,7 @@ func (solver *Solver) loss(filters [6]float64) float64 {
 		math.Abs(colorHSL.L-solver.targetHSL.L)
 }
 
-func (solver *Solver) css(filters [6]float64) string {
+func (solver *solver) css(filters [6]float64) string {
 
 	var f = func(idx int, multiplier float64) float64 {
 		return math.Round(filters[idx] * multiplier)
@@ -313,33 +313,4 @@ func (solver *Solver) css(filters [6]float64) string {
 func init() {
 	rand.Seed(time.Now().UnixNano())
 	seed = rand.ExpFloat64() / 2
-}
-
-//Test
-func test_colors() {
-
-	var r, g, b float64 = 255, 0, 0
-
-	var color = NewColor(r, g, b)
-	var solver = NewSolver(color)
-
-	start := time.Now()
-	var _, loss, filter = solver.Solve()
-	elapsed := time.Since(start)
-	fmt.Println("Binomial took ", elapsed)
-	fmt.Println(loss)
-
-	var lossMessage string
-	if loss < 1 {
-		lossMessage = "This is a perfect result."
-	} else if loss < 5 {
-		lossMessage = "The is close enough."
-	} else if loss < 15 {
-		lossMessage = "The color is somewhat off. Consider running it again."
-	} else {
-		lossMessage = "The color is extremely off. Run it again!"
-	}
-
-	fmt.Println(filter)
-	fmt.Println(lossMessage)
 }
