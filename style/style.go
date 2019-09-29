@@ -24,7 +24,7 @@ const Right = 1
 const Auto = math.MaxFloat64
 const Center = 0
 
-//A style is a set of visual indications of an element.
+//Style is a set of visual indications of an element.
 //For example, colour, spacing & positioning.
 type Style struct {
 	css.Style
@@ -498,6 +498,14 @@ func (style Style) SetRoundedCornersBottom(radius complex128) {
 
 	style.SetBorderBottomLeftRadius(value)
 	style.SetBorderBottomRightRadius(value)
+}
+
+//SetRoundedCornersTop sets this element to have rounded corners of the specified radius.
+func (style Style) SetRoundedCornersTop(radius complex128) {
+	var value = css.Decode(radius)
+
+	style.SetBorderTopLeftRadius(value)
+	style.SetBorderTopRightRadius(value)
 }
 
 //RemoveRoundedCorners removes any rounded corner specification for this element.

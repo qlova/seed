@@ -8,8 +8,6 @@ import (
 //HTML returns rendered html of the entire app.
 func (app App) HTML() []byte {
 	var Style = app.BuildStyleSheet(0).Bytes()
-	var Portrait = app.BuildStyleSheetForPortrait(0).Bytes()
-	var Landscape = app.BuildStyleSheetForLandscape(0).Bytes()
 
 	var HTML = app.Seed.Render(app.platform)
 	var scripts = app.Scripts(app.platform)
@@ -269,14 +267,6 @@ func (app App) HTML() []byte {
 		buffer.Write(app.Fonts())
 		buffer.Write(app.Animations())
 		buffer.Write(Style)
-
-		buffer.WriteString(`@media screen and (orientation: landscape) {`)
-		buffer.Write(Landscape)
-		buffer.WriteString(`}`)
-
-		buffer.WriteString(`@media screen and (orientation: portrait) {`)
-		buffer.Write(Portrait)
-		buffer.WriteString(`}`)
 
 		buffer.Write(app.MediaQueries())
 	}

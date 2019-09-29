@@ -1,85 +1,48 @@
 package style
 
-import "github.com/qlova/seed/style/css"
-
 import (
 	"bytes"
-	"strings"
 )
 
-//A stylesheet that produces optimally compressed CSS for Qlovaseed.
-type Sheet map[string][]string
+//Sheet is a CSS stylesheet that produces optimally compressed CSS for Qlovaseed.
+type Sheet struct {
+	Rules
+	Portrait, Landscape Rules
+}
 
-//Main optimisation method.
-func (sheet Sheet) Add(selector string, style css.Stylable) {
-	var properties = strings.Split(string(style.Bytes()), ";")
-
-	for _, property := range properties {
-
-		if len(property) == 0 {
-			continue
-		}
-
-		sheet[property] = append(sheet[property], selector)
+//NewSheet returns a new sheet.
+func NewSheet() Sheet {
+	return Sheet{
+		Rules:     make(Rules),
+		Portrait:  make(Rules),
+		Landscape: make(Rules),
 	}
 }
 
-func (sheet Sheet) Get(selector string) css.Stylable {
-	var result = css.NewStyle()
-
-	for style, selectors := range sheet {
-		for _, selector := range selectors {
-			if selector == selector {
-				var parts = strings.Split(style, ":")
-				result.Stylable.(css.Implementation)[parts[0]] = parts[1][:len(parts[1])-1]
-			}
-		}
-	}
-
-	if len(result.Stylable.(css.Implementation)) == 0 {
-		return nil
-	}
-
-	return result
+//AddGroup adds a new style group to the sheet.
+func (sheet Sheet) AddGroup(selector string, group Group) {
+	sheet.Rules.Add(selector, group.Style)
+	sheet.Portrait.Add(selector, group.Portrait)
+	sheet.Landscape.Add(selector, group.Landscape)
 }
 
+//Bytes returns the sheet as CSS.
 func (sheet Sheet) Bytes() []byte {
+	var buffer bytes.Buffer
 
-	//Flip the Sheet data map.
-	var flipped = make(map[string][]string)
-	for property, selectors := range sheet {
+	buffer.Write(sheet.Rules.Bytes())
 
-		if len(selectors) == 0 {
-			panic("Error in style.Sheet.Render()")
-		}
-
-		if len(selectors) == 1 {
-			flipped[selectors[0]] = append(flipped[selectors[0]], property)
-		} else {
-			var selector string
-			//Create multi-selector
-			for i, id := range selectors {
-				selector += id
-				if i < len(selectors)-1 {
-					selector += ","
-				}
-			}
-			flipped[selector] = append(flipped[selector], property)
-		}
+	if len(sheet.Portrait) > 0 {
+		buffer.WriteString(`@media screen and (orientation: portrait) {`)
+		buffer.Write(sheet.Portrait.Bytes())
+		buffer.WriteString(`}`)
 	}
 
-	var result bytes.Buffer
-
-	for selector, properties := range flipped {
-
-		result.WriteString(selector)
-		result.WriteByte('{')
-		for _, property := range properties {
-			result.WriteString(property)
-			result.WriteByte(';')
-		}
-		result.WriteByte('}')
+	if len(sheet.Landscape) > 0 {
+		buffer.WriteString(`@media screen and (orientation: landscape) {`)
+		buffer.Write(sheet.Landscape.Bytes())
+		buffer.WriteString(`}`)
 	}
 
-	return result.Bytes()
+	return buffer.Bytes()
 }

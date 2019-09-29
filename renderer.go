@@ -5,8 +5,6 @@ import (
 	"fmt"
 )
 
-import "github.com/qlova/seed/style"
-
 //Platform is a platform type.
 type Platform int
 
@@ -31,7 +29,7 @@ func (seed Seed) ShortCircuit(platform Platform) Seed {
 	return Seed{}
 }
 
-func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
+func (seed Seed) buildStyleSheet(platform Platform, sheet *sheet) {
 	if short := seed.ShortCircuit(platform); short.seed != nil {
 		short.buildStyleSheet(platform, sheet)
 		return
@@ -40,11 +38,12 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
 	//seed.postProduction()
 	if data := seed.Style.Bytes(); data != nil {
 		seed.styled = true
+		var selector = "#" + seed.id
 		if seed.template {
-			sheet.Add("."+seed.id, seed.Style)
-		} else {
-			sheet.Add("#"+seed.id, seed.Style)
+			selector = "." + seed.id
 		}
+
+		sheet.AddSeed(selector, seed)
 	}
 	for _, child := range seed.children {
 		child.Root().buildStyleSheet(platform, sheet)
@@ -52,64 +51,10 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *style.Sheet) {
 }
 
 //BuildStyleSheet builds the seeds stylesheet.
-func (seed Seed) BuildStyleSheet(platform Platform) style.Sheet {
-	var stylesheet = make(style.Sheet)
+func (seed Seed) BuildStyleSheet(platform Platform) sheet {
+	var stylesheet = newSheet()
 	seed.buildStyleSheet(platform, &stylesheet)
 	return stylesheet
-}
-
-func (seed Seed) buildStyleSheetForLandscape(platform Platform, sheet *style.Sheet) {
-	if short := seed.ShortCircuit(platform); short.seed != nil {
-		short.buildStyleSheetForLandscape(platform, sheet)
-		return
-	}
-
-	//seed.postProduction()
-	if data := seed.Landscape.Bytes(); data != nil {
-		seed.styled = true
-		if seed.template {
-			sheet.Add("."+seed.id, seed.Landscape)
-		} else {
-			sheet.Add("#"+seed.id, seed.Landscape)
-		}
-	}
-	for _, child := range seed.children {
-		child.Root().buildStyleSheetForLandscape(platform, sheet)
-	}
-}
-
-//BuildStyleSheetForLandscape builds the seeds's style sheet for landscape.
-func (seed Seed) BuildStyleSheetForLandscape(platform Platform) style.Sheet {
-	var stylesheet = make(style.Sheet)
-	seed.buildStyleSheetForLandscape(platform, &stylesheet)
-	return stylesheet
-}
-
-//BuildStyleSheetForPortrait builds the seeds's style sheet for portrait.
-func (seed Seed) BuildStyleSheetForPortrait(platform Platform) style.Sheet {
-	var stylesheet = make(style.Sheet)
-	seed.buildStyleSheetForPortrait(platform, &stylesheet)
-	return stylesheet
-}
-
-func (seed Seed) buildStyleSheetForPortrait(platform Platform, sheet *style.Sheet) {
-	if short := seed.ShortCircuit(platform); short.seed != nil {
-		short.buildStyleSheetForPortrait(platform, sheet)
-		return
-	}
-
-	//seed.postProduction()
-	if data := seed.Portrait.Bytes(); data != nil {
-		seed.styled = true
-		if seed.template {
-			sheet.Add("."+seed.id, seed.Portrait)
-		} else {
-			sheet.Add("#"+seed.id, seed.Portrait)
-		}
-	}
-	for _, child := range seed.children {
-		child.Root().buildStyleSheetForPortrait(platform, sheet)
-	}
 }
 
 //HTML returns this seed rendered as HTML.

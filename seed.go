@@ -94,7 +94,11 @@ type Seed struct {
 
 type seed struct {
 	HTML.Element
-	style.Style
+
+	style.Group
+	//Watch, Phone, Tablet, Laptop, Desktop
+	Tiny, Small, Medium, Large, Huge style.Group
+
 	dynamic
 
 	id               string
@@ -128,8 +132,6 @@ type seed struct {
 	scripts []string
 
 	handlers []func(w http.ResponseWriter, r *http.Request)
-
-	Landscape, Portrait style.Style
 
 	screenSmallerThan, screenGreaterThan map[Unit]style.Style
 
@@ -309,9 +311,13 @@ func New() Seed {
 
 	id++
 
-	s.Style = style.New()
-	s.Landscape = style.New()
-	s.Portrait = style.New()
+	s.Group.Init()
+	s.Tiny.Init()
+	s.Small.Init()
+	s.Medium.Init()
+	s.Large.Init()
+	s.Huge.Init()
+
 	s.tag = "div"
 
 	allSeeds[s.id] = s

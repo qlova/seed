@@ -142,7 +142,7 @@ func (app *harvester) harvest(seed Seed) {
 	}
 
 	//Harvest mediaQueries.
-	if seed.screenSmallerThan != nil {
+	/*if seed.screenSmallerThan != nil {
 		for unit, stile := range seed.screenSmallerThan {
 			if h.screenSmallerThans[unit] == nil {
 				h.screenSmallerThans[unit] = make(style.Sheet)
@@ -153,7 +153,7 @@ func (app *harvester) harvest(seed Seed) {
 				h.screenSmallerThans[unit].Add("#"+seed.id, stile)
 			}
 		}
-	}
+	}*/
 
 	//Recursively harvest children.
 	for _, child := range seed.children {
