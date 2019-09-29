@@ -1,22 +1,17 @@
 package user
 
 import (
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
-	"math/big"
 	"net/http"
 	"regexp"
-	"time"
 )
 
+//User is a current user of the app.
 type User struct {
 	user
-
-	indices []int
-	marker  int
 }
 
+//Production specifies if we are running in production.
 var Production bool
 
 type user struct {
@@ -25,12 +20,33 @@ type user struct {
 
 	//The pending update for the user.
 	Update
+
+	indices []int
+	marker  int
 }
 
+//SetIndices sets the indicies of a feed request.
+func (user *User) SetIndices(i []int) {
+	user.indices = i
+	user.marker = 0
+}
+
+//Index returns the current index.
+func (user User) Index() int {
+	if user.marker < len(user.indices) {
+		user.marker++
+		return user.indices[user.marker-1]
+	} else {
+		return -1
+	}
+}
+
+//WriteString writes a string to the user.
 func (user User) WriteString(s string) {
 	user.user.ResponseWriter.Write([]byte(s))
 }
 
+//FromHandler returns a user from http.Handler arguments.
 func (User) FromHandler(w http.ResponseWriter, r *http.Request) User {
 	return User{user: user{
 		Request:        r,
@@ -44,52 +60,22 @@ func (User) FromHandler(w http.ResponseWriter, r *http.Request) User {
 	}}
 }
 
-func (user *User) SetIndices(i []int) {
-	user.indices = i
-	user.marker = 0
-}
-
-func (user User) Index() int {
-	if user.marker < len(user.indices) {
-		user.marker++
-		return user.indices[user.marker-1]
-	} else {
-		return -1
-	}
-}
-
+//Send encodes data as json and sends it to the user.
 func (user User) Send(data interface{}) {
 	json.NewEncoder(user.ResponseWriter).Encode(data)
 }
 
-func (user User) Get(data Data) string {
-	result, err := user.Request.Cookie(string(data))
-	if err != nil {
-		fmt.Println(err.Error())
-		return ""
-	}
-	return result.Value
-}
-
-var Intranet *regexp.Regexp
+var intranet *regexp.Regexp
 
 func init() {
 	var err error
-	Intranet, err = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
+	intranet, err = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
 	if err != nil {
 		panic("invalid regexp!")
 	}
 }
 
-func (user User) Set(data Data, value string) {
-	http.SetCookie(user.ResponseWriter, &http.Cookie{
-		Name:    string(data),
-		Value:   value,
-		Secure:  Production,
-		Expires: time.Now().Add(time.Hour * 24 * 365),
-	})
-}
-
+//NotAuthorised returns a 401 error to the user.
 func (user User) NotAuthorised() {
 	user.ResponseWriter.WriteHeader(401)
 }
@@ -101,23 +87,11 @@ func (user User) Error(err ...string) {
 	}
 }
 
+//Close closes the user.
 func (user User) Close() {
 	if len(user.Update.Document) > 0 || len(user.Update.LocalStorage) > 0 || len(user.Update.Evaluations) > 0 {
 		json.NewEncoder(user.ResponseWriter).Encode(user.Update)
 	} else {
 		user.ResponseWriter.WriteHeader(http.StatusOK)
 	}
-}
-
-var id int64 = 1
-
-type Data string
-
-func DataType() Data {
-	//global identification is compressed to base64 and prefixed with g_.
-	var result = "user_" + base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
-
-	id++
-
-	return Data(result)
 }

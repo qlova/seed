@@ -1,6 +1,6 @@
 package user
 
-//This describes a JSON update that gets sent to the user, it defines a change in state that will be applied to the user.
+//Update describes a JSON update that gets sent to the user, it defines a change in state that will be applied to the user.
 type Update struct {
 
 	//a mapping of document paths to values,

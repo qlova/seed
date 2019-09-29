@@ -26,11 +26,6 @@ type User = user.User
 //Shadow is an alias to the style.Shadow type.
 type Shadow = style.Shadow
 
-//UserData returns a reference to a new type of user data, this is small data that is used to identify the user.
-func UserData() user.Data {
-	return user.DataType()
-}
-
 //Vm is a unit relative to the viewport size.
 const Vm Unit = style.Vm
 

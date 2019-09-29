@@ -11,7 +11,6 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/user"
 )
 
 //Returns a http handler that serves this application.
@@ -94,12 +93,6 @@ func (launcher launcher) Handler() http.Handler {
 		//Remote procedure calls.
 		if len(request.URL.Path) > 6 && request.URL.Path[:7] == "/feeds/" {
 			feedHandler(response, request, request.URL.Path[7:])
-			return
-		}
-
-		//Serve assets.
-		if len(request.URL.Path) > len("/attachments/") && request.URL.Path[:len("/attachments/")] == "/attachments/" {
-			http.ServeFile(response, request, dir+"/"+user.AttachmentDirectory+"/"+request.URL.Path[len("/attachments/"):])
 			return
 		}
 
