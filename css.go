@@ -7,6 +7,7 @@ const CSS = `
 		-webkit-focus-ring-color: rgba(255, 255, 255, 0) !important; 
 		outline: none !important;
 		flex-shrink: 0;
+		cursor: default;
 	}
 
 	a {
