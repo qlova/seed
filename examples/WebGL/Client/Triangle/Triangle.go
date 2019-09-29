@@ -12,7 +12,7 @@ func main() {
 		var canvas = Canvas.Script(q)
 		var gl = canvas.OpenGL()
 
-		gl.Viewport(q.Float(0), q.Float(0), canvas.Width(), canvas.Height())
+		//gl.Viewport(q.Float(0), q.Float(0), canvas.Width(), canvas.Height())
 
 		var VertexShader = gl.CreateShader(gl.VertexShader)
 		gl.ShaderSource(VertexShader, q.String(`attribute vec3 c;void main(void){gl_Position=vec4(c, 1.0);}`))
