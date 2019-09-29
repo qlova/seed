@@ -3,6 +3,7 @@ package seed
 import (
 	"bytes"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/qlova/seed/manifest"
@@ -179,6 +180,11 @@ func (app *App) Launch(listen ...string) error {
 
 	launcher{App: *app}.Launch(listen...)
 	return nil
+}
+
+//Handler returns a handler for this app.
+func (app *App) Handler() http.Handler {
+	return launcher{App: *app}.Handler()
 }
 
 //OnUpdateFound will be called when an update is found for the app.
