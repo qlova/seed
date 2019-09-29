@@ -8,6 +8,8 @@ require (
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gorilla/websocket v1.4.1
 	github.com/qlova/script v0.0.0-20190731095237-dfd47aef1c0f
+	github.com/russross/blackfriday v2.0.0+incompatible
+	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/zserge/webview v0.0.0-20190123072648-16c93bcaeaeb

@@ -4,7 +4,7 @@ import (
 	"github.com/qlova/seed/style"
 	"github.com/qlova/seed/style/css"
 	"github.com/qlova/seed/user"
-	"gopkg.in/russross/blackfriday.v2"
+	"github.com/russross/blackfriday"
 
 	"encoding/base64"
 	"html"
