@@ -38,6 +38,41 @@ func (app App) Export(t TargetEnum) error {
 			file.Write(data.Data)
 		}
 
+		//Default icon.
+		{
+			var file, err = os.Create(dir + "/website/Qlovaseed.png")
+			if err != nil {
+				panic(err.Error())
+			}
+			defer file.Close()
+
+			icon, _ := fsByte(false, "/Qlovaseed.png")
+
+			file.Write(icon)
+		}
+
+		//App Manifest.
+		{
+			var file, err = os.Create(dir + "/website/app.webmanifest")
+			if err != nil {
+				panic(err.Error())
+			}
+			defer file.Close()
+
+			file.Write(app.Manifest.Render())
+		}
+
+		//Service worker.
+		{
+			var file, err = os.Create(dir + "/website/index.js")
+			if err != nil {
+				panic(err.Error())
+			}
+			defer file.Close()
+
+			file.Write(app.Worker.Render())
+		}
+
 		index.Write(app.render(true, Mobile))
 		return nil
 	}

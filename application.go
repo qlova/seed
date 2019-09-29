@@ -162,6 +162,12 @@ func (app *App) SetTrackingCode(code string) {
 //However, to actually launch the app in production, a -production flag needs to passed to the app.
 func (app *App) Launch(listen ...string) error {
 
+	if exporting {
+		app.build()
+		app.Export(Website)
+		return nil
+	}
+
 	if len(os.Args) == 2 && os.Args[1] == "-deploy" {
 		err := app.Deploy()
 		if err != nil {
