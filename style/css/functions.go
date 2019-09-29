@@ -4,6 +4,7 @@ import (
 	"fmt"
 	go_color "image/color"
 	"math"
+	"strconv"
 )
 
 const Pc = 1
@@ -34,6 +35,10 @@ func Decode(unit complex128) unitType {
 	} else {
 		return unitType(fmt.Sprint(real(unit), "%"))
 	}
+}
+
+func Image(url string) imageValue {
+	return imageType("url(" + strconv.Quote(url) + ")")
 }
 
 func AnimationName(name string) animationNameValue {
