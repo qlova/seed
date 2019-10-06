@@ -94,6 +94,7 @@ func (launcher launcher) Launch(port ...string) {
 
 			var Process = exec.Command(os.Args[0], "-live")
 			Process.Stdout = os.Stdout
+			Process.Stderr = os.Stderr
 			Process.Start()
 
 			watcher, err := fsnotify.NewWatcher()
@@ -141,6 +142,7 @@ func (launcher launcher) Launch(port ...string) {
 										}
 										Process = exec.Command(os.Args[0], "-live")
 										Process.Stdout = os.Stdout
+										Process.Stderr = os.Stderr
 										Process.Start()
 
 										reloading = true
