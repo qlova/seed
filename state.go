@@ -37,56 +37,56 @@ func (state State) Not() State {
 
 //VisibleWhen sets a seed to be visible when the state is active.
 func (seed Seed) VisibleWhen(state State) {
-	seed.When(state, func(q Script) {
-		seed.Script(q).SetVisible()
+	seed.When(state, func(q script.Ctx) {
+		seed.Ctx(q).SetVisible()
 	})
-	seed.When(state.Not(), func(q Script) {
-		seed.Script(q).SetHidden()
+	seed.When(state.Not(), func(q script.Ctx) {
+		seed.Ctx(q).SetHidden()
 	})
 
 }
 
 //HiddenWhen sets a seed to be hidden when the state is active.
 func (seed Seed) HiddenWhen(state State) {
-	seed.When(state, func(q Script) {
-		seed.Script(q).SetHidden()
+	seed.When(state, func(q script.Ctx) {
+		seed.Ctx(q).SetHidden()
 	})
-	seed.When(state.Not(), func(q Script) {
-		seed.Script(q).SetVisible()
+	seed.When(state.Not(), func(q script.Ctx) {
+		seed.Ctx(q).SetVisible()
 	})
 }
 
 //When runs a script whenever the state becomes active.
-func (seed Seed) When(state State, f func(q Script)) {
+func (seed Seed) When(state State, f func(q script.Ctx)) {
 	if seed.states == nil {
-		seed.states = make(map[State]func(Script))
+		seed.states = make(map[State]func(script.Ctx))
 	}
 	seed.states[state] = f
 }
 
 //OnClickToggleState is shorthand.
 func (seed Seed) OnClickToggleState(state State) {
-	seed.OnClick(func(q Script) {
+	seed.OnClick(func(q script.Ctx) {
 		state.Toggle(q)
 	})
 }
 
 //OnClickSetState is shorthand.
 func (seed Seed) OnClickSetState(state State) {
-	seed.OnClick(func(q Script) {
+	seed.OnClick(func(q script.Ctx) {
 		state.Set(q)
 	})
 }
 
 //OnClickUnsetState is shorthand.
 func (seed Seed) OnClickUnsetState(state State) {
-	seed.OnClick(func(q Script) {
+	seed.OnClick(func(q script.Ctx) {
 		state.Unset(q)
 	})
 }
 
 //Toggle toggles a state.
-func (state State) Toggle(q Script) {
+func (state State) Toggle(q script.Ctx) {
 	q.If(state.Get(q), func() {
 		state.Unset(q)
 	}, q.Else(func() {
@@ -95,7 +95,7 @@ func (state State) Toggle(q Script) {
 }
 
 //Get gets the state as a bool.
-func (state State) Get(q Script) script.Bool {
+func (state State) Get(q script.Ctx) script.Bool {
 	if state.not {
 		return q.Not(state.Bool.Get(q))
 	}
@@ -103,7 +103,7 @@ func (state State) Get(q Script) script.Bool {
 }
 
 //Set sets the state to be active.
-func (state State) Set(q Script) {
+func (state State) Set(q script.Ctx) {
 	var reference = global.Reference(state.Bool).String()
 	if state.not {
 		state.Bool.Set(q, q.False())
@@ -117,7 +117,7 @@ func (state State) Set(q Script) {
 }
 
 //Unset sets the state to not be active.
-func (state State) Unset(q Script) {
+func (state State) Unset(q script.Ctx) {
 	var reference = global.Reference(state.Bool).String()
 	if state.not {
 		state.Bool.Set(q, q.True())

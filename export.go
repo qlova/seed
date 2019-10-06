@@ -1,8 +1,10 @@
 package seed
 
-import "os"
-import "path/filepath"
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+)
 
 //TargetEnum is an experimental target type.
 type TargetEnum int

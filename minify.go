@@ -1,8 +1,8 @@
 package seed
 
-import "regexp"
-
 import (
+	"regexp"
+
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/html"

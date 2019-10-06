@@ -1,13 +1,14 @@
 package seed
 
-import "fmt"
-import "strings"
-import "strconv"
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
 
-import "github.com/qlova/seed/style/css"
-
-import "github.com/qlova/seed/script"
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/style/css"
+)
 
 //Shuold this be stored in the harvester?
 var feeds = make(map[string]func(User) Food)
@@ -61,8 +62,8 @@ func NewFeedWithin(parent Feed, food interface{}) Feed {
 	return feed
 }
 
-//Script returns a script interface to the feed.
-func (feed Feed) Script(q Script) script.Feed {
+//Ctx returns a script context to the feed.
+func (feed Feed) Ctx(q script.Ctx) script.Feed {
 	return script.Feed{script.Seed{
 		ID: feed.id,
 		Q:  q,
@@ -70,9 +71,9 @@ func (feed Feed) Script(q Script) script.Feed {
 }
 
 //OnRefresh runs the provided script when this feed refreshes.
-func (feed Feed) OnRefresh(f func(Script)) {
-	feed.OnReady(func(q Script) {
-		q.Javascript(feed.Script(q).Element() + ".onrefresh = function() {")
+func (feed Feed) OnRefresh(f func(script.Ctx)) {
+	feed.OnReady(func(q script.Ctx) {
+		q.Javascript(feed.Ctx(q).Element() + ".onrefresh = function() {")
 		f(q)
 		q.Javascript("};")
 	})
@@ -136,16 +137,16 @@ func (f Feeder) As(template Template) Feed {
 		feeds[f.feed.handler] = handler
 	}
 
-	f.feed.OnReady(func(q Script) {
-		q.Javascript(f.feed.Script(q).Element() + ".index = window.localStorage.getItem('" + f.feed.Script(q).ID + "_index') || '0';")
+	f.feed.OnReady(func(q script.Ctx) {
+		q.Javascript(f.feed.Ctx(q).Element() + ".index = window.localStorage.getItem('" + f.feed.Ctx(q).ID + "_index') || '0';")
 		//Call this refresh instead of onready?
-		q.Javascript(f.feed.Script(q).Element() + ".onready = function() {")
+		q.Javascript(f.feed.Ctx(q).Element() + ".onready = function() {")
 
 		q.Javascript(`let index = "";`)
 
 		for parent := &f.feed; parent != nil; parent = parent.within {
 			if parent.within != nil {
-				q.Javascript(`index += "/"+(` + parent.Script(q).Element() + `.index || "0");`)
+				q.Javascript(`index += "/"+(` + parent.Ctx(q).Element() + `.index || "0");`)
 			}
 		}
 
@@ -154,23 +155,23 @@ func (f Feeder) As(template Template) Feed {
 
 		q.Javascript(`let json = JSON.parse(request.response); if(!json) return;`)
 
-		q.Javascript(f.feed.Script(q).Element() + `.data = json;`)
-		q.Javascript(f.feed.Script(q).Element() + `.innerHTML = "";`)
+		q.Javascript(f.feed.Ctx(q).Element() + `.data = json;`)
+		q.Javascript(f.feed.Ctx(q).Element() + `.innerHTML = "";`)
 
 		q.Javascript(`for (let i = 0; i < json.length; i++) {`)
 
 		q.Javascript("let data = json[i];")
 		//Here we need to generate Javascript that can construct a seed from a Template.
-		q.Javascript(f.feed.Script(q).Element() + ".appendChild(" + template.Render(q) + ");")
+		q.Javascript(f.feed.Ctx(q).Element() + ".appendChild(" + template.Render(q) + ");")
 
 		q.Javascript(`}`)
 		//TODO do this properly.
 
-		q.Javascript(`if (` + f.feed.Script(q).Element() + ".onrefresh) " + f.feed.Script(q).Element() + ".onrefresh();")
+		q.Javascript(`if (` + f.feed.Ctx(q).Element() + ".onrefresh) " + f.feed.Ctx(q).Element() + ".onrefresh();")
 
 		q.Javascript(`}; request.send();`)
 		q.Javascript(`};`)
-		q.Javascript(f.feed.Script(q).Element() + ".onready();")
+		q.Javascript(f.feed.Ctx(q).Element() + ".onready();")
 
 	})
 

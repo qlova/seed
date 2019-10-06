@@ -1,8 +1,11 @@
 package style
 
-import "math/big"
-import "github.com/qlova/seed/style/css"
-import "encoding/base64"
+import (
+	"encoding/base64"
+	"math/big"
+
+	"github.com/qlova/seed/style/css"
+)
 
 //Font is a style definition for how text should be rendered.
 type Font struct {

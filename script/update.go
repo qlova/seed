@@ -39,18 +39,18 @@ function update() {
 `
 
 //Update seamlessly restarts and updates the app from the server.
-func (q Script) Update() {
+func (q Ctx) Update() {
 	q.Require(Update)
 	q.Javascript(`setTimeout(update, 100);`)
 }
 
 //CheckForUpdates checks for an update.
-func (q Script) CheckForUpdates() {
+func (q Ctx) CheckForUpdates() {
 	q.Javascript(`ServiceWorker_Registration.update();`)
 }
 
 //Restart peforms a hard reboot of the app.
-func (q Script) Restart() {
+func (q Ctx) Restart() {
 	q.Javascript("window.location.reload();")
 }
 
@@ -96,7 +96,7 @@ const InstallJS = `
 `
 
 //Install installs the app to the user's device.
-func (q Script) Install() {
+func (q Ctx) Install() {
 	q.Require(InstallJS)
 	q.Javascript(`install();`)
 }

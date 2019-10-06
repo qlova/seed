@@ -58,7 +58,7 @@ function request (method, formdata, url, manual) {
 //Promise represents a future action that can either succeed or fail.
 type Promise struct {
 	expression string
-	q          Script
+	q          Ctx
 }
 
 //Raw returns the raw JS promise.
@@ -91,7 +91,7 @@ type Attachable interface {
 }
 
 //Attach attaches Attachables and returns an AttachCall.
-func (q Script) Attach(attachables ...Attachable) Attached {
+func (q Ctx) Attach(attachables ...Attachable) Attached {
 	var variable = Unique()
 
 	q.Javascript(`var ` + variable + " = new FormData();")
@@ -106,7 +106,7 @@ func (q Script) Attach(attachables ...Attachable) Attached {
 //Attached has attachments and these will be passed to the Go function that is called.
 type Attached struct {
 	formdata string
-	q        Script
+	q        Ctx
 	args     Args
 }
 
@@ -122,13 +122,13 @@ func (c Attached) With(args Args) Attached {
 }
 
 //With adds arguments to the attached call.
-func (q Script) With(args Args) Attached {
+func (q Ctx) With(args Args) Attached {
 	return Attached{"", q, args}
 }
 
 var rpcID int64
 
-func (q Script) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type) Promise {
+func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type) Promise {
 
 	//Get a unique string reference for f.
 	var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
@@ -181,19 +181,19 @@ func (q Script) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Ty
 
 //ReturnValue can be used to access the Go return value as a string.
 //Only works inside a Promise callback, otherwise behaviour is undefined.
-func (q Script) ReturnValue() qlova.String {
+func (q Ctx) ReturnValue() qlova.String {
 	return q.wrap("rpc_result")
 }
 
 //Error can be used to access the Go return error as a string.
 //Only works inside a Promise callback, otherwise behaviour is undefined.
-func (q Script) Error() qlova.String {
+func (q Ctx) Error() qlova.String {
 	return q.wrap("rpc_result.response")
 }
 
 var exports = make(map[string]reflect.Value)
 
-func (q Script) call(f interface{}, args ...qlova.Type) qlova.Value {
+func (q Ctx) call(f interface{}, args ...qlova.Type) qlova.Value {
 	if name, ok := f.(string); ok && len(args) == 0 {
 		q.Raw("Javascript", language.Statement(name+`();`))
 		return qlova.Value{}

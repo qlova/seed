@@ -1,8 +1,10 @@
 package main
 
-import "github.com/qlova/seed"
-import "github.com/qlova/seeds/text"
-import "github.com/qlova/seeds/expander"
+import (
+	"github.com/qlova/seed"
+	"github.com/qlova/seeds/expander"
+	"github.com/qlova/seeds/text"
+)
 
 func main() {
 	var App = seed.NewApp("Hello World")

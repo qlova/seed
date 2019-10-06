@@ -1,7 +1,9 @@
 package css
 
-import "bytes"
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
 const From = 0
 const To = 100

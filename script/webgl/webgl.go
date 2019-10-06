@@ -1,10 +1,12 @@
 package webgl
 
-import qlova "github.com/qlova/script"
-import "github.com/qlova/seed/script"
+import (
+	qlova "github.com/qlova/script"
+	"github.com/qlova/script/language"
+	"github.com/qlova/seed/script"
 
-import "github.com/qlova/script/language"
-import Javascript "github.com/qlova/script/language/javascript"
+	Javascript "github.com/qlova/script/language/javascript"
+)
 
 //BitField specifies a buffer bit field type.
 type BitField string
@@ -47,7 +49,7 @@ type Attribute struct {
 //Context is a gl context for rendering to the screen.
 type Context struct {
 	GL string
-	Q  script.Script
+	Q  script.Ctx
 
 	ColorBufferBit                  BitField
 	VertexShader, FragmentShader    ShaderType

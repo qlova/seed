@@ -1,8 +1,11 @@
 package main
 
-import "github.com/qlova/seed"
-import "github.com/qlova/seeds/particles"
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/qlova/seed"
+	"github.com/qlova/seeds/particles"
+)
 
 func main() {
 	var App = seed.NewApp()

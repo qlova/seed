@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/script"
 	"github.com/qlova/seeds/maps"
 )
 
@@ -13,8 +14,8 @@ func main() {
 		Zoom:   15,
 	})
 
-	App.OnReady(func(q seed.Script) {
-		var Maps = Maps.Script(q)
+	App.OnReady(func(q script.Ctx) {
+		var Maps = Maps.Ctx(q)
 
 		q.RequestGeoLocation().Then(func() {
 			Maps.FlyTo(q.GeoLocation())

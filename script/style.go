@@ -15,13 +15,13 @@ type Color struct {
 }
 
 //Color returns a script color based on the color.Color.
-func (q Script) Color(c color.Color) Color {
+func (q Ctx) Color(c color.Color) Color {
 	r, g, b, a := c.RGBA()
 	return Color{q.String(fmt.Sprint("rgba(", r, ",", g, ",", b, ",", a, ")"))}
 }
 
 //Hex returns a color based on the hex value.
-func (q Script) Hex(s string) Color {
+func (q Ctx) Hex(s string) Color {
 	return Color{q.String(s)}
 }
 

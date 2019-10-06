@@ -1,7 +1,9 @@
 package script
 
-import "github.com/qlova/seed/internal"
-import "github.com/qlova/seed/style/css"
+import (
+	"github.com/qlova/seed/internal"
+	"github.com/qlova/seed/style/css"
+)
 
 //Animation is a mapping of float64 to frames as a ratio between 0 and 1 (start and end).
 type Animation = internal.Animation

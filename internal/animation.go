@@ -1,7 +1,9 @@
 package internal
 
-import "github.com/qlova/seed/style"
-import "github.com/qlova/seed/style/css"
+import (
+	"github.com/qlova/seed/style"
+	"github.com/qlova/seed/style/css"
+)
 
 //Frame is an animation frame.
 type Frame struct {

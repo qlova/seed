@@ -7,11 +7,11 @@ import (
 )
 
 //SubString returns a slice of s, from start to end.
-func (q Script) SubString(s String, start, end Int) String {
+func (q Ctx) SubString(s String, start, end Int) String {
 	return q.js.Call(s.LanguageType().Raw()+".substr", start, end).String()
 }
 
 //Contains returns true if text contains match.
-func (q Script) Contains(text, match qlova.String) qlova.Bool {
+func (q Ctx) Contains(text, match qlova.String) qlova.Bool {
 	return q.Script.BoolFromLanguageType(Javascript.Bit{Expression: language.Statement(raw(text) + `.includes(` + raw(match) + `)`)})
 }

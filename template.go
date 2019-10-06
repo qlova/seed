@@ -1,6 +1,9 @@
 package seed
 
-import "github.com/qlova/seed/style/css"
+import (
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/style/css"
+)
 
 //Template is a seed that can be duplicated and modified based on data.
 type Template struct {
@@ -19,7 +22,7 @@ func NewTemplate() Template {
 	return Template{seed}
 }
 
-func (template Template) render(q Script) string {
+func (template Template) render(q script.Ctx) string {
 	var seed = template.Seed
 
 	q.Javascript("let " + seed.id + " = document.createElement(\"")
@@ -48,7 +51,7 @@ func (seed Seed) Template() {
 	seed.template = true
 }
 
-func (template Template) scripts(q Script) {
+func (template Template) scripts(q script.Ctx) {
 	var seed = template.Seed
 
 	if seed.onready != nil {
@@ -65,7 +68,7 @@ func (template Template) scripts(q Script) {
 }
 
 //Render renders the template.
-func (template Template) Render(q Script) string {
+func (template Template) Render(q script.Ctx) string {
 	var element = template.render(q)
 	template.scripts(q)
 	return element

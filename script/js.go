@@ -1,16 +1,19 @@
 package script
 
-import qlova "github.com/qlova/script"
-import "github.com/qlova/script/language"
-import Javascript "github.com/qlova/script/language/javascript"
+import (
+	qlova "github.com/qlova/script"
+	"github.com/qlova/script/language"
+
+	Javascript "github.com/qlova/script/language/javascript"
+)
 
 //A nice interface to the Javascript world.
 type js struct {
-	q Script
+	q Ctx
 }
 
 type value struct {
-	q   Script
+	q   Ctx
 	raw string
 }
 
@@ -35,7 +38,7 @@ func (v value) Unit() Unit {
 }
 
 //Value wraps a JS string as a value that can be cast to script.Type.
-func (q Script) Value(raw string) value {
+func (q Ctx) Value(raw string) value {
 	return value{q, raw}
 }
 

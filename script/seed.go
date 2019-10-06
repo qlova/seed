@@ -27,7 +27,7 @@ type Seed struct {
 	css.Style
 
 	ID, Native string
-	Q          Script
+	Q          Ctx
 }
 
 //Set is the required JS code for setting styles.
@@ -125,7 +125,7 @@ func (seed Seed) Javascript(js string) {
 
 //File is a script interface to a file type.
 type File struct {
-	Q Script
+	Q Ctx
 	Native
 }
 

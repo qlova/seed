@@ -28,11 +28,11 @@ type harvester struct {
 	animationNames []string
 
 	//Dynamic handlers
-	dynamicHandlers map[string][]func(Script)
+	dynamicHandlers map[string][]func(script.Ctx)
 
 	customHandlers []func(response http.ResponseWriter, request *http.Request)
 
-	stateHandlers map[State][]func(Script)
+	stateHandlers map[State][]func(script.Ctx)
 
 	screenSmallerThans map[Unit]style.Sheet
 
@@ -42,9 +42,9 @@ type harvester struct {
 func newHarvester() *harvester {
 	return &harvester{
 		fonts:              make(map[style.Font]struct{}),
-		stateHandlers:      make(map[State][]func(Script)),
+		stateHandlers:      make(map[State][]func(script.Ctx)),
 		screenSmallerThans: make(map[Unit]style.Sheet),
-		dynamicHandlers:    make(map[string][]func(Script)),
+		dynamicHandlers:    make(map[string][]func(script.Ctx)),
 
 		Context: internal.NewContext(),
 	}
@@ -77,8 +77,8 @@ func (app *harvester) harvestOnReady(seed Seed) []byte {
 
 	//TODO sort?
 	for event, handler := range seed.on {
-		buffer.Write(script.ToJavascript(func(q Script) {
-			q.Javascript(seed.Script(q).Element() + ".on" + event + " = function() {")
+		buffer.Write(script.ToJavascript(func(q script.Ctx) {
+			q.Javascript(seed.Ctx(q).Element() + ".on" + event + " = function() {")
 			handler(q)
 			q.Javascript("};")
 		}, h.Context))
@@ -114,13 +114,13 @@ func (app *harvester) harvest(seed Seed) {
 
 	//Harvest Dynamic Handlers.
 	if reference := global.Reference(seed.dynamic.Text).String(); reference != "" {
-		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], func(q Script) {
-			seed.Script(q).SetText(seed.dynamic.Text.Get(q))
+		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], func(q script.Ctx) {
+			seed.Ctx(q).SetText(seed.dynamic.Text.Get(q))
 		})
 	}
 	if reference := global.Reference(seed.dynamic.Source).String(); reference != "" {
-		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], func(q Script) {
-			seed.Script(q).SetSource(seed.dynamic.Source.Get(q))
+		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], func(q script.Ctx) {
+			seed.Ctx(q).SetSource(seed.dynamic.Source.Get(q))
 		})
 	}
 
@@ -257,12 +257,12 @@ func (app *harvester) StateHandlers() []byte {
 		var reference = global.Reference(state.Bool).String()
 		if state.not {
 			buffer.WriteString("window." + reference + "_unset = function() {")
-			buffer.Write([]byte(script.ToJavascript(func(q Script) {
+			buffer.Write([]byte(script.ToJavascript(func(q script.Ctx) {
 				state.Bool.Set(q, q.Bool(false))
 			})))
 		} else {
 			buffer.WriteString("window." + reference + "_set = function () {")
-			buffer.Write([]byte(script.ToJavascript(func(q Script) {
+			buffer.Write([]byte(script.ToJavascript(func(q script.Ctx) {
 				state.Bool.Set(q, q.Bool(true))
 			})))
 		}
@@ -276,7 +276,7 @@ func (app *harvester) StateHandlers() []byte {
 	}
 
 	for state := range h.stateHandlers {
-		buffer.Write([]byte(script.ToJavascript(func(q Script) {
+		buffer.Write([]byte(script.ToJavascript(func(q script.Ctx) {
 			q.If(state.Get(q), func() {
 				state.Set(q)
 			})

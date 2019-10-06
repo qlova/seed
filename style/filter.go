@@ -1,9 +1,11 @@
 package style
 
-import "fmt"
-import "math"
-import "math/rand"
-import "time"
+import (
+	"fmt"
+	"math"
+	"math/rand"
+	"time"
+)
 
 var seed = 1.0
 

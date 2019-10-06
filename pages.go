@@ -1,7 +1,9 @@
 package seed
 
-import "github.com/qlova/seed/script"
-import "github.com/qlova/seed/style/css"
+import (
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/style/css"
+)
 
 //Page is a page of an app, or seed.
 type Page struct {
@@ -63,25 +65,25 @@ func (page Page) SetBack(back Page) {
 //SyncVisibilityWith sets the given seed to be visible when the page is visible and hidden when the page is hidden.
 func (page Page) SyncVisibilityWith(seed Interface) {
 	var root = seed.Root()
-	page.OnPageEnter(func(q Script) {
-		root.Script(q).SetVisible()
+	page.OnPageEnter(func(q script.Ctx) {
+		root.Ctx(q).SetVisible()
 	})
-	page.OnPageExit(func(q Script) {
-		root.Script(q).SetHidden()
+	page.OnPageExit(func(q script.Ctx) {
+		root.Ctx(q).SetHidden()
 	})
 }
 
-//Script returns a script interface to the page.
-func (page Page) Script(q Script) script.Page {
-	return script.Page{page.Seed.Script(q)}
+//Ctx returns a script context to the page.
+func (page Page) Ctx(q script.Ctx) script.Page {
+	return script.Page{page.Seed.Ctx(q)}
 }
 
 //OnBack is triggered before the back action is triggered, return q.Bool(true) to prevent default behaviour.
-func (page Page) OnBack(f func(q Script)) {
-	page.OnReady(func(q Script) {
+func (page Page) OnBack(f func(q script.Ctx)) {
+	page.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
-		q.Javascript("let old_onback = " + page.Script(q).Element() + ".onback;")
-		q.Javascript(page.Script(q).Element() + ".onback = function() {")
+		q.Javascript("let old_onback = " + page.Ctx(q).Element() + ".onback;")
+		q.Javascript(page.Ctx(q).Element() + ".onback = function() {")
 		q.Javascript("if (old_onback) old_onback();")
 		f(q)
 		q.Javascript("};")
@@ -90,15 +92,15 @@ func (page Page) OnBack(f func(q Script)) {
 }
 
 //OnPageEnter runs a script when this page is entered/ongoto.
-func (page Page) OnPageEnter(f func(Script)) {
-	page.On("pageenter", func(q Script) {
+func (page Page) OnPageEnter(f func(script.Ctx)) {
+	page.On("pageenter", func(q script.Ctx) {
 		f(q)
 	})
 }
 
 //OnPageExit runs a script when leaving this page (onleave).
-func (page Page) OnPageExit(f func(Script)) {
-	page.On("pageexit", func(q Script) {
+func (page Page) OnPageExit(f func(script.Ctx)) {
+	page.On("pageexit", func(q script.Ctx) {
 		f(q)
 	})
 }

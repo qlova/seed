@@ -8,11 +8,11 @@ import (
 //Element is an HTML element.
 type Element struct {
 	query string
-	q     Script
+	q     Ctx
 }
 
 //Query allows finding an element based on a query string.
-func (q Script) Query(query qlova.String) Element {
+func (q Ctx) Query(query qlova.String) Element {
 	return Element{query: raw(query), q: q}
 }
 

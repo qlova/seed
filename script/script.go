@@ -1,22 +1,21 @@
 package script
 
-import "github.com/qlova/seed/internal"
+import (
+	"github.com/qlova/seed/internal"
+	"github.com/qlova/seed/style/css"
 
-import "github.com/qlova/seed/style/css"
-import qlova "github.com/qlova/script"
+	qlova "github.com/qlova/script"
+	"github.com/qlova/script/language"
 
-import "github.com/qlova/script/language"
-import Javascript "github.com/qlova/script/language/javascript"
+	Javascript "github.com/qlova/script/language/javascript"
+)
 
-//Script is an alias to Context.
-type Script struct {
-	*script
+//Ctx is a script context. Providing access to script behaviours.
+type Ctx struct {
+	*ctx
 }
 
-//Context is a script context. Providing access to script behaviours.
-type Context = Script
-
-type script struct {
+type ctx struct {
 	internal.Context
 	qlova.Script
 
@@ -25,7 +24,7 @@ type script struct {
 }
 
 //Require inserts the provided dependency string in the head of the document.
-func (q Script) Require(dependency string) {
+func (q Ctx) Require(dependency string) {
 
 	//Subdependencies.
 	if dependency == Goto {
@@ -40,7 +39,7 @@ func (q Script) Require(dependency string) {
 }
 
 //RawString is an internal function and should not be used.
-func (q Script) RawString(s qlova.String) string {
+func (q Ctx) RawString(s qlova.String) string {
 	return raw(s)
 }
 
@@ -48,14 +47,14 @@ func raw(s qlova.String) string {
 	return string(s.LanguageType().(Javascript.String).Expression)
 }
 
-func (q Script) wrap(s string) qlova.String {
+func (q Ctx) wrap(s string) qlova.String {
 	return q.StringFromLanguageType(Javascript.String{
 		Expression: language.Statement(s),
 	})
 }
 
 //ToJavascript returns the given script encoded as Javascript.
-func ToJavascript(f func(q Script), ctx ...internal.Context) []byte {
+func ToJavascript(f func(q Ctx), ctx ...internal.Context) []byte {
 	if f == nil {
 		return nil
 	}
@@ -68,14 +67,14 @@ func ToJavascript(f func(q Script), ctx ...internal.Context) []byte {
 	return toJavascript(f, context)
 }
 
-func toJavascript(f func(q Script), context internal.Context) []byte {
+func toJavascript(f func(q Ctx), context internal.Context) []byte {
 	var program = qlova.Program(func(q qlova.Script) {
-		var s = Script{&script{
+		var s = Ctx{&ctx{
 			Script:  q,
 			Context: context,
 		}}
 		s.js.q = s
-		s.Time.Script = s
+		s.Time.Ctx = s
 		//s.Go.Script = s
 		f(s)
 	})
@@ -89,17 +88,17 @@ func toJavascript(f func(q Script), context internal.Context) []byte {
 }
 
 //JS return the JS interface of script.
-func (q Script) JS() js {
+func (q Ctx) JS() js {
 	return q.js
 }
 
 //Javascript inserts raw js into the script.
-func (q Script) Javascript(js string) {
+func (q Ctx) Javascript(js string) {
 	q.Raw("Javascript", language.Statement(js))
 }
 
 //Run runs a Javascript function with the given arguments.
-func (q Script) Run(f Function, args ...qlova.Type) {
+func (q Ctx) Run(f Function, args ...qlova.Type) {
 	q.Javascript(string(f) + "();")
 }
 
@@ -112,7 +111,7 @@ func (unit Unit) Raw() string {
 }
 
 //Unit returns a script.Unit from the given unit.
-func (q Script) Unit(unit complex128) Unit {
+func (q Ctx) Unit(unit complex128) Unit {
 	return Unit(q.StringFromLanguageType(Javascript.String{
 		Expression: language.Statement(css.Decode(unit)),
 	}))
@@ -140,7 +139,7 @@ const SetClipboard = `
 `
 
 //SetClipboard sets the clipboard to the provided string.
-func (q Script) SetClipboard(text String) {
+func (q Ctx) SetClipboard(text String) {
 	q.Require(SetClipboard)
 	q.js.Run(`setClipboard`, text)
 }

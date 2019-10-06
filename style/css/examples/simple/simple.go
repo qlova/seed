@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
-import "github.com/qlova/seed/style/css"
+import (
+	"fmt"
+
+	"github.com/qlova/seed/style/css"
+)
 
 func main() {
 	var style = css.NewStyle()

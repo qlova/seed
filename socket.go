@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/websocket"
 	//"strings"
 	//"strconv"
 	//"bufio"
@@ -11,8 +13,6 @@ import (
 	//"encoding/json"
 	//"path"
 )
-
-import "github.com/gorilla/websocket"
 
 var singleLocalConnection = false
 

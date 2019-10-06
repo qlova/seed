@@ -52,7 +52,7 @@ function back() {
 `
 
 //Back returns to the last page on the stack. Popping the current page.
-func (q Script) Back() {
+func (q Ctx) Back() {
 	q.Require(Back)
 	q.js.Run(`back`)
 }
@@ -207,7 +207,7 @@ func (page Page) SetCurrent() {
 }
 
 //CurrentPage returns the current page.
-func (q Script) CurrentPage() Page {
+func (q Ctx) CurrentPage() Page {
 	return Page{Seed{
 		ID: `"+current_page+"`,
 		Q:  q,
@@ -215,17 +215,17 @@ func (q Script) CurrentPage() Page {
 }
 
 //ClearHistory clears the page history, you should call this after transitioning from a sign-in page.
-func (q Script) ClearHistory() {
+func (q Ctx) ClearHistory() {
 	q.Javascript(`goto_history = [];`)
 }
 
 //PushHistory pushes the page to history.
-func (q Script) PushHistory(page Page) {
+func (q Ctx) PushHistory(page Page) {
 	q.Javascript(`goto_history.push('` + page.ID + `');`)
 }
 
 //LastPage returns the last page.
-func (q Script) LastPage() Page {
+func (q Ctx) LastPage() Page {
 	return Page{Seed{
 		ID: `"+last_page+"`,
 		Q:  q,
@@ -233,7 +233,7 @@ func (q Script) LastPage() Page {
 }
 
 //NextPage returns the next page.
-func (q Script) NextPage() Page {
+func (q Ctx) NextPage() Page {
 	return Page{Seed{
 		ID: `"+next_page+"`,
 		Q:  q,

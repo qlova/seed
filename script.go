@@ -6,17 +6,14 @@ type (
 	//Bool aliases to the script.Bool type.
 	Bool = script.Bool
 
-	//Script aliases to the script.Bool type.
-	Script = script.Script
-
 	//Args aliases to the script.Args type.
 	Args = script.Args
 )
 
-var functions = make(map[string]func(Script))
+var functions = make(map[string]func(script.Ctx))
 
-//NewFunction defines a new function that can be called from any Script context.
-func NewFunction(f func(Script), names ...string) script.Function {
+//NewFunction defines a new function that can be called from any Ctx context.
+func NewFunction(f func(script.Ctx), names ...string) script.Function {
 	var name string
 	if len(names) > 0 {
 		name = names[0]
@@ -30,8 +27,8 @@ func NewFunction(f func(Script), names ...string) script.Function {
 	return script.Function(name)
 }
 
-//Script returns a scriptable version of this seed.
-func (seed Seed) Script(q Script) script.Seed {
+//Ctx returns the script context of this seed.
+func (seed Seed) Ctx(q script.Ctx) script.Seed {
 	if seed.template {
 		return script.Seed{
 			Native: seed.id,

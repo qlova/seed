@@ -71,8 +71,8 @@ func main() {
 	//In order to add a widget to your app, or container, use the package's AddTo method.
 	var ClientPowered = button.AddTo(App, "My callback runs on the client")
 	
-		ClientPowered.OnClick(func(q seed.Script) {
-			ClientPowered.Script(q).SetText(q.String("You clicked me!"))
+		ClientPowered.OnClick(func(q script.Ctx) {
+			ClientPowered.Ctx(q).SetText(q.String("You clicked me!"))
 		})
 	
 	

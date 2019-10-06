@@ -1,7 +1,9 @@
 package css
 
-import "strings"
-import "syscall/js"
+import (
+	"strings"
+	"syscall/js"
+)
 
 type WasmImplementation struct {
 	element js.Value

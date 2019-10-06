@@ -7,13 +7,12 @@ import (
 	"os/exec"
 	"os/signal"
 	"path"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/qlova/seed/user"
 )
 
 //import ua "github.com/avct/uasurfer"
-
-import "github.com/qlova/seed/user"
-
-import "github.com/fsnotify/fsnotify"
 
 type launcher struct {
 	App

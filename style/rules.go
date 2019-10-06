@@ -1,10 +1,10 @@
 package style
 
-import "github.com/qlova/seed/style/css"
-
 import (
 	"bytes"
 	"strings"
+
+	"github.com/qlova/seed/style/css"
 )
 
 //Rules is a mapping between selectors and styles.

@@ -1,6 +1,7 @@
 package seed
 
 import (
+	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/style"
 	"github.com/qlova/seed/style/css"
 	"github.com/qlova/seed/user"
@@ -112,11 +113,11 @@ type seed struct {
 	page    bool
 	splash  bool
 
-	onclick  func(Script)
-	onchange func(Script)
-	onready  func(Script)
+	onclick  func(script.Ctx)
+	onchange func(script.Ctx)
+	onready  func(script.Ctx)
 
-	on map[string]func(Script)
+	on map[string]func(script.Ctx)
 
 	template bool
 
@@ -136,19 +137,19 @@ type seed struct {
 
 	assets []Asset
 
-	states map[State]func(Script)
+	states map[State]func(script.Ctx)
 
 	tags map[string]bool
 }
 
 //On runs a script callback when the specified event is fired.
-func (seed Seed) On(event string, callback func(Script)) {
+func (seed Seed) On(event string, callback func(script.Ctx)) {
 	if seed.on == nil {
-		seed.on = make(map[string]func(Script))
+		seed.on = make(map[string]func(script.Ctx))
 	}
 
 	if original, ok := seed.on[event]; ok {
-		seed.on[event] = func(q Script) {
+		seed.on[event] = func(q script.Ctx) {
 			original(q)
 			callback(q)
 		}
@@ -373,20 +374,20 @@ const OnPress = `
 `
 
 //OnClick runs a script when this seed is clicked.
-func (seed Seed) OnClick(f func(Script)) {
+func (seed Seed) OnClick(f func(script.Ctx)) {
 	seed.onclick = f
-	seed.OnReady(func(q Script) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Require(OnPress)
-		q.Javascript("op(" + seed.Script(q).Element() + ", function(event) {")
+		q.Javascript("op(" + seed.Ctx(q).Element() + ", function(event) {")
 		f(q)
 		q.Javascript("});")
 	})
 }
 
 //OnClickThrough runs a script when this seed is clicked, allows click to propagate to other scripts.
-func (seed Seed) OnClickThrough(f func(Script)) {
+func (seed Seed) OnClickThrough(f func(script.Ctx)) {
 	seed.onclick = f
-	seed.OnReady(func(q Script) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Require(OnPress)
 		q.Javascript("op('" + seed.id + "', function(event) {")
 		f(q)
@@ -394,20 +395,20 @@ func (seed Seed) OnClickThrough(f func(Script)) {
 	})
 }
 
-//OnClickGoto is shorthand for seed.OnClick(func(q seed.Script){ page.Script(q).Goto() })
+//OnClickGoto is shorthand for seed.OnClick(func(q script.Ctx){ page.Ctx(q).Goto() })
 func (seed Seed) OnClickGoto(page Page) {
-	seed.OnClick(func(q Script) {
-		page.Script(q).Goto()
+	seed.OnClick(func(q script.Ctx) {
+		page.Ctx(q).Goto()
 	})
 }
 
 //OnReady runs a script when this seed is ready/loaded/onload/init.
-func (seed Seed) OnReady(f func(Script)) {
+func (seed Seed) OnReady(f func(script.Ctx)) {
 	if seed.onready == nil {
 		seed.onready = f
 	} else {
 		var old = seed.onready
-		seed.onready = func(q Script) {
+		seed.onready = func(q script.Ctx) {
 			old(q)
 			f(q)
 		}
@@ -415,13 +416,13 @@ func (seed Seed) OnReady(f func(Script)) {
 }
 
 //OnChange runs a script when this seed's value is changed by the user.
-func (seed Seed) OnChange(f func(Script)) {
-	seed.OnReady(func(q Script) {
+func (seed Seed) OnChange(f func(script.Ctx)) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
 		q.Javascript(`let onchange = function(ev) {`)
 		f(q)
 		q.Javascript(`};`)
-		q.Javascript(seed.Script(q).Element() + `.onchange = onchange;`)
+		q.Javascript(seed.Ctx(q).Element() + `.onchange = onchange;`)
 		q.Javascript("}")
 	})
 }
@@ -477,11 +478,11 @@ func (seed Seed) SetMarkdown(data string) {
 }
 
 //OnSwipeLeft runs a script when swiped left.
-func (seed Seed) OnSwipeLeft(f func(Script)) {
+func (seed Seed) OnSwipeLeft(f func(script.Ctx)) {
 	seed.Require("hammer.js")
-	seed.OnReady(func(q Script) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
-		q.Javascript("let hammertime = new Hammer(" + seed.Script(q).Element() + ");")
+		q.Javascript("let hammertime = new Hammer(" + seed.Ctx(q).Element() + ");")
 		q.Javascript(`hammertime.on("swipeleft", function() {`)
 		f(q)
 		q.Javascript("});")
@@ -490,11 +491,11 @@ func (seed Seed) OnSwipeLeft(f func(Script)) {
 }
 
 //OnSwipeRight runs a script when swiped right.
-func (seed Seed) OnSwipeRight(f func(Script)) {
+func (seed Seed) OnSwipeRight(f func(script.Ctx)) {
 	seed.Require("hammer.js")
-	seed.OnReady(func(q Script) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
-		q.Javascript("let hammertime = new Hammer(" + seed.Script(q).Element() + ");")
+		q.Javascript("let hammertime = new Hammer(" + seed.Ctx(q).Element() + ");")
 		q.Javascript(`hammertime.on("swiperight", function() {`)
 		f(q)
 		q.Javascript("});")
@@ -503,49 +504,49 @@ func (seed Seed) OnSwipeRight(f func(Script)) {
 }
 
 //OnFocus run a script when this seed is focused.
-func (seed Seed) OnFocus(f func(Script)) {
-	seed.OnReady(func(q Script) {
+func (seed Seed) OnFocus(f func(script.Ctx)) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
 		q.Javascript(`let onfocus = function(ev) {`)
 		f(q)
 		q.Javascript(`};`)
-		q.Javascript(seed.Script(q).Element() + `.onfocus = onfocus;`)
+		q.Javascript(seed.Ctx(q).Element() + `.onfocus = onfocus;`)
 		q.Javascript("}")
 	})
 }
 
 //OnInput runs a script when this seed has input.
-func (seed Seed) OnInput(f func(Script)) {
-	seed.OnReady(func(q Script) {
+func (seed Seed) OnInput(f func(script.Ctx)) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
 		q.Javascript(`let oninput = function(ev) {`)
 		f(q)
 		q.Javascript(`};`)
-		q.Javascript(seed.Script(q).Element() + `.oninput = oninput;`)
+		q.Javascript(seed.Ctx(q).Element() + `.oninput = oninput;`)
 		q.Javascript("}")
 	})
 }
 
 //OnEnter runs a script when this seed has enter input.
-func (seed Seed) OnEnter(f func(Script)) {
-	seed.OnReady(func(q Script) {
+func (seed Seed) OnEnter(f func(script.Ctx)) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
 		q.Javascript(`let onenter = function(ev) {if (ev.keyCode == 13 || ev.which == 13){`)
 		f(q)
 		q.Javascript(`}};`)
-		q.Javascript(seed.Script(q).Element() + `.onkeypress = onenter;`)
+		q.Javascript(seed.Ctx(q).Element() + `.onkeypress = onenter;`)
 		q.Javascript("}")
 	})
 }
 
 //OnFocusLost runs a script when this seed has focus lost.
-func (seed Seed) OnFocusLost(f func(Script)) {
-	seed.OnReady(func(q Script) {
+func (seed Seed) OnFocusLost(f func(script.Ctx)) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
 		q.Javascript(`let onfocuslost = function(ev) {`)
 		f(q)
 		q.Javascript(`};`)
-		q.Javascript(seed.Script(q).Element() + `.onfocusout = onfocuslost;`)
+		q.Javascript(seed.Ctx(q).Element() + `.onfocusout = onfocuslost;`)
 		q.Javascript("}")
 	})
 }
@@ -556,14 +557,14 @@ const LongPress = `
 `
 
 //OnLongPress runs a script when this seed is long-clicked.
-func (seed Seed) OnLongPress(f func(Script)) {
-	seed.OnReady(func(q Script) {
+func (seed Seed) OnLongPress(f func(script.Ctx)) {
+	seed.OnReady(func(q script.Ctx) {
 		q.Require(LongPress)
 		q.Javascript("{")
 		q.Javascript(`let onlongpress = function(ev) {ev.preventDefault()`)
 		f(q)
 		q.Javascript(`};`)
-		q.Javascript(seed.Script(q).Element() + `.addEventListener('long-press', onlongpress);`)
+		q.Javascript(seed.Ctx(q).Element() + `.addEventListener('long-press', onlongpress);`)
 		q.Javascript("}")
 	})
 }

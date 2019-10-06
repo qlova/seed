@@ -1,8 +1,10 @@
 /*This file is computer-generated*/
 package css
 
-import "strconv"
-import "reflect"
+import (
+	"reflect"
+	"strconv"
+)
 
 type unitOrAutoValue interface {
 	stringable

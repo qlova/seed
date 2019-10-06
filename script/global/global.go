@@ -23,7 +23,7 @@ func (ref Reference) String() string {
 }
 
 //Set is a set method that should be called whenever the parent value is set.
-func (ref Reference) Set(q script.Script) {
+func (ref Reference) Set(q script.Ctx) {
 	q.Javascript(`if (dynamic["` + ref.string + `"]) dynamic["` + ref.string + `"]();`)
 }
 
@@ -50,14 +50,14 @@ func NewInt(name ...string) Int {
 }
 
 //Get the script.Int for the global.Int
-func (i Int) Get(q script.Script) script.Int {
+func (i Int) Get(q script.Ctx) script.Int {
 	return q.IntFromLanguageType(Javascript.Integer{
 		Expression: language.Statement(`(parseInt(window.localStorage.getItem("` + i.string + `") || "0"))`),
 	})
 }
 
 //Set the global.Int to be script.Int
-func (i Int) Set(q script.Script, value script.Int) {
+func (i Int) Set(q script.Ctx, value script.Int) {
 	q.Javascript(`window.localStorage.setItem("` + i.string + `", ` + value.LanguageType().Raw() + `.toString());`)
 	Reference(i).Set(q)
 }
@@ -71,14 +71,14 @@ func NewString(name ...string) String {
 }
 
 //Get the script.String for the global.String
-func (s String) Get(q script.Script) script.String {
+func (s String) Get(q script.Ctx) script.String {
 	return q.StringFromLanguageType(Javascript.String{
 		Expression: language.Statement(`(window.localStorage.getItem("` + s.string + `"))`),
 	})
 }
 
 //Set the global.String to be script.String
-func (s String) Set(q script.Script, value script.String) {
+func (s String) Set(q script.Ctx, value script.String) {
 	q.Javascript(`window.localStorage.setItem("` + s.string + `", ` + value.LanguageType().Raw() + `);`)
 	Reference(s).Set(q)
 }
@@ -92,14 +92,14 @@ func NewBool(name ...string) Bool {
 }
 
 //Get the script.Bool for the global.Bool
-func (b Bool) Get(q script.Script) script.Bool {
+func (b Bool) Get(q script.Ctx) script.Bool {
 	return q.BoolFromLanguageType(Javascript.Bit{
 		Expression: language.Statement(`(window.localStorage.getItem("` + b.string + `") == "true")`),
 	})
 }
 
 //Set the global.Bool to be script.Bool
-func (b Bool) Set(q script.Script, value script.Bool) {
+func (b Bool) Set(q script.Ctx, value script.Bool) {
 	q.Javascript(`window.localStorage.setItem("` + b.string + `", ` + value.LanguageType().Raw() + `);`)
 	Reference(b).Set(q)
 }

@@ -1,9 +1,12 @@
 package main
 
-import "github.com/qlova/seed"
+import (
+	"github.com/qlova/seed"
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seeds/button"
+)
 
 //Import a widget to use it, a list of widgets can be found in the widgets directory.
-import "github.com/qlova/seeds/button"
 
 func main() {
 	var App = seed.NewApp("My App")
@@ -11,8 +14,8 @@ func main() {
 	//In order to add a widget to your app, or container, use the package's AddTo method.
 	var ClientPowered = button.AddTo(App, "My callback runs on the client")
 
-	ClientPowered.OnClick(func(q seed.Script) {
-		ClientPowered.Script(q).SetText(q.String("You clicked me!"))
+	ClientPowered.OnClick(func(q script.Ctx) {
+		ClientPowered.Ctx(q).SetText(q.String("You clicked me!"))
 	})
 
 	var ServerPowered = button.AddTo(App, "My callback runs on the server")

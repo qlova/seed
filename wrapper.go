@@ -5,6 +5,6 @@ package seed
 //import "github.com/qlova/script/language"
 //import "github.com/qlova/script/language/javascript"
 
-/*func wrap(q script.Script) Script {
-	return Script{seedScript: &seedScript{ Script:q }}
+/*func wrap(q script.Ctx) Ctx {
+	return Ctx{seedScript: &seedCtx{ Script:q }}
 }*/

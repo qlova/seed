@@ -173,7 +173,7 @@ func setTransitionIn(Page script.Page, trans Transition) {
 	var q = Page.Q
 
 	if !trans.When.Null() {
-		q.If(q.LastPage().Equals(trans.When.Script(q)), func() {
+		q.If(q.LastPage().Equals(trans.When.Ctx(q)), func() {
 			if trans.Then != nil {
 				setTransitionIn(Page, *trans.Then)
 			}
@@ -211,7 +211,7 @@ func setTransitionOut(Page script.Page, trans Transition) {
 	var q = Page.Q
 
 	if !trans.When.Null() {
-		q.If(q.NextPage().Equals(trans.When.Script(q)), func() {
+		q.If(q.NextPage().Equals(trans.When.Ctx(q)), func() {
 			if trans.Then != nil {
 				setTransitionOut(Page, *trans.Then)
 			}
@@ -245,14 +245,14 @@ func setTransitionOut(Page script.Page, trans Transition) {
 //SetTransition sets a page transition for the page.
 func (page Page) SetTransition(trans Transition) {
 	if trans.In != nil || !trans.When.Null() || trans.WhenTag != "" {
-		page.OnPageEnter(func(q Script) {
-			var Page = page.Script(q)
+		page.OnPageEnter(func(q script.Ctx) {
+			var Page = page.Ctx(q)
 			setTransitionIn(Page, trans)
 		})
 	}
 	if trans.Out != nil || !trans.When.Null() || trans.WhenTag != "" {
-		page.OnPageExit(func(q Script) {
-			var Page = page.Script(q)
+		page.OnPageExit(func(q script.Ctx) {
+			var Page = page.Ctx(q)
 			setTransitionOut(Page, trans)
 		})
 	}

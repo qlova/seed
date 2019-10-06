@@ -23,6 +23,7 @@ func (style Style) SetBorder(color color.Color, thickness int) {
 	style.Set("border-top-width", fmt.Sprint(thickness, "px"))
 	style.Set("border-bottom-width", fmt.Sprint(thickness, "px"))
 	style.SetBorderColor(css.Colour(color))
+	style.SetBorderStyle(css.Solid)
 }
 
 //SetRoundedCorners sets this element to have rounded corners of the specified radius.

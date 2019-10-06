@@ -20,7 +20,7 @@ const GeoLocation = `
 
 //RequestGeoLocation requests GeoLocation information.
 //This must be called before q.GeoLocation is called.
-func (q Script) RequestGeoLocation() Promise {
+func (q Ctx) RequestGeoLocation() Promise {
 	q.Require(GeoLocation)
 	return Promise{
 		`requestGeoLocation()`, q,
@@ -28,7 +28,7 @@ func (q Script) RequestGeoLocation() Promise {
 }
 
 //GeoLocation returns the current Location.
-func (q Script) GeoLocation() Location {
+func (q Ctx) GeoLocation() Location {
 	q.Require(GeoLocation)
 	return Location{
 		q.Value("geoLocation").Native(),

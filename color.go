@@ -1,7 +1,9 @@
 package seed
 
-import "image/color"
-import "encoding/hex"
+import (
+	"encoding/hex"
+	"image/color"
+)
 
 //Some colors as constants.
 const (

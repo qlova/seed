@@ -34,12 +34,12 @@ function data_request (url) {
 `
 
 //DataResponse returns the resulting value from the specified key inside of the data result object.
-func (q Script) DataResponse(key string) String {
+func (q Ctx) DataResponse(key string) String {
 	return q.Value(`rpc_result["` + key + `"]`).String()
 }
 
 //DataRequest makes a new request execting JSON data from the specified URL.
-func (q Script) DataRequest(url String) Promise {
+func (q Ctx) DataRequest(url String) Promise {
 	q.Require(DataRequestJS)
 
 	var variable = Unique()

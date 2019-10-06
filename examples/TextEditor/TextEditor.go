@@ -1,7 +1,9 @@
 package main
 
-import "github.com/qlova/seed"
-import "github.com/qlova/seeds/editor"
+import (
+	"github.com/qlova/seed"
+	"github.com/qlova/seeds/editor"
+)
 
 //A basic text editor without the ability to save files.
 func main() {

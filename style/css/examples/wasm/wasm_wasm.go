@@ -3,9 +3,12 @@
 //Makes the background of the page yellow.
 package main
 
-import "fmt"
-import "syscall/js"
-import "github.com/qlova/seed/style/css"
+import (
+	"fmt"
+	"syscall/js"
+
+	"github.com/qlova/seed/style/css"
+)
 
 func main() {
 	var body = js.Global().Get("document").Get("body")

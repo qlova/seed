@@ -1,7 +1,9 @@
 package seed
 
-import "bytes"
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
 //JSX returns ReactNative JSX for this seed.
 //Please note that this is purely expreimental and mostly doesn't work.

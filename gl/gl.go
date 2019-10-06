@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/script"
 )
 
 //Context is a gl context for rendering to the screen.
@@ -90,8 +91,8 @@ func NewContext(element seed.Seed) Context {
 		Triangles = iota
 	)
 
-	element.OnReady(func(q seed.Script) {
-		q.Javascript(`let gl = ` + element.Script(q).Element() + `.getContext("webgl");`)
+	element.OnReady(func(q script.Ctx) {
+		q.Javascript(`let gl = ` + element.Ctx(q).Element() + `.getContext("webgl");`)
 		q.Javascript(`var socket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/gl/` + element.ID() + `"); socket.binaryType = 'arraybuffer';`)
 		q.Javascript(`socket.onopen = function() {`)
 		q.Javascript(`	console.log('connected!');`)

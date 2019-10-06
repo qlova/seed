@@ -1,8 +1,10 @@
 package main
 
-import "os"
-import "fmt"
-import "strings"
+import (
+	"fmt"
+	"os"
+	"strings"
+)
 
 func Format(property string) (upper, camel string) {
 	var parts = strings.Split(property, "-")

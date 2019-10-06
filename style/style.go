@@ -1,7 +1,10 @@
 package style
 
-import "github.com/qlova/seed/style/css"
-import "math"
+import (
+	"math"
+
+	"github.com/qlova/seed/style/css"
+)
 
 //Unit is a display unit.
 type Unit = complex128

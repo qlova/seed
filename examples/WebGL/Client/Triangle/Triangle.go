@@ -1,15 +1,18 @@
 package main
 
-import "github.com/qlova/seed"
-import "github.com/qlova/seeds/canvas"
+import (
+	"github.com/qlova/seed"
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seeds/canvas"
+)
 
 func main() {
 	var App = seed.NewApp()
 
 	var Canvas = canvas.AddTo(App)
 
-	Canvas.OnReady(func(q seed.Script) {
-		var canvas = Canvas.Script(q)
+	Canvas.OnReady(func(q script.Ctx) {
+		var canvas = Canvas.Ctx(q)
 		var gl = canvas.OpenGL()
 
 		//gl.Viewport(q.Float(0), q.Float(0), canvas.Width(), canvas.Height())

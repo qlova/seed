@@ -1,11 +1,14 @@
 package seed
 
-import "github.com/qlova/seed/user"
-import qlova "github.com/qlova/script"
+import (
+	qlova "github.com/qlova/script"
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/user"
+)
 
 //Go runs a Go function instead of a script Function.
-func Go(function interface{}, args ...qlova.Type) func(q Script) {
-	return func(q Script) {
+func Go(function interface{}, args ...qlova.Type) func(q script.Ctx) {
+	return func(q script.Ctx) {
 		q.Go(function)
 	}
 }

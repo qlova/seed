@@ -25,7 +25,7 @@ type App struct {
 
 	hashes []string
 
-	onupdatefound func(Script)
+	onupdatefound func(script.Ctx)
 
 	loadingPage  Page
 	startingPage Page
@@ -71,8 +71,8 @@ func NewApp(args ...string) *App {
 	return &app
 }
 
-//ToJavascript converts a Script function into javascript bytes.
-func (app *App) ToJavascript(f func(Script)) []byte {
+//ToJavascript converts a Ctx function into javascript bytes.
+func (app *App) ToJavascript(f func(script.Ctx)) []byte {
 	return script.ToJavascript(f, app.Context)
 }
 
@@ -96,7 +96,7 @@ func (app *App) SetPage(page Page) {
 
 	app.startingPage = page
 
-	app.OnReady(func(q Script) {
+	app.OnReady(func(q script.Ctx) {
 		q.Require(script.Goto)
 	})
 }
@@ -188,6 +188,6 @@ func (app *App) Handler() http.Handler {
 }
 
 //OnUpdateFound will be called when an update is found for the app.
-func (app *App) OnUpdateFound(f func(Script)) {
+func (app *App) OnUpdateFound(f func(script.Ctx)) {
 	app.onupdatefound = f
 }
