@@ -14,5 +14,4 @@ require (
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/zserge/webview v0.0.0-20190123072648-16c93bcaeaeb
 	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
-	golang.org/x/sys v0.0.0-20191005200804-aed5e4c7ecf9 // indirect
 )

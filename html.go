@@ -73,17 +73,18 @@ func (app App) HTML() []byte {
 				window.dispatchEvent(new Event('orientationchange'));
 			}
 
-			//Disable Rightclick.
-			document.addEventListener("contextmenu", function (e) {
-				e.preventDefault();
-			}, false);
-
 			var ActivePhotoSwipe = null;
 		`)
 
 		if app.production {
 			//Disable back-button.
 			buffer.WriteString(`var production = true;
+
+			//Disable Rightclick.
+			document.addEventListener("contextmenu", function (e) {
+				e.preventDefault();
+			}, false);
+
 			function setCookie(cname, cvalue, exdays) {
 					var d = new Date();
 					d.setTime(d.getTime() + (exdays*24*60*60*1000));
