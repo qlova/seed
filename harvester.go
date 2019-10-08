@@ -21,6 +21,7 @@ type harvester struct {
 	assets []Asset
 
 	//Fonts associated with a seed (need special handling compared to assets).
+	//font-family CSS will be generated from this.
 	fonts map[style.Font]struct{}
 
 	//Animations and animation ids associated with a seed.
@@ -137,8 +138,18 @@ func (app *harvester) harvest(seed Seed) {
 	}
 
 	//Harvest Fonts.
-	if seed.font.FontFace.FontFamily != "" {
-		h.fonts[seed.font] = struct{}{}
+	if seed.font != "" {
+		var path = string(seed.font)
+		if font, ok := app.Context.FontCache[path]; ok {
+			seed.Style.SetFont(font)
+		}
+
+		h.assets = append(h.assets, NewAsset(path))
+
+		var font = style.NewFont(path)
+		app.Context.FontCache[path] = font
+
+		h.fonts[font] = struct{}{}
 	}
 
 	//Harvest mediaQueries.

@@ -36,30 +36,16 @@ var Arial = style.Font{
 }
 
 //Font is a font type.
-type Font struct {
-	style.Font
-	path string
-}
-
-//FontCache caches fonts that have been registered.
-var FontCache = make(map[string]Font)
+type Font string
 
 //NewFont registers the font and creates it.
 func NewFont(path string) Font {
-	if font, ok := FontCache[path]; ok {
-		return font
-	}
-
-	var font = Font{style.NewFont(path), path}
-	FontCache[path] = font
-	return font
+	return Font(path)
 }
 
 //SetFont sets the font of the specified seed.
 func (seed Seed) SetFont(font Font) {
-	seed.font = font.Font
-	NewAsset(font.path).AddTo(seed)
-	seed.Style.SetFont(font.Font)
+	seed.font = font
 }
 
 //Seed is a component of an app.
@@ -86,7 +72,7 @@ type seed struct {
 	styled bool
 	ready  bool
 
-	font      style.Font
+	font      Font
 	animation Animation
 
 	content []byte
