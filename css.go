@@ -16,6 +16,7 @@ const CSS = `
 	
 	img {
 		object-fit: contain;
+		max-width: 100%;
 	}
 	
 	html {
