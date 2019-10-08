@@ -6,7 +6,7 @@ import (
 	"github.com/qlova/seed/script"
 )
 
-//Transition is a transisition between pages.
+//Transition is a transition between pages.
 type Transition struct {
 	In  *Animation
 	Out *Animation
@@ -64,9 +64,35 @@ var Flip = Transition{
 	},
 }
 
+//Stay is a transition, where the page stays visisble until the end of the transition.
+var Stay = Transition{
+	Out: &Animation{},
+	In:  &Animation{},
+}
+
 //FlipOut is a transition.
 var FlipOut = Transition{
 	Out: Flip.Out,
+}
+
+//SlideIn stores all slidein animations.
+var SlideIn = struct {
+	Up, Down, Left, Right *Animation
+}{
+	Up:    SlideUp.In,
+	Down:  SlideDown.In,
+	Left:  SlideLeft.In,
+	Right: SlideRight.In,
+}
+
+//SlideOut stores all slideout animations.
+var SlideOut = struct {
+	Up, Down, Left, Right *Animation
+}{
+	Up:    SlideDown.Out,
+	Down:  SlideUp.Out,
+	Left:  SlideRight.Out,
+	Right: SlideLeft.Out,
 }
 
 //SlideUp is a transition.
@@ -87,6 +113,28 @@ var SlideUp = Transition{
 
 		100: func(frame Frame) {
 			frame.Translate(0, 100)
+		},
+	},
+}
+
+//SlideDown is a transition.
+var SlideDown = Transition{
+	In: &Animation{
+		0: func(frame Frame) {
+			frame.Translate(0, -100)
+		},
+
+		100: func(frame Frame) {
+			frame.Translate(0, 0)
+		},
+	},
+	Out: &Animation{
+		0: func(frame Frame) {
+			frame.Translate(0, 0)
+		},
+
+		100: func(frame Frame) {
+			frame.Translate(0, -100)
 		},
 	},
 }
