@@ -24,12 +24,22 @@ func (script Ctx) Website(location qlova.String) URL {
 	return script.URL(location)
 }
 
-//Open opens the URL in a new tab.
+const openURI = `function openURI(uri) {
+	let splits = uri.split(':');
+	if (splits.length > 0 && splits[0] != "https" && splits[0] != "http") {
+		window.location.href = uri;
+		return;
+	} 
+	window.open(uri);
+}`
+
+//Open opens the URL in a new tab if possible.
 func (url URL) Open() {
-	url.q.Javascript("window.open(" + string(url.location.LanguageType().Raw()) + ");")
+	url.q.Require(openURI)
+	url.q.Javascript("openURI(" + string(url.location.LanguageType().Raw()) + ");")
 }
 
-//Goto goes directly to the URL.
+//Goto goes directly to the URL if possible..
 func (url URL) Goto() {
 	url.q.Javascript("window.location.href = (" + string(url.location.LanguageType().Raw()) + ");")
 }
