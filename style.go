@@ -6,6 +6,12 @@ import (
 	"github.com/qlova/seed/style"
 )
 
+//Shadow is an alias to the style.Shadow type.
+type Shadow = style.Shadow
+
+//Gradient is an alias to the style.Gradient type.
+type Gradient = style.Gradient
+
 type sheet struct {
 	style.Sheet
 
