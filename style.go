@@ -3,7 +3,9 @@ package seed
 import (
 	"bytes"
 
+	"github.com/qlova/seed/internal"
 	"github.com/qlova/seed/style"
+	"github.com/qlova/seed/style/css"
 )
 
 //Shadow is an alias to the style.Shadow type.
@@ -11,6 +13,20 @@ type Shadow = style.Shadow
 
 //Gradient is an alias to the style.Gradient type.
 type Gradient = style.Gradient
+
+//Frame is an animation frame.
+type Frame = internal.Frame
+
+//Animation is a change in styles across frames.
+type Animation = internal.Animation
+
+//SetAnimation sets the animation of this seed to be looping and 1 second long.
+func (seed Seed) SetAnimation(animation Animation) {
+	seed.animation = animation
+	seed.SetAnimationName(css.AnimationName(seed.id))
+	seed.SetAnimationDuration(css.Time(1))
+	seed.SetAnimationIterationCount(css.Infinite)
+}
 
 type sheet struct {
 	style.Sheet
