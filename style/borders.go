@@ -37,6 +37,22 @@ func (style Style) SetRoundedCorners(radius Unit) {
 	style.SetBorderTopLeftRadius(value)
 }
 
+//SetRoundedCornersLeft sets this element to have rounded corners of the specified radius.
+func (style Style) SetRoundedCornersLeft(radius Unit) {
+	var value = css.Decode(radius)
+
+	style.SetBorderBottomLeftRadius(value)
+	style.SetBorderTopLeftRadius(value)
+}
+
+//SetRoundedCornersRight sets this element to have rounded corners of the specified radius.
+func (style Style) SetRoundedCornersRight(radius Unit) {
+	var value = css.Decode(radius)
+
+	style.SetBorderBottomRightRadius(value)
+	style.SetBorderTopRightRadius(value)
+}
+
 //SetRoundedCornersBottom sets this element to have rounded corners of the specified radius.
 func (style Style) SetRoundedCornersBottom(radius Unit) {
 	var value = css.Decode(radius)
