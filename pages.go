@@ -8,6 +8,7 @@ import (
 //Page is a page of an app, or seed.
 type Page struct {
 	Seed
+	state State
 }
 
 //NewPage returns a new Page.
@@ -28,7 +29,19 @@ func NewPage() Page {
 	//seed.Style.SetHeight(100)*/
 	seed.Style.SetSize(100, 100)
 
-	return Page{seed}
+	var page = Page{seed, NewState(seed.id)}
+
+	page.OnPageEnter(func(q script.Ctx) {
+		page.state.Set(q)
+	})
+	page.OnPageExit(func(q script.Ctx) {
+		page.state.Unset(q)
+	})
+	return page
+}
+
+func (page Page) State() State {
+	return page.state
 }
 
 //SetTag sets a tag associated with this page.
