@@ -6,6 +6,7 @@ import (
 	"math"
 
 	qlova "github.com/qlova/script"
+	"github.com/qlova/seed/style"
 	"github.com/qlova/seed/style/css"
 )
 
@@ -55,6 +56,20 @@ func (seed Seed) SetGradient(direction complex128, start, end Color) {
 func (seed Seed) ClearGradient() {
 	seed.Set("background-image", "")
 }
+
+//SetTint sets the tint of this seed. Color must be known at runtime.
+func (seed Seed) SetTint(tint color.Color) {
+	var s = style.New()
+	s.SetTint(tint)
+	var f = s.Style.Get("filter")
+	seed.Set("filter", f[:len(f)-1])
+}
+
+//RemoveTint removes the tint of this seed. Color must be known at runtime.
+func (seed Seed) RemoveTint() {
+	seed.Set("filter", "unset")
+}
+
 //Translate sets the transform of this seed to the specified translation.
 func (seed Seed) Translate(x, y Unit) {
 	seed.Javascript(seed.Element() + `.style.setProperty("--x", "` + x.Raw() + `");`)
