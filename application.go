@@ -2,9 +2,7 @@ package seed
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/qlova/seed/manifest"
 	"github.com/qlova/seed/script"
@@ -167,15 +165,6 @@ func (app *App) Launch(listen ...string) error {
 		app.build()
 		app.Export(Website)
 		return nil
-	}
-
-	if len(os.Args) == 2 && os.Args[1] == "-deploy" {
-		err := app.Deploy()
-		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
-		os.Exit(0)
 	}
 
 	launcher{App: *app}.Launch(listen...)
