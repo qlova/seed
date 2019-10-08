@@ -73,7 +73,7 @@ func (a itemsAligner) End() {
 
 //AlignItems returns an aligner that aligns the children of this seed.
 func (style Style) AlignItems() Aligner {
-	return selfAligner{style}
+	return itemsAligner{style}
 }
 
 //SetLayer sets the rendering layer.

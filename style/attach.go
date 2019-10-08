@@ -39,7 +39,7 @@ func (style Style) AttachToScreen() Attacher {
 
 //AttachToParent attaches this element to its parent, returns an attacher to specify where.
 func (style Style) AttachToParent() Attacher {
-	style.SetPosition(css.Fixed)
+	style.SetPosition(css.Absolute)
 	return Attacher{style}
 }
 
