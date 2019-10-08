@@ -35,7 +35,6 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *sheet) {
 		return
 	}
 
-	//seed.postProduction()
 	if data := seed.Style.Bytes(); data != nil {
 		seed.styled = true
 		var selector = "#" + seed.id
@@ -120,18 +119,6 @@ func (seed Seed) HTML(platform Platform) []byte {
 			html.WriteByte('\'')
 		}
 	}
-
-	/*if seed.onclick != nil && seed.parent == nil {
-		html.WriteString(" onclick='")
-		html.Write(script.ToJavascript(seed.onclick))
-		html.WriteByte('\'')
-	}
-
-	if seed.onchange != nil {
-		html.WriteString(" onchange='")
-		html.Write(script.ToJavascript(seed.onchange))
-		html.WriteByte('\'')
-	}*/
 
 	html.WriteByte('>')
 
