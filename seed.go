@@ -28,6 +28,9 @@ type User = user.User
 //Shadow is an alias to the style.Shadow type.
 type Shadow = style.Shadow
 
+//Gradient is an alias to the style.Gradient type.
+type Gradient = style.Gradient
+
 //Arial is a default arial font.
 var Arial = style.Font{
 	FontFace: css.FontFace{
