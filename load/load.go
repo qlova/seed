@@ -9,8 +9,8 @@ import (
 	"os"
 
 	"archive/tar"
+	"compress/gzip"
 
-	"github.com/mholt/archiver"
 	"github.com/qlova/seed"
 
 	"github.com/qlova/seed/load/pencil"
@@ -25,18 +25,18 @@ func File(name string) *seed.App {
 		os.Exit(1)
 	}
 
-	var decompressor = archiver.NewTarGz()
-	err = decompressor.Open(file, 0)
+	gzf, err := gzip.NewReader(file)
 	if err != nil {
-		//TODO error handling
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	tarReader := tar.NewReader(gzf)
+
 	var project = make(map[string][]byte)
 
 	for {
-		f, err := decompressor.Read()
+		f, err := tarReader.Next()
 		if err == io.EOF {
 			break
 		}
@@ -46,22 +46,13 @@ func File(name string) *seed.App {
 			os.Exit(1)
 		}
 
-		project[f.Name()], err = ioutil.ReadAll(f)
+		project[f.Name], err = ioutil.ReadAll(tarReader)
 
 		if err != nil {
 			//TODO error handling
 			fmt.Println(err)
 			os.Exit(1)
 		}
-
-		err = f.Close()
-		if err != nil {
-			//TODO error handling
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		fmt.Println(f.Header.(*tar.Header).Name)
 	}
 
 	var App = seed.NewApp()
