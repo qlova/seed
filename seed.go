@@ -5,7 +5,7 @@ import (
 	"github.com/qlova/seed/style"
 	"github.com/qlova/seed/style/css"
 	"github.com/qlova/seed/user"
-	"github.com/russross/blackfriday"
+	"github.com/russross/blackfriday/v2"
 
 	"encoding/base64"
 	"html"

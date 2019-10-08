@@ -11,6 +11,7 @@ require (
 	github.com/qlova/script v0.0.0-20190731095237-dfd47aef1c0f
 	github.com/qlova/seeds v0.1.1
 	github.com/russross/blackfriday v2.0.0+incompatible
+	github.com/russross/blackfriday/v2 v2.0.1
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/zserge/webview v0.0.0-20190123072648-16c93bcaeaeb
 	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
