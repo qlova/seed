@@ -1,6 +1,8 @@
 package style
 
 import (
+	"bytes"
+	"fmt"
 	"image/color"
 	"math"
 
@@ -17,9 +19,81 @@ func (style Style) SetTextColor(color color.Color) {
 	style.Style.SetColor(css.Colour(color))
 }
 
+//Gradient is a
+type Gradient struct {
+	From, To  color.Color
+	Colors    []color.Color
+	Ratios    []float64
+	Direction complex128
+
+	Repeating, Radial, Circle bool
+
+	Size    complex128
+	Closest bool
+	Side    bool
+}
+
+//CSS returns the gradient as a CSS function.
+func (gradient Gradient) CSS() []byte {
+	var buffer bytes.Buffer
+
+	if len(gradient.Colors) == 0 {
+		gradient.Colors = []color.Color{gradient.From, gradient.To}
+	}
+
+	if gradient.Repeating || len(gradient.Ratios) > 0 {
+		buffer.WriteString(`repeating-`)
+	}
+
+	if gradient.Radial {
+
+		buffer.WriteString(`radial-gradient(`)
+
+		if gradient.Circle {
+			buffer.WriteString(`circle `)
+		}
+
+		if gradient.Closest {
+			buffer.WriteString(`closest-`)
+		} else {
+			buffer.WriteString(`farthest-`)
+		}
+		if gradient.Side {
+			buffer.WriteString(`side `)
+		} else {
+			buffer.WriteString(`corner `)
+		}
+
+		if gradient.Size != 0 {
+			fmt.Fprintf(&buffer, `at %v %v`, real(gradient.Size), imag(gradient.Size))
+		}
+
+		buffer.WriteByte(',')
+	} else {
+		buffer.WriteString(`linear-gradient(`)
+		fmt.Fprintf(&buffer, "%vdeg,", math.Atan2(imag(gradient.Direction), real(gradient.Direction))+math.Pi/2)
+	}
+
+	buffer.WriteString(css.Colour(gradient.Colors[0]).String())
+
+	for i, col := range gradient.Colors {
+		buffer.WriteByte(',')
+		buffer.WriteString(css.Colour(col).String())
+		if len(gradient.Ratios) > i {
+			fmt.Fprintf(&buffer, " %v%%", gradient.Ratios[i])
+		}
+	}
+
+	buffer.WriteByte(')')
+	buffer.WriteByte(';')
+
+	return buffer.Bytes()
+
+}
+
 //SetGradient sets the color of this element to be a gradient moving in direction from start color to end color.
-func (style Style) SetGradient(direction complex128, start, end color.Color) {
-	style.SetBackgroundImage(css.LinearGradient(math.Atan2(imag(direction), real(direction))+math.Pi/2, css.Colour(start), css.Colour(end)))
+func (style Style) SetGradient(gradient Gradient) {
+	style.Set("background-image", string(gradient.CSS()))
 }
 
 //RemoveGradient removes any gradients from this element.
