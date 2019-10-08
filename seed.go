@@ -19,6 +19,11 @@ import (
 	HTML "github.com/qlova/seed/html"
 )
 
+//Interface is anything that has a Root() seed method.
+type Interface interface {
+	Root() Seed
+}
+
 //Dir is the working directory of the seed.
 var Dir = filepath.Dir(os.Args[0])
 
