@@ -7,7 +7,7 @@ type Group struct {
 	Portrait, Landscape Style
 }
 
-//Init initialises the styleset.
+//Init initializes the group.
 func (group *Group) Init() {
 	group.Style = New()
 	group.Portrait = New()
