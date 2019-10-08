@@ -184,6 +184,7 @@ const Goto = `
 func (page Page) Goto() {
 	var q = page.Q
 	q.Require(Goto)
+	q.Require(Back)
 	q.Javascript("goto('" + page.ID + "');")
 }
 
