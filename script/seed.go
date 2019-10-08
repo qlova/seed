@@ -288,11 +288,6 @@ func (seed Seed) OnClick(f func()) {
 	seed.Javascript(`};`)
 }
 
-//Translate sets the transform of this seed to the specified translation.
-func (seed Seed) Translate(x, y Unit) {
-	seed.Javascript(seed.Element() + `.style.transform = "translate(` + x.Raw() + "," + y.Raw() + `)";`)
-}
-
 //Filter runs a function on each child of this seed.
 func (seed Seed) Filter(f func(child Seed)) {
 	seed.Q.Javascript(`for (let i = 0; i < ` + seed.Element() + `.children.length; i++) {`)

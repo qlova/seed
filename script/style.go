@@ -55,3 +55,15 @@ func (seed Seed) SetGradient(direction complex128, start, end Color) {
 func (seed Seed) ClearGradient() {
 	seed.Set("background-image", "")
 }
+//Translate sets the transform of this seed to the specified translation.
+func (seed Seed) Translate(x, y Unit) {
+	seed.Javascript(seed.Element() + `.style.setProperty("--x", "` + x.Raw() + `");`)
+	seed.Javascript(seed.Element() + `.style.setProperty("--y", "` + y.Raw() + `");`)
+	seed.Set("transform", "rotate(var(--angle, 0)) scale(var(--scale, 1)) translate(var(--x, 0), var(--y, 0))")
+}
+
+//Scale sets the scale of this seed to the specified scalar.
+func (seed Seed) Scale(scalar Float) {
+	seed.Javascript(seed.Element() + `.style.setProperty("--scale", ` + scalar.LanguageType().Raw() + `);`)
+	seed.Set("transform", "rotate(var(--angle, 0)) scale(var(--scale, 1)) translate(var(--x, 0), var(--y, 0))")
+}
