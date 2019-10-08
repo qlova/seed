@@ -20,14 +20,6 @@ The cross-platform Go framework for building apps.
 
 ![showcase](media/showcase.jpg)
 
-## Installing
-
-You can get Qlovaseed using go get.
-```sh
-go get -u -v github.com/qlova/seed/...
-```
-Qlovaseed apps can be developed on Android, Linux, Mac & Windows.
-
 ## Getting started
 
 Create HelloWorld.go file and paste in the following contents:
@@ -51,7 +43,7 @@ func main() {
 
 ```
 
-In the same folder, run 'go build' to create an executable for the app, run this to launch the app. By default, Qlovaseed will start a WebServer and open a browser window displaying your app.
+In the same folder, run 'go mod init .' to initialise the project and then 'go build' to create an executable for the app, run this to launch the app. By default, Qlovaseed will start a WebServer and open a browser window displaying your app.
 
 ## Widgets and Logic
 
