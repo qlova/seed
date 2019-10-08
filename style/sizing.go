@@ -1,6 +1,9 @@
 package style
 
-import "github.com/qlova/seed/style/css"
+import (
+	"github.com/qlova/seed/style/css"
+	"github.com/qlova/seed/unit"
+)
 
 //SetSize sets the width and height of the element. Takes em, vm, px or percentage values.
 func (style Style) SetSize(width, height complex128) {
@@ -55,31 +58,31 @@ func (style Style) SetZoomable() {
 }
 
 //SetMaxWidth sets the max width of this element.
-func (style Style) SetMaxWidth(width Unit) {
+func (style Style) SetMaxWidth(width  unit.Unit) {
 	style.Style.SetMaxWidth(css.Decode(width))
 }
 
 //SetMaxHeight sets the max height of this element.
-func (style Style) SetMaxHeight(height Unit) {
+func (style Style) SetMaxHeight(height  unit.Unit) {
 	style.Style.SetMaxHeight(css.Decode(height))
 }
 
 //SetMinWidth sets the min width of this element.
-func (style Style) SetMinWidth(width Unit) {
+func (style Style) SetMinWidth(width  unit.Unit) {
 	style.Style.SetMinWidth(css.Decode(width))
 }
 
 //SetMinHeight sets the min height of this element.
-func (style Style) SetMinHeight(height Unit) {
+func (style Style) SetMinHeight(height  unit.Unit) {
 	style.Style.SetMinHeight(css.Decode(height))
 }
 
 //SetWidth sets the desired width of this element.
-func (style Style) SetWidth(width Unit) {
+func (style Style) SetWidth(width  unit.Unit) {
 	style.Style.SetWidth(css.Decode(width))
 }
 
 //SetHeight sets the desired height of this element.
-func (style Style) SetHeight(height Unit) {
+func (style Style) SetHeight(height  unit.Unit) {
 	style.Style.SetHeight(css.Decode(height))
 }

@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	"github.com/qlova/seed/style/css"
+	"github.com/qlova/seed/unit"
 )
 
 //SetBorderless removes the border from this element.
@@ -27,7 +28,7 @@ func (style Style) SetBorder(color color.Color, thickness int) {
 }
 
 //SetRoundedCorners sets this element to have rounded corners of the specified radius.
-func (style Style) SetRoundedCorners(radius Unit) {
+func (style Style) SetRoundedCorners(radius unit.Unit) {
 	var value = css.Decode(radius)
 
 	style.SetBorderBottomLeftRadius(value)
@@ -38,7 +39,7 @@ func (style Style) SetRoundedCorners(radius Unit) {
 }
 
 //SetRoundedCornersLeft sets this element to have rounded corners of the specified radius.
-func (style Style) SetRoundedCornersLeft(radius Unit) {
+func (style Style) SetRoundedCornersLeft(radius unit.Unit) {
 	var value = css.Decode(radius)
 
 	style.SetBorderBottomLeftRadius(value)
@@ -46,7 +47,7 @@ func (style Style) SetRoundedCornersLeft(radius Unit) {
 }
 
 //SetRoundedCornersRight sets this element to have rounded corners of the specified radius.
-func (style Style) SetRoundedCornersRight(radius Unit) {
+func (style Style) SetRoundedCornersRight(radius unit.Unit) {
 	var value = css.Decode(radius)
 
 	style.SetBorderBottomRightRadius(value)
@@ -54,7 +55,7 @@ func (style Style) SetRoundedCornersRight(radius Unit) {
 }
 
 //SetRoundedCornersBottom sets this element to have rounded corners of the specified radius.
-func (style Style) SetRoundedCornersBottom(radius Unit) {
+func (style Style) SetRoundedCornersBottom(radius unit.Unit) {
 	var value = css.Decode(radius)
 
 	style.SetBorderBottomLeftRadius(value)
@@ -62,7 +63,7 @@ func (style Style) SetRoundedCornersBottom(radius Unit) {
 }
 
 //SetRoundedCornersTop sets this element to have rounded corners of the specified radius.
-func (style Style) SetRoundedCornersTop(radius Unit) {
+func (style Style) SetRoundedCornersTop(radius unit.Unit) {
 	var value = css.Decode(radius)
 
 	style.SetBorderTopLeftRadius(value)

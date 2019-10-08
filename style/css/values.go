@@ -1,38 +1,80 @@
 /*This file is computer-generated*/
 package css
 
+const Running running = 0
+
+type running byte
+
+func (running) String() string           { return "running" }
+func (running) animationPlayStateValue() {}
+
+const Paused paused = 0
+
+type paused byte
+
+func (paused) String() string           { return "paused" }
+func (paused) animationPlayStateValue() {}
+
 const Unset unset = 0
 
 type unset byte
 
-func (unset) String() string  { return "unset" }
-func (unset) animationValue() {}
+func (unset) String() string           { return "unset" }
+func (unset) animationPlayStateValue() {}
 
 const Initial initial = 0
 
 type initial byte
 
-func (initial) String() string  { return "initial" }
-func (initial) animationValue() {}
+func (initial) String() string           { return "initial" }
+func (initial) animationPlayStateValue() {}
 
 const Inherit inherit = 0
 
 type inherit byte
 
-func (inherit) String() string  { return "inherit" }
-func (inherit) animationValue() {}
+func (inherit) String() string           { return "inherit" }
+func (inherit) animationPlayStateValue() {}
 
-const None none = 0
+const Row row = 0
 
-type none byte
+type row byte
 
-func (none) String() string     { return "none" }
-func (none) gridTemplateValue() {}
+func (row) String() string      { return "row" }
+func (row) flexDirectionValue() {}
 
-type gridautoType string
+const RowReverse rowReverse = 0
 
-func (s gridautoType) String() string   { return string(s) }
-func (gridautoType) gridTemplateValue() {}
+type rowReverse byte
+
+func (rowReverse) String() string      { return "row-reverse" }
+func (rowReverse) flexDirectionValue() {}
+
+const ColumnReverse columnReverse = 0
+
+type columnReverse byte
+
+func (columnReverse) String() string      { return "column-reverse" }
+func (columnReverse) flexDirectionValue() {}
+
+const Column column = 0
+
+type column byte
+
+func (column) String() string      { return "column" }
+func (column) flexDirectionValue() {}
+
+func (unset) flexDirectionValue() {}
+
+func (initial) flexDirectionValue() {}
+
+func (inherit) flexDirectionValue() {}
+
+func (unset) gridValue() {}
+
+func (initial) gridValue() {}
+
+func (inherit) gridValue() {}
 
 func (unset) gridTemplateValue() {}
 
@@ -40,161 +82,71 @@ func (initial) gridTemplateValue() {}
 
 func (inherit) gridTemplateValue() {}
 
-type lengthType string
-
-func (s lengthType) String() string { return string(s) }
-func (lengthType) unitValue()       {}
-
-func (unset) unitValue() {}
-
-func (initial) unitValue() {}
-
-func (inherit) unitValue() {}
-
-const Visible visible = 0
-
-type visible byte
-
-func (visible) String() string { return "visible" }
-func (visible) overflowValue() {}
-
-const Scroll scroll = 0
-
-type scroll byte
-
-func (scroll) String() string { return "scroll" }
-func (scroll) overflowValue() {}
-
-const Hidden hidden = 0
-
-type hidden byte
-
-func (hidden) String() string { return "hidden" }
-func (hidden) overflowValue() {}
-
 const Auto auto = 0
 
 type auto byte
 
-func (auto) String() string { return "auto" }
-func (auto) overflowValue() {}
+func (auto) String() string       { return "auto" }
+func (auto) imageRenderingValue() {}
 
-func (unset) overflowValue() {}
+const Pixelated pixelated = 0
 
-func (initial) overflowValue() {}
+type pixelated byte
 
-func (inherit) overflowValue() {}
+func (pixelated) String() string       { return "pixelated" }
+func (pixelated) imageRenderingValue() {}
 
-func (unset) sizeValue() {}
+const CrispEdges crispEdges = 0
 
-func (initial) sizeValue() {}
+type crispEdges byte
 
-func (inherit) sizeValue() {}
+func (crispEdges) String() string       { return "crisp-edges" }
+func (crispEdges) imageRenderingValue() {}
 
-type breakvalueType string
+func (unset) imageRenderingValue() {}
 
-func (s breakvalueType) String() string { return string(s) }
-func (breakvalueType) breakValue()      {}
+func (initial) imageRenderingValue() {}
 
-func (unset) breakValue() {}
+func (inherit) imageRenderingValue() {}
 
-func (initial) breakValue() {}
+func (unset) uintOrUnitValue() {}
 
-func (inherit) breakValue() {}
+func (initial) uintOrUnitValue() {}
 
-const Normal normal = 0
+func (inherit) uintOrUnitValue() {}
 
-type normal byte
+const Nowrap nowrap = 0
 
-func (normal) String() string   { return "normal" }
-func (normal) fontWeightValue() {}
+type nowrap byte
 
-const Lighter lighter = 0
+func (nowrap) String() string { return "nowrap" }
+func (nowrap) flexWrapValue() {}
 
-type lighter byte
+const Wrap wrap = 0
 
-func (lighter) String() string   { return "lighter" }
-func (lighter) fontWeightValue() {}
+type wrap byte
 
-const Bolder bolder = 0
+func (wrap) String() string { return "wrap" }
+func (wrap) flexWrapValue() {}
 
-type bolder byte
+const WrapReverse wrapReverse = 0
 
-func (bolder) String() string   { return "bolder" }
-func (bolder) fontWeightValue() {}
+type wrapReverse byte
 
-const Bold bold = 0
+func (wrapReverse) String() string { return "wrap-reverse" }
+func (wrapReverse) flexWrapValue() {}
 
-type bold byte
+func (unset) flexWrapValue() {}
 
-func (bold) String() string   { return "bold" }
-func (bold) fontWeightValue() {}
+func (initial) flexWrapValue() {}
 
-type integerType string
+func (inherit) flexWrapValue() {}
 
-func (s integerType) String() string { return string(s) }
-func (integerType) fontWeightValue() {}
+const None none = 0
 
-func (unset) fontWeightValue() {}
+type none byte
 
-func (initial) fontWeightValue() {}
-
-func (inherit) fontWeightValue() {}
-
-func (auto) unitOrAutoValue() {}
-
-func (unitType) unitOrAutoValue() {}
-
-const Zero zero = 0
-
-type zero byte
-
-func (zero) String() string   { return "0" }
-func (zero) unitOrAutoValue() {}
-
-func (unset) unitOrAutoValue() {}
-
-func (initial) unitOrAutoValue() {}
-
-func (inherit) unitOrAutoValue() {}
-
-func (unset) borderStyleValue() {}
-
-func (initial) borderStyleValue() {}
-
-func (inherit) borderStyleValue() {}
-
-const Medium medium = 0
-
-type medium byte
-
-func (medium) String() string        { return "medium" }
-func (medium) columnRuleWidthValue() {}
-
-const Thin thin = 0
-
-type thin byte
-
-func (thin) String() string        { return "thin" }
-func (thin) columnRuleWidthValue() {}
-
-const Thick thick = 0
-
-type thick byte
-
-func (thick) String() string        { return "thick" }
-func (thick) columnRuleWidthValue() {}
-
-func (lengthType) columnRuleWidthValue() {}
-
-func (zero) columnRuleWidthValue() {}
-
-func (unset) columnRuleWidthValue() {}
-
-func (initial) columnRuleWidthValue() {}
-
-func (inherit) columnRuleWidthValue() {}
-
+func (none) String() string      { return "none" }
 func (none) textTransformValue() {}
 
 const Uppercase uppercase = 0
@@ -231,106 +183,6 @@ func (initial) textTransformValue() {}
 
 func (inherit) textTransformValue() {}
 
-func (auto) columnCountValue() {}
-
-func (integerType) columnCountValue() {}
-
-func (unset) columnCountValue() {}
-
-func (initial) columnCountValue() {}
-
-func (inherit) columnCountValue() {}
-
-const Flat flat = 0
-
-type flat byte
-
-func (flat) String() string       { return "flat" }
-func (flat) transformStyleValue() {}
-
-const Preserve3d preserve3d = 0
-
-type preserve3d byte
-
-func (preserve3d) String() string       { return "preserve-3d" }
-func (preserve3d) transformStyleValue() {}
-
-func (unset) transformStyleValue() {}
-
-func (initial) transformStyleValue() {}
-
-func (inherit) transformStyleValue() {}
-
-func (unitType) borderTopRightRadiusValue() {}
-
-func (unset) borderTopRightRadiusValue() {}
-
-func (initial) borderTopRightRadiusValue() {}
-
-func (inherit) borderTopRightRadiusValue() {}
-
-func (none) imageValue() {}
-
-type urlType string
-
-func (s urlType) String() string { return string(s) }
-func (urlType) imageValue()      {}
-
-func (unset) imageValue() {}
-
-func (initial) imageValue() {}
-
-func (inherit) imageValue() {}
-
-func (integerType) uintValue() {}
-
-func (unset) uintValue() {}
-
-func (initial) uintValue() {}
-
-func (inherit) uintValue() {}
-
-func (unset) borderValue() {}
-
-func (initial) borderValue() {}
-
-func (inherit) borderValue() {}
-
-const Top top = 0
-
-type top byte
-
-func (top) String() string    { return "top" }
-func (top) captionSideValue() {}
-
-const Bottom bottom = 0
-
-type bottom byte
-
-func (bottom) String() string    { return "bottom" }
-func (bottom) captionSideValue() {}
-
-func (unset) captionSideValue() {}
-
-func (initial) captionSideValue() {}
-
-func (inherit) captionSideValue() {}
-
-func (none) textCombineUprightValue() {}
-
-const All all = 0
-
-type all byte
-
-func (all) String() string           { return "all" }
-func (all) textCombineUprightValue() {}
-
-func (unset) textCombineUprightValue() {}
-
-func (initial) textCombineUprightValue() {}
-
-func (inherit) textCombineUprightValue() {}
-
 func (auto) textUnderlinePositionValue() {}
 
 const Under under = 0
@@ -360,137 +212,140 @@ func (initial) textUnderlinePositionValue() {}
 
 func (inherit) textUnderlinePositionValue() {}
 
-const Ltr ltr = 0
+func (auto) unitOrAutoValue() {}
 
-type ltr byte
+func (unitType) unitOrAutoValue() {}
 
-func (ltr) String() string  { return "ltr" }
-func (ltr) directionValue() {}
+const Zero zero = 0
 
-const Rtl rtl = 0
+type zero byte
 
-type rtl byte
+func (zero) String() string   { return "0" }
+func (zero) unitOrAutoValue() {}
 
-func (rtl) String() string  { return "rtl" }
-func (rtl) directionValue() {}
+func (unset) unitOrAutoValue() {}
 
-func (unset) directionValue() {}
+func (initial) unitOrAutoValue() {}
 
-func (initial) directionValue() {}
+func (inherit) unitOrAutoValue() {}
 
-func (inherit) directionValue() {}
+func (none) transformValue() {}
 
-func (normal) fontVariantCapsValue() {}
+type transformationType string
 
-const Unicase unicase = 0
+func (s transformationType) String() string { return string(s) }
+func (transformationType) transformValue()  {}
 
-type unicase byte
+func (unset) transformValue() {}
 
-func (unicase) String() string        { return "unicase" }
-func (unicase) fontVariantCapsValue() {}
+func (initial) transformValue() {}
 
-const TitlingCaps titlingCaps = 0
+func (inherit) transformValue() {}
 
-type titlingCaps byte
+func (auto) userSelectValue() {}
 
-func (titlingCaps) String() string        { return "titling-caps" }
-func (titlingCaps) fontVariantCapsValue() {}
+func (none) userSelectValue() {}
 
-const SmallCaps smallCaps = 0
+const Text text = 0
 
-type smallCaps byte
+type text byte
 
-func (smallCaps) String() string        { return "small-caps" }
-func (smallCaps) fontVariantCapsValue() {}
+func (text) String() string   { return "text" }
+func (text) userSelectValue() {}
 
-const PetiteCaps petiteCaps = 0
+const All all = 0
 
-type petiteCaps byte
+type all byte
 
-func (petiteCaps) String() string        { return "petite-caps" }
-func (petiteCaps) fontVariantCapsValue() {}
+func (all) String() string   { return "all" }
+func (all) userSelectValue() {}
 
-const AllSmallCaps allSmallCaps = 0
+func (unset) userSelectValue() {}
 
-type allSmallCaps byte
+func (initial) userSelectValue() {}
 
-func (allSmallCaps) String() string        { return "all-small-caps" }
-func (allSmallCaps) fontVariantCapsValue() {}
+func (inherit) userSelectValue() {}
 
-const AllPetiteCaps allPetiteCaps = 0
+func (auto) alignSelfValue() {}
 
-type allPetiteCaps byte
+const Stretch stretch = 0
 
-func (allPetiteCaps) String() string        { return "all-petite-caps" }
-func (allPetiteCaps) fontVariantCapsValue() {}
+type stretch byte
 
-func (unset) fontVariantCapsValue() {}
+func (stretch) String() string  { return "stretch" }
+func (stretch) alignSelfValue() {}
 
-func (initial) fontVariantCapsValue() {}
+const FlexStart flexStart = 0
 
-func (inherit) fontVariantCapsValue() {}
+type flexStart byte
 
-func (zero) unitValue() {}
+func (flexStart) String() string  { return "flex-start" }
+func (flexStart) alignSelfValue() {}
+
+const FlexEnd flexEnd = 0
+
+type flexEnd byte
+
+func (flexEnd) String() string  { return "flex-end" }
+func (flexEnd) alignSelfValue() {}
+
+const Center center = 0
+
+type center byte
+
+func (center) String() string  { return "center" }
+func (center) alignSelfValue() {}
 
 const Baseline baseline = 0
 
 type baseline byte
 
-func (baseline) String() string      { return "baseline" }
-func (baseline) verticalAlignValue() {}
+func (baseline) String() string  { return "baseline" }
+func (baseline) alignSelfValue() {}
 
-func (top) verticalAlignValue() {}
+func (unset) alignSelfValue() {}
 
-const TextTop textTop = 0
+func (initial) alignSelfValue() {}
 
-type textTop byte
+func (inherit) alignSelfValue() {}
 
-func (textTop) String() string      { return "text-top" }
-func (textTop) verticalAlignValue() {}
+type breakvalueType string
 
-const TextBottom textBottom = 0
+func (s breakvalueType) String() string { return string(s) }
+func (breakvalueType) breakValue()      {}
 
-type textBottom byte
+func (unset) breakValue() {}
 
-func (textBottom) String() string      { return "text-bottom" }
-func (textBottom) verticalAlignValue() {}
+func (initial) breakValue() {}
 
-const Super super = 0
+func (inherit) breakValue() {}
 
-type super byte
+const Normal normal = 0
 
-func (super) String() string      { return "super" }
-func (super) verticalAlignValue() {}
+type normal byte
 
-const Sub sub = 0
+func (normal) String() string  { return "normal" }
+func (normal) wordBreakValue() {}
 
-type sub byte
+const KeepAll keepAll = 0
 
-func (sub) String() string      { return "sub" }
-func (sub) verticalAlignValue() {}
+type keepAll byte
 
-const Middle middle = 0
+func (keepAll) String() string  { return "keep-all" }
+func (keepAll) wordBreakValue() {}
 
-type middle byte
+const BreakAll breakAll = 0
 
-func (middle) String() string      { return "middle" }
-func (middle) verticalAlignValue() {}
+type breakAll byte
 
-func (bottom) verticalAlignValue() {}
+func (breakAll) String() string  { return "break-all" }
+func (breakAll) wordBreakValue() {}
 
-func (unitType) verticalAlignValue() {}
+func (unset) wordBreakValue() {}
 
-func (unset) verticalAlignValue() {}
+func (initial) wordBreakValue() {}
 
-func (initial) verticalAlignValue() {}
-
-func (inherit) verticalAlignValue() {}
-
-func (unset) boxValue() {}
-
-func (initial) boxValue() {}
-
-func (inherit) boxValue() {}
+func (inherit) wordBreakValue() {}
 
 func (none) borderStyleValue() {}
 
@@ -522,6 +377,11 @@ type inset byte
 func (inset) String() string    { return "inset" }
 func (inset) borderStyleValue() {}
 
+const Hidden hidden = 0
+
+type hidden byte
+
+func (hidden) String() string    { return "hidden" }
 func (hidden) borderStyleValue() {}
 
 const Groove groove = 0
@@ -552,93 +412,11 @@ type dashed byte
 func (dashed) String() string    { return "dashed" }
 func (dashed) borderStyleValue() {}
 
-func (auto) integerOrAutoValue() {}
+func (unset) borderStyleValue() {}
 
-func (integerType) integerOrAutoValue() {}
+func (initial) borderStyleValue() {}
 
-func (unset) integerOrAutoValue() {}
-
-func (initial) integerOrAutoValue() {}
-
-func (inherit) integerOrAutoValue() {}
-
-func (unset) unitAndUnitValue() {}
-
-func (initial) unitAndUnitValue() {}
-
-func (inherit) unitAndUnitValue() {}
-
-func (unset) borderLeftValue() {}
-
-func (initial) borderLeftValue() {}
-
-func (inherit) borderLeftValue() {}
-
-const Invert invert = 0
-
-type invert byte
-
-func (invert) String() string { return "invert" }
-func (invert) colorValue()    {}
-
-func (unset) colorValue() {}
-
-func (initial) colorValue() {}
-
-func (inherit) colorValue() {}
-
-func (auto) textJustifyValue() {}
-
-func (none) textJustifyValue() {}
-
-const InterWord interWord = 0
-
-type interWord byte
-
-func (interWord) String() string    { return "inter-word" }
-func (interWord) textJustifyValue() {}
-
-const Distribute distribute = 0
-
-type distribute byte
-
-func (distribute) String() string    { return "distribute" }
-func (distribute) textJustifyValue() {}
-
-func (unset) textJustifyValue() {}
-
-func (initial) textJustifyValue() {}
-
-func (inherit) textJustifyValue() {}
-
-func (auto) breakInsideValue() {}
-
-const AvoidPage avoidPage = 0
-
-type avoidPage byte
-
-func (avoidPage) String() string    { return "avoid-page" }
-func (avoidPage) breakInsideValue() {}
-
-const AvoidColumn avoidColumn = 0
-
-type avoidColumn byte
-
-func (avoidColumn) String() string    { return "avoid-column" }
-func (avoidColumn) breakInsideValue() {}
-
-const Avoid avoid = 0
-
-type avoid byte
-
-func (avoid) String() string    { return "avoid" }
-func (avoid) breakInsideValue() {}
-
-func (unset) breakInsideValue() {}
-
-func (initial) breakInsideValue() {}
-
-func (inherit) breakInsideValue() {}
+func (inherit) borderStyleValue() {}
 
 func (none) clearValue() {}
 
@@ -659,63 +437,60 @@ func (initial) clearValue() {}
 
 func (inherit) clearValue() {}
 
-func (none) nameValue() {}
-
-func (unset) nameValue() {}
-
-func (initial) nameValue() {}
-
-func (inherit) nameValue() {}
-
-const Running running = 0
-
-type running byte
-
-func (running) String() string           { return "running" }
-func (running) animationPlayStateValue() {}
-
-const Paused paused = 0
-
-type paused byte
-
-func (paused) String() string           { return "paused" }
-func (paused) animationPlayStateValue() {}
-
-func (unset) animationPlayStateValue() {}
-
-func (initial) animationPlayStateValue() {}
-
-func (inherit) animationPlayStateValue() {}
-
-const Transparent transparent = 0
-
-type transparent byte
-
-func (transparent) String() string { return "transparent" }
-func (transparent) colorValue()    {}
-
-func (medium) thicknessValue() {}
-
-func (thin) thicknessValue() {}
-
-func (thick) thicknessValue() {}
-
-func (lengthType) thicknessValue() {}
-
-func (zero) thicknessValue() {}
-
-func (unset) thicknessValue() {}
-
-func (initial) thicknessValue() {}
-
-func (inherit) thicknessValue() {}
+func (auto) columnWidthValue() {}
 
 const Length length = 0
 
 type length byte
 
-func (length) String() string   { return "length" }
-func (length) unitOrAutoValue() {}
+func (length) String() string    { return "length" }
+func (length) columnWidthValue() {}
+
+func (unset) columnWidthValue() {}
+
+func (initial) columnWidthValue() {}
+
+func (inherit) columnWidthValue() {}
+
+const Ltr ltr = 0
+
+type ltr byte
+
+func (ltr) String() string  { return "ltr" }
+func (ltr) directionValue() {}
+
+const Rtl rtl = 0
+
+type rtl byte
+
+func (rtl) String() string  { return "rtl" }
+func (rtl) directionValue() {}
+
+func (unset) directionValue() {}
+
+func (initial) directionValue() {}
+
+func (inherit) directionValue() {}
+
+func (normal) fontVariantEastAsianValue() {}
+
+func (unset) fontVariantEastAsianValue() {}
+
+func (initial) fontVariantEastAsianValue() {}
+
+func (inherit) fontVariantEastAsianValue() {}
+
+func (unset) borderRadiusValue() {}
+
+func (initial) borderRadiusValue() {}
+
+func (inherit) borderRadiusValue() {}
+
+func (unset) colorValue() {}
+
+func (initial) colorValue() {}
+
+func (inherit) colorValue() {}
 
 type gridstopType string
 
@@ -728,34 +503,187 @@ func (initial) gridStopValue() {}
 
 func (inherit) gridStopValue() {}
 
-func (none) gridTemplateAreasValue() {}
+func (auto) marginValue() {}
 
-func (unset) gridTemplateAreasValue() {}
+func (unitType) marginValue() {}
 
-func (initial) gridTemplateAreasValue() {}
+func (zero) marginValue() {}
 
-func (inherit) gridTemplateAreasValue() {}
+func (unset) marginValue() {}
 
-func (solid) textDecorationStyleValue() {}
+func (initial) marginValue() {}
 
-const Wavy wavy = 0
+func (inherit) marginValue() {}
 
-type wavy byte
+func (stretch) alignContentValue() {}
 
-func (wavy) String() string            { return "wavy" }
-func (wavy) textDecorationStyleValue() {}
+const SpaceBetween spaceBetween = 0
 
-func (double) textDecorationStyleValue() {}
+type spaceBetween byte
 
-func (dotted) textDecorationStyleValue() {}
+func (spaceBetween) String() string     { return "space-between" }
+func (spaceBetween) alignContentValue() {}
 
-func (dashed) textDecorationStyleValue() {}
+const SpaceAround spaceAround = 0
 
-func (unset) textDecorationStyleValue() {}
+type spaceAround byte
 
-func (initial) textDecorationStyleValue() {}
+func (spaceAround) String() string     { return "space-around" }
+func (spaceAround) alignContentValue() {}
 
-func (inherit) textDecorationStyleValue() {}
+const SpaceEvenly spaceEvenly = 0
+
+type spaceEvenly byte
+
+func (spaceEvenly) String() string     { return "space-evenly" }
+func (spaceEvenly) alignContentValue() {}
+
+func (flexStart) alignContentValue() {}
+
+func (flexEnd) alignContentValue() {}
+
+func (center) alignContentValue() {}
+
+func (unset) alignContentValue() {}
+
+func (initial) alignContentValue() {}
+
+func (inherit) alignContentValue() {}
+
+type timeType string
+
+func (s timeType) String() string { return string(s) }
+func (timeType) durationValue()   {}
+
+func (unset) durationValue() {}
+
+func (initial) durationValue() {}
+
+func (inherit) durationValue() {}
+
+func (normal) fontWeightValue() {}
+
+const Lighter lighter = 0
+
+type lighter byte
+
+func (lighter) String() string   { return "lighter" }
+func (lighter) fontWeightValue() {}
+
+const Bolder bolder = 0
+
+type bolder byte
+
+func (bolder) String() string   { return "bolder" }
+func (bolder) fontWeightValue() {}
+
+const Bold bold = 0
+
+type bold byte
+
+func (bold) String() string   { return "bold" }
+func (bold) fontWeightValue() {}
+
+type integerType string
+
+func (s integerType) String() string { return string(s) }
+func (integerType) fontWeightValue() {}
+
+func (unset) fontWeightValue() {}
+
+func (initial) fontWeightValue() {}
+
+func (inherit) fontWeightValue() {}
+
+func (auto) pointerEventsValue() {}
+
+func (none) pointerEventsValue() {}
+
+func (unset) pointerEventsValue() {}
+
+func (initial) pointerEventsValue() {}
+
+func (inherit) pointerEventsValue() {}
+
+func (none) shadowValue() {}
+
+const Shadow shadow = 0
+
+type shadow byte
+
+func (shadow) String() string { return "shadow" }
+func (shadow) shadowValue()   {}
+
+func (unset) shadowValue() {}
+
+func (initial) shadowValue() {}
+
+func (inherit) shadowValue() {}
+
+const Visible visible = 0
+
+type visible byte
+
+func (visible) String() string   { return "visible" }
+func (visible) visibilityValue() {}
+
+func (hidden) visibilityValue() {}
+
+const Collapse collapse = 0
+
+type collapse byte
+
+func (collapse) String() string   { return "collapse" }
+func (collapse) visibilityValue() {}
+
+func (unset) visibilityValue() {}
+
+func (initial) visibilityValue() {}
+
+func (inherit) visibilityValue() {}
+
+func (integerType) widowsValue() {}
+
+func (unset) widowsValue() {}
+
+func (initial) widowsValue() {}
+
+func (inherit) widowsValue() {}
+
+func (none) gridTemplateValue() {}
+
+type gridautoType string
+
+func (s gridautoType) String() string   { return string(s) }
+func (gridautoType) gridTemplateValue() {}
+
+func (none) unitOrNoneValue() {}
+
+func (unitType) unitOrNoneValue() {}
+
+func (unset) unitOrNoneValue() {}
+
+func (initial) unitOrNoneValue() {}
+
+func (inherit) unitOrNoneValue() {}
+
+type timingfunctionType string
+
+func (s timingfunctionType) String() string              { return string(s) }
+func (timingfunctionType) animationTimingFunctionValue() {}
+
+func (unset) animationTimingFunctionValue() {}
+
+func (initial) animationTimingFunctionValue() {}
+
+func (inherit) animationTimingFunctionValue() {}
+
+const Transparent transparent = 0
+
+type transparent byte
+
+func (transparent) String() string { return "transparent" }
+func (transparent) colorValue()    {}
 
 const CurrentColor currentColor = 0
 
@@ -764,272 +692,57 @@ type currentColor byte
 func (currentColor) String() string { return "currentColor" }
 func (currentColor) colorValue()    {}
 
-const Inline inline = 0
+func (none) fontSizeAdjustValue() {}
 
-type inline byte
+func (numberType) fontSizeAdjustValue() {}
 
-func (inline) String() string { return "inline" }
-func (inline) displayValue()  {}
+func (unset) fontSizeAdjustValue() {}
 
-const TableRowGroup tableRowGroup = 0
+func (initial) fontSizeAdjustValue() {}
 
-type tableRowGroup byte
+func (inherit) fontSizeAdjustValue() {}
 
-func (tableRowGroup) String() string { return "table-row-group" }
-func (tableRowGroup) displayValue()  {}
+func (auto) columnCountValue() {}
 
-const TableRow tableRow = 0
+func (integerType) columnCountValue() {}
 
-type tableRow byte
+func (unset) columnCountValue() {}
 
-func (tableRow) String() string { return "table-row" }
-func (tableRow) displayValue()  {}
+func (initial) columnCountValue() {}
 
-const TableHeaderGroup tableHeaderGroup = 0
+func (inherit) columnCountValue() {}
 
-type tableHeaderGroup byte
+func (boxType) backgroundOriginValue() {}
 
-func (tableHeaderGroup) String() string { return "table-header-group" }
-func (tableHeaderGroup) displayValue()  {}
+func (unset) backgroundOriginValue() {}
 
-const TableFooterGroup tableFooterGroup = 0
+func (initial) backgroundOriginValue() {}
 
-type tableFooterGroup byte
+func (inherit) backgroundOriginValue() {}
 
-func (tableFooterGroup) String() string { return "table-footer-group" }
-func (tableFooterGroup) displayValue()  {}
+func (normal) fontVariantLigaturesValue() {}
 
-const TableColumnGroup tableColumnGroup = 0
+func (none) fontVariantLigaturesValue() {}
 
-type tableColumnGroup byte
+func (unset) fontVariantLigaturesValue() {}
 
-func (tableColumnGroup) String() string { return "table-column-group" }
-func (tableColumnGroup) displayValue()  {}
+func (initial) fontVariantLigaturesValue() {}
 
-const TableColumn tableColumn = 0
+func (inherit) fontVariantLigaturesValue() {}
 
-type tableColumn byte
+func (unset) outlineValue() {}
 
-func (tableColumn) String() string { return "table-column" }
-func (tableColumn) displayValue()  {}
+func (initial) outlineValue() {}
 
-const TableCell tableCell = 0
+func (inherit) outlineValue() {}
 
-type tableCell byte
+func (zero) unitValue() {}
 
-func (tableCell) String() string { return "table-cell" }
-func (tableCell) displayValue()  {}
+func (unset) unitValue() {}
 
-const TableCaption tableCaption = 0
+func (initial) unitValue() {}
 
-type tableCaption byte
-
-func (tableCaption) String() string { return "table-caption" }
-func (tableCaption) displayValue()  {}
-
-const Table table = 0
-
-type table byte
-
-func (table) String() string { return "table" }
-func (table) displayValue()  {}
-
-const RunIn runIn = 0
-
-type runIn byte
-
-func (runIn) String() string { return "run-in" }
-func (runIn) displayValue()  {}
-
-func (none) displayValue() {}
-
-const ListItem listItem = 0
-
-type listItem byte
-
-func (listItem) String() string { return "list-item" }
-func (listItem) displayValue()  {}
-
-const InlineTable inlineTable = 0
-
-type inlineTable byte
-
-func (inlineTable) String() string { return "inline-table" }
-func (inlineTable) displayValue()  {}
-
-const InlineFlex inlineFlex = 0
-
-type inlineFlex byte
-
-func (inlineFlex) String() string { return "inline-flex" }
-func (inlineFlex) displayValue()  {}
-
-const InlineBlock inlineBlock = 0
-
-type inlineBlock byte
-
-func (inlineBlock) String() string { return "inline-block" }
-func (inlineBlock) displayValue()  {}
-
-const Flex flex = 0
-
-type flex byte
-
-func (flex) String() string { return "flex" }
-func (flex) displayValue()  {}
-
-const Container container = 0
-
-type container byte
-
-func (container) String() string { return "container" }
-func (container) displayValue()  {}
-
-const Compact compact = 0
-
-type compact byte
-
-func (compact) String() string { return "compact" }
-func (compact) displayValue()  {}
-
-const Block block = 0
-
-type block byte
-
-func (block) String() string { return "block" }
-func (block) displayValue()  {}
-
-func (unset) displayValue() {}
-
-func (initial) displayValue() {}
-
-func (inherit) displayValue() {}
-
-func (auto) textAlignLastValue() {}
-
-const Start start = 0
-
-type start byte
-
-func (start) String() string      { return "start" }
-func (start) textAlignLastValue() {}
-
-func (right) textAlignLastValue() {}
-
-func (left) textAlignLastValue() {}
-
-const Justify justify = 0
-
-type justify byte
-
-func (justify) String() string      { return "justify" }
-func (justify) textAlignLastValue() {}
-
-const End end = 0
-
-type end byte
-
-func (end) String() string      { return "end" }
-func (end) textAlignLastValue() {}
-
-const Center center = 0
-
-type center byte
-
-func (center) String() string      { return "center" }
-func (center) textAlignLastValue() {}
-
-func (unset) textAlignLastValue() {}
-
-func (initial) textAlignLastValue() {}
-
-func (inherit) textAlignLastValue() {}
-
-func (integerType) orderValue() {}
-
-func (unset) orderValue() {}
-
-func (initial) orderValue() {}
-
-func (inherit) orderValue() {}
-
-const Show show = 0
-
-type show byte
-
-func (show) String() string   { return "show" }
-func (show) emptyCellsValue() {}
-
-const Hide hide = 0
-
-type hide byte
-
-func (hide) String() string   { return "hide" }
-func (hide) emptyCellsValue() {}
-
-func (unset) emptyCellsValue() {}
-
-func (initial) emptyCellsValue() {}
-
-func (inherit) emptyCellsValue() {}
-
-func (lengthType) numberValue() {}
-
-func (integerType) numberValue() {}
-
-func (unset) numberValue() {}
-
-func (initial) numberValue() {}
-
-func (inherit) numberValue() {}
-
-const Seperate seperate = 0
-
-type seperate byte
-
-func (seperate) String() string       { return "seperate" }
-func (seperate) borderCollapseValue() {}
-
-const Collapse collapse = 0
-
-type collapse byte
-
-func (collapse) String() string       { return "collapse" }
-func (collapse) borderCollapseValue() {}
-
-func (unset) borderCollapseValue() {}
-
-func (initial) borderCollapseValue() {}
-
-func (inherit) borderCollapseValue() {}
-
-const Maunal maunal = 0
-
-type maunal byte
-
-func (maunal) String() string { return "maunal" }
-func (maunal) hyphensValue()  {}
-
-func (none) hyphensValue() {}
-
-func (auto) hyphensValue() {}
-
-func (unset) hyphensValue() {}
-
-func (initial) hyphensValue() {}
-
-func (inherit) hyphensValue() {}
-
-type timeType string
-
-func (s timeType) String() string         { return string(s) }
-func (timeType) transitionDurationValue() {}
-
-func (unset) transitionDurationValue() {}
-
-func (initial) transitionDurationValue() {}
-
-func (inherit) transitionDurationValue() {}
+func (inherit) unitValue() {}
 
 func (normal) uintValue() {}
 
@@ -1054,1016 +767,28 @@ type pre byte
 func (pre) String() string { return "pre" }
 func (pre) uintValue()     {}
 
-const Nowrap nowrap = 0
+func (nowrap) uintValue() {}
 
-type nowrap byte
+func (unset) uintValue() {}
 
-func (nowrap) String() string { return "nowrap" }
-func (nowrap) uintValue()     {}
+func (initial) uintValue() {}
 
-func (auto) alignSelfValue() {}
+func (inherit) uintValue() {}
 
-const Stretch stretch = 0
+const Seperate seperate = 0
 
-type stretch byte
+type seperate byte
 
-func (stretch) String() string  { return "stretch" }
-func (stretch) alignSelfValue() {}
+func (seperate) String() string       { return "seperate" }
+func (seperate) borderCollapseValue() {}
 
-const FlexStart flexStart = 0
+func (collapse) borderCollapseValue() {}
 
-type flexStart byte
+func (unset) borderCollapseValue() {}
 
-func (flexStart) String() string  { return "flex-start" }
-func (flexStart) alignSelfValue() {}
+func (initial) borderCollapseValue() {}
 
-const FlexEnd flexEnd = 0
-
-type flexEnd byte
-
-func (flexEnd) String() string  { return "flex-end" }
-func (flexEnd) alignSelfValue() {}
-
-func (center) alignSelfValue() {}
-
-func (baseline) alignSelfValue() {}
-
-func (unset) alignSelfValue() {}
-
-func (initial) alignSelfValue() {}
-
-func (inherit) alignSelfValue() {}
-
-func (unset) borderImageValue() {}
-
-func (initial) borderImageValue() {}
-
-func (inherit) borderImageValue() {}
-
-func (unset) borderImageSliceValue() {}
-
-func (initial) borderImageSliceValue() {}
-
-func (inherit) borderImageSliceValue() {}
-
-func (auto) fontDisplayValue() {}
-
-func (block) fontDisplayValue() {}
-
-const Swap swap = 0
-
-type swap byte
-
-func (swap) String() string    { return "swap" }
-func (swap) fontDisplayValue() {}
-
-const Fallback fallback = 0
-
-type fallback byte
-
-func (fallback) String() string    { return "fallback" }
-func (fallback) fontDisplayValue() {}
-
-const Optional optional = 0
-
-type optional byte
-
-func (optional) String() string    { return "optional" }
-func (optional) fontDisplayValue() {}
-
-func (unset) fontDisplayValue() {}
-
-func (initial) fontDisplayValue() {}
-
-func (inherit) fontDisplayValue() {}
-
-func (flexStart) justifyContentValue() {}
-
-const SpaceBetween spaceBetween = 0
-
-type spaceBetween byte
-
-func (spaceBetween) String() string       { return "space-between" }
-func (spaceBetween) justifyContentValue() {}
-
-const SpaceAround spaceAround = 0
-
-type spaceAround byte
-
-func (spaceAround) String() string       { return "space-around" }
-func (spaceAround) justifyContentValue() {}
-
-func (flexEnd) justifyContentValue() {}
-
-func (center) justifyContentValue() {}
-
-func (unset) justifyContentValue() {}
-
-func (initial) justifyContentValue() {}
-
-func (inherit) justifyContentValue() {}
-
-func (stretch) alignContentValue() {}
-
-func (spaceBetween) alignContentValue() {}
-
-func (spaceAround) alignContentValue() {}
-
-func (flexStart) alignContentValue() {}
-
-func (flexEnd) alignContentValue() {}
-
-func (center) alignContentValue() {}
-
-func (unset) alignContentValue() {}
-
-func (initial) alignContentValue() {}
-
-func (inherit) alignContentValue() {}
-
-const Slice slice = 0
-
-type slice byte
-
-func (slice) String() string           { return "slice" }
-func (slice) boxDecorationBreakValue() {}
-
-const Clone clone = 0
-
-type clone byte
-
-func (clone) String() string           { return "clone" }
-func (clone) boxDecorationBreakValue() {}
-
-func (unset) boxDecorationBreakValue() {}
-
-func (initial) boxDecorationBreakValue() {}
-
-func (inherit) boxDecorationBreakValue() {}
-
-func (unset) gridGapValue() {}
-
-func (initial) gridGapValue() {}
-
-func (inherit) gridGapValue() {}
-
-func (none) hangingPunctuationValue() {}
-
-const Last last = 0
-
-type last byte
-
-func (last) String() string           { return "last" }
-func (last) hangingPunctuationValue() {}
-
-const ForceEnd forceEnd = 0
-
-type forceEnd byte
-
-func (forceEnd) String() string           { return "force-end" }
-func (forceEnd) hangingPunctuationValue() {}
-
-const First first = 0
-
-type first byte
-
-func (first) String() string           { return "first" }
-func (first) hangingPunctuationValue() {}
-
-const AllowEnd allowEnd = 0
-
-type allowEnd byte
-
-func (allowEnd) String() string           { return "allow-end" }
-func (allowEnd) hangingPunctuationValue() {}
-
-func (unset) hangingPunctuationValue() {}
-
-func (initial) hangingPunctuationValue() {}
-
-func (inherit) hangingPunctuationValue() {}
-
-func (normal) contentValue() {}
-
-const OpenQuote openQuote = 0
-
-type openQuote byte
-
-func (openQuote) String() string { return "open-quote" }
-func (openQuote) contentValue()  {}
-
-func (none) contentValue() {}
-
-const NoOpenQuote noOpenQuote = 0
-
-type noOpenQuote byte
-
-func (noOpenQuote) String() string { return "no-open-quote" }
-func (noOpenQuote) contentValue()  {}
-
-const NoCloseQuote noCloseQuote = 0
-
-type noCloseQuote byte
-
-func (noCloseQuote) String() string { return "no-close-quote" }
-func (noCloseQuote) contentValue()  {}
-
-const Icon icon = 0
-
-type icon byte
-
-func (icon) String() string { return "icon" }
-func (icon) contentValue()  {}
-
-const CloseQuote closeQuote = 0
-
-type closeQuote byte
-
-func (closeQuote) String() string { return "close-quote" }
-func (closeQuote) contentValue()  {}
-
-func (urlType) contentValue() {}
-
-type stringType string
-
-func (s stringType) String() string { return string(s) }
-func (stringType) contentValue()    {}
-
-type counterType string
-
-func (s counterType) String() string { return string(s) }
-func (counterType) contentValue()    {}
-
-func (unset) contentValue() {}
-
-func (initial) contentValue() {}
-
-func (inherit) contentValue() {}
-
-func (normal) mixBlendModeValue() {}
-
-const SoftLight softLight = 0
-
-type softLight byte
-
-func (softLight) String() string     { return "soft-light" }
-func (softLight) mixBlendModeValue() {}
-
-const Screen screen = 0
-
-type screen byte
-
-func (screen) String() string     { return "screen" }
-func (screen) mixBlendModeValue() {}
-
-const Saturation saturation = 0
-
-type saturation byte
-
-func (saturation) String() string     { return "saturation" }
-func (saturation) mixBlendModeValue() {}
-
-const Overlay overlay = 0
-
-type overlay byte
-
-func (overlay) String() string     { return "overlay" }
-func (overlay) mixBlendModeValue() {}
-
-const Multiply multiply = 0
-
-type multiply byte
-
-func (multiply) String() string     { return "multiply" }
-func (multiply) mixBlendModeValue() {}
-
-const Luminosity luminosity = 0
-
-type luminosity byte
-
-func (luminosity) String() string     { return "luminosity" }
-func (luminosity) mixBlendModeValue() {}
-
-const Lighten lighten = 0
-
-type lighten byte
-
-func (lighten) String() string     { return "lighten" }
-func (lighten) mixBlendModeValue() {}
-
-const Hue hue = 0
-
-type hue byte
-
-func (hue) String() string     { return "hue" }
-func (hue) mixBlendModeValue() {}
-
-const HardLight hardLight = 0
-
-type hardLight byte
-
-func (hardLight) String() string     { return "hard-light" }
-func (hardLight) mixBlendModeValue() {}
-
-const Exclusion exclusion = 0
-
-type exclusion byte
-
-func (exclusion) String() string     { return "exclusion" }
-func (exclusion) mixBlendModeValue() {}
-
-const Difference difference = 0
-
-type difference byte
-
-func (difference) String() string     { return "difference" }
-func (difference) mixBlendModeValue() {}
-
-const Darken darken = 0
-
-type darken byte
-
-func (darken) String() string     { return "darken" }
-func (darken) mixBlendModeValue() {}
-
-const ColorDodge colorDodge = 0
-
-type colorDodge byte
-
-func (colorDodge) String() string     { return "color-dodge" }
-func (colorDodge) mixBlendModeValue() {}
-
-const ColorBurn colorBurn = 0
-
-type colorBurn byte
-
-func (colorBurn) String() string     { return "color-burn" }
-func (colorBurn) mixBlendModeValue() {}
-
-const Color color = 0
-
-type color byte
-
-func (color) String() string     { return "color" }
-func (color) mixBlendModeValue() {}
-
-func (unset) mixBlendModeValue() {}
-
-func (initial) mixBlendModeValue() {}
-
-func (inherit) mixBlendModeValue() {}
-
-func (unset) borderRadiusValue() {}
-
-func (initial) borderRadiusValue() {}
-
-func (inherit) borderRadiusValue() {}
-
-func (auto) columnWidthValue() {}
-
-func (length) columnWidthValue() {}
-
-func (unset) columnWidthValue() {}
-
-func (initial) columnWidthValue() {}
-
-func (inherit) columnWidthValue() {}
-
-const Row row = 0
-
-type row byte
-
-func (row) String() string      { return "row" }
-func (row) flexDirectionValue() {}
-
-const RowReverse rowReverse = 0
-
-type rowReverse byte
-
-func (rowReverse) String() string      { return "row-reverse" }
-func (rowReverse) flexDirectionValue() {}
-
-const ColumnReverse columnReverse = 0
-
-type columnReverse byte
-
-func (columnReverse) String() string      { return "column-reverse" }
-func (columnReverse) flexDirectionValue() {}
-
-const Column column = 0
-
-type column byte
-
-func (column) String() string      { return "column" }
-func (column) flexDirectionValue() {}
-
-func (unset) flexDirectionValue() {}
-
-func (initial) flexDirectionValue() {}
-
-func (inherit) flexDirectionValue() {}
-
-func (auto) isolationValue() {}
-
-const Isolate isolate = 0
-
-type isolate byte
-
-func (isolate) String() string  { return "isolate" }
-func (isolate) isolationValue() {}
-
-func (unset) isolationValue() {}
-
-func (initial) isolationValue() {}
-
-func (inherit) isolationValue() {}
-
-func (none) unitOrNoneValue() {}
-
-func (lengthType) unitOrNoneValue() {}
-
-func (unset) unitOrNoneValue() {}
-
-func (initial) unitOrNoneValue() {}
-
-func (inherit) unitOrNoneValue() {}
-
-func (timeType) transitionDelayValue() {}
-
-func (unset) transitionDelayValue() {}
-
-func (initial) transitionDelayValue() {}
-
-func (inherit) transitionDelayValue() {}
-
-func (normal) fontVariantPositionValue() {}
-
-func (sub) fontVariantPositionValue() {}
-
-func (super) fontVariantPositionValue() {}
-
-func (unset) fontVariantPositionValue() {}
-
-func (initial) fontVariantPositionValue() {}
-
-func (inherit) fontVariantPositionValue() {}
-
-func (unitType) unitOrNoneValue() {}
-
-func (unset) textDecorationValue() {}
-
-func (initial) textDecorationValue() {}
-
-func (inherit) textDecorationValue() {}
-
-func (normal) wordWrapValue() {}
-
-const BreakWord breakWord = 0
-
-type breakWord byte
-
-func (breakWord) String() string { return "break-word" }
-func (breakWord) wordWrapValue() {}
-
-func (unset) wordWrapValue() {}
-
-func (initial) wordWrapValue() {}
-
-func (inherit) wordWrapValue() {}
-
-const Fill fill = 0
-
-type fill byte
-
-func (fill) String() string  { return "fill" }
-func (fill) objectFitValue() {}
-
-const ScaleDown scaleDown = 0
-
-type scaleDown byte
-
-func (scaleDown) String() string  { return "scale-down" }
-func (scaleDown) objectFitValue() {}
-
-func (none) objectFitValue() {}
-
-const Cover cover = 0
-
-type cover byte
-
-func (cover) String() string  { return "cover" }
-func (cover) objectFitValue() {}
-
-const Contain contain = 0
-
-type contain byte
-
-func (contain) String() string  { return "contain" }
-func (contain) objectFitValue() {}
-
-func (unset) objectFitValue() {}
-
-func (initial) objectFitValue() {}
-
-func (inherit) objectFitValue() {}
-
-type pagebreakType string
-
-func (s pagebreakType) String() string { return string(s) }
-func (pagebreakType) pageBreakValue()  {}
-
-func (unset) pageBreakValue() {}
-
-func (initial) pageBreakValue() {}
-
-func (inherit) pageBreakValue() {}
-
-func (nowrap) flexWrapValue() {}
-
-const Wrap wrap = 0
-
-type wrap byte
-
-func (wrap) String() string { return "wrap" }
-func (wrap) flexWrapValue() {}
-
-const WrapReverse wrapReverse = 0
-
-type wrapReverse byte
-
-func (wrapReverse) String() string { return "wrap-reverse" }
-func (wrapReverse) flexWrapValue() {}
-
-func (unset) flexWrapValue() {}
-
-func (initial) flexWrapValue() {}
-
-func (inherit) flexWrapValue() {}
-
-func (none) fontSizeAdjustValue() {}
-
-func (numberType) fontSizeAdjustValue() {}
-
-func (unset) fontSizeAdjustValue() {}
-
-func (initial) fontSizeAdjustValue() {}
-
-func (inherit) fontSizeAdjustValue() {}
-
-func (none) animationFillModeValue() {}
-
-const Forwards forwards = 0
-
-type forwards byte
-
-func (forwards) String() string          { return "forwards" }
-func (forwards) animationFillModeValue() {}
-
-func (both) animationFillModeValue() {}
-
-const Backwards backwards = 0
-
-type backwards byte
-
-func (backwards) String() string          { return "backwards" }
-func (backwards) animationFillModeValue() {}
-
-func (unset) animationFillModeValue() {}
-
-func (initial) animationFillModeValue() {}
-
-func (inherit) animationFillModeValue() {}
-
-func (boxType) backgroundOriginValue() {}
-
-func (unset) backgroundOriginValue() {}
-
-func (initial) backgroundOriginValue() {}
-
-func (inherit) backgroundOriginValue() {}
-
-func (unset) fontValue() {}
-
-func (initial) fontValue() {}
-
-func (inherit) fontValue() {}
-
-func (zero) paddingValue() {}
-
-func (unset) paddingValue() {}
-
-func (initial) paddingValue() {}
-
-func (inherit) paddingValue() {}
-
-func (none) filterValue() {}
-
-type filterModeType string
-
-func (s filterModeType) String() string { return string(s) }
-func (filterModeType) filterValue()     {}
-
-func (urlType) filterValue() {}
-
-func (unset) filterValue() {}
-
-func (initial) filterValue() {}
-
-func (inherit) filterValue() {}
-
-func (unset) transitionValue() {}
-
-func (initial) transitionValue() {}
-
-func (inherit) transitionValue() {}
-
-func (unset) transitionTimingFunctionValue() {}
-
-func (initial) transitionTimingFunctionValue() {}
-
-func (inherit) transitionTimingFunctionValue() {}
-
-func (transparent) sizeValue() {}
-
-func (colorType) sizeValue() {}
-
-func (currentColor) sizeValue() {}
-
-func (unset) gridValue() {}
-
-func (initial) gridValue() {}
-
-func (inherit) gridValue() {}
-
-func (auto) pageBreakInsideValue() {}
-
-func (avoid) pageBreakInsideValue() {}
-
-func (unset) pageBreakInsideValue() {}
-
-func (initial) pageBreakInsideValue() {}
-
-func (inherit) pageBreakInsideValue() {}
-
-func (integerType) widowsValue() {}
-
-func (unset) widowsValue() {}
-
-func (initial) widowsValue() {}
-
-func (inherit) widowsValue() {}
-
-func (unset) columnRuleValue() {}
-
-func (initial) columnRuleValue() {}
-
-func (inherit) columnRuleValue() {}
-
-func (normal) normalOrUnitOrAutoValue() {}
-
-func (lengthType) normalOrUnitOrAutoValue() {}
-
-func (unset) normalOrUnitOrAutoValue() {}
-
-func (initial) normalOrUnitOrAutoValue() {}
-
-func (inherit) normalOrUnitOrAutoValue() {}
-
-func (normal) overflowWrapValue() {}
-
-func (breakWord) overflowWrapValue() {}
-
-func (unset) overflowWrapValue() {}
-
-func (initial) overflowWrapValue() {}
-
-func (inherit) overflowWrapValue() {}
-
-func (none) shadowValue() {}
-
-const Shadow shadow = 0
-
-type shadow byte
-
-func (shadow) String() string { return "shadow" }
-func (shadow) shadowValue()   {}
-
-func (unset) shadowValue() {}
-
-func (initial) shadowValue() {}
-
-func (inherit) shadowValue() {}
-
-func (none) transformValue() {}
-
-type transformationType string
-
-func (s transformationType) String() string { return string(s) }
-func (transformationType) transformValue()  {}
-
-func (unset) transformValue() {}
-
-func (initial) transformValue() {}
-
-func (inherit) transformValue() {}
-
-func (unset) uintOrUnitValue() {}
-
-func (initial) uintOrUnitValue() {}
-
-func (inherit) uintOrUnitValue() {}
-
-func (normal) columnGapValue() {}
-
-func (lengthType) columnGapValue() {}
-
-func (unset) columnGapValue() {}
-
-func (initial) columnGapValue() {}
-
-func (inherit) columnGapValue() {}
-
-func (auto) normalOrAutoValue() {}
-
-func (normal) normalOrAutoValue() {}
-
-func (none) normalOrAutoValue() {}
-
-func (unset) normalOrAutoValue() {}
-
-func (initial) normalOrAutoValue() {}
-
-func (inherit) normalOrAutoValue() {}
-
-const Repeat repeat = 0
-
-type repeat byte
-
-func (repeat) String() string         { return "repeat" }
-func (repeat) backgroundRepeatValue() {}
-
-const Space space = 0
-
-type space byte
-
-func (space) String() string         { return "space" }
-func (space) backgroundRepeatValue() {}
-
-const Round round = 0
-
-type round byte
-
-func (round) String() string         { return "round" }
-func (round) backgroundRepeatValue() {}
-
-const RepeatY repeatY = 0
-
-type repeatY byte
-
-func (repeatY) String() string         { return "repeat-y" }
-func (repeatY) backgroundRepeatValue() {}
-
-const RepeatX repeatX = 0
-
-type repeatX byte
-
-func (repeatX) String() string         { return "repeat-x" }
-func (repeatX) backgroundRepeatValue() {}
-
-const NoRepeat noRepeat = 0
-
-type noRepeat byte
-
-func (noRepeat) String() string         { return "no-repeat" }
-func (noRepeat) backgroundRepeatValue() {}
-
-func (unset) backgroundRepeatValue() {}
-
-func (initial) backgroundRepeatValue() {}
-
-func (inherit) backgroundRepeatValue() {}
-
-func (stretch) borderImageRepeatValue() {}
-
-func (space) borderImageRepeatValue() {}
-
-func (round) borderImageRepeatValue() {}
-
-func (repeat) borderImageRepeatValue() {}
-
-func (unset) borderImageRepeatValue() {}
-
-func (initial) borderImageRepeatValue() {}
-
-func (inherit) borderImageRepeatValue() {}
-
-type featuretagvalueType string
-
-func (s featuretagvalueType) String() string          { return string(s) }
-func (featuretagvalueType) fontFeatureSettingsValue() {}
-
-func (unset) fontFeatureSettingsValue() {}
-
-func (initial) fontFeatureSettingsValue() {}
-
-func (inherit) fontFeatureSettingsValue() {}
-
-func (normal) fontVariantNumericValue() {}
-
-func (unset) fontVariantNumericValue() {}
-
-func (initial) fontVariantNumericValue() {}
-
-func (inherit) fontVariantNumericValue() {}
-
-func (none) textDecorationLineValue() {}
-
-const Underline underline = 0
-
-type underline byte
-
-func (underline) String() string           { return "underline" }
-func (underline) textDecorationLineValue() {}
-
-const Overline overline = 0
-
-type overline byte
-
-func (overline) String() string           { return "overline" }
-func (overline) textDecorationLineValue() {}
-
-const LineThrough lineThrough = 0
-
-type lineThrough byte
-
-func (lineThrough) String() string           { return "line-through" }
-func (lineThrough) textDecorationLineValue() {}
-
-const Blink blink = 0
-
-type blink byte
-
-func (blink) String() string           { return "blink" }
-func (blink) textDecorationLineValue() {}
-
-func (unset) textDecorationLineValue() {}
-
-func (initial) textDecorationLineValue() {}
-
-func (inherit) textDecorationLineValue() {}
-
-const Clip clip = 0
-
-type clip byte
-
-func (clip) String() string     { return "clip" }
-func (clip) textOverflowValue() {}
-
-const Ellipsis ellipsis = 0
-
-type ellipsis byte
-
-func (ellipsis) String() string     { return "ellipsis" }
-func (ellipsis) textOverflowValue() {}
-
-func (stringType) textOverflowValue() {}
-
-func (unset) textOverflowValue() {}
-
-func (initial) textOverflowValue() {}
-
-func (inherit) textOverflowValue() {}
-
-type gradientType string
-
-func (s gradientType) String() string { return string(s) }
-func (gradientType) imageValue()      {}
-
-func (auto) clipValue() {}
-
-func (unset) clipValue() {}
-
-func (initial) clipValue() {}
-
-func (inherit) clipValue() {}
-
-func (unset) flexValue() {}
-
-func (initial) flexValue() {}
-
-func (inherit) flexValue() {}
-
-const Weight weight = 0
-
-type weight byte
-
-func (weight) String() string      { return "weight" }
-func (weight) fontSynthesisValue() {}
-
-const StyleProperty styleProperty = 0
-
-type styleProperty byte
-
-func (styleProperty) String() string      { return "style" }
-func (styleProperty) fontSynthesisValue() {}
-
-func (none) fontSynthesisValue() {}
-
-func (unset) fontSynthesisValue() {}
-
-func (initial) fontSynthesisValue() {}
-
-func (inherit) fontSynthesisValue() {}
-
-func (start) textAlignValue() {}
-
-func (right) textAlignValue() {}
-
-const MatchParent matchParent = 0
-
-type matchParent byte
-
-func (matchParent) String() string  { return "match-parent" }
-func (matchParent) textAlignValue() {}
-
-func (left) textAlignValue() {}
-
-func (justify) textAlignValue() {}
-
-func (end) textAlignValue() {}
-
-func (center) textAlignValue() {}
-
-func (stringType) textAlignValue() {}
-
-func (unset) textAlignValue() {}
-
-func (initial) textAlignValue() {}
-
-func (inherit) textAlignValue() {}
-
-func (normal) animationDirectionValue() {}
-
-const Reverse reverse = 0
-
-type reverse byte
-
-func (reverse) String() string           { return "reverse" }
-func (reverse) animationDirectionValue() {}
-
-const AlternateReverse alternateReverse = 0
-
-type alternateReverse byte
-
-func (alternateReverse) String() string           { return "alternate-reverse" }
-func (alternateReverse) animationDirectionValue() {}
-
-const Alternate alternate = 0
-
-type alternate byte
-
-func (alternate) String() string           { return "alternate" }
-func (alternate) animationDirectionValue() {}
-
-func (unset) animationDirectionValue() {}
-
-func (initial) animationDirectionValue() {}
-
-func (inherit) animationDirectionValue() {}
-
-func (auto) lineBreakValue() {}
-
-const Strict strict = 0
-
-type strict byte
-
-func (strict) String() string  { return "strict" }
-func (strict) lineBreakValue() {}
-
-func (normal) lineBreakValue() {}
-
-const Loose loose = 0
-
-type loose byte
-
-func (loose) String() string  { return "loose" }
-func (loose) lineBreakValue() {}
-
-func (unset) lineBreakValue() {}
-
-func (initial) lineBreakValue() {}
-
-func (inherit) lineBreakValue() {}
-
-func (auto) pointerEventsValue() {}
-
-func (none) pointerEventsValue() {}
-
-func (unset) pointerEventsValue() {}
-
-func (initial) pointerEventsValue() {}
-
-func (inherit) pointerEventsValue() {}
+func (inherit) borderCollapseValue() {}
 
 func (auto) cursorValue() {}
 
@@ -2102,14 +827,12 @@ type verticalText byte
 func (verticalText) String() string { return "vertical-text" }
 func (verticalText) cursorValue()   {}
 
-func (urlType) cursorValue() {}
+type urlType string
 
-const Text text = 0
+func (s urlType) String() string { return string(s) }
+func (urlType) cursorValue()     {}
 
-type text byte
-
-func (text) String() string { return "text" }
-func (text) cursorValue()   {}
+func (text) cursorValue() {}
 
 const SwResize swResize = 0
 
@@ -2301,295 +1024,6 @@ func (initial) cursorValue() {}
 
 func (inherit) cursorValue() {}
 
-func (unset) gridRowValue() {}
-
-func (initial) gridRowValue() {}
-
-func (inherit) gridRowValue() {}
-
-func (numberType) animationIterationCountValue() {}
-
-const Infinite infinite = 0
-
-type infinite byte
-
-func (infinite) String() string                { return "infinite" }
-func (infinite) animationIterationCountValue() {}
-
-func (unset) animationIterationCountValue() {}
-
-func (initial) animationIterationCountValue() {}
-
-func (inherit) animationIterationCountValue() {}
-
-func (unset) borderTopValue() {}
-
-func (initial) borderTopValue() {}
-
-func (inherit) borderTopValue() {}
-
-func (none) counterIncrementValue() {}
-
-func (unset) counterIncrementValue() {}
-
-func (initial) counterIncrementValue() {}
-
-func (inherit) counterIncrementValue() {}
-
-func (gridautoType) gridAutoValue() {}
-
-func (unset) gridAutoValue() {}
-
-func (initial) gridAutoValue() {}
-
-func (inherit) gridAutoValue() {}
-
-const Mixed mixed = 0
-
-type mixed byte
-
-func (mixed) String() string        { return "mixed" }
-func (mixed) textOrientationValue() {}
-
-const UseGlyphOrientation useGlyphOrientation = 0
-
-type useGlyphOrientation byte
-
-func (useGlyphOrientation) String() string        { return "use-glyph-orientation" }
-func (useGlyphOrientation) textOrientationValue() {}
-
-const Upright upright = 0
-
-type upright byte
-
-func (upright) String() string        { return "upright" }
-func (upright) textOrientationValue() {}
-
-const SidewaysRight sidewaysRight = 0
-
-type sidewaysRight byte
-
-func (sidewaysRight) String() string        { return "sideways-right" }
-func (sidewaysRight) textOrientationValue() {}
-
-const SidewaysLeft sidewaysLeft = 0
-
-type sidewaysLeft byte
-
-func (sidewaysLeft) String() string        { return "sideways-left" }
-func (sidewaysLeft) textOrientationValue() {}
-
-const Sideways sideways = 0
-
-type sideways byte
-
-func (sideways) String() string        { return "sideways" }
-func (sideways) textOrientationValue() {}
-
-func (unset) textOrientationValue() {}
-
-func (initial) textOrientationValue() {}
-
-func (inherit) textOrientationValue() {}
-
-func (stretch) alignItemsValue() {}
-
-func (flexStart) alignItemsValue() {}
-
-func (flexEnd) alignItemsValue() {}
-
-func (center) alignItemsValue() {}
-
-func (baseline) alignItemsValue() {}
-
-func (unset) alignItemsValue() {}
-
-func (initial) alignItemsValue() {}
-
-func (inherit) alignItemsValue() {}
-
-func (none) floatValue() {}
-
-func (left) floatValue() {}
-
-func (right) floatValue() {}
-
-func (unset) floatValue() {}
-
-func (initial) floatValue() {}
-
-func (inherit) floatValue() {}
-
-func (normal) fontLanguageOverrideValue() {}
-
-func (stringType) fontLanguageOverrideValue() {}
-
-func (unset) fontLanguageOverrideValue() {}
-
-func (initial) fontLanguageOverrideValue() {}
-
-func (inherit) fontLanguageOverrideValue() {}
-
-type timingfunctionType string
-
-func (s timingfunctionType) String() string              { return string(s) }
-func (timingfunctionType) animationTimingFunctionValue() {}
-
-func (unset) animationTimingFunctionValue() {}
-
-func (initial) animationTimingFunctionValue() {}
-
-func (inherit) animationTimingFunctionValue() {}
-
-func (visible) backfaceVisibilityValue() {}
-
-func (hidden) backfaceVisibilityValue() {}
-
-func (unset) backfaceVisibilityValue() {}
-
-func (initial) backfaceVisibilityValue() {}
-
-func (inherit) backfaceVisibilityValue() {}
-
-func (normal) wordSpacingValue() {}
-
-func (unitType) wordSpacingValue() {}
-
-func (unset) wordSpacingValue() {}
-
-func (initial) wordSpacingValue() {}
-
-func (inherit) wordSpacingValue() {}
-
-func (normal) backgroundBlendModeValue() {}
-
-func (softLight) backgroundBlendModeValue() {}
-
-func (screen) backgroundBlendModeValue() {}
-
-func (saturation) backgroundBlendModeValue() {}
-
-func (overlay) backgroundBlendModeValue() {}
-
-func (multiply) backgroundBlendModeValue() {}
-
-func (luminosity) backgroundBlendModeValue() {}
-
-func (lighten) backgroundBlendModeValue() {}
-
-func (hue) backgroundBlendModeValue() {}
-
-func (hardLight) backgroundBlendModeValue() {}
-
-func (exclusion) backgroundBlendModeValue() {}
-
-func (difference) backgroundBlendModeValue() {}
-
-func (darken) backgroundBlendModeValue() {}
-
-func (colorDodge) backgroundBlendModeValue() {}
-
-func (colorBurn) backgroundBlendModeValue() {}
-
-func (color) backgroundBlendModeValue() {}
-
-func (unset) backgroundBlendModeValue() {}
-
-func (initial) backgroundBlendModeValue() {}
-
-func (inherit) backgroundBlendModeValue() {}
-
-const Balance balance = 0
-
-type balance byte
-
-func (balance) String() string   { return "balance" }
-func (balance) columnFillValue() {}
-
-func (auto) columnFillValue() {}
-
-func (unset) columnFillValue() {}
-
-func (initial) columnFillValue() {}
-
-func (inherit) columnFillValue() {}
-
-func (unset) columnsValue() {}
-
-func (initial) columnsValue() {}
-
-func (inherit) columnsValue() {}
-
-func (normal) fontStretchValue() {}
-
-const UltraExpanded ultraExpanded = 0
-
-type ultraExpanded byte
-
-func (ultraExpanded) String() string    { return "ultra-expanded" }
-func (ultraExpanded) fontStretchValue() {}
-
-const UltraCondensed ultraCondensed = 0
-
-type ultraCondensed byte
-
-func (ultraCondensed) String() string    { return "ultra-condensed" }
-func (ultraCondensed) fontStretchValue() {}
-
-const SemiExpanded semiExpanded = 0
-
-type semiExpanded byte
-
-func (semiExpanded) String() string    { return "semi-expanded" }
-func (semiExpanded) fontStretchValue() {}
-
-const SemiCondensed semiCondensed = 0
-
-type semiCondensed byte
-
-func (semiCondensed) String() string    { return "semi-condensed" }
-func (semiCondensed) fontStretchValue() {}
-
-const ExtraExpanded extraExpanded = 0
-
-type extraExpanded byte
-
-func (extraExpanded) String() string    { return "extra-expanded" }
-func (extraExpanded) fontStretchValue() {}
-
-const ExtraCondensed extraCondensed = 0
-
-type extraCondensed byte
-
-func (extraCondensed) String() string    { return "extra-condensed" }
-func (extraCondensed) fontStretchValue() {}
-
-const Expanded expanded = 0
-
-type expanded byte
-
-func (expanded) String() string    { return "expanded" }
-func (expanded) fontStretchValue() {}
-
-const Condensed condensed = 0
-
-type condensed byte
-
-func (condensed) String() string    { return "condensed" }
-func (condensed) fontStretchValue() {}
-
-func (unset) fontStretchValue() {}
-
-func (initial) fontStretchValue() {}
-
-func (inherit) fontStretchValue() {}
-
-func (unset) listStyleValue() {}
-
-func (initial) listStyleValue() {}
-
-func (inherit) listStyleValue() {}
-
 const Outside outside = 0
 
 type outside byte
@@ -2610,101 +1044,597 @@ func (initial) listStylePositionValue() {}
 
 func (inherit) listStylePositionValue() {}
 
-func (auto) marginValue() {}
+func (auto) integerOrAutoValue() {}
 
-func (unitType) marginValue() {}
+func (integerType) integerOrAutoValue() {}
 
-func (zero) marginValue() {}
+func (unset) integerOrAutoValue() {}
 
-func (unset) marginValue() {}
+func (initial) integerOrAutoValue() {}
 
-func (initial) marginValue() {}
+func (inherit) integerOrAutoValue() {}
 
-func (inherit) marginValue() {}
+func (numberType) animationIterationCountValue() {}
 
-func (normal) unicodeBidiValue() {}
+const Infinite infinite = 0
 
-const Embed embed = 0
+type infinite byte
 
-type embed byte
+func (infinite) String() string                { return "infinite" }
+func (infinite) animationIterationCountValue() {}
 
-func (embed) String() string    { return "embed" }
-func (embed) unicodeBidiValue() {}
+func (unset) animationIterationCountValue() {}
 
-const BidiOverride bidiOverride = 0
+func (initial) animationIterationCountValue() {}
 
-type bidiOverride byte
+func (inherit) animationIterationCountValue() {}
 
-func (bidiOverride) String() string    { return "bidi-override" }
-func (bidiOverride) unicodeBidiValue() {}
+func (none) quotesValue() {}
 
-func (unset) unicodeBidiValue() {}
+func (unset) quotesValue() {}
 
-func (initial) unicodeBidiValue() {}
+func (initial) quotesValue() {}
 
-func (inherit) unicodeBidiValue() {}
+func (inherit) quotesValue() {}
 
-func (unset) willChangeValue() {}
+func (auto) textAlignLastValue() {}
 
-func (initial) willChangeValue() {}
+const Start start = 0
 
-func (inherit) willChangeValue() {}
+type start byte
 
-func (normal) fontVariantLigaturesValue() {}
+func (start) String() string      { return "start" }
+func (start) textAlignLastValue() {}
 
-func (none) fontVariantLigaturesValue() {}
+func (right) textAlignLastValue() {}
 
-func (unset) fontVariantLigaturesValue() {}
+func (left) textAlignLastValue() {}
 
-func (initial) fontVariantLigaturesValue() {}
+const Justify justify = 0
 
-func (inherit) fontVariantLigaturesValue() {}
+type justify byte
 
-func (visible) visibilityValue() {}
+func (justify) String() string      { return "justify" }
+func (justify) textAlignLastValue() {}
 
-func (hidden) visibilityValue() {}
+const End end = 0
 
-func (collapse) visibilityValue() {}
+type end byte
 
-func (unset) visibilityValue() {}
+func (end) String() string      { return "end" }
+func (end) textAlignLastValue() {}
 
-func (initial) visibilityValue() {}
+func (center) textAlignLastValue() {}
 
-func (inherit) visibilityValue() {}
+func (unset) textAlignLastValue() {}
 
-func (none) unitOrAutoValue() {}
+func (initial) textAlignLastValue() {}
 
-func (all) unitOrAutoValue() {}
+func (inherit) textAlignLastValue() {}
 
-func (unset) borderRightValue() {}
+func (auto) textJustifyValue() {}
 
-func (initial) borderRightValue() {}
+func (none) textJustifyValue() {}
 
-func (inherit) borderRightValue() {}
+const InterWord interWord = 0
 
-func (none) resizeValue() {}
+type interWord byte
 
-const Vertical vertical = 0
+func (interWord) String() string    { return "inter-word" }
+func (interWord) textJustifyValue() {}
 
-type vertical byte
+const Distribute distribute = 0
 
-func (vertical) String() string { return "vertical" }
-func (vertical) resizeValue()   {}
+type distribute byte
 
-const Horizontal horizontal = 0
+func (distribute) String() string    { return "distribute" }
+func (distribute) textJustifyValue() {}
 
-type horizontal byte
+func (unset) textJustifyValue() {}
 
-func (horizontal) String() string { return "horizontal" }
-func (horizontal) resizeValue()   {}
+func (initial) textJustifyValue() {}
 
-func (both) resizeValue() {}
+func (inherit) textJustifyValue() {}
 
-func (unset) resizeValue() {}
+func (unset) unitAndUnitValue() {}
 
-func (initial) resizeValue() {}
+func (initial) unitAndUnitValue() {}
 
-func (inherit) resizeValue() {}
+func (inherit) unitAndUnitValue() {}
+
+const Scroll scroll = 0
+
+type scroll byte
+
+func (scroll) String() string             { return "scroll" }
+func (scroll) backgroundAttachmentValue() {}
+
+const Local local = 0
+
+type local byte
+
+func (local) String() string             { return "local" }
+func (local) backgroundAttachmentValue() {}
+
+const Fixed fixed = 0
+
+type fixed byte
+
+func (fixed) String() string             { return "fixed" }
+func (fixed) backgroundAttachmentValue() {}
+
+func (unset) backgroundAttachmentValue() {}
+
+func (initial) backgroundAttachmentValue() {}
+
+func (inherit) backgroundAttachmentValue() {}
+
+const Fill fill = 0
+
+type fill byte
+
+func (fill) String() string  { return "fill" }
+func (fill) objectFitValue() {}
+
+const ScaleDown scaleDown = 0
+
+type scaleDown byte
+
+func (scaleDown) String() string  { return "scale-down" }
+func (scaleDown) objectFitValue() {}
+
+func (none) objectFitValue() {}
+
+const Cover cover = 0
+
+type cover byte
+
+func (cover) String() string  { return "cover" }
+func (cover) objectFitValue() {}
+
+const Contain contain = 0
+
+type contain byte
+
+func (contain) String() string  { return "contain" }
+func (contain) objectFitValue() {}
+
+func (unset) objectFitValue() {}
+
+func (initial) objectFitValue() {}
+
+func (inherit) objectFitValue() {}
+
+func (auto) tableLayoutValue() {}
+
+func (fixed) tableLayoutValue() {}
+
+func (unset) tableLayoutValue() {}
+
+func (initial) tableLayoutValue() {}
+
+func (inherit) tableLayoutValue() {}
+
+func (unset) sizeValue() {}
+
+func (initial) sizeValue() {}
+
+func (inherit) sizeValue() {}
+
+func (unset) boxValue() {}
+
+func (initial) boxValue() {}
+
+func (inherit) boxValue() {}
+
+func (none) filterValue() {}
+
+type filterModeType string
+
+func (s filterModeType) String() string { return string(s) }
+func (filterModeType) filterValue()     {}
+
+func (urlType) filterValue() {}
+
+func (unset) filterValue() {}
+
+func (initial) filterValue() {}
+
+func (inherit) filterValue() {}
+
+func (auto) breakInsideValue() {}
+
+const AvoidPage avoidPage = 0
+
+type avoidPage byte
+
+func (avoidPage) String() string    { return "avoid-page" }
+func (avoidPage) breakInsideValue() {}
+
+const AvoidColumn avoidColumn = 0
+
+type avoidColumn byte
+
+func (avoidColumn) String() string    { return "avoid-column" }
+func (avoidColumn) breakInsideValue() {}
+
+const Avoid avoid = 0
+
+type avoid byte
+
+func (avoid) String() string    { return "avoid" }
+func (avoid) breakInsideValue() {}
+
+func (unset) breakInsideValue() {}
+
+func (initial) breakInsideValue() {}
+
+func (inherit) breakInsideValue() {}
+
+func (row) gridColumnValue() {}
+
+func (column) gridColumnValue() {}
+
+const Dense dense = 0
+
+type dense byte
+
+func (dense) String() string   { return "dense" }
+func (dense) gridColumnValue() {}
+
+func (unset) gridColumnValue() {}
+
+func (initial) gridColumnValue() {}
+
+func (inherit) gridColumnValue() {}
+
+func (auto) scrollBehaviorValue() {}
+
+const Smooth smooth = 0
+
+type smooth byte
+
+func (smooth) String() string       { return "smooth" }
+func (smooth) scrollBehaviorValue() {}
+
+func (unset) scrollBehaviorValue() {}
+
+func (initial) scrollBehaviorValue() {}
+
+func (inherit) scrollBehaviorValue() {}
+
+func (baseline) verticalAlignValue() {}
+
+const Top top = 0
+
+type top byte
+
+func (top) String() string      { return "top" }
+func (top) verticalAlignValue() {}
+
+const TextTop textTop = 0
+
+type textTop byte
+
+func (textTop) String() string      { return "text-top" }
+func (textTop) verticalAlignValue() {}
+
+const TextBottom textBottom = 0
+
+type textBottom byte
+
+func (textBottom) String() string      { return "text-bottom" }
+func (textBottom) verticalAlignValue() {}
+
+const Super super = 0
+
+type super byte
+
+func (super) String() string      { return "super" }
+func (super) verticalAlignValue() {}
+
+const Sub sub = 0
+
+type sub byte
+
+func (sub) String() string      { return "sub" }
+func (sub) verticalAlignValue() {}
+
+const Middle middle = 0
+
+type middle byte
+
+func (middle) String() string      { return "middle" }
+func (middle) verticalAlignValue() {}
+
+const Bottom bottom = 0
+
+type bottom byte
+
+func (bottom) String() string      { return "bottom" }
+func (bottom) verticalAlignValue() {}
+
+func (unitType) verticalAlignValue() {}
+
+func (unset) verticalAlignValue() {}
+
+func (initial) verticalAlignValue() {}
+
+func (inherit) verticalAlignValue() {}
+
+func (normal) wordWrapValue() {}
+
+const BreakWord breakWord = 0
+
+type breakWord byte
+
+func (breakWord) String() string { return "break-word" }
+func (breakWord) wordWrapValue() {}
+
+func (unset) wordWrapValue() {}
+
+func (initial) wordWrapValue() {}
+
+func (inherit) wordWrapValue() {}
+
+func (normal) backgroundBlendModeValue() {}
+
+const SoftLight softLight = 0
+
+type softLight byte
+
+func (softLight) String() string            { return "soft-light" }
+func (softLight) backgroundBlendModeValue() {}
+
+const Screen screen = 0
+
+type screen byte
+
+func (screen) String() string            { return "screen" }
+func (screen) backgroundBlendModeValue() {}
+
+const Saturation saturation = 0
+
+type saturation byte
+
+func (saturation) String() string            { return "saturation" }
+func (saturation) backgroundBlendModeValue() {}
+
+const Overlay overlay = 0
+
+type overlay byte
+
+func (overlay) String() string            { return "overlay" }
+func (overlay) backgroundBlendModeValue() {}
+
+const Multiply multiply = 0
+
+type multiply byte
+
+func (multiply) String() string            { return "multiply" }
+func (multiply) backgroundBlendModeValue() {}
+
+const Luminosity luminosity = 0
+
+type luminosity byte
+
+func (luminosity) String() string            { return "luminosity" }
+func (luminosity) backgroundBlendModeValue() {}
+
+const Lighten lighten = 0
+
+type lighten byte
+
+func (lighten) String() string            { return "lighten" }
+func (lighten) backgroundBlendModeValue() {}
+
+const Hue hue = 0
+
+type hue byte
+
+func (hue) String() string            { return "hue" }
+func (hue) backgroundBlendModeValue() {}
+
+const HardLight hardLight = 0
+
+type hardLight byte
+
+func (hardLight) String() string            { return "hard-light" }
+func (hardLight) backgroundBlendModeValue() {}
+
+const Exclusion exclusion = 0
+
+type exclusion byte
+
+func (exclusion) String() string            { return "exclusion" }
+func (exclusion) backgroundBlendModeValue() {}
+
+const Difference difference = 0
+
+type difference byte
+
+func (difference) String() string            { return "difference" }
+func (difference) backgroundBlendModeValue() {}
+
+const Darken darken = 0
+
+type darken byte
+
+func (darken) String() string            { return "darken" }
+func (darken) backgroundBlendModeValue() {}
+
+const ColorDodge colorDodge = 0
+
+type colorDodge byte
+
+func (colorDodge) String() string            { return "color-dodge" }
+func (colorDodge) backgroundBlendModeValue() {}
+
+const ColorBurn colorBurn = 0
+
+type colorBurn byte
+
+func (colorBurn) String() string            { return "color-burn" }
+func (colorBurn) backgroundBlendModeValue() {}
+
+const Color color = 0
+
+type color byte
+
+func (color) String() string            { return "color" }
+func (color) backgroundBlendModeValue() {}
+
+func (unset) backgroundBlendModeValue() {}
+
+func (initial) backgroundBlendModeValue() {}
+
+func (inherit) backgroundBlendModeValue() {}
+
+func (unset) borderLeftValue() {}
+
+func (initial) borderLeftValue() {}
+
+func (inherit) borderLeftValue() {}
+
+func (length) unitOrAutoValue() {}
+
+func (normal) fontVariantPositionValue() {}
+
+func (sub) fontVariantPositionValue() {}
+
+func (super) fontVariantPositionValue() {}
+
+func (unset) fontVariantPositionValue() {}
+
+func (initial) fontVariantPositionValue() {}
+
+func (inherit) fontVariantPositionValue() {}
+
+func (unset) numberValue() {}
+
+func (initial) numberValue() {}
+
+func (inherit) numberValue() {}
+
+func (normal) fontLanguageOverrideValue() {}
+
+type stringType string
+
+func (s stringType) String() string           { return string(s) }
+func (stringType) fontLanguageOverrideValue() {}
+
+func (unset) fontLanguageOverrideValue() {}
+
+func (initial) fontLanguageOverrideValue() {}
+
+func (inherit) fontLanguageOverrideValue() {}
+
+const Invert invert = 0
+
+type invert byte
+
+func (invert) String() string { return "invert" }
+func (invert) colorValue()    {}
+
+func (none) textCombineUprightValue() {}
+
+func (all) textCombineUprightValue() {}
+
+func (unset) textCombineUprightValue() {}
+
+func (initial) textCombineUprightValue() {}
+
+func (inherit) textCombineUprightValue() {}
+
+const Medium medium = 0
+
+type medium byte
+
+func (medium) String() string  { return "medium" }
+func (medium) thicknessValue() {}
+
+const Thin thin = 0
+
+type thin byte
+
+func (thin) String() string  { return "thin" }
+func (thin) thicknessValue() {}
+
+const Thick thick = 0
+
+type thick byte
+
+func (thick) String() string  { return "thick" }
+func (thick) thicknessValue() {}
+
+type lengthType string
+
+func (s lengthType) String() string { return string(s) }
+func (lengthType) thicknessValue()  {}
+
+func (zero) thicknessValue() {}
+
+func (unset) thicknessValue() {}
+
+func (initial) thicknessValue() {}
+
+func (inherit) thicknessValue() {}
+
+func (normal) lineHeightValue() {}
+
+func (unitType) lineHeightValue() {}
+
+func (numberType) lineHeightValue() {}
+
+func (unset) lineHeightValue() {}
+
+func (initial) lineHeightValue() {}
+
+func (inherit) lineHeightValue() {}
+
+func (gridautoType) gridAutoValue() {}
+
+func (unset) gridAutoValue() {}
+
+func (initial) gridAutoValue() {}
+
+func (inherit) gridAutoValue() {}
+
+func (none) hangingPunctuationValue() {}
+
+const Last last = 0
+
+type last byte
+
+func (last) String() string           { return "last" }
+func (last) hangingPunctuationValue() {}
+
+const ForceEnd forceEnd = 0
+
+type forceEnd byte
+
+func (forceEnd) String() string           { return "force-end" }
+func (forceEnd) hangingPunctuationValue() {}
+
+const First first = 0
+
+type first byte
+
+func (first) String() string           { return "first" }
+func (first) hangingPunctuationValue() {}
+
+const AllowEnd allowEnd = 0
+
+type allowEnd byte
+
+func (allowEnd) String() string           { return "allow-end" }
+func (allowEnd) hangingPunctuationValue() {}
+
+func (unset) hangingPunctuationValue() {}
+
+func (initial) hangingPunctuationValue() {}
+
+func (inherit) hangingPunctuationValue() {}
 
 const Disc disc = 0
 
@@ -2812,50 +1742,43 @@ func (initial) listStyleTypeValue() {}
 
 func (inherit) listStyleTypeValue() {}
 
-func (none) animationNameValue() {}
+func (unset) gridGapValue() {}
 
-type identifierType string
+func (initial) gridGapValue() {}
 
-func (s identifierType) String() string    { return string(s) }
-func (identifierType) animationNameValue() {}
+func (inherit) gridGapValue() {}
 
-func (unset) animationNameValue() {}
+func (unset) gridRowValue() {}
 
-func (initial) animationNameValue() {}
+func (initial) gridRowValue() {}
 
-func (inherit) animationNameValue() {}
+func (inherit) gridRowValue() {}
 
-func (normal) fontVariantValue() {}
+func (none) imageValue() {}
 
-func (unicase) fontVariantValue() {}
+func (urlType) imageValue() {}
 
-func (titlingCaps) fontVariantValue() {}
+func (unset) imageValue() {}
 
-func (smallCaps) fontVariantValue() {}
+func (initial) imageValue() {}
 
-func (petiteCaps) fontVariantValue() {}
+func (inherit) imageValue() {}
 
-func (allSmallCaps) fontVariantValue() {}
+type gradientType string
 
-func (allPetiteCaps) fontVariantValue() {}
+func (s gradientType) String() string { return string(s) }
+func (gradientType) imageValue()      {}
 
-func (unset) fontVariantValue() {}
+type pagebreakType string
 
-func (initial) fontVariantValue() {}
+func (s pagebreakType) String() string { return string(s) }
+func (pagebreakType) pageBreakValue()  {}
 
-func (inherit) fontVariantValue() {}
+func (unset) pageBreakValue() {}
 
-func (normal) lineHeightValue() {}
+func (initial) pageBreakValue() {}
 
-func (unitType) lineHeightValue() {}
-
-func (numberType) lineHeightValue() {}
-
-func (unset) lineHeightValue() {}
-
-func (initial) lineHeightValue() {}
-
-func (inherit) lineHeightValue() {}
+func (inherit) pageBreakValue() {}
 
 const Static static = 0
 
@@ -2885,11 +1808,6 @@ type page byte
 func (page) String() string { return "page" }
 func (page) positionValue() {}
 
-const Fixed fixed = 0
-
-type fixed byte
-
-func (fixed) String() string { return "fixed" }
 func (fixed) positionValue() {}
 
 func (center) positionValue() {}
@@ -2907,165 +1825,191 @@ func (initial) positionValue() {}
 
 func (inherit) positionValue() {}
 
-func (none) quotesValue() {}
+func (unset) textDecorationValue() {}
 
-func (unset) quotesValue() {}
+func (initial) textDecorationValue() {}
 
-func (initial) quotesValue() {}
+func (inherit) textDecorationValue() {}
 
-func (inherit) quotesValue() {}
+func (normal) normalOrUnitOrAutoValue() {}
 
-func (timeType) durationValue() {}
+func (lengthType) normalOrUnitOrAutoValue() {}
 
-func (unset) durationValue() {}
+func (unset) normalOrUnitOrAutoValue() {}
 
-func (initial) durationValue() {}
+func (initial) normalOrUnitOrAutoValue() {}
 
-func (inherit) durationValue() {}
+func (inherit) normalOrUnitOrAutoValue() {}
 
-func (unset) borderBottomValue() {}
+func (top) captionSideValue() {}
 
-func (initial) borderBottomValue() {}
+func (bottom) captionSideValue() {}
 
-func (inherit) borderBottomValue() {}
+func (unset) captionSideValue() {}
 
-func (auto) tableLayoutValue() {}
+func (initial) captionSideValue() {}
 
-func (fixed) tableLayoutValue() {}
+func (inherit) captionSideValue() {}
 
-func (unset) tableLayoutValue() {}
+func (none) gridTemplateAreasValue() {}
 
-func (initial) tableLayoutValue() {}
+func (unset) gridTemplateAreasValue() {}
 
-func (inherit) tableLayoutValue() {}
+func (initial) gridTemplateAreasValue() {}
 
-const HorizontalTb horizontalTb = 0
+func (inherit) gridTemplateAreasValue() {}
 
-type horizontalTb byte
+func (unset) borderValue() {}
 
-func (horizontalTb) String() string    { return "horizontal-tb" }
-func (horizontalTb) writingModeValue() {}
+func (initial) borderValue() {}
 
-const VerticalRl verticalRl = 0
+func (inherit) borderValue() {}
 
-type verticalRl byte
+func (none) nameValue() {}
 
-func (verticalRl) String() string    { return "vertical-rl" }
-func (verticalRl) writingModeValue() {}
+func (unset) nameValue() {}
 
-const VerticalLr verticalLr = 0
+func (initial) nameValue() {}
 
-type verticalLr byte
+func (inherit) nameValue() {}
 
-func (verticalLr) String() string    { return "vertical-lr" }
-func (verticalLr) writingModeValue() {}
+func (normal) fontVariantCapsValue() {}
 
-func (unset) writingModeValue() {}
+const Unicase unicase = 0
 
-func (initial) writingModeValue() {}
+type unicase byte
 
-func (inherit) writingModeValue() {}
+func (unicase) String() string        { return "unicase" }
+func (unicase) fontVariantCapsValue() {}
 
-func (unitType) borderTopLeftRadiusValue() {}
+const TitlingCaps titlingCaps = 0
 
-func (unset) borderTopLeftRadiusValue() {}
+type titlingCaps byte
 
-func (initial) borderTopLeftRadiusValue() {}
+func (titlingCaps) String() string        { return "titling-caps" }
+func (titlingCaps) fontVariantCapsValue() {}
 
-func (inherit) borderTopLeftRadiusValue() {}
+const SmallCaps smallCaps = 0
 
-type familynameType string
+type smallCaps byte
 
-func (s familynameType) String() string { return string(s) }
-func (familynameType) fontFamilyValue() {}
+func (smallCaps) String() string        { return "small-caps" }
+func (smallCaps) fontVariantCapsValue() {}
 
-func (unset) fontFamilyValue() {}
+const PetiteCaps petiteCaps = 0
 
-func (initial) fontFamilyValue() {}
+type petiteCaps byte
 
-func (inherit) fontFamilyValue() {}
+func (petiteCaps) String() string        { return "petite-caps" }
+func (petiteCaps) fontVariantCapsValue() {}
 
-func (normal) fontVariantEastAsianValue() {}
+const AllSmallCaps allSmallCaps = 0
 
-func (unset) fontVariantEastAsianValue() {}
+type allSmallCaps byte
 
-func (initial) fontVariantEastAsianValue() {}
+func (allSmallCaps) String() string        { return "all-small-caps" }
+func (allSmallCaps) fontVariantCapsValue() {}
 
-func (inherit) fontVariantEastAsianValue() {}
+const AllPetiteCaps allPetiteCaps = 0
 
-func (row) gridColumnValue() {}
+type allPetiteCaps byte
 
-func (column) gridColumnValue() {}
+func (allPetiteCaps) String() string        { return "all-petite-caps" }
+func (allPetiteCaps) fontVariantCapsValue() {}
 
-const Dense dense = 0
+func (unset) fontVariantCapsValue() {}
 
-type dense byte
+func (initial) fontVariantCapsValue() {}
 
-func (dense) String() string   { return "dense" }
-func (dense) gridColumnValue() {}
+func (inherit) fontVariantCapsValue() {}
 
-func (unset) gridColumnValue() {}
+func (normal) wordSpacingValue() {}
 
-func (initial) gridColumnValue() {}
+func (unitType) wordSpacingValue() {}
 
-func (inherit) gridColumnValue() {}
+func (unset) wordSpacingValue() {}
 
-func (auto) scrollBehaviorValue() {}
+func (initial) wordSpacingValue() {}
 
-const Smooth smooth = 0
+func (inherit) wordSpacingValue() {}
 
-type smooth byte
+func (normal) fontStretchValue() {}
 
-func (smooth) String() string       { return "smooth" }
-func (smooth) scrollBehaviorValue() {}
+const UltraExpanded ultraExpanded = 0
 
-func (unset) scrollBehaviorValue() {}
+type ultraExpanded byte
 
-func (initial) scrollBehaviorValue() {}
+func (ultraExpanded) String() string    { return "ultra-expanded" }
+func (ultraExpanded) fontStretchValue() {}
 
-func (inherit) scrollBehaviorValue() {}
+const UltraCondensed ultraCondensed = 0
 
-func (auto) userSelectValue() {}
+type ultraCondensed byte
 
-func (none) userSelectValue() {}
+func (ultraCondensed) String() string    { return "ultra-condensed" }
+func (ultraCondensed) fontStretchValue() {}
 
-func (text) userSelectValue() {}
+const SemiExpanded semiExpanded = 0
 
-func (all) userSelectValue() {}
+type semiExpanded byte
 
-func (unset) userSelectValue() {}
+func (semiExpanded) String() string    { return "semi-expanded" }
+func (semiExpanded) fontStretchValue() {}
 
-func (initial) userSelectValue() {}
+const SemiCondensed semiCondensed = 0
 
-func (inherit) userSelectValue() {}
+type semiCondensed byte
 
-func (unset) gridAreaValue() {}
+func (semiCondensed) String() string    { return "semi-condensed" }
+func (semiCondensed) fontStretchValue() {}
 
-func (initial) gridAreaValue() {}
+const ExtraExpanded extraExpanded = 0
 
-func (inherit) gridAreaValue() {}
+type extraExpanded byte
 
-func (auto) imageRenderingValue() {}
+func (extraExpanded) String() string    { return "extra-expanded" }
+func (extraExpanded) fontStretchValue() {}
 
-const Pixelated pixelated = 0
+const ExtraCondensed extraCondensed = 0
 
-type pixelated byte
+type extraCondensed byte
 
-func (pixelated) String() string       { return "pixelated" }
-func (pixelated) imageRenderingValue() {}
+func (extraCondensed) String() string    { return "extra-condensed" }
+func (extraCondensed) fontStretchValue() {}
 
-const CrispEdges crispEdges = 0
+const Expanded expanded = 0
 
-type crispEdges byte
+type expanded byte
 
-func (crispEdges) String() string       { return "crisp-edges" }
-func (crispEdges) imageRenderingValue() {}
+func (expanded) String() string    { return "expanded" }
+func (expanded) fontStretchValue() {}
 
-func (unset) imageRenderingValue() {}
+const Condensed condensed = 0
 
-func (initial) imageRenderingValue() {}
+type condensed byte
 
-func (inherit) imageRenderingValue() {}
+func (condensed) String() string    { return "condensed" }
+func (condensed) fontStretchValue() {}
+
+func (unset) fontStretchValue() {}
+
+func (initial) fontStretchValue() {}
+
+func (inherit) fontStretchValue() {}
+
+func (timeType) transitionDelayValue() {}
+
+func (unset) transitionDelayValue() {}
+
+func (initial) transitionDelayValue() {}
+
+func (inherit) transitionDelayValue() {}
+
+func (unset) borderRightValue() {}
+
+func (initial) borderRightValue() {}
+
+func (inherit) borderRightValue() {}
 
 func (medium) fontSizeValue() {}
 
@@ -3133,6 +2077,713 @@ func (initial) fontSizeValue() {}
 
 func (inherit) fontSizeValue() {}
 
+func (unset) transitionTimingFunctionValue() {}
+
+func (initial) transitionTimingFunctionValue() {}
+
+func (inherit) transitionTimingFunctionValue() {}
+
+const Slice slice = 0
+
+type slice byte
+
+func (slice) String() string           { return "slice" }
+func (slice) boxDecorationBreakValue() {}
+
+const Clone clone = 0
+
+type clone byte
+
+func (clone) String() string           { return "clone" }
+func (clone) boxDecorationBreakValue() {}
+
+func (unset) boxDecorationBreakValue() {}
+
+func (initial) boxDecorationBreakValue() {}
+
+func (inherit) boxDecorationBreakValue() {}
+
+func (auto) normalOrAutoValue() {}
+
+func (normal) normalOrAutoValue() {}
+
+func (none) normalOrAutoValue() {}
+
+func (unset) normalOrAutoValue() {}
+
+func (initial) normalOrAutoValue() {}
+
+func (inherit) normalOrAutoValue() {}
+
+func (unset) borderTopValue() {}
+
+func (initial) borderTopValue() {}
+
+func (inherit) borderTopValue() {}
+
+func (auto) lineBreakValue() {}
+
+const Strict strict = 0
+
+type strict byte
+
+func (strict) String() string  { return "strict" }
+func (strict) lineBreakValue() {}
+
+func (normal) lineBreakValue() {}
+
+const Loose loose = 0
+
+type loose byte
+
+func (loose) String() string  { return "loose" }
+func (loose) lineBreakValue() {}
+
+func (unset) lineBreakValue() {}
+
+func (initial) lineBreakValue() {}
+
+func (inherit) lineBreakValue() {}
+
+func (start) textAlignValue() {}
+
+func (right) textAlignValue() {}
+
+const MatchParent matchParent = 0
+
+type matchParent byte
+
+func (matchParent) String() string  { return "match-parent" }
+func (matchParent) textAlignValue() {}
+
+func (left) textAlignValue() {}
+
+func (justify) textAlignValue() {}
+
+func (end) textAlignValue() {}
+
+func (center) textAlignValue() {}
+
+func (stringType) textAlignValue() {}
+
+func (unset) textAlignValue() {}
+
+func (initial) textAlignValue() {}
+
+func (inherit) textAlignValue() {}
+
+func (solid) textDecorationStyleValue() {}
+
+const Wavy wavy = 0
+
+type wavy byte
+
+func (wavy) String() string            { return "wavy" }
+func (wavy) textDecorationStyleValue() {}
+
+func (double) textDecorationStyleValue() {}
+
+func (dotted) textDecorationStyleValue() {}
+
+func (dashed) textDecorationStyleValue() {}
+
+func (unset) textDecorationStyleValue() {}
+
+func (initial) textDecorationStyleValue() {}
+
+func (inherit) textDecorationStyleValue() {}
+
+func (none) unitOrAutoValue() {}
+
+func (all) unitOrAutoValue() {}
+
+func (unset) borderBottomValue() {}
+
+func (initial) borderBottomValue() {}
+
+func (inherit) borderBottomValue() {}
+
+func (normal) fontVariantAlternatesValue() {}
+
+const HistoricalForms historicalForms = 0
+
+type historicalForms byte
+
+func (historicalForms) String() string              { return "historical-forms" }
+func (historicalForms) fontVariantAlternatesValue() {}
+
+func (unset) fontVariantAlternatesValue() {}
+
+func (initial) fontVariantAlternatesValue() {}
+
+func (inherit) fontVariantAlternatesValue() {}
+
+func (unset) columnsValue() {}
+
+func (initial) columnsValue() {}
+
+func (inherit) columnsValue() {}
+
+func (normal) fontVariantValue() {}
+
+func (unicase) fontVariantValue() {}
+
+func (titlingCaps) fontVariantValue() {}
+
+func (smallCaps) fontVariantValue() {}
+
+func (petiteCaps) fontVariantValue() {}
+
+func (allSmallCaps) fontVariantValue() {}
+
+func (allPetiteCaps) fontVariantValue() {}
+
+func (unset) fontVariantValue() {}
+
+func (initial) fontVariantValue() {}
+
+func (inherit) fontVariantValue() {}
+
+func (unset) transitionValue() {}
+
+func (initial) transitionValue() {}
+
+func (inherit) transitionValue() {}
+
+func (none) animationFillModeValue() {}
+
+const Forwards forwards = 0
+
+type forwards byte
+
+func (forwards) String() string          { return "forwards" }
+func (forwards) animationFillModeValue() {}
+
+func (both) animationFillModeValue() {}
+
+const Backwards backwards = 0
+
+type backwards byte
+
+func (backwards) String() string          { return "backwards" }
+func (backwards) animationFillModeValue() {}
+
+func (unset) animationFillModeValue() {}
+
+func (initial) animationFillModeValue() {}
+
+func (inherit) animationFillModeValue() {}
+
+const Inline inline = 0
+
+type inline byte
+
+func (inline) String() string { return "inline" }
+func (inline) displayValue()  {}
+
+const TableRowGroup tableRowGroup = 0
+
+type tableRowGroup byte
+
+func (tableRowGroup) String() string { return "table-row-group" }
+func (tableRowGroup) displayValue()  {}
+
+const TableRow tableRow = 0
+
+type tableRow byte
+
+func (tableRow) String() string { return "table-row" }
+func (tableRow) displayValue()  {}
+
+const TableHeaderGroup tableHeaderGroup = 0
+
+type tableHeaderGroup byte
+
+func (tableHeaderGroup) String() string { return "table-header-group" }
+func (tableHeaderGroup) displayValue()  {}
+
+const TableFooterGroup tableFooterGroup = 0
+
+type tableFooterGroup byte
+
+func (tableFooterGroup) String() string { return "table-footer-group" }
+func (tableFooterGroup) displayValue()  {}
+
+const TableColumnGroup tableColumnGroup = 0
+
+type tableColumnGroup byte
+
+func (tableColumnGroup) String() string { return "table-column-group" }
+func (tableColumnGroup) displayValue()  {}
+
+const TableColumn tableColumn = 0
+
+type tableColumn byte
+
+func (tableColumn) String() string { return "table-column" }
+func (tableColumn) displayValue()  {}
+
+const TableCell tableCell = 0
+
+type tableCell byte
+
+func (tableCell) String() string { return "table-cell" }
+func (tableCell) displayValue()  {}
+
+const TableCaption tableCaption = 0
+
+type tableCaption byte
+
+func (tableCaption) String() string { return "table-caption" }
+func (tableCaption) displayValue()  {}
+
+const Table table = 0
+
+type table byte
+
+func (table) String() string { return "table" }
+func (table) displayValue()  {}
+
+const RunIn runIn = 0
+
+type runIn byte
+
+func (runIn) String() string { return "run-in" }
+func (runIn) displayValue()  {}
+
+func (none) displayValue() {}
+
+const ListItem listItem = 0
+
+type listItem byte
+
+func (listItem) String() string { return "list-item" }
+func (listItem) displayValue()  {}
+
+const InlineTable inlineTable = 0
+
+type inlineTable byte
+
+func (inlineTable) String() string { return "inline-table" }
+func (inlineTable) displayValue()  {}
+
+const InlineFlex inlineFlex = 0
+
+type inlineFlex byte
+
+func (inlineFlex) String() string { return "inline-flex" }
+func (inlineFlex) displayValue()  {}
+
+const InlineBlock inlineBlock = 0
+
+type inlineBlock byte
+
+func (inlineBlock) String() string { return "inline-block" }
+func (inlineBlock) displayValue()  {}
+
+const Flex flex = 0
+
+type flex byte
+
+func (flex) String() string { return "flex" }
+func (flex) displayValue()  {}
+
+const Container container = 0
+
+type container byte
+
+func (container) String() string { return "container" }
+func (container) displayValue()  {}
+
+const Compact compact = 0
+
+type compact byte
+
+func (compact) String() string { return "compact" }
+func (compact) displayValue()  {}
+
+const Block block = 0
+
+type block byte
+
+func (block) String() string { return "block" }
+func (block) displayValue()  {}
+
+func (unset) displayValue() {}
+
+func (initial) displayValue() {}
+
+func (inherit) displayValue() {}
+
+func (unitAndUnitType) transformOriginValue() {}
+
+func (unset) transformOriginValue() {}
+
+func (initial) transformOriginValue() {}
+
+func (inherit) transformOriginValue() {}
+
+func (normal) contentValue() {}
+
+const OpenQuote openQuote = 0
+
+type openQuote byte
+
+func (openQuote) String() string { return "open-quote" }
+func (openQuote) contentValue()  {}
+
+func (none) contentValue() {}
+
+const NoOpenQuote noOpenQuote = 0
+
+type noOpenQuote byte
+
+func (noOpenQuote) String() string { return "no-open-quote" }
+func (noOpenQuote) contentValue()  {}
+
+const NoCloseQuote noCloseQuote = 0
+
+type noCloseQuote byte
+
+func (noCloseQuote) String() string { return "no-close-quote" }
+func (noCloseQuote) contentValue()  {}
+
+const Icon icon = 0
+
+type icon byte
+
+func (icon) String() string { return "icon" }
+func (icon) contentValue()  {}
+
+const CloseQuote closeQuote = 0
+
+type closeQuote byte
+
+func (closeQuote) String() string { return "close-quote" }
+func (closeQuote) contentValue()  {}
+
+func (urlType) contentValue() {}
+
+func (stringType) contentValue() {}
+
+type counterType string
+
+func (s counterType) String() string { return string(s) }
+func (counterType) contentValue()    {}
+
+func (unset) contentValue() {}
+
+func (initial) contentValue() {}
+
+func (inherit) contentValue() {}
+
+func (integerType) uintValue() {}
+
+func (lengthType) unitValue() {}
+
+func (unset) gridAreaValue() {}
+
+func (initial) gridAreaValue() {}
+
+func (inherit) gridAreaValue() {}
+
+func (normal) overflowWrapValue() {}
+
+func (breakWord) overflowWrapValue() {}
+
+func (unset) overflowWrapValue() {}
+
+func (initial) overflowWrapValue() {}
+
+func (inherit) overflowWrapValue() {}
+
+func (visible) backfaceVisibilityValue() {}
+
+func (hidden) backfaceVisibilityValue() {}
+
+func (unset) backfaceVisibilityValue() {}
+
+func (initial) backfaceVisibilityValue() {}
+
+func (inherit) backfaceVisibilityValue() {}
+
+func (unset) listStyleValue() {}
+
+func (initial) listStyleValue() {}
+
+func (inherit) listStyleValue() {}
+
+func (normal) unicodeBidiValue() {}
+
+const Embed embed = 0
+
+type embed byte
+
+func (embed) String() string    { return "embed" }
+func (embed) unicodeBidiValue() {}
+
+const BidiOverride bidiOverride = 0
+
+type bidiOverride byte
+
+func (bidiOverride) String() string    { return "bidi-override" }
+func (bidiOverride) unicodeBidiValue() {}
+
+func (unset) unicodeBidiValue() {}
+
+func (initial) unicodeBidiValue() {}
+
+func (inherit) unicodeBidiValue() {}
+
+func (unset) flexFlowValue() {}
+
+func (initial) flexFlowValue() {}
+
+func (inherit) flexFlowValue() {}
+
+func (none) floatValue() {}
+
+func (left) floatValue() {}
+
+func (right) floatValue() {}
+
+func (unset) floatValue() {}
+
+func (initial) floatValue() {}
+
+func (inherit) floatValue() {}
+
+func (row) gridAutoFlowValue() {}
+
+func (column) gridAutoFlowValue() {}
+
+func (dense) gridAutoFlowValue() {}
+
+func (unset) gridAutoFlowValue() {}
+
+func (initial) gridAutoFlowValue() {}
+
+func (inherit) gridAutoFlowValue() {}
+
+func (lengthType) unitOrNoneValue() {}
+
+type featuretagvalueType string
+
+func (s featuretagvalueType) String() string          { return string(s) }
+func (featuretagvalueType) fontFeatureSettingsValue() {}
+
+func (unset) fontFeatureSettingsValue() {}
+
+func (initial) fontFeatureSettingsValue() {}
+
+func (inherit) fontFeatureSettingsValue() {}
+
+func (auto) clipValue() {}
+
+func (unset) clipValue() {}
+
+func (initial) clipValue() {}
+
+func (inherit) clipValue() {}
+
+func (unset) fontValue() {}
+
+func (initial) fontValue() {}
+
+func (inherit) fontValue() {}
+
+func (auto) pageBreakInsideValue() {}
+
+func (avoid) pageBreakInsideValue() {}
+
+func (unset) pageBreakInsideValue() {}
+
+func (initial) pageBreakInsideValue() {}
+
+func (inherit) pageBreakInsideValue() {}
+
+const Balance balance = 0
+
+type balance byte
+
+func (balance) String() string   { return "balance" }
+func (balance) columnFillValue() {}
+
+func (auto) columnFillValue() {}
+
+func (unset) columnFillValue() {}
+
+func (initial) columnFillValue() {}
+
+func (inherit) columnFillValue() {}
+
+func (unset) flexValue() {}
+
+func (initial) flexValue() {}
+
+func (inherit) flexValue() {}
+
+func (integerType) orderValue() {}
+
+func (unset) orderValue() {}
+
+func (initial) orderValue() {}
+
+func (inherit) orderValue() {}
+
+func (unset) willChangeValue() {}
+
+func (initial) willChangeValue() {}
+
+func (inherit) willChangeValue() {}
+
+func (unset) animationValue() {}
+
+func (initial) animationValue() {}
+
+func (inherit) animationValue() {}
+
+func (normal) animationDirectionValue() {}
+
+const Reverse reverse = 0
+
+type reverse byte
+
+func (reverse) String() string           { return "reverse" }
+func (reverse) animationDirectionValue() {}
+
+const AlternateReverse alternateReverse = 0
+
+type alternateReverse byte
+
+func (alternateReverse) String() string           { return "alternate-reverse" }
+func (alternateReverse) animationDirectionValue() {}
+
+const Alternate alternate = 0
+
+type alternate byte
+
+func (alternate) String() string           { return "alternate" }
+func (alternate) animationDirectionValue() {}
+
+func (unset) animationDirectionValue() {}
+
+func (initial) animationDirectionValue() {}
+
+func (inherit) animationDirectionValue() {}
+
+func (medium) columnRuleWidthValue() {}
+
+func (thin) columnRuleWidthValue() {}
+
+func (thick) columnRuleWidthValue() {}
+
+func (lengthType) columnRuleWidthValue() {}
+
+func (zero) columnRuleWidthValue() {}
+
+func (unset) columnRuleWidthValue() {}
+
+func (initial) columnRuleWidthValue() {}
+
+func (inherit) columnRuleWidthValue() {}
+
+const Show show = 0
+
+type show byte
+
+func (show) String() string   { return "show" }
+func (show) emptyCellsValue() {}
+
+const Hide hide = 0
+
+type hide byte
+
+func (hide) String() string   { return "hide" }
+func (hide) emptyCellsValue() {}
+
+func (unset) emptyCellsValue() {}
+
+func (initial) emptyCellsValue() {}
+
+func (inherit) emptyCellsValue() {}
+
+const Maunal maunal = 0
+
+type maunal byte
+
+func (maunal) String() string { return "maunal" }
+func (maunal) hyphensValue()  {}
+
+func (none) hyphensValue() {}
+
+func (auto) hyphensValue() {}
+
+func (unset) hyphensValue() {}
+
+func (initial) hyphensValue() {}
+
+func (inherit) hyphensValue() {}
+
+const Repeat repeat = 0
+
+type repeat byte
+
+func (repeat) String() string         { return "repeat" }
+func (repeat) backgroundRepeatValue() {}
+
+const Space space = 0
+
+type space byte
+
+func (space) String() string         { return "space" }
+func (space) backgroundRepeatValue() {}
+
+const Round round = 0
+
+type round byte
+
+func (round) String() string         { return "round" }
+func (round) backgroundRepeatValue() {}
+
+const RepeatY repeatY = 0
+
+type repeatY byte
+
+func (repeatY) String() string         { return "repeat-y" }
+func (repeatY) backgroundRepeatValue() {}
+
+const RepeatX repeatX = 0
+
+type repeatX byte
+
+func (repeatX) String() string         { return "repeat-x" }
+func (repeatX) backgroundRepeatValue() {}
+
+const NoRepeat noRepeat = 0
+
+type noRepeat byte
+
+func (noRepeat) String() string         { return "no-repeat" }
+func (noRepeat) backgroundRepeatValue() {}
+
+func (unset) backgroundRepeatValue() {}
+
+func (initial) backgroundRepeatValue() {}
+
+func (inherit) backgroundRepeatValue() {}
+
+type familynameType string
+
+func (s familynameType) String() string { return string(s) }
+func (familynameType) fontFamilyValue() {}
+
+func (unset) fontFamilyValue() {}
+
+func (initial) fontFamilyValue() {}
+
+func (inherit) fontFamilyValue() {}
+
 func (normal) fontStyleValue() {}
 
 const Oblique oblique = 0
@@ -3155,6 +2806,118 @@ func (initial) fontStyleValue() {}
 
 func (inherit) fontStyleValue() {}
 
+func (timeType) transitionDurationValue() {}
+
+func (unset) transitionDurationValue() {}
+
+func (initial) transitionDurationValue() {}
+
+func (inherit) transitionDurationValue() {}
+
+const Weight weight = 0
+
+type weight byte
+
+func (weight) String() string      { return "weight" }
+func (weight) fontSynthesisValue() {}
+
+const StyleProperty styleProperty = 0
+
+type styleProperty byte
+
+func (styleProperty) String() string      { return "style" }
+func (styleProperty) fontSynthesisValue() {}
+
+func (none) fontSynthesisValue() {}
+
+func (unset) fontSynthesisValue() {}
+
+func (initial) fontSynthesisValue() {}
+
+func (inherit) fontSynthesisValue() {}
+
+func (visible) overflowValue() {}
+
+func (scroll) overflowValue() {}
+
+func (hidden) overflowValue() {}
+
+func (auto) overflowValue() {}
+
+func (unset) overflowValue() {}
+
+func (initial) overflowValue() {}
+
+func (inherit) overflowValue() {}
+
+const Mixed mixed = 0
+
+type mixed byte
+
+func (mixed) String() string        { return "mixed" }
+func (mixed) textOrientationValue() {}
+
+const UseGlyphOrientation useGlyphOrientation = 0
+
+type useGlyphOrientation byte
+
+func (useGlyphOrientation) String() string        { return "use-glyph-orientation" }
+func (useGlyphOrientation) textOrientationValue() {}
+
+const Upright upright = 0
+
+type upright byte
+
+func (upright) String() string        { return "upright" }
+func (upright) textOrientationValue() {}
+
+const SidewaysRight sidewaysRight = 0
+
+type sidewaysRight byte
+
+func (sidewaysRight) String() string        { return "sideways-right" }
+func (sidewaysRight) textOrientationValue() {}
+
+const SidewaysLeft sidewaysLeft = 0
+
+type sidewaysLeft byte
+
+func (sidewaysLeft) String() string        { return "sideways-left" }
+func (sidewaysLeft) textOrientationValue() {}
+
+const Sideways sideways = 0
+
+type sideways byte
+
+func (sideways) String() string        { return "sideways" }
+func (sideways) textOrientationValue() {}
+
+func (unset) textOrientationValue() {}
+
+func (initial) textOrientationValue() {}
+
+func (inherit) textOrientationValue() {}
+
+func (unitType) borderTopRightRadiusValue() {}
+
+func (unset) borderTopRightRadiusValue() {}
+
+func (initial) borderTopRightRadiusValue() {}
+
+func (inherit) borderTopRightRadiusValue() {}
+
+func (lengthType) numberValue() {}
+
+func (integerType) numberValue() {}
+
+func (zero) paddingValue() {}
+
+func (unset) paddingValue() {}
+
+func (initial) paddingValue() {}
+
+func (inherit) paddingValue() {}
+
 func (all) transitionPropertyValue() {}
 
 func (none) transitionPropertyValue() {}
@@ -3165,64 +2928,205 @@ func (initial) transitionPropertyValue() {}
 
 func (inherit) transitionPropertyValue() {}
 
-func (scroll) backgroundAttachmentValue() {}
+func (none) animationNameValue() {}
 
-const Local local = 0
+type identifierType string
 
-type local byte
+func (s identifierType) String() string    { return string(s) }
+func (identifierType) animationNameValue() {}
 
-func (local) String() string             { return "local" }
-func (local) backgroundAttachmentValue() {}
+func (unset) animationNameValue() {}
 
-func (fixed) backgroundAttachmentValue() {}
+func (initial) animationNameValue() {}
 
-func (unset) backgroundAttachmentValue() {}
+func (inherit) animationNameValue() {}
 
-func (initial) backgroundAttachmentValue() {}
+func (normal) fontVariantNumericValue() {}
 
-func (inherit) backgroundAttachmentValue() {}
+func (unset) fontVariantNumericValue() {}
 
-func (normal) wordBreakValue() {}
+func (initial) fontVariantNumericValue() {}
 
-const KeepAll keepAll = 0
+func (inherit) fontVariantNumericValue() {}
 
-type keepAll byte
+func (auto) isolationValue() {}
 
-func (keepAll) String() string  { return "keep-all" }
-func (keepAll) wordBreakValue() {}
+const Isolate isolate = 0
 
-const BreakAll breakAll = 0
+type isolate byte
 
-type breakAll byte
+func (isolate) String() string  { return "isolate" }
+func (isolate) isolationValue() {}
 
-func (breakAll) String() string  { return "break-all" }
-func (breakAll) wordBreakValue() {}
+func (unset) isolationValue() {}
 
-func (unset) wordBreakValue() {}
+func (initial) isolationValue() {}
 
-func (initial) wordBreakValue() {}
+func (inherit) isolationValue() {}
 
-func (inherit) wordBreakValue() {}
+const Flat flat = 0
 
-func (unset) outlineValue() {}
+type flat byte
 
-func (initial) outlineValue() {}
+func (flat) String() string       { return "flat" }
+func (flat) transformStyleValue() {}
 
-func (inherit) outlineValue() {}
+const Preserve3d preserve3d = 0
 
-func (unset) flexFlowValue() {}
+type preserve3d byte
 
-func (initial) flexFlowValue() {}
+func (preserve3d) String() string       { return "preserve-3d" }
+func (preserve3d) transformStyleValue() {}
 
-func (inherit) flexFlowValue() {}
+func (unset) transformStyleValue() {}
 
-func (unitAndUnitType) transformOriginValue() {}
+func (initial) transformStyleValue() {}
 
-func (unset) transformOriginValue() {}
+func (inherit) transformStyleValue() {}
 
-func (initial) transformOriginValue() {}
+const HorizontalTb horizontalTb = 0
 
-func (inherit) transformOriginValue() {}
+type horizontalTb byte
+
+func (horizontalTb) String() string    { return "horizontal-tb" }
+func (horizontalTb) writingModeValue() {}
+
+const VerticalRl verticalRl = 0
+
+type verticalRl byte
+
+func (verticalRl) String() string    { return "vertical-rl" }
+func (verticalRl) writingModeValue() {}
+
+const VerticalLr verticalLr = 0
+
+type verticalLr byte
+
+func (verticalLr) String() string    { return "vertical-lr" }
+func (verticalLr) writingModeValue() {}
+
+func (unset) writingModeValue() {}
+
+func (initial) writingModeValue() {}
+
+func (inherit) writingModeValue() {}
+
+func (unset) borderImageValue() {}
+
+func (initial) borderImageValue() {}
+
+func (inherit) borderImageValue() {}
+
+func (auto) fontDisplayValue() {}
+
+func (block) fontDisplayValue() {}
+
+const Swap swap = 0
+
+type swap byte
+
+func (swap) String() string    { return "swap" }
+func (swap) fontDisplayValue() {}
+
+const Fallback fallback = 0
+
+type fallback byte
+
+func (fallback) String() string    { return "fallback" }
+func (fallback) fontDisplayValue() {}
+
+const Optional optional = 0
+
+type optional byte
+
+func (optional) String() string    { return "optional" }
+func (optional) fontDisplayValue() {}
+
+func (unset) fontDisplayValue() {}
+
+func (initial) fontDisplayValue() {}
+
+func (inherit) fontDisplayValue() {}
+
+func (flexStart) justifyContentValue() {}
+
+func (spaceBetween) justifyContentValue() {}
+
+func (spaceEvenly) justifyContentValue() {}
+
+func (spaceAround) justifyContentValue() {}
+
+func (flexEnd) justifyContentValue() {}
+
+func (center) justifyContentValue() {}
+
+func (unset) justifyContentValue() {}
+
+func (initial) justifyContentValue() {}
+
+func (inherit) justifyContentValue() {}
+
+func (normal) mixBlendModeValue() {}
+
+func (softLight) mixBlendModeValue() {}
+
+func (screen) mixBlendModeValue() {}
+
+func (saturation) mixBlendModeValue() {}
+
+func (overlay) mixBlendModeValue() {}
+
+func (multiply) mixBlendModeValue() {}
+
+func (luminosity) mixBlendModeValue() {}
+
+func (lighten) mixBlendModeValue() {}
+
+func (hue) mixBlendModeValue() {}
+
+func (hardLight) mixBlendModeValue() {}
+
+func (exclusion) mixBlendModeValue() {}
+
+func (difference) mixBlendModeValue() {}
+
+func (darken) mixBlendModeValue() {}
+
+func (colorDodge) mixBlendModeValue() {}
+
+func (colorBurn) mixBlendModeValue() {}
+
+func (color) mixBlendModeValue() {}
+
+func (unset) mixBlendModeValue() {}
+
+func (initial) mixBlendModeValue() {}
+
+func (inherit) mixBlendModeValue() {}
+
+func (none) resizeValue() {}
+
+const Vertical vertical = 0
+
+type vertical byte
+
+func (vertical) String() string { return "vertical" }
+func (vertical) resizeValue()   {}
+
+const Horizontal horizontal = 0
+
+type horizontal byte
+
+func (horizontal) String() string { return "horizontal" }
+func (horizontal) resizeValue()   {}
+
+func (both) resizeValue() {}
+
+func (unset) resizeValue() {}
+
+func (initial) resizeValue() {}
+
+func (inherit) resizeValue() {}
 
 func (unset) allValue() {}
 
@@ -3230,35 +3134,140 @@ func (initial) allValue() {}
 
 func (inherit) allValue() {}
 
-func (normal) fontVariantAlternatesValue() {}
-
-const HistoricalForms historicalForms = 0
-
-type historicalForms byte
-
-func (historicalForms) String() string              { return "historical-forms" }
-func (historicalForms) fontVariantAlternatesValue() {}
-
-func (unset) fontVariantAlternatesValue() {}
-
-func (initial) fontVariantAlternatesValue() {}
-
-func (inherit) fontVariantAlternatesValue() {}
-
-func (row) gridAutoFlowValue() {}
-
-func (column) gridAutoFlowValue() {}
-
-func (dense) gridAutoFlowValue() {}
-
-func (unset) gridAutoFlowValue() {}
-
-func (initial) gridAutoFlowValue() {}
-
-func (inherit) gridAutoFlowValue() {}
-
 func (unset) backgroundValue() {}
 
 func (initial) backgroundValue() {}
 
 func (inherit) backgroundValue() {}
+
+func (none) counterIncrementValue() {}
+
+func (unset) counterIncrementValue() {}
+
+func (initial) counterIncrementValue() {}
+
+func (inherit) counterIncrementValue() {}
+
+const Clip clip = 0
+
+type clip byte
+
+func (clip) String() string     { return "clip" }
+func (clip) textOverflowValue() {}
+
+const Ellipsis ellipsis = 0
+
+type ellipsis byte
+
+func (ellipsis) String() string     { return "ellipsis" }
+func (ellipsis) textOverflowValue() {}
+
+func (stringType) textOverflowValue() {}
+
+func (unset) textOverflowValue() {}
+
+func (initial) textOverflowValue() {}
+
+func (inherit) textOverflowValue() {}
+
+func (none) textDecorationLineValue() {}
+
+const Underline underline = 0
+
+type underline byte
+
+func (underline) String() string           { return "underline" }
+func (underline) textDecorationLineValue() {}
+
+const Overline overline = 0
+
+type overline byte
+
+func (overline) String() string           { return "overline" }
+func (overline) textDecorationLineValue() {}
+
+const LineThrough lineThrough = 0
+
+type lineThrough byte
+
+func (lineThrough) String() string           { return "line-through" }
+func (lineThrough) textDecorationLineValue() {}
+
+const Blink blink = 0
+
+type blink byte
+
+func (blink) String() string           { return "blink" }
+func (blink) textDecorationLineValue() {}
+
+func (unset) textDecorationLineValue() {}
+
+func (initial) textDecorationLineValue() {}
+
+func (inherit) textDecorationLineValue() {}
+
+func (transparent) sizeValue() {}
+
+func (colorType) sizeValue() {}
+
+func (currentColor) sizeValue() {}
+
+func (unset) columnRuleValue() {}
+
+func (initial) columnRuleValue() {}
+
+func (inherit) columnRuleValue() {}
+
+func (stretch) alignItemsValue() {}
+
+func (flexStart) alignItemsValue() {}
+
+func (flexEnd) alignItemsValue() {}
+
+func (center) alignItemsValue() {}
+
+func (baseline) alignItemsValue() {}
+
+func (unset) alignItemsValue() {}
+
+func (initial) alignItemsValue() {}
+
+func (inherit) alignItemsValue() {}
+
+func (stretch) borderImageRepeatValue() {}
+
+func (space) borderImageRepeatValue() {}
+
+func (round) borderImageRepeatValue() {}
+
+func (repeat) borderImageRepeatValue() {}
+
+func (unset) borderImageRepeatValue() {}
+
+func (initial) borderImageRepeatValue() {}
+
+func (inherit) borderImageRepeatValue() {}
+
+func (unset) borderImageSliceValue() {}
+
+func (initial) borderImageSliceValue() {}
+
+func (inherit) borderImageSliceValue() {}
+
+func (unitType) borderTopLeftRadiusValue() {}
+
+func (unset) borderTopLeftRadiusValue() {}
+
+func (initial) borderTopLeftRadiusValue() {}
+
+func (inherit) borderTopLeftRadiusValue() {}
+
+func (normal) columnGapValue() {}
+
+func (lengthType) columnGapValue() {}
+
+func (unset) columnGapValue() {}
+
+func (initial) columnGapValue() {}
+
+func (inherit) columnGapValue() {}

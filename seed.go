@@ -4,6 +4,7 @@ import (
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/style"
 	"github.com/qlova/seed/style/css"
+	"github.com/qlova/seed/unit"
 	"github.com/qlova/seed/user"
 	"github.com/russross/blackfriday/v2"
 
@@ -26,27 +27,6 @@ type User = user.User
 
 //Shadow is an alias to the style.Shadow type.
 type Shadow = style.Shadow
-
-//Vm is a unit relative to the viewport size.
-const Vm Unit = style.Vm
-
-//Em is a unit  value is relative to the current font size.
-const Em Unit = style.Em
-
-//Px is a unit (pixels)
-const Px Unit = style.Px
-
-//Auto is a unit where appropriate will automatically select a suitable value.
-const Auto Unit = style.Auto
-
-//Direction constants.
-const (
-	Top    = style.Top
-	Bottom = style.Bottom
-	Left   = style.Left
-	Right  = style.Right
-	Center = style.Center
-)
 
 //Arial is a default arial font.
 var Arial = style.Font{
@@ -167,16 +147,16 @@ func (seed Seed) Is(b Interface) bool {
 type Unit = complex128
 
 //ScreenSmallerThan is a conditional query that returns a style that effects that condition.
-func (seed Seed) ScreenSmallerThan(unit Unit) style.Style {
+func (seed Seed) ScreenSmallerThan(u unit.Unit) style.Style {
 	if seed.screenSmallerThan == nil {
-		seed.screenSmallerThan = make(map[Unit]style.Style)
+		seed.screenSmallerThan = make(map[unit.Unit]style.Style)
 	}
 
-	if s, ok := seed.screenSmallerThan[unit]; ok {
+	if s, ok := seed.screenSmallerThan[u]; ok {
 		return s
 	}
 	var s = style.New()
-	seed.screenSmallerThan[unit] = s
+	seed.screenSmallerThan[u] = s
 	return s
 }
 

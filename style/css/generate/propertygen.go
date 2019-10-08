@@ -52,7 +52,7 @@ package main
 */
 
 var Properties = map[string][]string{
-	"align-content":              {"stretch", "space-between", "space-around", "flex-start", "flex-end", "center"},
+	"align-content":              {"stretch", "space-between", "space-around", "space-evenly", "flex-start", "flex-end", "center"},
 	"align-items":                {"stretch", "flex-start", "flex-end", "center", "baseline"},
 	"align-self":                 {"auto", "stretch", "flex-start", "flex-end", "center", "baseline"},
 	"all":                        {},
@@ -191,7 +191,7 @@ var Properties = map[string][]string{
 	"image-rendering":            {"auto", "pixelated", "crisp-edges"},
 	"@import":                    {},
 	"isolation":                  {"auto", "isolate"},
-	"justify-content":            {"flex-start", "space-between", "space-around", "flex-end", "center"},
+	"justify-content":            {"flex-start", "space-between", "space-evenly", "space-around", "flex-end", "center"},
 	"@keyframes":                 {},
 	"left":                       {"auto", "<unit>", "0"},
 	"letter-spacing":             {"normal", "<length>"},

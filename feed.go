@@ -8,6 +8,7 @@ import (
 
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/style/css"
+	"github.com/qlova/seed/unit"
 )
 
 //Shuold this be stored in the harvester?
@@ -37,7 +38,7 @@ var feedID = 0
 //It accepts a function that returns Food.
 func NewFeed(food interface{}) Feed {
 	var seed = New()
-	seed.SetSize(100, Auto)
+	seed.SetSize(100, unit.Auto)
 	seed.SetUnshrinkable()
 
 	seed.SetDisplay(css.Flex)

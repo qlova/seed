@@ -49,7 +49,7 @@ func NewApp(args ...string) *App {
 
 	app.SetSize(100, 100)
 	app.SetDisplay(css.Flex)
-	app.Align(0)
+	app.TextAlign().Center()
 	app.SetFlexDirection(css.Column)
 
 	app.Icons = append(app.Icons, manifest.Icon{

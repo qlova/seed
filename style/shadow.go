@@ -5,11 +5,12 @@ import (
 	"image/color"
 
 	"github.com/qlova/seed/style/css"
+	"github.com/qlova/seed/unit"
 )
 
 //Shadow Defines a shadow that should be applied to the Element, with offset X and Y, Blur and of the specified color.
 type Shadow struct {
-	X, Y, Blur, Spread Unit
+	X, Y, Blur, Spread unit.Unit
 	Color              color.Color
 }
 

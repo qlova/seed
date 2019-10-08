@@ -1,34 +1,8 @@
 package style
 
 import (
-	"math"
-
 	"github.com/qlova/seed/style/css"
 )
-
-//Unit is a display unit.
-type Unit = complex128
-
-//Em represents the default font-size, therefore this unit is relative to the pixel-density of the device.
-const Em = css.Em
-
-//Px represents a single pixel on a screen, since screens can have different pixel-densities, it is recommended not to use this unit.
-const Px = css.Px
-
-//Vm unit is relative to the screen size, more specifically, it is a ratio of the smallest side of the screen.
-const Vm = css.Vm
-
-//Direction constants.
-const (
-	Center = 0
-	Top    = -1i
-	Bottom = 1i
-	Left   = -1
-	Right  = 1
-)
-
-//Auto is an auto value.
-const Auto = math.MaxFloat64
 
 //Style is a set of visual indications of an element.
 //For example, colour, spacing & positioning.

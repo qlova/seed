@@ -18,11 +18,11 @@ func main() {
 
 	var LastSnapshot = image.AddTo(App)
 	LastSnapshot.SetHidden()
-	LastSnapshot.SetAttach(seed.Bottom + seed.Right)
+	LastSnapshot.AttachToScreen().Bottom().Right()
 	LastSnapshot.SetHeight(10)
 
 	var Button = button.AddTo(App, "Take Picture")
-	Button.SetAttach(seed.Bottom + seed.Left)
+	Button.AttachToScreen().Bottom().Left()
 	Button.OnClick(func(q script.Ctx) {
 		var Camera = Camera.Ctx(q)
 		var LastSnapshot = LastSnapshot.Ctx(q)
