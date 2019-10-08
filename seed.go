@@ -60,6 +60,7 @@ type Seed struct {
 type seed struct {
 	HTML.Element
 
+	//Default, Portrait, Landscape.
 	style.Group
 	//Watch, Phone, Tablet, Laptop, Desktop
 	Tiny, Small, Medium, Large, Huge style.Group
@@ -386,13 +387,8 @@ func (seed Seed) OnReady(f func(script.Ctx)) {
 
 //OnChange runs a script when this seed's value is changed by the user.
 func (seed Seed) OnChange(f func(script.Ctx)) {
-	seed.OnReady(func(q script.Ctx) {
-		q.Javascript("{")
-		q.Javascript(`let onchange = function(ev) {`)
+	seed.On("change", func(q script.Ctx) {
 		f(q)
-		q.Javascript(`};`)
-		q.Javascript(seed.Ctx(q).Element() + `.onchange = onchange;`)
-		q.Javascript("}")
 	})
 }
 
@@ -474,25 +470,15 @@ func (seed Seed) OnSwipeRight(f func(script.Ctx)) {
 
 //OnFocus run a script when this seed is focused.
 func (seed Seed) OnFocus(f func(script.Ctx)) {
-	seed.OnReady(func(q script.Ctx) {
-		q.Javascript("{")
-		q.Javascript(`let onfocus = function(ev) {`)
+	seed.On("focus", func(q script.Ctx) {
 		f(q)
-		q.Javascript(`};`)
-		q.Javascript(seed.Ctx(q).Element() + `.onfocus = onfocus;`)
-		q.Javascript("}")
 	})
 }
 
 //OnInput runs a script when this seed has input.
 func (seed Seed) OnInput(f func(script.Ctx)) {
-	seed.OnReady(func(q script.Ctx) {
-		q.Javascript("{")
-		q.Javascript(`let oninput = function(ev) {`)
+	seed.On("input", func(q script.Ctx) {
 		f(q)
-		q.Javascript(`};`)
-		q.Javascript(seed.Ctx(q).Element() + `.oninput = oninput;`)
-		q.Javascript("}")
 	})
 }
 
@@ -510,13 +496,8 @@ func (seed Seed) OnEnter(f func(script.Ctx)) {
 
 //OnFocusLost runs a script when this seed has focus lost.
 func (seed Seed) OnFocusLost(f func(script.Ctx)) {
-	seed.OnReady(func(q script.Ctx) {
-		q.Javascript("{")
-		q.Javascript(`let onfocuslost = function(ev) {`)
+	seed.On("focusout", func(q script.Ctx) {
 		f(q)
-		q.Javascript(`};`)
-		q.Javascript(seed.Ctx(q).Element() + `.onfocusout = onfocuslost;`)
-		q.Javascript("}")
 	})
 }
 
