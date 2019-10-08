@@ -2,8 +2,6 @@ module github.com/qlova/seed
 
 go 1.13
 
-replace github.com/qlova/seeds => /home/quentin/Git/qlova/seeds
-
 require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/fsnotify/fsnotify v1.4.7
