@@ -58,7 +58,7 @@ function request (method, formdata, url, manual) {
 			if (update.charAt(0) == "#") {
 				let splits = update.split(".", 2)
 				let id = splits[0];
-				let property = splits[1];
+				let property = update.slice(update.indexOf(".")+1);
 				console.log("get('"+id.substring(1)+"')."+property+" = '"+json.Document[update]+"';");
 				eval("get('"+id.substring(1)+"')."+property+" = '"+json.Document[update]+"';");
 			}
@@ -72,36 +72,9 @@ function request (method, formdata, url, manual) {
 				eval(instruction);
 			}
 		}
-	}).catch();
+	})
 }
 `
-
-//Promise represents a future action that can either succeed or fail.
-type Promise struct {
-	expression string
-	q          Ctx
-}
-
-//Raw returns the raw JS promise.
-func (promise Promise) Raw() string {
-	return promise.expression
-}
-
-//Then executes the provided function when the promise succeeds.
-func (promise Promise) Then(f func()) Promise {
-	promise.q.Javascript(promise.expression + ".then(function(rpc_result) {")
-	f()
-	promise.q.Javascript("}).catch(function(){});;")
-	return promise
-}
-
-//Catch executes the provided function when the promise fails.
-func (promise Promise) Catch(f func()) Promise {
-	promise.q.Javascript(promise.expression + ".catch(function(rpc_result) {")
-	f()
-	promise.q.Javascript("});")
-	return promise
-}
 
 //Args is a mapping from strings to script types.
 type Args map[string]qlova.Type
@@ -138,7 +111,12 @@ func (c Attached) Go(f interface{}, args ...qlova.Type) Promise {
 
 //With adds arguments to the attached call.
 func (c Attached) With(args Args) Attached {
-	c.args = args
+	if c.args == nil {
+		c.args = args
+	}
+	for key, value := range args {
+		c.args[key] = value
+	}
 	return c
 }
 
@@ -197,7 +175,7 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 	q.Require(Request)
 	q.Raw("Javascript", language.Statement(`let `+variable+` = request("POST", `+formdata+`, "`+CallingString+`");`))
 
-	return Promise{variable, q}
+	return Promise{q.Value(variable).Native(), q}
 }
 
 //ReturnValue can be used to access the Go return value as a string.

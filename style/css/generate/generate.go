@@ -24,7 +24,7 @@ func Exception(property string) string {
 	switch property {
 	case "will-change":
 		return `
-func (style *Style) SetWillChange(properties ...interface{}) {
+func (style Style) SetWillChange(properties ...interface{}) {
 	var names string
 
 	for i, property := range properties {
@@ -64,13 +64,13 @@ func FontSynthesis(weight, style bool) fontSynthesisValue {
 	return result
 }
 
-func (style *Style) SetFontSynthesis(value fontSynthesisValue) {
+func (style Style) SetFontSynthesis(value fontSynthesisValue) {
 	style.set("font-synthesis", value)
 }
 `
 	case "grid-template-areas":
 		return `
-func (style *Style) SetGridTemplateAreas(names []string) {
+func (style Style) SetGridTemplateAreas(names []string) {
 	if len(names) == 0 {
 		style.set("grid-template-areas", unitType("none"))
 		return
@@ -84,7 +84,7 @@ func (style *Style) SetGridTemplateAreas(names []string) {
 `
 	case "grid-template-columns":
 		return `
-func (style *Style) SetGridTemplateColumns(values []gridTemplateValue) {
+func (style Style) SetGridTemplateColumns(values []gridTemplateValue) {
 	if len(values) == 0 {
 		style.set("grid-template-columns", unitType("none"))
 		return
@@ -99,7 +99,7 @@ func (style *Style) SetGridTemplateColumns(values []gridTemplateValue) {
 
 	case "grid-template-rows":
 		return `
-func (style *Style) SetGridTemplateRows(values []gridTemplateValue) {
+func (style Style) SetGridTemplateRows(values []gridTemplateValue) {
 	if len(values) == 0 {
 		style.set("grid-template-rows", unitType("none"))
 		return
@@ -113,7 +113,7 @@ func (style *Style) SetGridTemplateRows(values []gridTemplateValue) {
 `
 	case "quotes":
 		return `
-func (style *Style) SetQuotes(quotes []string) {
+func (style Style) SetQuotes(quotes []string) {
 	if len(quotes) == 0 {
 		style.set("quotes", unitType("none"))
 		return
@@ -127,7 +127,7 @@ func (style *Style) SetQuotes(quotes []string) {
 `
 	case "transform-origin":
 		return `
-func (style *Style) SetTransformOrigin(p positionValue, z ...unitValue) {
+func (style Style) SetTransformOrigin(p positionValue, z ...unitValue) {
 	if len(z) > 0 {
 		style.set("transform-origin", unitType(p.String()+" "+z[0].String()))
 	} else {
@@ -137,7 +137,7 @@ func (style *Style) SetTransformOrigin(p positionValue, z ...unitValue) {
 `
 	case "transition-property":
 		return `
-func (style *Style) SetTransitionProperty(properties ...interface{}) {
+func (style Style) SetTransitionProperty(properties ...interface{}) {
 	var names string
 
 	for _, property := range properties {
@@ -304,10 +304,10 @@ func main() {
 				TypeName = camel
 			}
 
-			fmt.Println("func (style *Style) " + upper + "() " + TypeName + "Value {")
+			fmt.Println("func (style Style) " + upper + "() " + TypeName + "Value {")
 			fmt.Println("\treturn " + TypeName + "Type(style.Get(\"" + property + "\"))")
 			fmt.Println("}")
-			fmt.Println("func (style *Style) Set" + upper + "(value " + TypeName + "Value) {")
+			fmt.Println("func (style Style) Set" + upper + "(value " + TypeName + "Value) {")
 
 			fmt.Println("\tstyle.set(\"" + property + "\", value) ")
 			fmt.Println("}")

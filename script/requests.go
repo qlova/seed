@@ -46,5 +46,5 @@ func (q Ctx) DataRequest(url String) Promise {
 
 	q.Raw("Javascript", language.Statement(`let `+variable+` = data_request(`+url.LanguageType().Raw()+`);`))
 
-	return Promise{variable, q}
+	return Promise{q.Value(variable).Native(), q}
 }

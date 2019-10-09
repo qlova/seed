@@ -23,7 +23,7 @@ const GeoLocation = `
 func (q Ctx) RequestGeoLocation() Promise {
 	q.Require(GeoLocation)
 	return Promise{
-		`requestGeoLocation()`, q,
+		q.Value(`requestGeoLocation()`).Native(), q,
 	}
 }
 

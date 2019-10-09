@@ -33,6 +33,13 @@ func (v value) Native() qlova.Native {
 	return v.q.Script.NativeFromLanguageType(Javascript.Native{Expression: language.Statement(v.raw)})
 }
 
+func (v value) Promise() Promise {
+	return Promise{
+		Native: v.Native().Var(),
+		q:      v.q,
+	}
+}
+
 func (v value) Unit() Unit {
 	return Unit(v.String())
 }

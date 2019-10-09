@@ -23,6 +23,13 @@ func New() Style {
 	}
 }
 
+//From returns a style from a css stylable.
+func From(stylable css.Stylable) Style {
+	return Style{
+		Style: css.Style{stylable},
+	}
+}
+
 //Copy duplicates a style and returns a copy of it.
 func (style Style) Copy() Style {
 	var OldStyleImplemenation = style.Stylable.(css.Implementation)

@@ -197,7 +197,7 @@ func Unique() string {
 func (seed Seed) Play() Promise {
 	var variable = Unique()
 	seed.Javascript(`let ` + variable + ` = ` + seed.Element() + `.play();`)
-	return Promise{q: seed.Q, expression: variable}
+	return Promise{q: seed.Q, Native: seed.Q.Value(variable).Native()}
 }
 
 //Pause calls pause on the seed and returns the resulting promise.
