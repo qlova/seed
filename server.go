@@ -27,6 +27,9 @@ func Embed(name string, data []byte) {
 	if path.Ext(name) == ".css" {
 		ContentType = "text/css"
 	}
+	if path.Ext(name) == ".wasm" {
+		ContentType = "application/wasm"
+	}
 
 	embeddings[name] = embedding{
 		ContentType: ContentType,
