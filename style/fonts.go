@@ -3,6 +3,7 @@ package style
 import (
 	"encoding/base64"
 	"math/big"
+	"strings"
 
 	"github.com/qlova/seed/style/css"
 )
@@ -19,6 +20,13 @@ var fontID int64 = 1
 func NewFont(path string) Font {
 
 	var id = base64.RawURLEncoding.EncodeToString(big.NewInt(fontID).Bytes())
+
+	if id[0] >= '0' && id[0] <= '9' {
+		id = "_" + id
+	}
+
+	id = strings.Replace(id, "-", "__", -1)
+
 	fontID++
 
 	var font = Font{

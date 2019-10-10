@@ -142,14 +142,17 @@ func (app *harvester) harvest(seed Seed) {
 		var path = string(seed.font)
 		if font, ok := app.Context.FontCache[path]; ok {
 			seed.Style.SetFont(font)
+		} else {
+
+			h.assets = append(h.assets, NewAsset(path))
+
+			var font = style.NewFont(path)
+			app.Context.FontCache[path] = font
+
+			h.fonts[font] = struct{}{}
+
+			seed.Style.SetFont(font)
 		}
-
-		h.assets = append(h.assets, NewAsset(path))
-
-		var font = style.NewFont(path)
-		app.Context.FontCache[path] = font
-
-		h.fonts[font] = struct{}{}
 	}
 
 	//Harvest mediaQueries.
