@@ -7,7 +7,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gorilla/websocket v1.4.1
 	github.com/qlova/script v0.1.0
-	github.com/qlova/seeds v0.2.0
+	github.com/qlova/seeds v0.2.1
 	github.com/russross/blackfriday/v2 v2.0.1
 	github.com/tdewolff/minify/v2 v2.5.2
 	github.com/zserge/webview v0.0.0-20190123072648-16c93bcaeaeb
