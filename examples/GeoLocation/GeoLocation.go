@@ -19,7 +19,7 @@ func main() {
 
 		q.RequestGeoLocation().Then(func() {
 			Maps.FlyTo(q.GeoLocation())
-		}).Catch(func() {
+		}).Catch(func(err script.Error) {
 			q.Alert(q.String("Could not determine location"))
 		})
 	})
