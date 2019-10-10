@@ -39,7 +39,7 @@ function back() {
 	//Lol
 	let fallback = get(current_page).dataset.back; 
 	if (fallback) {
-		goto(fallback);
+		goto(fallback, true);
 		return;
 	}
 

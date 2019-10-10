@@ -225,12 +225,11 @@ func setTransitionIn(Page script.Page, trans Transition) {
 			if trans.Then != nil {
 				setTransitionIn(Page, *trans.Then)
 			}
-			q.Return()
-		})
-		if trans.Else != nil {
-			setTransitionIn(Page, *trans.Else)
-			return
-		}
+		}, q.Else(func() {
+			if trans.Else != nil {
+				setTransitionIn(Page, *trans.Else)
+			}
+		}))
 		return
 	}
 
@@ -240,12 +239,11 @@ func setTransitionIn(Page script.Page, trans Transition) {
 			if trans.Then != nil {
 				setTransitionIn(Page, *trans.Then)
 			}
-			q.Return()
-		})
-		if trans.Else != nil {
-			setTransitionIn(Page, *trans.Else)
-			return
-		}
+		}, q.Else(func() {
+			if trans.Else != nil {
+				setTransitionIn(Page, *trans.Else)
+			}
+		}))
 		return
 	}
 
@@ -263,12 +261,12 @@ func setTransitionOut(Page script.Page, trans Transition) {
 			if trans.Then != nil {
 				setTransitionOut(Page, *trans.Then)
 			}
-			q.Return()
-		})
-		if trans.Else != nil {
-			setTransitionOut(Page, *trans.Else)
-			return
-		}
+		}, q.Else(func() {
+			if trans.Else != nil {
+				setTransitionOut(Page, *trans.Else)
+			}
+		}))
+		return
 	}
 
 	if trans.WhenTag != "" {
@@ -276,12 +274,12 @@ func setTransitionOut(Page script.Page, trans Transition) {
 			if trans.Then != nil {
 				setTransitionOut(Page, *trans.Then)
 			}
-			q.Return()
-		})
-		if trans.Else != nil {
-			setTransitionOut(Page, *trans.Else)
-			return
-		}
+		}, q.Else(func() {
+			if trans.Else != nil {
+				setTransitionOut(Page, *trans.Else)
+			}
+		}))
+		return
 	}
 
 	if trans.Out != nil {

@@ -35,15 +35,14 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *sheet) {
 		return
 	}
 
-	if data := seed.Style.Bytes(); data != nil {
-		seed.styled = true
-		var selector = "#" + seed.id
-		if seed.template {
-			selector = "." + seed.id
-		}
-
-		sheet.AddSeed(selector, seed)
+	seed.styled = true
+	var selector = "#" + seed.id
+	if seed.template {
+		selector = "." + seed.id
 	}
+
+	sheet.AddSeed(selector, seed)
+
 	for _, child := range seed.children {
 		child.Root().buildStyleSheet(platform, sheet)
 	}
