@@ -32,6 +32,8 @@ function slave(response) {
 		for (let update in json.LocalStorage) {
 			window.localStorage.setItem(update, json.LocalStorage[update]);
 		}
+		
+		eval(json.Evaluations);
 
 		for (let namespace in json.Evaluations) {
 			for (let instruction of json.Evaluations[namespace]) {

@@ -39,6 +39,11 @@ type Update struct {
 	user.User
 }
 
+//ID returns the ID of the seed that this is updateing.
+func (update Update) ID() string {
+	return update.id
+}
+
 //For returns a new remote update to a seed that can be used to remotely modify the seed.
 func (seed Seed) For(u User) Update {
 	var update Update

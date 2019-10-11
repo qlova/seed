@@ -1,6 +1,8 @@
 package seed
 
 import (
+	"fmt"
+
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/script/global"
 )
@@ -134,16 +136,18 @@ func (state State) Unset(q script.Ctx) {
 func (state State) UnsetFor(u User) {
 	var reference = global.Reference(state.Bool).String()
 	if state.not {
-		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], `if (window.`+reference+`_set)`+reference+`_set();`)
+		fmt.Fprintf(u.Update.Script(), `if (window.%v_set) %v_set();`, reference, reference)
+		return
 	}
-	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], `if (window.`+reference+`_unset)`+reference+`_unset();`)
+	fmt.Fprintf(u.Update.Script(), `if (window.%v_unset) %v_unset();`, reference, reference)
 }
 
 //SetFor sets a state for tthe specified user.
 func (state State) SetFor(u User) {
 	var reference = global.Reference(state.Bool).String()
 	if state.not {
-		u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], `if (window.`+reference+`_unset)`+reference+`_unset();`)
+		fmt.Fprintf(u.Update.Script(), `if (window.%v_unset) %v_unset();`, reference, reference)
+		return
 	}
-	u.Update.Evaluations["state"] = append(u.Update.Evaluations["state"], `if (window.`+reference+`_set)`+reference+`_set();`)
+	fmt.Fprintf(u.Update.Script(), `if (window.%v_set) %v_set();`, reference, reference)
 }

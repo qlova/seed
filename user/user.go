@@ -1,6 +1,7 @@
 package user
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"regexp"
@@ -55,7 +56,7 @@ func (User) FromHandler(w http.ResponseWriter, r *http.Request) User {
 		Update: Update{
 			Document:     make(map[string]string),
 			LocalStorage: make(map[string]string),
-			Evaluations:  make(map[string][]string),
+			script:       bytes.NewBuffer(nil),
 		},
 	}}
 }
@@ -89,7 +90,11 @@ func (user User) Error(err ...string) {
 
 //Close closes the user.
 func (user User) Close() {
-	if len(user.Update.Document) > 0 || len(user.Update.LocalStorage) > 0 || len(user.Update.Evaluations) > 0 {
+	if len(user.Update.Document) > 0 ||
+		len(user.Update.LocalStorage) > 0 ||
+		len(user.Update.script.Bytes()) > 0 ||
+		len(user.Update.Data) > 0 {
+		user.Evaluations = user.Update.script.String()
 		json.NewEncoder(user.ResponseWriter).Encode(user.Update)
 	} else {
 		user.ResponseWriter.WriteHeader(http.StatusOK)
