@@ -89,11 +89,14 @@ All widgets/seeds can be styled with methods from the style package.
 https://godoc.org/github.com/qlova/seed/style
 
 ```
+import "github.com/qlova/seed/unit"
+import "github.com/qlova/seeds/text"
+
 var Text = text.AddTo(App, "Some syllable text)
 Text.SetBold()
-Text.Align(seed.Left)
+Text.Align().Left()
 Text.SetColor(seed.RGB(100, 0, 0)
-Text.SetOuterSpacing(seed.Em, seed.Em)
+Text.SetOuterSpacing(unit.Em, unit.Em)
 ```
 
 ## HTML/CSS/JS
@@ -106,10 +109,5 @@ However, there may be good reasons to use these technologies to extend missing f
 * When in doubt, seed.CSS().Set can be used to set css styles with strings,
 * seed.Script has a Javascript method for raw Javascript.
 * seed.Embed & seed.Seed.Require are useful for embedding Javascript and CSS files. Checkout the editor & swiper seeds.
-
-## Themes
-
-A work in progress material theme can be found [here](https://github.com/qlova/theme/tree/master/material).
-Check the examples folder to learn how to use it.
 
 **Please remember**, this framework is in development, it does not have a stable API and features are currently implemented as needed.
