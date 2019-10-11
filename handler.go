@@ -13,28 +13,24 @@ import (
 	"github.com/qlova/seed/script"
 )
 
-//Returns a http handler that serves this application.
-func (launcher launcher) Handler() http.Handler {
-	launcher.App.build()
-
+//Handler returns a http handler that serves this application.
+func (runtime Runtime) Handler() http.Handler {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	minified, err := mini(launcher.render(true, Default))
+	minified, err := mini(runtime.app.Render(Default))
 	if err != nil {
 		//Panic?
 	}
 
-	var html = launcher.render(false, Default)
+	var html = runtime.app.render(false, Default)
 
-	var worker = launcher.App.Worker.Render()
-	var manifest = launcher.Manifest.Render()
+	var worker = runtime.app.Worker.Render()
+	var manifest = runtime.app.Manifest.Render()
 
-	var custom = launcher.App.CustomHandler()
-
-	//var desktop = launcher.render(true, Desktop)
+	var custom = runtime.app.CustomHandler()
 
 	var LocalClients = 0
 
@@ -44,7 +40,7 @@ func (launcher launcher) Handler() http.Handler {
 	}
 
 	return gziphandler.GzipHandler(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		if origin := request.Header.Get("Origin"); origin == "https://"+launcher.App.host && origin != "" {
+		if origin := request.Header.Get("Origin"); origin == "https://"+runtime.app.host && origin != "" {
 			response.Header().Set("Access-Control-Allow-Origin", origin)
 		} else {
 			response.Header().Set("Access-Control-Allow-Origin", "file://")
@@ -107,22 +103,22 @@ func (launcher launcher) Handler() http.Handler {
 			}
 		}
 
-		if launcher.App.rest != "" && (request.URL.Host == launcher.App.rest || request.Host == launcher.App.rest) {
+		if runtime.app.rest != "" && (request.URL.Host == runtime.app.rest || request.Host == runtime.app.rest) {
 			response.Write([]byte(string("This place is for computers")))
 			return
 
 		}
 
-		if request.URL.Path == "/.well-known/assetlinks.json" && launcher.App.pkg != "" {
+		if request.URL.Path == "/.well-known/assetlinks.json" && runtime.app.pkg != "" {
 			response.Header().Set("Content-Type", "application/json")
 			response.Write([]byte(`[{
   "relation": ["delegate_permission/common.handle_all_urls"],
-  "target" : { "namespace": "android_app", "package_name": "` + launcher.App.pkg + `",
+  "target" : { "namespace": "android_app", "package_name": "` + runtime.app.pkg + `",
                "sha256_cert_fingerprints": [`))
 
-			for i, hash := range launcher.App.hashes {
+			for i, hash := range runtime.app.hashes {
 				response.Write([]byte("\"" + hash + "\""))
-				if i < len(launcher.App.hashes)-1 {
+				if i < len(runtime.app.hashes)-1 {
 					response.Write([]byte(`,`))
 				}
 			}

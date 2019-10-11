@@ -3,6 +3,7 @@ package seed
 import (
 	"bytes"
 	"net/http"
+	"os"
 
 	"github.com/qlova/seed/manifest"
 	"github.com/qlova/seed/script"
@@ -160,20 +161,31 @@ func (app *App) SetTrackingCode(code string) {
 //This method is suitable for launching the app in development and in production.
 //However, to actually launch the app in production, a -production flag needs to passed to the app.
 func (app *App) Launch(listen ...string) error {
+	app.build()
 
 	if exporting {
-		app.build()
 		app.Export(Website)
 		return nil
 	}
 
-	launcher{App: *app}.Launch(listen...)
+	var wasm bool
+	for _, arg := range os.Args {
+		if arg == "-wasm" {
+			wasm = true
+		}
+	}
+
+	Runtime{
+		app:           *app,
+		bootstrapWasm: wasm,
+	}.Launch(listen...)
 	return nil
 }
 
 //Handler returns a handler for this app.
 func (app *App) Handler() http.Handler {
-	return launcher{App: *app}.Handler()
+	app.build()
+	return Runtime{app: *app}.Handler()
 }
 
 //OnUpdateFound will be called when an update is found for the app.

@@ -1,3 +1,5 @@
+//+build !wasm
+
 package seed
 
 import (
@@ -13,13 +15,6 @@ import (
 )
 
 //import ua "github.com/avct/uasurfer"
-
-type launcher struct {
-	App
-
-	//Hostname and port where you want the application to be listening on.
-	Listen string
-}
 
 //Live signals if the application is live or not.
 var Live bool
@@ -70,23 +65,29 @@ func init() {
 	}()
 }
 
-func (launcher launcher) Launch(port ...string) {
-	if launcher.Seed.seed != nil {
+//Launch launches the app listening on the given port.
+func (runtime Runtime) Launch(port ...string) {
+	if runtime.app.Seed.seed != nil {
 
 		if len(port) > 0 {
-			launcher.Listen = port[0]
+			runtime.Listen = port[0]
 		}
 
 		//Allow port config from Env
 		if port := os.Getenv("PORT"); port != "" {
-			launcher.Listen = port
+			runtime.Listen = port
 		}
 
-		if launcher.Listen == "" {
-			launcher.Listen = ":1234"
+		if runtime.Listen == "" {
+			runtime.Listen = ":1234"
 		}
 
 		if !Live && !Production {
+
+			if runtime.bootstrapWasm {
+				runtime.launchWasm()
+				return
+			}
 
 			//Launch the app if possible.
 			go launch(":10000")
@@ -172,11 +173,11 @@ func (launcher launcher) Launch(port ...string) {
 				log.Fatal(err)
 			}
 
-			proxy(launcher.Listen, ":10000")
+			proxy(runtime.Listen, ":10000")
 
 		} else {
-			http.Handle("/", launcher.Handler())
-			http.ListenAndServe(launcher.Listen, nil)
+			http.Handle("/", runtime.app.Handler())
+			http.ListenAndServe(runtime.Listen, nil)
 		}
 		return
 	}
