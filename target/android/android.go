@@ -14,6 +14,9 @@ import (
 	"github.com/qlova/seed"
 )
 
+//TODO Use https://developer.android.com/reference/androidx/webkit/WebViewAssetLoader
+//Needs https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev/webkit/src/main/java/androidx/webkit/WebViewAssetLoader.java
+//And https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev/webkit/src/main/java/androidx/webkit/internal/AssetHelper.java
 const MainActivity = `package com.example.app;
 
 import android.widget.RelativeLayout;
