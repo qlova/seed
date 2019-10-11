@@ -18,7 +18,36 @@ import (
 
 //Request is the JS code required to make Go calls.
 const Request = `
+function slave(response) {
+	if (response.charAt(0) != "{") return;
+		let json = JSON.parse(response);
+		for (let update in json.Document) {
+			if (update.charAt(0) == "#") {
+				let splits = update.split(".", 2)
+				let id = splits[0];
+				let property = update.slice(update.indexOf(".")+1);
+				eval("get('"+id.substring(1)+"')."+property+" = '"+json.Document[update]+"';");
+			}
+		}
+		for (let update in json.LocalStorage) {
+			window.localStorage.setItem(update, json.LocalStorage[update]);
+		}
+
+		for (let namespace in json.Evaluations) {
+			for (let instruction of json.Evaluations[namespace]) {
+				eval(instruction);
+			}
+		}
+
+}
+
 function request (method, formdata, url, manual) {
+
+	if (window.rpc && rpc[url]) {
+		slave(rpc[url](formdata));
+		return;
+	}
+
 	if (ServiceWorker_Registration) ServiceWorker_Registration.update();
 
 	if (url.charAt(0) == "/") url = host+url;
@@ -52,26 +81,7 @@ function request (method, formdata, url, manual) {
 	};
 	xhr.send(formdata);
 	}).then(function(response) {
-		if (response.charAt(0) != "{") return;
-		let json = JSON.parse(response);
-		for (let update in json.Document) {
-			if (update.charAt(0) == "#") {
-				let splits = update.split(".", 2)
-				let id = splits[0];
-				let property = update.slice(update.indexOf(".")+1);
-				console.log("get('"+id.substring(1)+"')."+property+" = '"+json.Document[update]+"';");
-				eval("get('"+id.substring(1)+"')."+property+" = '"+json.Document[update]+"';");
-			}
-		}
-		for (let update in json.LocalStorage) {
-			window.localStorage.setItem(update, json.LocalStorage[update]);
-		}
-
-		for (let namespace in json.Evaluations) {
-			for (let instruction of json.Evaluations[namespace]) {
-				eval(instruction);
-			}
-		}
+		slave(response)
 	})
 }
 `
@@ -125,7 +135,7 @@ func (q Ctx) With(args Args) Attached {
 	return Attached{"", q, args}
 }
 
-var rpcID int64
+var rpcID int64 = 1
 
 func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type) Promise {
 
@@ -139,7 +149,7 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 	if value.Kind() != reflect.Func || value.Type().NumOut() > 1 {
 		panic("Script.Call: Must pass a Go function without zero or one return values")
 	}
-	exports[name] = value
+	Exports[name] = value
 
 	var CallingString = `/call/` + name
 
@@ -190,7 +200,7 @@ func (q Ctx) Error() qlova.String {
 	return q.wrap("rpc_result.response")
 }
 
-var exports = make(map[string]reflect.Value)
+var Exports = make(map[string]reflect.Value)
 
 func (q Ctx) call(f interface{}, args ...qlova.Type) qlova.Value {
 	if name, ok := f.(string); ok && len(args) == 0 {
@@ -205,7 +215,7 @@ func (q Ctx) call(f interface{}, args ...qlova.Type) qlova.Value {
 	if value.Kind() != reflect.Func || value.Type().NumOut() > 1 {
 		panic("Script.Call: Must pass a Go function without zero or one return values")
 	}
-	exports[name] = value
+	Exports[name] = value
 
 	var CallingString = `/call/` + name
 
@@ -250,7 +260,7 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 		return
 	}
 
-	f, ok := exports[args[0]]
+	f, ok := Exports[args[0]]
 	if !ok {
 		return
 	}
