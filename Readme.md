@@ -110,4 +110,8 @@ However, there may be good reasons to use these technologies to extend missing f
 * seed.Script has a Javascript method for raw Javascript.
 * seed.Embed & seed.Seed.Require are useful for embedding Javascript and CSS files. Checkout the editor & swiper seeds.
 
+## Community 
+
+There is a reddit community: [/r/Qlovaseed](https://www.reddit.com/r/Qlovaseed/).
+
 **Please remember**, this framework is in development, it does not have a stable API and features are currently implemented as needed.
