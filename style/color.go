@@ -71,7 +71,7 @@ func (gradient Gradient) CSS() []byte {
 		buffer.WriteByte(',')
 	} else {
 		buffer.WriteString(`linear-gradient(`)
-		fmt.Fprintf(&buffer, "%vdeg,", math.Atan2(imag(gradient.Direction), real(gradient.Direction))+math.Pi/2)
+		fmt.Fprintf(&buffer, "%vrad,", math.Atan2(imag(gradient.Direction), real(gradient.Direction))+math.Pi/2)
 	}
 
 	buffer.WriteString(css.Colour(gradient.Colors[0]).String())
