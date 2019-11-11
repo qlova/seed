@@ -33,6 +33,27 @@ func (v value) Native() qlova.Native {
 	return v.q.Script.NativeFromLanguageType(Javascript.Native{Expression: language.Statement(v.raw)})
 }
 
+func (v value) Dynamic() Dynamic {
+	return Dynamic{
+		Native: v.Native(),
+		Q:      v.q,
+	}
+}
+
+func (v value) Array() Array {
+	return Array{
+		Native: v.Native(),
+		Q:      v.q,
+	}
+}
+
+func (v value) Object() Object {
+	return Object{
+		Native: v.Native(),
+		Q:      v.q,
+	}
+}
+
 func (v value) Promise() Promise {
 	return Promise{
 		Native: v.Native().Var(),

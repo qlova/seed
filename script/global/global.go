@@ -103,3 +103,41 @@ func (b Bool) Set(q script.Ctx, value script.Bool) {
 	q.Javascript(`window.localStorage.setItem("` + b.string + `", ` + value.LanguageType().Raw() + `);`)
 	Reference(b).Set(q)
 }
+
+//Array is a global Array.
+type Array Reference
+
+//NewArray returns a reference to a new global array.
+func NewArray(name ...string) Array {
+	return Array(New(name...))
+}
+
+//Get the script.Array for the global.Array
+func (a Array) Get(q script.Ctx) script.Array {
+	return q.Value(`JSON.parse(window.localStorage.getItem("` + a.string + `") || "[]")`).Array()
+}
+
+//Set the global.Array to be script.Array
+func (a Array) Set(q script.Ctx, value script.Array) {
+	q.Javascript(`window.localStorage.setItem("` + a.string + `", JSON.stringify(` + value.LanguageType().Raw() + `));`)
+	Reference(a).Set(q)
+}
+
+//Object is a global Object.
+type Object Reference
+
+//NewObject returns a reference to a new global object.
+func NewObject(name ...string) Object {
+	return Object(New(name...))
+}
+
+//Get the script.Object for the global.Object
+func (o Object) Get(q script.Ctx) script.Object {
+	return q.Value(`JSON.parse(window.localStorage.getItem("` + o.string + `") || "{}")`).Object()
+}
+
+//Set the global.Object to be script.Object
+func (o Object) Set(q script.Ctx, value script.Object) {
+	q.Javascript(`window.localStorage.setItem("` + o.string + `", JSON.stringify(` + value.LanguageType().Raw() + `));`)
+	Reference(o).Set(q)
+}
