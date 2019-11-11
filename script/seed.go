@@ -168,18 +168,21 @@ func (seed Seed) wrap(s string) String {
 	})
 }
 
+//Format is required to format text.
+const Format = `function formatText(s) {
+	let div = document.createElement('div');
+	div.innerText = s;
+	s = div.innerHTML;
+
+	s.replace("\n", "<br>");
+	s.replace("  ", "&nbsp;&nbsp;");
+	s.replace("\t", "&emsp;");
+	return s;
+}`
+
 //SetText sets the text of the string.
 func (seed Seed) SetText(s String) {
-	seed.Q.Require(`function formatText(s) {
-		let div = document.createElement('div');
-		div.innerText = s;
-		s = div.innerHTML;
-
-		s.replace("\n", "<br>");
-		s.replace("  ", "&nbsp;&nbsp;");
-		s.replace("\t", "&emsp;");
-		return s;
-}`)
+	seed.Q.Require(Format)
 	seed.Javascript(seed.Element() + `.innerHTML = formatText(` + raw(s) + `);`)
 }
 

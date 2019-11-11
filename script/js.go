@@ -17,6 +17,10 @@ type value struct {
 	raw string
 }
 
+func (v value) Int() qlova.Int {
+	return v.q.Script.ValueFromLanguageType(Javascript.Integer{Expression: language.Statement(v.raw)}).Int()
+}
+
 func (v value) String() qlova.String {
 	return v.q.Script.ValueFromLanguageType(Javascript.String{Expression: language.Statement(v.raw)}).String()
 }
@@ -31,6 +35,27 @@ func (v value) Float() qlova.Float {
 
 func (v value) Native() qlova.Native {
 	return v.q.Script.NativeFromLanguageType(Javascript.Native{Expression: language.Statement(v.raw)})
+}
+
+func (v value) Dynamic() Dynamic {
+	return Dynamic{
+		Native: v.Native(),
+		Q:      v.q,
+	}
+}
+
+func (v value) Array() Array {
+	return Array{
+		Native: v.Native(),
+		Q:      v.q,
+	}
+}
+
+func (v value) Object() Object {
+	return Object{
+		Native: v.Native(),
+		Q:      v.q,
+	}
 }
 
 func (v value) Promise() Promise {

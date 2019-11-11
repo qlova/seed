@@ -3,12 +3,27 @@ package html
 //Attribute is an HTML element attribute.
 type Attribute string
 
+//Language is a valid language attribute.
+type Language string
+
+//LinkType indicate the relationship between two documents.
+//See https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types
+type LinkType string
+
 //Collection of attributes.
 const (
 	Source          Attribute = "src"
 	Value           Attribute = "value"
 	AllowFullscreen Attribute = "allowfullscreen"
 	Frameborder     Attribute = "frameborder"
+
+	Download                   Attribute = "download"
+	HypertextReference         Attribute = "href"
+	HypertextReferenceLanguage Attribute = "hreflang"
+	Relationship               Attribute = "rel"
+	Target                     Attribute = "target"
+	Type                       Attribute = "type"
+	Ping                       Attribute = "ping"
 )
 
 //Tag is an HTML tag.

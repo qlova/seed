@@ -180,7 +180,13 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 			q.Javascript(formdata + ` = new FormData();`)
 		}
 		for key, value := range nargs {
-			q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, ` + value.LanguageType().Raw() + `);`)
+			switch value.(type) {
+			case Array, Object:
+				q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, JSON.stringify(` + value.LanguageType().Raw() + `));`)
+			default:
+				q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, ` + value.LanguageType().Raw() + `);`)
+			}
+
 		}
 	}
 

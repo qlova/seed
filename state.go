@@ -15,7 +15,7 @@ type State struct {
 
 //Null returns true if this is a null state.
 func (state State) Null() bool {
-	return global.Reference(state.Bool).String() == ""
+	return state.Bool.Ref() == ""
 }
 
 //NewState returns a new globally unique state.
@@ -106,7 +106,7 @@ func (state State) Get(q script.Ctx) script.Bool {
 
 //Set sets the state to be active.
 func (state State) Set(q script.Ctx) {
-	var reference = global.Reference(state.Bool).String()
+	var reference = state.Bool.Ref()
 	if state.not {
 		state.Bool.Set(q, q.False())
 		q.Javascript(`if (window.` + reference + `_unset)`)
@@ -120,7 +120,7 @@ func (state State) Set(q script.Ctx) {
 
 //Unset sets the state to not be active.
 func (state State) Unset(q script.Ctx) {
-	var reference = global.Reference(state.Bool).String()
+	var reference = state.Bool.Ref()
 	if state.not {
 		state.Bool.Set(q, q.True())
 		q.Javascript(`if (window.` + reference + `_set)`)
@@ -134,7 +134,7 @@ func (state State) Unset(q script.Ctx) {
 
 //UnsetFor unsets a state for tthe specified user.
 func (state State) UnsetFor(u User) {
-	var reference = global.Reference(state.Bool).String()
+	var reference = state.Bool.Ref()
 	if state.not {
 		fmt.Fprintf(u.Update.Script(), `if (window.%v_set) %v_set();`, reference, reference)
 		return
@@ -144,7 +144,7 @@ func (state State) UnsetFor(u User) {
 
 //SetFor sets a state for tthe specified user.
 func (state State) SetFor(u User) {
-	var reference = global.Reference(state.Bool).String()
+	var reference = state.Bool.Ref()
 	if state.not {
 		fmt.Fprintf(u.Update.Script(), `if (window.%v_unset) %v_unset();`, reference, reference)
 		return
