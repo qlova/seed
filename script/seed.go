@@ -2,6 +2,7 @@ package script
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/qlova/script/language"
@@ -30,12 +31,34 @@ type Seed struct {
 	Q          Ctx
 }
 
+//Seed creates a new seed dynamically.
+func (ctx Ctx) Seed(options ...string) Seed {
+	var tag = "div"
+	if len(options) > 0 {
+		tag = options[0]
+	}
+	var variable = ctx.Value(`document.createElement(` + strconv.Quote(tag) + `)`).Native().Var()
+	var seed = Seed{
+		Native: variable.LanguageType().Raw(),
+		Q:      ctx,
+	}
+	seed.Stylable = seed
+	return seed
+}
+
 //Set is the required JS code for setting styles.
 const Set = `
 function set(element, property, value) {
 	element.style[property] = value;
 }
 `
+
+//CSS implements css.Stylable
+func (seed Seed) CSS() css.Style {
+	return css.Style{
+		Stylable: seed,
+	}
+}
 
 //Set sets the CSS style property to value.
 func (seed Seed) Set(property, value string) {
