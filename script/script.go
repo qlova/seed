@@ -1,6 +1,8 @@
 package script
 
 import (
+	"fmt"
+
 	"github.com/qlova/seed/internal"
 	"github.com/qlova/seed/style/css"
 
@@ -93,8 +95,8 @@ func (q Ctx) JS() js {
 }
 
 //Javascript inserts raw js into the script.
-func (q Ctx) Javascript(js string) {
-	q.Raw("Javascript", language.Statement(js))
+func (q Ctx) Javascript(js string, args ...interface{}) {
+	q.Raw("Javascript", language.Statement(fmt.Sprintf(js, args...)))
 }
 
 //Run runs a Javascript function with the given arguments.

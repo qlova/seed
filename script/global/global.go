@@ -10,6 +10,11 @@ import (
 	Javascript "github.com/qlova/script/language/javascript"
 )
 
+//Variable is any global variable.
+type Variable interface {
+	Ref() string
+}
+
 //All globals have a unique id.
 var id int64 = 1
 
@@ -18,7 +23,8 @@ type Reference struct {
 	string
 }
 
-func (ref Reference) String() string {
+//Ref returns the raw reference.
+func (ref Reference) Ref() string {
 	return ref.string
 }
 
@@ -41,33 +47,14 @@ func New(name ...string) Reference {
 	return Reference{result}
 }
 
-//Int is a global Integer.
-type Int Reference
-
-//NewInt returns a reference to a new global integer.
-func NewInt(name ...string) Int {
-	return Int(New(name...))
-}
-
-//Get the script.Int for the global.Int
-func (i Int) Get(q script.Ctx) script.Int {
-	return q.IntFromLanguageType(Javascript.Integer{
-		Expression: language.Statement(`(parseInt(window.localStorage.getItem("` + i.string + `") || "0"))`),
-	})
-}
-
-//Set the global.Int to be script.Int
-func (i Int) Set(q script.Ctx, value script.Int) {
-	q.Javascript(`window.localStorage.setItem("` + i.string + `", ` + value.LanguageType().Raw() + `.toString());`)
-	Reference(i).Set(q)
-}
-
 //String is a global Integer.
-type String Reference
+type String struct {
+	Reference
+}
 
 //NewString returns a reference to a new global string.
 func NewString(name ...string) String {
-	return String(New(name...))
+	return String{New(name...)}
 }
 
 //Get the script.String for the global.String
@@ -80,15 +67,17 @@ func (s String) Get(q script.Ctx) script.String {
 //Set the global.String to be script.String
 func (s String) Set(q script.Ctx, value script.String) {
 	q.Javascript(`window.localStorage.setItem("` + s.string + `", ` + value.LanguageType().Raw() + `);`)
-	Reference(s).Set(q)
+	s.Reference.Set(q)
 }
 
 //Bool is a global Boolean.
-type Bool Reference
+type Bool struct {
+	Reference
+}
 
 //NewBool returns a reference to a new global boolean.
 func NewBool(name ...string) Bool {
-	return Bool(New(name...))
+	return Bool{New(name...)}
 }
 
 //Get the script.Bool for the global.Bool
@@ -101,15 +90,17 @@ func (b Bool) Get(q script.Ctx) script.Bool {
 //Set the global.Bool to be script.Bool
 func (b Bool) Set(q script.Ctx, value script.Bool) {
 	q.Javascript(`window.localStorage.setItem("` + b.string + `", ` + value.LanguageType().Raw() + `);`)
-	Reference(b).Set(q)
+	b.Reference.Set(q)
 }
 
 //Array is a global Array.
-type Array Reference
+type Array struct {
+	Reference
+}
 
 //NewArray returns a reference to a new global array.
 func NewArray(name ...string) Array {
-	return Array(New(name...))
+	return Array{New(name...)}
 }
 
 //Get the script.Array for the global.Array
@@ -120,15 +111,17 @@ func (a Array) Get(q script.Ctx) script.Array {
 //Set the global.Array to be script.Array
 func (a Array) Set(q script.Ctx, value script.Array) {
 	q.Javascript(`window.localStorage.setItem("` + a.string + `", JSON.stringify(` + value.LanguageType().Raw() + `));`)
-	Reference(a).Set(q)
+	a.Reference.Set(q)
 }
 
 //Object is a global Object.
-type Object Reference
+type Object struct {
+	Reference
+}
 
 //NewObject returns a reference to a new global object.
 func NewObject(name ...string) Object {
-	return Object(New(name...))
+	return Object{New(name...)}
 }
 
 //Get the script.Object for the global.Object
@@ -139,5 +132,5 @@ func (o Object) Get(q script.Ctx) script.Object {
 //Set the global.Object to be script.Object
 func (o Object) Set(q script.Ctx, value script.Object) {
 	q.Javascript(`window.localStorage.setItem("` + o.string + `", JSON.stringify(` + value.LanguageType().Raw() + `));`)
-	Reference(o).Set(q)
+	o.Reference.Set(q)
 }

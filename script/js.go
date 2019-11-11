@@ -17,6 +17,10 @@ type value struct {
 	raw string
 }
 
+func (v value) Int() qlova.Int {
+	return v.q.Script.ValueFromLanguageType(Javascript.Integer{Expression: language.Statement(v.raw)}).Int()
+}
+
 func (v value) String() qlova.String {
 	return v.q.Script.ValueFromLanguageType(Javascript.String{Expression: language.Statement(v.raw)}).String()
 }

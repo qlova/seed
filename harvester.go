@@ -6,7 +6,6 @@ import (
 
 	"github.com/qlova/seed/internal"
 	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/script/global"
 	"github.com/qlova/seed/style"
 	"github.com/qlova/seed/style/css"
 )
@@ -113,16 +112,8 @@ func (app *harvester) harvest(seed Seed) {
 		h.assets = append(h.assets, seed.assets...)
 	}
 
-	//Harvest Dynamic Handlers.
-	if reference := global.Reference(seed.dynamic.Text).String(); reference != "" {
-		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], func(q script.Ctx) {
-			seed.Ctx(q).SetText(seed.dynamic.Text.Get(q))
-		})
-	}
-	if reference := global.Reference(seed.dynamic.Source).String(); reference != "" {
-		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], func(q script.Ctx) {
-			seed.Ctx(q).SetSource(seed.dynamic.Source.Get(q))
-		})
+	for reference, handlers := range seed.dynamic.Handlers {
+		h.dynamicHandlers[reference] = append(h.dynamicHandlers[reference], handlers...)
 	}
 
 	//Harvest State Handlers.
@@ -268,7 +259,7 @@ func (app *harvester) StateHandlers() []byte {
 	var buffer bytes.Buffer
 
 	for state, handlers := range h.stateHandlers {
-		var reference = global.Reference(state.Bool).String()
+		var reference = state.Bool.Ref()
 		if state.not {
 			buffer.WriteString("window." + reference + "_unset = function() {")
 			buffer.Write([]byte(script.ToJavascript(func(q script.Ctx) {
