@@ -17,9 +17,9 @@ func (promise Promise) Raw() string {
 }
 
 //Then executes the provided function when the promise succeeds.
-func (promise Promise) Then(f func()) Promise {
-	promise.q.Javascript(promise.Raw() + ` = ` + promise.Raw() + ".then(function(rpc_result) {")
-	f()
+func (promise Promise) Then(f func(value Dynamic)) Promise {
+	promise.q.Javascript(promise.Raw() + ` = ` + promise.Raw() + ".then(function(promise_result) {")
+	f(promise.q.Value("promise_result").Dynamic())
 	promise.q.Javascript("});")
 	return promise
 }
