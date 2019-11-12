@@ -33,14 +33,9 @@ function slave(response) {
 			window.localStorage.setItem(update, json.LocalStorage[update]);
 		}
 		
-		eval(json.Evaluations);
+		eval(json.Evaluation);
 
-		for (let namespace in json.Evaluations) {
-			for (let instruction of json.Evaluations[namespace]) {
-				eval(instruction);
-			}
-		}
-
+		return JSON.parse(json.Response);
 }
 
 function request (method, formdata, url, manual) {
@@ -61,29 +56,29 @@ function request (method, formdata, url, manual) {
 	}
 
 	return new Promise(function (resolve, reject) {
-	var xhr = new XMLHttpRequest();
-	xhr.open(method, url, true);
-	xhr.onload = function () {
-		if (this.status >= 200 && this.status < 300) {
-		resolve(xhr.response);
-		} else {
-		reject({
+		var xhr = new XMLHttpRequest();
+		xhr.open(method, url, true);
+		xhr.onload = function () {
+			if (this.status >= 200 && this.status < 300) {
+			resolve(xhr.response);
+			} else {
+			reject({
+				status: this.status,
+				statusText: xhr.statusText,
+				response: xhr.response
+			});
+			}
+		};
+		xhr.onerror = function () {
+			reject({
 			status: this.status,
 			statusText: xhr.statusText,
 			response: xhr.response
-		});
-		}
-	};
-	xhr.onerror = function () {
-		reject({
-		status: this.status,
-		statusText: xhr.statusText,
-		response: xhr.response
-		});
-	};
-	xhr.send(formdata);
+			});
+		};
+		xhr.send(formdata);
 	}).then(function(response) {
-		slave(response)
+		return slave(response)
 	})
 }
 `
