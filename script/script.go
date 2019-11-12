@@ -96,7 +96,11 @@ func (q Ctx) JS() js {
 
 //Javascript inserts raw js into the script.
 func (q Ctx) Javascript(js string, args ...interface{}) {
-	q.Raw("Javascript", language.Statement(fmt.Sprintf(js, args...)))
+	if len(args) > 0 {
+		q.Raw("Javascript", language.Statement(fmt.Sprintf(js, args...)))
+	} else {
+		q.Raw("Javascript", language.Statement(fmt.Sprint(js)))
+	}
 }
 
 //Run runs a Javascript function with the given arguments.
