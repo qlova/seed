@@ -54,6 +54,7 @@ func (User) FromHandler(w http.ResponseWriter, r *http.Request) User {
 		ResponseWriter: w,
 
 		Update: Update{
+			Response:     new(string),
 			Document:     make(map[string]string),
 			LocalStorage: make(map[string]string),
 			script:       bytes.NewBuffer(nil),
@@ -93,8 +94,9 @@ func (user User) Close() {
 	if len(user.Update.Document) > 0 ||
 		len(user.Update.LocalStorage) > 0 ||
 		len(user.Update.script.Bytes()) > 0 ||
-		len(user.Update.Data) > 0 {
-		user.Evaluations = user.Update.script.String()
+		len(user.Update.Data) > 0 ||
+		len(*user.Update.Response) > 0 {
+		user.Evaluation = user.Update.script.String()
 		json.NewEncoder(user.ResponseWriter).Encode(user.Update)
 	} else {
 		user.ResponseWriter.WriteHeader(http.StatusOK)
