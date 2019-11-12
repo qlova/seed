@@ -37,3 +37,8 @@ func (arg Argument) Map() (returns map[string]interface{}) {
 	}
 	return
 }
+
+//Decode decodes the value into the provided interface.
+func (arg Argument) Decode(i interface{}) error {
+	return json.NewDecoder(strings.NewReader(arg.string)).Decode(i)
+}
