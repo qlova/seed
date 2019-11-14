@@ -1,6 +1,10 @@
 package script
 
-import qlova "github.com/qlova/script"
+import (
+	"strings"
+
+	qlova "github.com/qlova/script"
+)
 
 //Array is a dynamic-content array.
 type Array struct {
@@ -8,8 +12,27 @@ type Array struct {
 	qlova.Native
 }
 
+//Strings creates a new script.Array of strings.
+func (q Ctx) Strings(slice ...string) Array {
+	var converted = make([]qlova.Type, len(slice))
+	for i := range slice {
+		converted[i] = q.String(slice[i])
+	}
+	return q.NewArray(converted...)
+}
+
 //NewArray creates a new Array.
-func (q Ctx) NewArray() Array {
+func (q Ctx) NewArray(elements ...qlova.Type) Array {
+	var raw = make([]string, len(elements))
+	for i := range elements {
+		raw[i] = elements[i].LanguageType().Raw()
+	}
+	if len(elements) > 0 {
+		return Array{
+			Q:      q,
+			Native: q.Value("[" + strings.Join(raw, ",") + "]").Native(),
+		}
+	}
 	return Array{
 		Q:      q,
 		Native: q.Value("[]").Native(),

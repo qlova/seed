@@ -85,12 +85,22 @@ func (app *harvester) harvestOnReady(seed Seed) []byte {
 	}
 
 	//Harvest onready handlers
-	if (seed.onready != nil) && !seed.template {
+	if (seed.onready != nil) && !seed.Template {
+		buffer.WriteString("get('")
+		buffer.WriteString(seed.id)
+		buffer.WriteString("').onready = function() {")
 		buffer.Write(script.ToJavascript(seed.onready, h.Context))
+		buffer.WriteString("};")
 	}
 
 	for _, child := range seed.children {
 		buffer.Write(h.harvestOnReady(child.Root()))
+	}
+
+	if (seed.onready != nil) && !seed.Template {
+		buffer.WriteString("get('")
+		buffer.WriteString(seed.id)
+		buffer.WriteString("').onready();")
 	}
 
 	return buffer.Bytes()

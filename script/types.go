@@ -2,6 +2,9 @@ package script
 
 import qlovascript "github.com/qlova/script"
 
+//Type is a qlovascript type.
+type Type = qlovascript.Type
+
 //String is the script string type.
 type String = qlovascript.String
 

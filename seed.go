@@ -88,7 +88,7 @@ type seed struct {
 
 	on map[string]func(script.Ctx)
 
-	template bool
+	Template bool
 
 	parent Interface
 
@@ -125,6 +125,11 @@ func (seed Seed) On(event string, callback func(script.Ctx)) {
 		return
 	}
 	seed.on[event] = callback
+}
+
+//Ready returns the ready event handler.
+func (seed Seed) Ready() func(script.Ctx) {
+	return seed.onready
 }
 
 //Is returns true if a and b are the same seed.
@@ -407,8 +412,8 @@ func (seed Seed) Add(child Interface) {
 	seed.children = append(seed.children, child)
 	child.Root().parent = seed
 	child.Root().app = seed.app
-	if seed.template {
-		child.Root().template = true
+	if seed.Template {
+		child.Root().Template = true
 	}
 }
 
@@ -420,6 +425,16 @@ func (seed Seed) AddHandler(handler func(w http.ResponseWriter, r *http.Request)
 //SetContent adds text, html or whatever!
 func (seed Seed) SetContent(data string) {
 	seed.content = []byte(data)
+}
+
+//SetHTML sets the html content of the seed.
+func (seed Seed) SetHTML(data string) {
+	seed.content = []byte(data)
+}
+
+//HTML returns the html content of the seed.
+func (seed Seed) HTML() []byte {
+	return seed.content
 }
 
 //Text returns the text content of the seed.

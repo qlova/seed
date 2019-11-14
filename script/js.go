@@ -12,66 +12,85 @@ type js struct {
 	q Ctx
 }
 
-type value struct {
+//Value is any script value.
+type Value struct {
 	q   Ctx
 	raw string
 }
 
-func (v value) Int() qlova.Int {
+//Int returns the value as an Int.
+func (v Value) Int() Int {
 	return v.q.Script.ValueFromLanguageType(Javascript.Integer{Expression: language.Statement(v.raw)}).Int()
 }
 
-func (v value) String() qlova.String {
+//String returns the value as a String.
+func (v Value) String() String {
 	return v.q.Script.ValueFromLanguageType(Javascript.String{Expression: language.Statement(v.raw)}).String()
 }
 
-func (v value) Bool() qlova.Bool {
+//Bool returns the value as a bool.
+func (v Value) Bool() qlova.Bool {
 	return v.q.Script.ValueFromLanguageType(Javascript.Bit{Expression: language.Statement(v.raw)}).Bool()
 }
 
-func (v value) Float() qlova.Float {
+//Float returns the value as a float.
+func (v Value) Float() qlova.Float {
 	return v.q.Script.ValueFromLanguageType(Javascript.Real{Expression: language.Statement(v.raw)}).Float()
 }
 
-func (v value) Native() qlova.Native {
+//Native returns the value as a native value.
+func (v Value) Native() qlova.Native {
 	return v.q.Script.NativeFromLanguageType(Javascript.Native{Expression: language.Statement(v.raw)})
 }
 
-func (v value) Dynamic() Dynamic {
+//Dynamic returns the value as a native value.
+func (v Value) Dynamic() Dynamic {
 	return Dynamic{
 		Native: v.Native(),
 		Q:      v.q,
 	}
 }
 
-func (v value) Array() Array {
+//File returns the value as an file.
+func (v Value) File() File {
+	return File{
+		Native: v.Native(),
+		Q:      v.q,
+	}
+}
+
+//Array returns the value as an array.
+func (v Value) Array() Array {
 	return Array{
 		Native: v.Native(),
 		Q:      v.q,
 	}
 }
 
-func (v value) Object() Object {
+//Object returns the value as an object.
+func (v Value) Object() Object {
 	return Object{
 		Native: v.Native(),
 		Q:      v.q,
 	}
 }
 
-func (v value) Promise() Promise {
+//Promise returns the value as a promise.
+func (v Value) Promise() Promise {
 	return Promise{
 		Native: v.Native().Var(),
 		q:      v.q,
 	}
 }
 
-func (v value) Unit() Unit {
+//Unit returns the value as a unit.
+func (v Value) Unit() Unit {
 	return Unit(v.String())
 }
 
 //Value wraps a JS string as a value that can be cast to script.Type.
-func (q Ctx) Value(raw string) value {
-	return value{q, raw}
+func (q Ctx) Value(raw string) Value {
+	return Value{q, raw}
 }
 
 func (j js) Run(function string, args ...qlova.Type) {
@@ -87,7 +106,7 @@ func (j js) Run(function string, args ...qlova.Type) {
 	j.q.Javascript(function + "(" + converted + ");")
 }
 
-func (j js) Call(function string, args ...qlova.Type) value {
+func (j js) Call(function string, args ...qlova.Type) Value {
 
 	var converted string
 	for i, arg := range args {
@@ -97,5 +116,5 @@ func (j js) Call(function string, args ...qlova.Type) value {
 		}
 	}
 
-	return value{j.q, function + "(" + converted + ")"}
+	return Value{j.q, function + "(" + converted + ")"}
 }

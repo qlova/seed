@@ -93,7 +93,7 @@ func (seed Seed) Data(property String) String {
 
 //SetData sets string Data associated with this seed.
 func (seed Seed) SetData(property, data String) {
-	seed.Q.Javascript(fmt.Sprint(seed.Element(), ".dataset[", property.LanguageType().Raw(), "] = ", data.LanguageType().Raw()))
+	seed.Q.Javascript(fmt.Sprint(seed.Element(), ".dataset[", property.LanguageType().Raw(), "] = ", data.LanguageType().Raw(), ";"))
 }
 
 //Bytes TODO this is unimplemented.
@@ -160,6 +160,18 @@ func (f File) Type() String {
 //Name returns the name of the file.
 func (f File) Name() String {
 	return f.Q.Value(f.LanguageType().Raw() + `.name`).String()
+}
+
+//URL returns a url to the file.
+func (f File) URL() Promise {
+	return f.Q.Value(`new Promise(function (resolve, reject) {
+		const reader = new FileReader();
+		reader.onload = function() {
+			resolve(reader.result);
+		}
+		reader.readAsDataURL(` + f.LanguageType().Raw() + `)
+	});
+	`).Promise()
 }
 
 func (seed Seed) wrap(s string) String {

@@ -29,7 +29,7 @@ func NewFunction(f func(script.Ctx), names ...string) script.Function {
 
 //Ctx returns the script context of this seed.
 func (seed Seed) Ctx(q script.Ctx) script.Seed {
-	if seed.template {
+	if seed.Template {
 		return script.Seed{
 			Native: seed.id,
 			Q:      q,

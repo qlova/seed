@@ -95,7 +95,7 @@ type Feeder struct {
 }
 
 //As adds this feed to the parent as described in the template.
-func (f Feeder) As(template Template) Feed {
+/*func (f Feeder) As(template Template) Feed {
 	f.seed.Add(template)
 
 	//Subfeed.
@@ -179,7 +179,7 @@ func (f Feeder) As(template Template) Feed {
 	f.seed.Add(f.feed)
 
 	return f.feed
-}
+}*/
 
 func feedHandler(w http.ResponseWriter, r *http.Request, id string) {
 	var splits = strings.Split(id, "/")

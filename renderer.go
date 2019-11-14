@@ -37,7 +37,7 @@ func (seed Seed) buildStyleSheet(platform Platform, sheet *sheet) {
 
 	seed.styled = true
 	var selector = "#" + seed.id
-	if seed.template {
+	if seed.Template {
 		selector = "." + seed.id
 	}
 
@@ -55,12 +55,12 @@ func (seed Seed) BuildStyleSheet(platform Platform) sheet {
 	return stylesheet
 }
 
-//HTML returns this seed rendered as HTML.
-func (seed Seed) HTML(platform Platform) []byte {
+//Render returns this seed rendered as HTML.
+func (seed Seed) Render(platform Platform) []byte {
 	if short := seed.ShortCircuit(platform); short.seed != nil {
-		return short.HTML(platform)
+		return short.Render(platform)
 	}
-	if seed.template {
+	if seed.Template {
 
 		for _, child := range seed.children {
 			child.Root().Render(platform)
@@ -155,17 +155,12 @@ func (seed Seed) HTML(platform Platform) []byte {
 	return html.Bytes()
 }
 
-//Render returns this seed rendered to bytes.
-func (seed Seed) Render(platform Platform) []byte {
-	return seed.HTML(platform)
-}
-
 func (seed Seed) getScripts(platform Platform) []string {
 	if short := seed.ShortCircuit(platform); short.seed != nil {
 		return short.getScripts(platform)
 	}
 
-	if seed.template {
+	if seed.Template {
 		return nil
 	}
 
