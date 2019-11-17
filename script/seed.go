@@ -208,6 +208,11 @@ func (seed Seed) SetSource(s String) {
 	seed.Javascript(seed.Element() + `.src = ` + raw(s) + `;`)
 }
 
+//Source returns the source of the seed.
+func (seed Seed) Source() String {
+	return seed.Q.Value(seed.Element() + `.src`).String()
+}
+
 //SetHTML sets the HTML of the seed.
 func (seed Seed) SetHTML(s String) {
 	seed.Javascript(seed.Element() + `.innerHTML = ` + raw(s) + `;`)
