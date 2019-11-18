@@ -88,7 +88,7 @@ type seed struct {
 
 	on map[string]func(script.Ctx)
 
-	Template bool
+	Template, TemplateRoot bool
 
 	parent Interface
 
@@ -412,7 +412,7 @@ func (seed Seed) Add(child Interface) {
 	seed.children = append(seed.children, child)
 	child.Root().parent = seed
 	child.Root().app = seed.app
-	if seed.Template {
+	if seed.Template || seed.TemplateRoot {
 		child.Root().Template = true
 	}
 }

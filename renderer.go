@@ -60,12 +60,10 @@ func (seed Seed) Render(platform Platform) []byte {
 	if short := seed.ShortCircuit(platform); short.seed != nil {
 		return short.Render(platform)
 	}
-	if seed.Template {
-
+	if seed.Template && !seed.TemplateRoot {
 		for _, child := range seed.children {
 			child.Root().Render(platform)
 		}
-
 		return nil
 	}
 

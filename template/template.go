@@ -26,6 +26,7 @@ func New() Seed {
 		var ctx = seed.Ctx(q)
 
 		q.Javascript(`%v.refresh = function(feed) {`, ctx.Element())
+		q.Javascript(`if (!feed) return;`)
 
 		q.Require(script.Get)
 		q.Javascript(`var %[2]v = %[1]v; %[2]v.innerHTML = ""; `, ctx.Element(), ctx.ID)
@@ -39,6 +40,8 @@ func New() Seed {
 		}
 		q.Javascript(`}};`)
 	})
+
+	seed.TemplateRoot = true
 
 	return seed
 }
