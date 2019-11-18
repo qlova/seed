@@ -298,11 +298,6 @@ func (seed Seed) URL() String {
 	return seed.wrap(seed.Element() + `.href`)
 }
 
-//Index returns the index of this feeditem.
-func (seed Seed) Index() String {
-	return seed.wrap(seed.Element() + `.index`)
-}
-
 //HTML returns the HTML of this seed.
 func (seed Seed) HTML() String {
 	return seed.wrap(seed.Element() + `.innerHTML`)

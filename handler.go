@@ -86,12 +86,6 @@ func (runtime Runtime) Handler() http.Handler {
 			return
 		}
 
-		//Remote procedure calls.
-		if len(request.URL.Path) > 6 && request.URL.Path[:7] == "/feeds/" {
-			feedHandler(response, request, request.URL.Path[7:])
-			return
-		}
-
 		//Run custom handlers.
 		if request.URL.Path != "/" {
 			if custom != nil {

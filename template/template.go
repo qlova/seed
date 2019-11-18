@@ -126,6 +126,17 @@ func (ctx Ctx) Data() script.Value {
 }
 
 //Refresh refreshes the template with the provided data.
-func (ctx Ctx) Refresh(data script.Type) {
-	ctx.Q.Javascript("%v.refresh(%v);", ctx.Element(), data.LanguageType().Raw())
+func (ctx Ctx) Refresh(data interface{}) {
+
+	switch v := data.(type) {
+	case script.Type:
+		ctx.Q.Javascript("%v.refresh(%v);", ctx.Element(), v.LanguageType().Raw())
+	case func(user seed.User):
+		ctx.Q.Go(v).Then(func(d script.Dynamic) {
+			ctx.Refresh(d)
+		})
+	default:
+		panic("template: invalid data")
+	}
+
 }
