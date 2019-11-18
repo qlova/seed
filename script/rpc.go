@@ -60,26 +60,24 @@ function request (method, formdata, url, manual) {
 		xhr.open(method, url, true);
 		xhr.onload = function () {
 			if (this.status >= 200 && this.status < 300) {
-			resolve(xhr.response);
+				resolve(slave(xhr.response));
 			} else {
+				reject({
+					status: this.status,
+					statusText: xhr.statusText,
+					response: xhr.response
+				});
+			}
+		};
+		xhr.onerror = function () {
 			reject({
 				status: this.status,
 				statusText: xhr.statusText,
 				response: xhr.response
 			});
-			}
-		};
-		xhr.onerror = function () {
-			reject({
-			status: this.status,
-			statusText: xhr.statusText,
-			response: xhr.response
-			});
 		};
 		xhr.send(formdata);
-	}).then(function(response) {
-		return slave(response)
-	})
+	});
 }
 `
 
