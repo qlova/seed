@@ -1,8 +1,6 @@
 package script
 
 import (
-	"fmt"
-
 	"github.com/qlova/seed/internal"
 	"github.com/qlova/seed/style/css"
 
@@ -87,20 +85,6 @@ func toJavascript(f func(q Ctx), context internal.Context) []byte {
 	}
 
 	return source.Data
-}
-
-//JS return the JS interface of script.
-func (q Ctx) JS() js {
-	return q.js
-}
-
-//Javascript inserts raw js into the script.
-func (q Ctx) Javascript(js string, args ...interface{}) {
-	if len(args) > 0 {
-		q.Raw("Javascript", language.Statement(fmt.Sprintf(js, args...)))
-	} else {
-		q.Raw("Javascript", language.Statement(fmt.Sprint(js)))
-	}
 }
 
 //Run runs a Javascript function with the given arguments.

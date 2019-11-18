@@ -1,6 +1,8 @@
 package script
 
 import (
+	"fmt"
+
 	qlova "github.com/qlova/script"
 	"github.com/qlova/script/language"
 
@@ -10,6 +12,29 @@ import (
 //A nice interface to the Javascript world.
 type js struct {
 	q Ctx
+}
+
+//JS return the JS interface of script.
+func (q Ctx) JS() js {
+	return q.js
+}
+
+//Javascript inserts raw js into the script.
+func (q Ctx) Javascript(js string, args ...interface{}) {
+	var converted = make([]interface{}, len(args))
+	for i := range args {
+		if T, ok := args[i].(Type); ok {
+			converted[i] = T.LanguageType().Raw()
+		} else {
+			converted[i] = args[i]
+		}
+	}
+
+	if len(args) > 0 {
+		q.Raw("Javascript", language.Statement(fmt.Sprintf(js, converted...)))
+	} else {
+		q.Raw("Javascript", language.Statement(fmt.Sprint(js)))
+	}
 }
 
 //Value is any script value.
@@ -89,8 +114,21 @@ func (v Value) Unit() Unit {
 }
 
 //Value wraps a JS string as a value that can be cast to script.Type.
-func (q Ctx) Value(raw string) Value {
-	return Value{q, raw}
+func (q Ctx) Value(format string, args ...interface{}) Value {
+
+	var converted = make([]interface{}, len(args))
+	for i := range args {
+		if T, ok := args[i].(Type); ok {
+			converted[i] = T.LanguageType().Raw()
+		} else {
+			converted[i] = args[i]
+		}
+	}
+
+	if len(args) > 0 {
+		return Value{q, fmt.Sprintf(format, converted...)}
+	}
+	return Value{q, format}
 }
 
 func (j js) Run(function string, args ...qlova.Type) {
