@@ -10,6 +10,17 @@ type time struct {
 	Ctx
 }
 
+//A Month specifies a month of the year (January = 1, ...).
+type Month struct {
+	Q Ctx
+	Int
+}
+
+func (month Month) String() String {
+	month.Q.Require(`var time_months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];`)
+	return month.Q.Value(`(time_months[%v])`, month.LanguageType().Raw()).String()
+}
+
 //Time is a script interface to a time value.
 type Time struct {
 	Q Ctx
@@ -17,12 +28,22 @@ type Time struct {
 }
 
 //Now returns the current time.
-func (q time) Now() Time {
-	return Time{q.Ctx, q.Value("(new Date())").Native()}
+func (t time) Now() Time {
+	return Time{t.Ctx, t.Value("(new Date())").Native()}
 }
 
-func (time Time) String() String {
-	return time.Q.Value(time.LanguageType().Raw() + ".toString()").String()
+func (t Time) String() String {
+	return t.Q.Value(t.LanguageType().Raw() + ".toString()").String()
+}
+
+//Day returns the day of the month specified by t.
+func (t Time) Day() Int {
+	return t.Q.Value(t.LanguageType().Raw() + ".getDate()").Int()
+}
+
+//Month returns the month of the year specified by t.
+func (t Time) Month() Month {
+	return Month{t.Q, t.Q.Value(t.LanguageType().Raw() + ".getMonth()").Int()}
 }
 
 //After executes a function after the given number of milliseconds have passed.
