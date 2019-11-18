@@ -37,7 +37,7 @@ function slave(response) {
 
 		if (!json.Response) return null;
 
-		return JSON.parse();
+		return JSON.parse(json.Response);
 }
 
 function request (method, formdata, url, manual) {
