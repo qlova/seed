@@ -3,15 +3,17 @@
 package seed
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
 	"path"
+	"time"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/qlova/seed/user"
+	"github.com/radovskyb/watcher"
 )
 
 //import ua "github.com/avct/uasurfer"
@@ -97,11 +99,17 @@ func (runtime Runtime) Launch(port ...string) {
 			Process.Stderr = os.Stderr
 			Process.Start()
 
-			watcher, err := fsnotify.NewWatcher()
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer watcher.Close()
+			patrol := watcher.New()
+			defer patrol.Close()
+
+			patrol.SetMaxEvents(1)
+
+			patrol.AddFilterHook(func(info os.FileInfo, fullPath string) error {
+				if path.Ext(fullPath) == ".go" {
+					return nil
+				}
+				return watcher.ErrSkip
+			})
 
 			var Compiler *exec.Cmd
 
@@ -116,62 +124,54 @@ func (runtime Runtime) Launch(port ...string) {
 
 			var Compiling bool
 
-			go func() {
-				for {
-					select {
-					case event, ok := <-watcher.Events:
-						if !ok {
-							return
-						}
-						//log.Println("event:", event)
-						if event.Op&fsnotify.Write == fsnotify.Write {
-
-							if path.Ext(event.Name) == ".go" {
-
-								if Compiling {
-									continue
-								}
-
-								Compiler = exec.Command("go", "build", "-i", "-o", os.Args[0])
-								Compiling = true
-								go func() {
-									err := Compiler.Run()
-									if err == nil {
-										if Process.Process != nil {
-											Process.Process.Kill()
-										}
-										Process = exec.Command(os.Args[0], "-live")
-										Process.Stdout = os.Stdout
-										Process.Stderr = os.Stderr
-										Process.Start()
-
-										reloading = true
-										for _, socket := range localSockets {
-											socket.WriteMessage(1, []byte("update();"))
-										}
-									} else {
-										println(err.Error())
-									}
-									Compiling = false
-
-								}()
-
-							}
-
-						}
-					case err, ok := <-watcher.Errors:
-						if !ok {
-							return
-						}
-						log.Println("error:", err)
-					}
-				}
-			}()
-
-			err = watcher.Add(path.Dir(os.Args[0]))
+			err := patrol.AddRecursive(".")
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			go patrol.Start(time.Millisecond * 100)
+
+			go func() {
+				for {
+					select {
+					case event := <-patrol.Event:
+						fmt.Println(event) // Print the event's info.
+
+						if Compiling {
+							continue
+						}
+
+						Compiler = exec.Command("go", "build", "-i", "-o", os.Args[0])
+						Compiling = true
+						go func() {
+							err := Compiler.Run()
+							if err == nil {
+								if Process.Process != nil {
+									Process.Process.Kill()
+								}
+								Process = exec.Command(os.Args[0], "-live")
+								Process.Stdout = os.Stdout
+								Process.Stderr = os.Stderr
+								Process.Start()
+
+								reloading = true
+								for _, socket := range localSockets {
+									socket.WriteMessage(1, []byte("update();"))
+								}
+							} else {
+								println(err.Error())
+							}
+							Compiling = false
+
+						}()
+
+					case err := <-patrol.Error:
+						log.Fatalln(err)
+					case <-patrol.Closed:
+						return
+					}
+				}
+			}()
 
 			proxy(runtime.Listen, ":10000")
 
