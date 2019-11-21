@@ -2,7 +2,24 @@ package script
 
 //Error is a Go call error.
 type Error struct {
+	Q Ctx
 	String
+}
+
+//Connection runs the `f` script if the error is a connection error.
+func (e Error) Connection(f func()) {
+	var q = e.Q
+	q.Javascript(`if (rpc_result.status != 500) {`)
+	f()
+	q.Javascript(`}`)
+}
+
+//Go runs the `f` script if the error is a Go error.
+func (e Error) Go(f func()) {
+	var q = e.Q
+	q.Javascript(`if (rpc_result.status == 500) {`)
+	f()
+	q.Javascript(`}`)
 }
 
 //Promise represents a future action that can either succeed or fail.
@@ -27,7 +44,7 @@ func (promise Promise) Then(f func(value Dynamic)) Promise {
 //Catch executes the provided function when the promise fails.
 func (promise Promise) Catch(f func(err Error)) Promise {
 	promise.q.Javascript(promise.Raw() + ".catch(function(rpc_result) {")
-	f(Error{promise.q.Value("rpc_result.response").String()})
+	f(Error{promise.q, promise.q.Value("rpc_result.response").String()})
 	promise.q.Javascript("});")
 	return promise
 }
