@@ -48,3 +48,9 @@ func (style Style) StickyToScreen() Attacher {
 	style.SetPosition(css.Sticky)
 	return Attacher{style}
 }
+
+//Detach detaches the element from the parent and/or the screen.
+//This causes the element to behave like a default element.
+func (style Style) Detach() {
+	style.SetPosition(css.Relative)
+}
