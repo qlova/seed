@@ -175,6 +175,7 @@ const Goto = `
 
 		//Persistence.
 		window.localStorage.setItem('*CurrentPage', next_page_id);
+		window.localStorage.setItem('*LastGotoTime', Date.now());
 			
 		next_page = null;
 	};

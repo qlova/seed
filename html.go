@@ -313,6 +313,15 @@ func (app App) HTML() []byte {
 			if (!window.goto) return;
 			let saved_page = window.localStorage.getItem('*CurrentPage');
 			if (saved_page) {
+				let last_time = +window.localStorage.getItem('*LastGotoTime');
+				let hibiscus = Date.now()-last_time;
+
+				if (hibiscus > 1000*60*60) {
+					window.localStorage.removeItem('*CurrentPage');
+					window.reload();
+					return;
+				}
+
 				goto(saved_page);
 
 				//clear history
