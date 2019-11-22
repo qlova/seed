@@ -316,9 +316,10 @@ func (app App) HTML() []byte {
 				let last_time = +window.localStorage.getItem('*LastGotoTime');
 				let hibiscus = Date.now()-last_time;
 
-				if (hibiscus > 1000*60*60) {
+				if (hibiscus > 1000*60*10) {
 					window.localStorage.removeItem('*CurrentPage');
-					window.reload();
+					current_page = loading_page;
+					goto(starting_page);
 					return;
 				}
 
