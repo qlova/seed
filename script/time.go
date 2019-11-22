@@ -36,6 +36,11 @@ func (t Time) String() String {
 	return t.Q.Value(t.LanguageType().Raw() + ".toString()").String()
 }
 
+//Unix returns t as a Unix time, the number of seconds elapsed since January 1, 1970 UTC. The result does not depend on the location associated with t.
+func (t Time) Unix() Int {
+	return t.Q.Value("Math.floor(%v/1000)", t).Int()
+}
+
 //Day returns the day of the month specified by t.
 func (t Time) Day() Int {
 	return t.Q.Value(t.LanguageType().Raw() + ".getDate()").Int()
@@ -58,4 +63,9 @@ func (q Ctx) Every(time float64, f func()) {
 	q.Javascript("setInterval(function() {")
 	f()
 	q.Javascript("}, " + fmt.Sprint(time) + ");")
+}
+
+//ToString turns a number into a string.
+func (q Ctx) ToString(i Int) String {
+	return q.Value(`(""+%v)`, i).String()
 }
