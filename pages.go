@@ -40,6 +40,11 @@ func NewPage() Page {
 	return page
 }
 
+func (page Page) Setup(f func(Page)) (ignore struct{}) {
+	f(page)
+	return
+}
+
 func (page Page) State() State {
 	return page.state
 }
@@ -88,7 +93,7 @@ func (page Page) SyncVisibilityWith(seed Interface) {
 
 //Ctx returns a script context to the page.
 func (page Page) Ctx(q script.Ctx) script.Page {
-	return script.Page{page.Seed.Ctx(q)}
+	return script.Page{page.Seed.Ctx(q), page}
 }
 
 //OnBack is triggered before the back action is triggered, return q.Bool(true) to prevent default behaviour.

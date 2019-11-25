@@ -91,6 +91,8 @@ func (app *App) NewPage() Page {
 //This page will be presented after the app has finished loading.
 func (app *App) SetPage(page Page) {
 
+	app.Context.AddPage(page.id, page)
+
 	app.LoadingPage()
 
 	app.startingPage = page

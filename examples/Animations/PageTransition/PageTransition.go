@@ -8,11 +8,11 @@ import (
 func main() {
 	var App = seed.NewApp()
 
-	var Home = App.NewPage()
+	var Home = seed.NewPage()
 	Home.SetColor(seed.Green)
 	Home.SetTransition(seed.FlipOut)
 
-	var Page = App.NewPage()
+	var Page = seed.NewPage()
 	Page.SetColor(seed.Red)
 	Page.SetTransition(seed.FadeIn)
 

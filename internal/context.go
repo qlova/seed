@@ -19,13 +19,17 @@ func NewContext() Context {
 		Dependencies: make(map[string]struct{}),
 		Animations:   make(map[*Animation]string),
 		FontCache:    make(map[string]style.Font),
+		Pages:        make(map[string]Page),
 	}}
 }
+
+type Page interface{}
 
 type context struct {
 	Dependencies map[string]struct{}
 	Animations   map[*Animation]string
 	FontCache    map[string]style.Font
+	Pages        map[string]Page
 }
 
 var animationID int64 = 1
@@ -43,4 +47,14 @@ func (context Context) Animation(animation *Animation) string {
 	context.Animations[animation] = id
 
 	return id
+}
+
+//AddPage adds a page to the context.
+func (context Context) AddPage(id string, page interface{}) {
+	context.Pages[id] = page
+}
+
+//ClearPages clears the current pages.
+func (context Context) ClearPages() {
+	context.Pages = make(map[string]Page)
 }

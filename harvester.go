@@ -2,6 +2,7 @@ package seed
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 
 	"github.com/qlova/seed/internal"
@@ -178,6 +179,27 @@ func (app *harvester) harvest(seed Seed) {
 
 //Harvest and combine the results with the application.
 func (app *App) build() {
+
+	var done = make(map[string]bool)
+	for {
+		var pages = app.Context.Pages
+		app.Context.ClearPages()
+
+		if len(pages) == 0 {
+			break
+		}
+
+		for id, page := range pages {
+			if done[id] {
+				continue
+			}
+			page := page.(Page)
+			app.Add(page.Root())
+			app.harvester.harvestOnReadyPage(page.Root())
+			done[id] = true
+		}
+	}
+
 	app.harvester.harvest(app.Root())
 	app.harvester.app = app
 

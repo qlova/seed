@@ -9,6 +9,9 @@ import (
 //Page is a script interface to seed.Page.
 type Page struct {
 	Seed
+
+	//Hack.
+	Page interface{}
 }
 
 //Back is the JS code needed for back functionality.
@@ -114,6 +117,10 @@ const Goto = `
 			if (next_page_id == "") return;
 
 			template = get(starting_page+":template");
+			if (template == null) {
+				console.error("starting page is invalid");
+				return;
+			}
 		}
 	
 		if (animating) {
@@ -187,6 +194,9 @@ func (page Page) Goto() {
 	q.Require(Goto)
 	q.Require(Back)
 	q.Javascript("goto('" + page.ID + "');")
+	if page.Page != nil {
+		q.Context.AddPage(page.ID, page.Page)
+	}
 }
 
 //PrivateGoto goes to the specified page without pushing to the stack.
@@ -213,7 +223,7 @@ func (q Ctx) CurrentPage() Page {
 	return Page{Seed{
 		ID: `"+current_page+"`,
 		Q:  q,
-	}}
+	}, nil}
 }
 
 //ClearHistory clears the page history, you should call this after transitioning from a sign-in page.
@@ -231,7 +241,7 @@ func (q Ctx) LastPage() Page {
 	return Page{Seed{
 		ID: `"+last_page+"`,
 		Q:  q,
-	}}
+	}, nil}
 }
 
 //NextPage returns the next page.
@@ -239,5 +249,5 @@ func (q Ctx) NextPage() Page {
 	return Page{Seed{
 		ID: `"+next_page+"`,
 		Q:  q,
-	}}
+	}, nil}
 }
