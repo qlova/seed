@@ -2,7 +2,6 @@ package seed
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 
 	"github.com/qlova/seed/internal"
