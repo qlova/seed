@@ -3,6 +3,7 @@ package seed
 import (
 	"bytes"
 	"path"
+	"sort"
 )
 
 //HTML returns rendered html of the entire app.
@@ -278,9 +279,16 @@ func (app App) HTML() []byte {
 	}
 	buffer.WriteString(`</style>`)
 
-	for script := range scripts {
-		if path.Ext(script) == ".js" {
-			buffer.Write([]byte(`<script src="` + script + `" defer></script>`))
+	{
+		keys := make([]string, 0, len(scripts))
+		for key := range scripts {
+			keys = append(keys, key)
+		}
+		sort.Sort(sort.Reverse(sort.StringSlice(keys)))
+		for _, script := range keys {
+			if path.Ext(script) == ".js" {
+				buffer.Write([]byte(`<script src="` + script + `" defer></script>`))
+			}
 		}
 	}
 
