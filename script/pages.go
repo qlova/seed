@@ -24,6 +24,8 @@ function back() {
 	
 	if (!window.goto) return;
 
+	going_back = true;
+
 	let onback = get(current_page).onback;
 	if (onback) if (onback()) return;
 	
@@ -63,6 +65,7 @@ func (q Ctx) Back() {
 //Goto is the JS code for goto (page switching) support.
 const Goto = `
 	var animating = false;
+	var going_back = false;
 
 	var animation_complete = function() {
 		animating = false;
@@ -143,6 +146,7 @@ const Goto = `
 						set(element, "animation", "")
 						set(element, "z-index", "")
 						get(element.id+":template").content.appendChild(element);
+						going_back = false;
 					};
 					last_page = element.id;
 

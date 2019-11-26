@@ -11,8 +11,9 @@ type Transition struct {
 	In  *Animation
 	Out *Animation
 
-	When    Page
-	WhenTag string
+	When     Page
+	WhenTag  string
+	WhenBack bool
 
 	Then, Else *Transition
 }
@@ -66,8 +67,24 @@ var Flip = Transition{
 
 //Stay is a transition, where the page stays visisble until the end of the transition.
 var Stay = Transition{
-	Out: &Animation{},
-	In:  &Animation{},
+	Out: &Animation{
+		0: func(frame Frame) {
+			frame.SetLayer(0)
+		},
+
+		100: func(frame Frame) {
+			frame.SetLayer(0)
+		},
+	},
+	In: &Animation{
+		0: func(frame Frame) {
+			frame.SetLayer(0)
+		},
+
+		100: func(frame Frame) {
+			frame.SetLayer(0)
+		},
+	},
 }
 
 //FlipOut is a transition.
@@ -189,7 +206,7 @@ var beginTransition = `function beginInTransition(element, animation, duration) 
 	set(element, "animation-name", animation);
 	set(element, "animation-direction", "normal");
 	set(element, "animation-fill-mode", "forwards");
-	set(element, "animation-duration", duration);
+	set(element, "animation-duration", duration+"s");
 	set(element, "animation-iteration-count", 1);
 
 	set(element, "z-index", "50");
@@ -198,7 +215,7 @@ var beginTransition = `function beginInTransition(element, animation, duration) 
 		set(element, "animation", ""); 
 		set(element, "z-index", "");
 		animation_complete();
-	}, 500);
+	}, 1000*duration);
 }
 function beginOutTransition(element, animation, duration) {
 	let last=last_page; if (!last || last == loading_page) return;
@@ -206,10 +223,12 @@ function beginOutTransition(element, animation, duration) {
 	set(element, "animation-name", animation);
 	set(element, "animation-direction", "normal");
 	set(element, "animation-fill-mode", "forwards");
-	set(element, "animation-duration", duration);
+	set(element, "animation-duration", duration+"s");
 	set(element, "animation-iteration-count", 1);
+	set(element, "z-index", "50");
+	animating = true;
 	
-	goto_exitpromise = Promise.resolve().delay(500).then(function() {
+	goto_exitpromise = Promise.resolve().delay(1000*duration).then(function() {
 		set(element, "animation", ""); 
 		set(element, "z-index", "");
 		animation_complete(); 
@@ -217,8 +236,23 @@ function beginOutTransition(element, animation, duration) {
 }
 `
 
+const duration = "0.5"
+
 func setTransitionIn(Page script.Page, trans Transition) {
 	var q = Page.Q
+
+	if trans.WhenBack {
+		q.If(q.Value("going_back").Bool(), func() {
+			if trans.Then != nil {
+				setTransitionIn(Page, *trans.Then)
+			}
+		}, q.Else(func() {
+			if trans.Else != nil {
+				setTransitionIn(Page, *trans.Else)
+			}
+		}))
+		return
+	}
 
 	if !trans.When.Null() {
 		q.If(q.LastPage().Equals(trans.When.Ctx(q)), func() {
@@ -249,15 +283,30 @@ func setTransitionIn(Page script.Page, trans Transition) {
 
 	if trans.In != nil {
 		q.Require(beginTransition)
-		q.Javascript(`beginInTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.In) + `', '0.5s');`)
+		q.Javascript(`beginInTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.In) + `', ` + duration + `);`)
 	}
 }
 
 func setTransitionOut(Page script.Page, trans Transition) {
 	var q = Page.Q
 
+	if trans.WhenBack {
+		q.If(q.Value("going_back").Bool(), func() {
+			if trans.Then != nil {
+				setTransitionOut(Page, *trans.Then)
+			}
+		}, q.Else(func() {
+			if trans.Else != nil {
+				setTransitionOut(Page, *trans.Else)
+			}
+		}))
+		return
+	}
+
 	if !trans.When.Null() {
+		q.Print(q.Value(trans.When.Ctx(q).Element()).String(), q.Value(q.NextPage().Element()).String())
 		q.If(q.NextPage().Equals(trans.When.Ctx(q)), func() {
+			q.Print(q.String("woo"))
 			if trans.Then != nil {
 				setTransitionOut(Page, *trans.Then)
 			}
@@ -284,19 +333,19 @@ func setTransitionOut(Page script.Page, trans Transition) {
 
 	if trans.Out != nil {
 		q.Require(beginTransition)
-		q.Javascript(`beginOutTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.Out) + `', '0.5s');`)
+		q.Javascript(`beginOutTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.Out) + `', ` + duration + `);`)
 	}
 }
 
 //SetTransition sets a page transition for the page.
 func (page Page) SetTransition(trans Transition) {
-	if trans.In != nil || !trans.When.Null() || trans.WhenTag != "" {
+	if trans.In != nil || !trans.When.Null() || trans.WhenTag != "" || trans.WhenBack {
 		page.OnPageEnter(func(q script.Ctx) {
 			var Page = page.Ctx(q)
 			setTransitionIn(Page, trans)
 		})
 	}
-	if trans.Out != nil || !trans.When.Null() || trans.WhenTag != "" {
+	if trans.Out != nil || !trans.When.Null() || trans.WhenTag != "" || trans.WhenBack {
 		page.OnPageExit(func(q script.Ctx) {
 			var Page = page.Ctx(q)
 			setTransitionOut(Page, trans)
