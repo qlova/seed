@@ -180,6 +180,12 @@ func (app *harvester) harvest(seed Seed) {
 func (app *App) build() {
 
 	var done = make(map[string]bool)
+
+	//Recursively harvest children.
+	for _, child := range app.Root().children {
+		app.harvester.harvestOnReady(child.Root())
+	}
+
 	for {
 		var pages = app.Context.Pages
 		app.Context.ClearPages()
