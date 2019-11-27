@@ -32,16 +32,44 @@ type sheet struct {
 	style.Sheet
 
 	Tiny, Small, Medium, Large, Huge style.Sheet
+
+	smallUp, mediumUp, largeUp,
+	smallDown, mediumDown, largeDown,
+	smallToMedium, mediumToLarge, smallToLarge *style.Sheet
+}
+
+type query struct {
+	smallUp, mediumUp, largeUp,
+	smallDown, mediumDown, largeDown,
+	smallToMedium, mediumToLarge, smallToLarge *style.Group
+}
+
+func (s Seed) TinyToSmall() style.Group {
+	if s.query == nil {
+		s.query = new(query)
+	}
+	var sheet = style.NewGroup()
+	s.query.smallDown = sheet
+	return *sheet
+}
+
+func (s Seed) MediumToHuge() style.Group {
+	if s.query == nil {
+		s.query = new(query)
+	}
+	var sheet = style.NewGroup()
+	s.query.mediumUp = sheet
+	return *sheet
 }
 
 func newSheet() sheet {
 	return sheet{
-		style.NewSheet(),
-		style.NewSheet(),
-		style.NewSheet(),
-		style.NewSheet(),
-		style.NewSheet(),
-		style.NewSheet(),
+		Sheet:  style.NewSheet(),
+		Tiny:   style.NewSheet(),
+		Small:  style.NewSheet(),
+		Medium: style.NewSheet(),
+		Large:  style.NewSheet(),
+		Huge:   style.NewSheet(),
 	}
 }
 
@@ -52,6 +80,88 @@ func (s *sheet) AddSeed(selector string, seed Seed) {
 	s.Medium.AddGroup(selector, seed.Medium)
 	s.Large.AddGroup(selector, seed.Large)
 	s.Huge.AddGroup(selector, seed.Huge)
+	if seed.query != nil {
+		var q = seed.query
+
+		if q.mediumUp != nil {
+			if s.mediumUp == nil {
+				var sheet = style.NewSheet()
+				s.mediumUp = &sheet
+			}
+			s.mediumUp.AddGroup(selector, *q.mediumUp)
+		}
+
+		if q.smallDown != nil {
+			if s.smallDown == nil {
+				var sheet = style.NewSheet()
+				s.smallDown = &sheet
+			}
+			s.smallDown.AddGroup(selector, *q.smallDown)
+		}
+
+	}
+}
+
+const TinyMin = `10rem`
+const TinyMax = `20rem`
+const SmallMin = `40rem`
+const SmallMax = `60rem`
+const MediumMin = `60rem`
+const MediumMax = `80rem`
+const LargeMin = `80rem`
+const LargeMax = `100rem`
+
+func (s sheet) writeQueryTo(buffer *bytes.Buffer) {
+	if s.mediumUp != nil {
+		buffer.WriteString(`@media screen and (` +
+			`min-width: ` + SmallMin +
+			`) and (` +
+			`min-height: ` + SmallMin +
+
+			`), screen and (` +
+
+			`min-width: ` + TinyMin +
+			`) and (` +
+			`min-height: ` + SmallMax +
+			`) and (` +
+			`max-width: ` + MediumMin +
+
+			`), screen and (` +
+
+			`min-height: ` + TinyMin +
+			`) and (` +
+			`min-width: ` + SmallMax +
+			`) and (` +
+			`max-height: ` + MediumMin +
+
+			`), screen and (` +
+
+			`min-width:  ` + SmallMax +
+			`) and (` +
+			`min-height: ` + SmallMin +
+			`) {`)
+		buffer.Write(s.mediumUp.Bytes())
+		buffer.WriteString(`}`)
+	}
+
+	if s.smallDown != nil {
+		buffer.WriteString(`@media screen and (` +
+			`min-height: ` + TinyMax +
+			`) and (` +
+			`max-width: ` + SmallMin +
+			`) and (` +
+			`max-height: ` + SmallMax +
+
+			`), screen and (` +
+			`min-width:  ` + TinyMax +
+			`) and (` +
+			`max-height: ` + SmallMin +
+			`) and (` +
+			`max-width: ` + SmallMax +
+			`) {`)
+		buffer.Write(s.smallDown.Bytes())
+		buffer.WriteString(`}`)
+	}
 }
 
 func (s sheet) Bytes() []byte {
@@ -59,26 +169,33 @@ func (s sheet) Bytes() []byte {
 
 	buffer.Write(s.Sheet.Bytes())
 
-	const TinyMin = `10rem`
-	const TinyMax = `20rem`
+	s.writeQueryTo(&buffer)
 
 	buffer.WriteString(`@media screen and (max-width: ` + TinyMax + `) and (max-height: ` + TinyMax +
 		`), screen and (max-width: ` + TinyMin + `), screen and (max-height: ` + TinyMin + `) {`)
 	buffer.Write(s.Tiny.Bytes())
 	buffer.WriteString(`}`)
 
-	const SmallMin = `40rem`
-	const SmallMax = `60rem`
+	buffer.WriteString(`@media screen and (` +
+		`min-width: ` + TinyMin +
+		`) and (` +
+		`min-height: ` + TinyMax +
+		`) and (` +
+		`max-width: ` + SmallMin +
+		`) and (` +
+		`max-height: ` + SmallMax +
 
-	buffer.WriteString(`@media screen and (min-width: ` + TinyMin + `) and (min-height: ` + TinyMax +
-		`) and (max-width: ` + SmallMin + `) and (max-height: ` + SmallMax +
-		`), screen and (min-height: ` + TinyMin + `) and (min-width:  ` + TinyMax +
-		`) and (max-height: ` + SmallMin + `) and (max-width: ` + SmallMax + `) {`)
+		`), screen and (` +
+		`min-height: ` + TinyMin +
+		`) and (` +
+		`min-width:  ` + TinyMax +
+		`) and (` +
+		`max-height: ` + SmallMin +
+		`) and (` +
+		`max-width: ` + SmallMax +
+		`) {`)
 	buffer.Write(s.Small.Bytes())
 	buffer.WriteString(`}`)
-
-	const MediumMin = `60rem`
-	const MediumMax = `80rem`
 
 	buffer.WriteString(`@media screen and (` +
 		`min-width: ` + SmallMin +
@@ -121,9 +238,6 @@ func (s sheet) Bytes() []byte {
 		`) {`)
 	buffer.Write(s.Medium.Bytes())
 	buffer.WriteString(`}`)
-
-	const LargeMin = `80rem`
-	const LargeMax = `100rem`
 
 	buffer.WriteString(`@media screen and (` +
 

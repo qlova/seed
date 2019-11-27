@@ -7,6 +7,13 @@ type Group struct {
 	Portrait, Landscape Style
 }
 
+//NewGroup returns a pointer to a new initialised style.Group.
+func NewGroup() *Group {
+	var g Group
+	g.Init()
+	return &g
+}
+
 //Init initializes the group.
 func (group *Group) Init() {
 	group.Style = New()

@@ -98,6 +98,9 @@ type seed struct {
 
 	handlers []func(w http.ResponseWriter, r *http.Request)
 
+	//Special styles.
+	query *query
+
 	screenSmallerThan, screenGreaterThan map[Unit]style.Style
 
 	desktop, mobile, tablet, watch, tv, native Seed
