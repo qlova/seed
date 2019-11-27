@@ -26,13 +26,6 @@ func (style *Style) update() {
 		transform += "rotateX(var(--rx, 0))"
 	}
 
-	if style.scale != nil {
-		transform += css.Scale(*style.scale, *style.scale)
-		changed = true
-	} else {
-		transform += "scale(var(--scale, 1))"
-	}
-
 	if style.y != nil && style.x != nil {
 
 		transform += css.Translate(css.Decode(*style.x), css.Decode(*style.y))
@@ -50,6 +43,13 @@ func (style *Style) update() {
 		} else {
 			transform += "translate(var(--x, 0), var(--y, 0))"
 		}
+	}
+
+	if style.scale != nil {
+		transform += css.Scale(*style.scale, *style.scale)
+		changed = true
+	} else {
+		transform += "scale(var(--scale, 1))"
 	}
 
 	if changed {
