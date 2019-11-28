@@ -31,6 +31,11 @@ func (seed Seed) Hidden() qlova.Bool {
 	return seed.Q.Value(`(getComputedStyle(` + seed.Element() + `, null).display == "none")`).Bool()
 }
 
+//Visible returns true if the seed is visible.
+func (seed Seed) Visible() qlova.Bool {
+	return seed.Q.Value(`(getComputedStyle(` + seed.Element() + `, null).display != "none")`).Bool()
+}
+
 //SetColor sets the color of this seed.
 func (seed Seed) SetColor(c Color) {
 	seed.Set("background-color", `"+`+c.LanguageType().Raw()+`+"`)
