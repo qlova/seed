@@ -19,8 +19,8 @@ func New() Seed {
 	seed.SetSize(100, unit.Auto)
 	seed.SetUnshrinkable()
 
-	seed.SetDisplay(css.Flex)
-	seed.SetFlexDirection(css.Row)
+	seed.CSS().SetDisplay(css.Flex)
+	seed.CSS().SetFlexDirection(css.Row)
 
 	seed.OnReady(func(q script.Ctx) {
 		var ctx = seed.Ctx(q)

@@ -49,9 +49,9 @@ func NewApp(args ...string) *App {
 	app.Seed.app = &app
 
 	app.SetSize(100, 100)
-	app.SetDisplay(css.Flex)
+	app.CSS().SetDisplay(css.Flex)
 	app.TextAlign().Center()
-	app.SetFlexDirection(css.Column)
+	app.CSS().SetFlexDirection(css.Column)
 
 	app.Icons = append(app.Icons, manifest.Icon{
 		Source: "Qlovaseed.png",

@@ -21,9 +21,9 @@ func NewSheet() Sheet {
 
 //AddGroup adds a new style group to the sheet.
 func (sheet Sheet) AddGroup(selector string, group Group) {
-	sheet.Rules.Add(selector, group.Style)
-	sheet.Portrait.Add(selector, group.Portrait)
-	sheet.Landscape.Add(selector, group.Landscape)
+	sheet.Rules.Add(selector, group.Style.CSS())
+	sheet.Portrait.Add(selector, group.Portrait.CSS())
+	sheet.Landscape.Add(selector, group.Landscape.CSS())
 }
 
 //Bytes returns the sheet as CSS.

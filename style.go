@@ -23,9 +23,9 @@ type Animation = internal.Animation
 //SetAnimation sets the animation of this seed to be looping and 1 second long.
 func (seed Seed) SetAnimation(animation Animation) {
 	seed.animation = animation
-	seed.SetAnimationName(css.AnimationName(seed.id))
-	seed.SetAnimationDuration(css.Time(1))
-	seed.SetAnimationIterationCount(css.Infinite)
+	seed.CSS().SetAnimationName(css.AnimationName(seed.id))
+	seed.CSS().SetAnimationDuration(css.Time(1))
+	seed.CSS().SetAnimationIterationCount(css.Infinite)
 }
 
 type sheet struct {

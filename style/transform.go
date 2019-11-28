@@ -53,14 +53,14 @@ func (style *Style) update() {
 	}
 
 	if changed {
-		style.SetTransform(transform)
+		style.CSS().SetTransform(transform)
 	}
 }
 
 //Rotate the element by the given angle.
 //This overrrides any previous calls to Angle.
 func (style *Style) Rotate(angle float64) {
-	style.Set("--angle", fmt.Sprint(angle, "deg"))
+	style.CSS().Set("--angle", fmt.Sprint(angle, "deg"))
 	style.angle = &angle
 	style.update()
 }
@@ -68,7 +68,7 @@ func (style *Style) Rotate(angle float64) {
 //RotateX the element by the given angle.
 //This overrrides any previous calls to Angle.
 func (style *Style) RotateX(angle float64) {
-	style.Set("--rx", fmt.Sprint(angle, "deg"))
+	style.CSS().Set("--rx", fmt.Sprint(angle, "deg"))
 	style.rx = &angle
 	style.update()
 }
@@ -76,7 +76,7 @@ func (style *Style) RotateX(angle float64) {
 //Scale the element by the given scale.
 //This overrrides any previous calls to Scale.
 func (style *Style) Scale(scale float64) {
-	style.Set("--scale", fmt.Sprint(scale))
+	style.CSS().Set("--scale", fmt.Sprint(scale))
 	style.scale = &scale
 	style.update()
 }
@@ -84,8 +84,8 @@ func (style *Style) Scale(scale float64) {
 //Translate the element by the given x and y values.
 //This overrrides any previous calls to Translate.
 func (style *Style) Translate(x, y complex128) {
-	style.Set("--x", css.Decode(x).String())
-	style.Set("--y", css.Decode(y).String())
+	style.CSS().Set("--x", css.Decode(x).String())
+	style.CSS().Set("--y", css.Decode(y).String())
 	style.x = &x
 	style.y = &y
 	style.update()

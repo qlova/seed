@@ -9,17 +9,17 @@ type TextAligner struct {
 
 //Left aligned text.
 func (a TextAligner) Left() {
-	a.style.SetTextAlign(css.Left)
+	a.style.CSS().SetTextAlign(css.Left)
 }
 
 //Right aligned text.
 func (a TextAligner) Right() {
-	a.style.SetTextAlign(css.Right)
+	a.style.CSS().SetTextAlign(css.Right)
 }
 
 //Center aligned text.
 func (a TextAligner) Center() {
-	a.style.SetTextAlign(css.Center)
+	a.style.CSS().SetTextAlign(css.Center)
 }
 
 //TextAlign returns a TextAligner for aligning text.
@@ -39,15 +39,15 @@ type selfAligner struct {
 }
 
 func (a selfAligner) Start() {
-	a.SetAlignSelf(css.FlexStart)
+	a.CSS().SetAlignSelf(css.FlexStart)
 }
 
 func (a selfAligner) Center() {
-	a.SetAlignSelf(css.Center)
+	a.CSS().SetAlignSelf(css.Center)
 }
 
 func (a selfAligner) End() {
-	a.SetAlignSelf(css.FlexEnd)
+	a.CSS().SetAlignSelf(css.FlexEnd)
 }
 
 //Align returns an aligner that aligns the seed.
@@ -60,15 +60,15 @@ type itemsAligner struct {
 }
 
 func (a itemsAligner) Start() {
-	a.SetAlignItems(css.FlexStart)
+	a.CSS().SetAlignItems(css.FlexStart)
 }
 
 func (a itemsAligner) Center() {
-	a.SetAlignItems(css.Center)
+	a.CSS().SetAlignItems(css.Center)
 }
 
 func (a itemsAligner) End() {
-	a.SetAlignItems(css.FlexEnd)
+	a.CSS().SetAlignItems(css.FlexEnd)
 }
 
 //AlignItems returns an aligner that aligns the children of this seed.
@@ -78,7 +78,7 @@ func (style Style) AlignItems() Aligner {
 
 //SetLayer sets the rendering layer.
 func (style Style) SetLayer(layer int) {
-	style.SetZIndex(css.Integer(layer))
+	style.CSS().SetZIndex(css.Integer(layer))
 }
 
 //Wrap causes the children elements of this element to wrap like text.

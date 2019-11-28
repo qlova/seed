@@ -19,12 +19,12 @@ func NewPage() Page {
 	seed.page = true
 	seed.class = "page"
 
-	seed.SetWillChange(css.Property.Display)
-	seed.SetWillChange(css.Property.Transform)
+	seed.CSS().SetWillChange(css.Property.Display)
+	seed.CSS().SetWillChange(css.Property.Transform)
 
-	seed.SetPosition(css.Absolute)
-	seed.SetTop(css.Zero)
-	seed.SetLeft(css.Zero)
+	seed.CSS().SetPosition(css.Absolute)
+	seed.CSS().SetTop(css.Zero)
+	seed.CSS().SetLeft(css.Zero)
 	//seed.Style.Style.SetWidth(css.Number(100).Vw())
 	//seed.Style.SetHeight(100)*/
 	seed.Style.SetSize(100, 100)

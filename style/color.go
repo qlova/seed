@@ -11,7 +11,7 @@ import (
 
 //SetColor sets the color of this element.
 func (style Style) SetColor(color color.Color) {
-	style.SetBackgroundColor(css.Colour(color))
+	style.CSS().SetBackgroundColor(css.Colour(color))
 }
 
 //SetTextColor sets the text color for this element.
@@ -93,7 +93,7 @@ func (gradient Gradient) CSS() []byte {
 
 //SetGradient sets the color of this element to be a gradient moving in direction from start color to end color.
 func (style Style) SetGradient(gradient Gradient) {
-	style.Set("background-image", string(gradient.CSS()))
+	style.CSS().Set("background-image", string(gradient.CSS()))
 }
 
 //RemoveGradient removes any gradients from this element.

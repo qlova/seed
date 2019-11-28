@@ -55,12 +55,12 @@ var Flip = Transition{
 	Out: &Animation{
 		0: func(frame Frame) {
 			frame.RotateX(0)
-			frame.Set("transform-origin", "top")
+			frame.CSS().Set("transform-origin", "top")
 		},
 
 		100: func(frame Frame) {
 			frame.RotateX(-math.Pi / 2)
-			frame.Set("transform-origin", "top")
+			frame.CSS().Set("transform-origin", "top")
 		},
 	},
 }

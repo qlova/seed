@@ -42,5 +42,5 @@ func NewFont(path string) Font {
 
 //SetFont sets the font used by this element.
 func (style Style) SetFont(font Font) {
-	style.SetFontFamily(font.FontFace)
+	style.CSS().SetFontFamily(font.FontFace)
 }
