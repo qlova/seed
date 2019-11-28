@@ -185,9 +185,7 @@ func (seed Seed) Scripts(platform Platform) map[string]struct{} {
 
 //Render renders the app to bytes.
 func (app App) Render(platform Platform) []byte {
-	if !app.built {
-		app.build()
-	}
+	app.build()
 	return app.render(true, platform)
 }
 

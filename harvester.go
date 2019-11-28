@@ -178,6 +178,9 @@ func (app *harvester) harvest(seed Seed) {
 
 //Harvest and combine the results with the application.
 func (app *App) build() {
+	if app.built {
+		return
+	}
 
 	var done = make(map[string]bool)
 
