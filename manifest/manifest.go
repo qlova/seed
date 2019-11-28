@@ -99,6 +99,6 @@ func (manifest *Manifest) SetIcon(path string) {
 
 //SetThemeColor sets the theme color of the application.
 func (manifest *Manifest) SetThemeColor(c color.Color) {
-	rgba := color.RGBAModel.Convert(c).(color.RGBA)
-	manifest.ThemeColor = fmt.Sprintf("#%.2x%.2x%.2x", rgba.R, rgba.G, rgba.B)
+	r, g, b, _ := c.RGBA()
+	manifest.ThemeColor = fmt.Sprintf("#%.2x%.2x%.2x", byte(r), byte(g), byte(b))
 }
