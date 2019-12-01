@@ -2,7 +2,18 @@ package script
 
 //Location is a type that contains geolocation data.
 type Location struct {
+	Q Ctx
 	Native
+}
+
+//Latitude of the location.
+func (loc Location) Latitude() Float {
+	return loc.Q.Value("%v.coord.latitude", loc).Float()
+}
+
+//Longitude of the location.
+func (loc Location) Longitude() Float {
+	return loc.Q.Value("%v.coord.longitude", loc).Float()
 }
 
 //GeoLocation is the JS required for GeoLocation support.
@@ -32,6 +43,7 @@ func (q Ctx) RequestGeoLocation() Promise {
 func (q Ctx) GeoLocation() Location {
 	q.Require(GeoLocation)
 	return Location{
+		q,
 		q.Value("geoLocation").Native(),
 	}
 }

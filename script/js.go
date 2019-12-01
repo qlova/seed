@@ -84,6 +84,14 @@ func (v Value) File() File {
 	}
 }
 
+//Location returns the value as a GeoLocation.
+func (v Value) Location() Location {
+	return Location{
+		Native: v.Native(),
+		Q:      v.q,
+	}
+}
+
 //Array returns the value as an array.
 func (v Value) Array() Array {
 	return Array{
