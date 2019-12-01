@@ -10,6 +10,10 @@ const CSS = `
 		cursor: default;
 	}
 
+	input[type=range]::-moz-focus-outer {
+		border: 0;
+	}
+
 	a {
 		text-decoration: none;
 	}
