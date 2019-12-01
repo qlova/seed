@@ -14,6 +14,8 @@ type Style struct {
 	angle *float64
 	rx    *float64
 	scale *float64
+
+	selectors map[string]Style
 }
 
 //New returns a new Style.
@@ -23,10 +25,21 @@ func New() Style {
 	}
 }
 
+//Select allows you to select custom style selectors such as :hover
+func (s Style) Select(selector string) Style {
+	if style, ok := s.selectors[selector]; ok {
+		return style
+	}
+	var created = New()
+	s.selectors[selector] = created
+	return created
+}
+
 //From returns a style from a css stylable.
 func From(stylable css.Stylable) Style {
 	return Style{
-		Style: css.Style{stylable},
+		Style:     css.Style{stylable},
+		selectors: make(map[string]Style, 0),
 	}
 }
 

@@ -13,17 +13,17 @@ type Sheet struct {
 //NewSheet returns a new sheet.
 func NewSheet() Sheet {
 	return Sheet{
-		Rules:     make(Rules),
-		Portrait:  make(Rules),
-		Landscape: make(Rules),
+		Rules:     NewRules(),
+		Portrait:  NewRules(),
+		Landscape: NewRules(),
 	}
 }
 
 //AddGroup adds a new style group to the sheet.
 func (sheet Sheet) AddGroup(selector string, group Group) {
-	sheet.Rules.Add(selector, group.Style.CSS())
-	sheet.Portrait.Add(selector, group.Portrait.CSS())
-	sheet.Landscape.Add(selector, group.Landscape.CSS())
+	sheet.Rules.AddStyle(selector, group.Style)
+	sheet.Portrait.AddStyle(selector, group.Portrait)
+	sheet.Landscape.AddStyle(selector, group.Landscape)
 }
 
 //Bytes returns the sheet as CSS.
@@ -32,13 +32,13 @@ func (sheet Sheet) Bytes() []byte {
 
 	buffer.Write(sheet.Rules.Bytes())
 
-	if len(sheet.Portrait) > 0 {
+	if len(sheet.Portrait.Standard) > 0 {
 		buffer.WriteString(`@media screen and (orientation: portrait) {`)
 		buffer.Write(sheet.Portrait.Bytes())
 		buffer.WriteString(`}`)
 	}
 
-	if len(sheet.Landscape) > 0 {
+	if len(sheet.Landscape.Standard) > 0 {
 		buffer.WriteString(`@media screen and (orientation: landscape) {`)
 		buffer.Write(sheet.Landscape.Bytes())
 		buffer.WriteString(`}`)

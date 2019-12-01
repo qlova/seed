@@ -19,4 +19,5 @@ func (group *Group) Init() {
 	group.Style = New()
 	group.Portrait = New()
 	group.Landscape = New()
+	group.selectors = make(map[string]Style)
 }
