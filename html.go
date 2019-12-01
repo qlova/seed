@@ -2,6 +2,7 @@ package seed
 
 import (
 	"bytes"
+	"fmt"
 	"path"
 	"sort"
 )
@@ -54,7 +55,7 @@ func (app App) HTML() []byte {
 
 	for script := range scripts {
 		if path.Ext(script) == ".css" {
-			buffer.Write([]byte(`<link rel="preload" href="` + script + `" as="style" onload="this.onload=null;this.rel='stylesheet'">`))
+			fmt.Fprintf(&buffer, `<link rel="stylesheet" href="%v" media="none" onload="if(media!='all')media='all'">`, script)
 		}
 	}
 
