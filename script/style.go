@@ -52,6 +52,26 @@ func (seed Seed) SetVisible() {
 	seed.Set("display", css.Flex.String())
 }
 
+//Column returns true if this is a column layout.
+func (seed Seed) Column() Bool {
+	return seed.Q.Value(`(getComputedStyle(` + seed.Element() + `, null).flexDirection == "column")`).Bool()
+}
+
+//SetColumn causes the seed to act as a column layout.
+func (seed Seed) SetColumn() {
+	seed.Set("flex-direction", css.Column.String())
+}
+
+//Row returns true if this is a row layout.
+func (seed Seed) Row() Bool {
+	return seed.Q.Value(`(getComputedStyle(` + seed.Element() + `, null).flexDirection == "row")`).Bool()
+}
+
+//SetRow causes the seed to act as a row layout.
+func (seed Seed) SetRow() {
+	seed.Set("flex-direction", css.Row.String())
+}
+
 //SetGradient sets the gradient of the seed.
 func (seed Seed) SetGradient(direction complex128, start, end Color) {
 	seed.Set("background-image", fmt.Sprint("linear-gradient(", math.Atan2(imag(direction), real(direction))+math.Pi/2, `deg,"+`, css.ColorValue(start.LanguageType().Raw()), `+","+`, css.ColorValue(end.LanguageType().Raw()), `+")`))
