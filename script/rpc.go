@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
-	"strings"
 
 	"github.com/qlova/seed/user"
 
@@ -135,7 +134,6 @@ func (q Ctx) With(args Args) Attached {
 var rpcID int64 = 1
 
 func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type) Promise {
-
 	//Get a unique string reference for f.
 	var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
 
@@ -150,27 +148,29 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 
 	var CallingString = `/call/` + name
 
-	var StartFrom = 0
-	//The function can take an optional client as it's first argument.
-	if value.Type().NumIn() > 0 && value.Type().In(0) == reflect.TypeOf(user.User{}) {
-		StartFrom = 1
-	}
+	var variable = Unique()
 
-	for i := StartFrom; i < value.Type().NumIn(); i++ {
-		switch value.Type().In(i).Kind() {
-		case reflect.String, reflect.Int:
+	//Get all positional arguments and add them to the formdata.
+	if len(args) > 0 {
+		if formdata == "" || formdata == "undefined" {
+			formdata = Unique()
+			q.Javascript(formdata + ` = new FormData();`)
+		}
 
-			CallingString += `/_"+encodeURIComponent(` + raw(args[i-StartFrom].(qlova.String)) + `)+"`
+		for i, arg := range args {
+			switch arg.(type) {
+			case String:
+				q.Javascript(`%v.set("%v", %v);`, formdata, i, arg)
+			default:
+				q.Javascript(`%v.set("%v", JSON.stringify(%v));`, formdata, i, arg)
+			}
 
-		default:
-			panic("Unimplemented: script.Run(" + value.Type().String() + ")")
 		}
 	}
 
-	var variable = Unique()
-
+	//Get all named arguments and add them to the formdata.
 	if nargs != nil {
-		if formdata == "" {
+		if formdata == "" || formdata == "undefined" {
 			formdata = Unique()
 			q.Javascript(formdata + ` = new FormData();`)
 		}
@@ -181,7 +181,6 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 			default:
 				q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, ` + value.LanguageType().Raw() + `);`)
 			}
-
 		}
 	}
 
@@ -205,71 +204,14 @@ func (q Ctx) Error() qlova.String {
 
 var Exports = make(map[string]reflect.Value)
 
-func (q Ctx) call(f interface{}, args ...qlova.Type) qlova.Value {
-	if name, ok := f.(string); ok && len(args) == 0 {
-		q.Raw("Javascript", language.Statement(name+`();`))
-		return qlova.Value{}
-	}
-
-	var name = fmt.Sprint(f)
-
-	var value = reflect.ValueOf(f)
-
-	if value.Kind() != reflect.Func || value.Type().NumOut() > 1 {
-		panic("Script.Call: Must pass a Go function without zero or one return values")
-	}
-	Exports[name] = value
-
-	var CallingString = `/call/` + name
-
-	var StartFrom = 0
-	//The function can take an optional client as it's first argument.
-	if value.Type().NumIn() > 0 && value.Type().In(0) == reflect.TypeOf(user.User{}) {
-		StartFrom = 1
-	}
-
-	for i := StartFrom; i < value.Type().NumIn(); i++ {
-		switch value.Type().In(i).Kind() {
-		case reflect.String:
-
-			CallingString += `/_"+encodeURIComponent(` + raw(args[i-StartFrom].(qlova.String)) + `)+"`
-
-		default:
-			panic("Unimplemented: script.Run(" + value.Type().String() + ")")
-		}
-	}
-
-	q.Require(Request)
-	q.Raw("Javascript", language.Statement(`let request = new XMLHttpRequest(); request.open("POST", "`+CallingString+`"); request.onload = function() {`))
-
-	if value.Type().NumOut() == 1 {
-		switch value.Type().Out(0).Kind() {
-
-		case reflect.String:
-			return q.wrap("this.responseText").Value()
-
-		default:
-			panic(value.Type().String() + " Unimplemented")
-		}
-	}
-
-	return qlova.Value{}
-}
-
 //Handler returns a handler for handling remote procedure calls.
 func Handler(w http.ResponseWriter, r *http.Request, call string) {
-	var args = strings.Split(call, "/")
-	if len(args) == 0 {
-		return
-	}
-
-	f, ok := Exports[args[0]]
+	f, ok := Exports[call]
 	if !ok {
 		return
 	}
 
 	var in []reflect.Value
-
 	var u = user.User{}.FromHandler(w, r)
 
 	var StartFrom = 0
@@ -277,23 +219,21 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	if f.Type().NumIn() > 0 && f.Type().In(0) == reflect.TypeOf(user.User{}) {
 		StartFrom = 1
 
+		//Make the user, the first argument.
 		in = append(in, reflect.ValueOf(u))
 
 	}
 
-	if len(args)-1 != f.Type().NumIn()-StartFrom {
-		println("argument length mismatch")
-		return
-	}
-
 	for i := StartFrom; i < f.Type().NumIn(); i++ {
+		var arg = u.Args(strconv.Itoa(i - StartFrom))
+
 		switch f.Type().In(i).Kind() {
 		case reflect.String:
 
-			in = append(in, reflect.ValueOf(args[i+1-StartFrom][1:]))
+			in = append(in, reflect.ValueOf(arg.String()))
 
 		case reflect.Int:
-			var number, _ = strconv.Atoi(args[i+1-StartFrom][1:])
+			var number, _ = strconv.Atoi(arg.String())
 			in = append(in, reflect.ValueOf(number))
 
 		default:
