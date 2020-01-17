@@ -312,8 +312,12 @@ func (app App) HTML() []byte {
 	`)
 
 	buffer.Write(StateHandlers)
+	buffer.WriteString(`goto_ready = true;`)
+
+	buffer.Write(app.RoutingTable())
+
 	buffer.WriteString(`
-		goto_ready = true;
+
 		if (window.localStorage) {
 			if (window.localStorage.getItem("updating")) {
 				window.localStorage.removeItem("updating");

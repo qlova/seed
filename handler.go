@@ -1,6 +1,7 @@
 package seed
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -86,14 +87,17 @@ func (runtime Runtime) Handler() http.Handler {
 			return
 		}
 
+		//Websockets
+		if len(request.URL.Path) > 5 && request.URL.Path[:6] == "/conn/" {
+			script.ConnectionHandler(response, request, request.URL.Path[6:])
+			return
+		}
+
 		//Run custom handlers.
 		if request.URL.Path != "/" {
 			if custom != nil {
 				custom(response, request)
-			}
-
-			if path.Ext(request.URL.Path) == "" {
-				return
+				fmt.Println(response.Header())
 			}
 		}
 

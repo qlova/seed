@@ -3,6 +3,7 @@ package seed
 import (
 	"bytes"
 	"net/http"
+	"strconv"
 
 	"github.com/qlova/seed/internal"
 	"github.com/qlova/seed/script"
@@ -37,6 +38,9 @@ type harvester struct {
 	screenSmallerThans map[Unit]style.Sheet
 
 	onReadyHandlers [][]byte
+
+	//mapping between url paths and pages that the path should route to.
+	routingTable map[string]string
 }
 
 func newHarvester() *harvester {
@@ -45,6 +49,7 @@ func newHarvester() *harvester {
 		stateHandlers:      make(map[State][]func(script.Ctx)),
 		screenSmallerThans: make(map[Unit]style.Sheet),
 		dynamicHandlers:    make(map[string][]func(script.Ctx)),
+		routingTable:       make(map[string]string),
 
 		Context: internal.NewContext(),
 	}
@@ -110,6 +115,10 @@ func (app *harvester) harvestOnReady(seed Seed) []byte {
 func (app *harvester) harvest(seed Seed) {
 
 	var h = app
+
+	if seed.page && seed.Element.Attributes["data-path"] != "" {
+		h.routingTable[seed.Element.Attributes["data-path"]] = seed.id
+	}
 
 	//Harvest Animations.
 	if seed.animation != nil {
@@ -187,7 +196,10 @@ func (app *App) build() {
 	//Recursively harvest children.
 	for _, child := range app.Root().children {
 		app.harvester.harvestOnReady(child.Root())
+		app.harvester.harvest(child.Root())
 	}
+
+	app.harvester.StateHandlers()
 
 	for {
 		var pages = app.Context.Pages
@@ -204,11 +216,16 @@ func (app *App) build() {
 			page := page.(Page)
 			app.Add(page.Root())
 			app.harvester.harvestOnReadyPage(page.Root())
+			app.harvester.harvest(page.Root())
+			app.harvester.StateHandlers()
 			done[id] = true
 		}
 	}
 
+	var backup = app.Root().children
+	app.Root().children = nil
 	app.harvester.harvest(app.Root())
+	app.Root().children = backup
 	app.harvester.app = app
 
 	//Index assets for the application.
@@ -217,6 +234,30 @@ func (app *App) build() {
 	}
 
 	app.built = true
+}
+
+//Return rendered fonts.
+func (app *harvester) RoutingTable() []byte {
+	var h = app
+
+	var buffer bytes.Buffer
+
+	buffer.WriteString(`
+		if (window.location.pathname != "/") {
+			switch (window.location.pathname) {
+	`)
+
+	for path, route := range h.routingTable {
+		buffer.WriteString("case ")
+		buffer.WriteString(strconv.Quote(path))
+		buffer.WriteString(`: goto(`)
+		buffer.WriteString(strconv.Quote(route))
+		buffer.WriteString(`); return;`)
+	}
+
+	buffer.WriteString(`}}`)
+
+	return buffer.Bytes()
 }
 
 //Return rendered fonts.
