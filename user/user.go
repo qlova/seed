@@ -3,13 +3,21 @@ package user
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
+	"net"
 	"net/http"
 	"regexp"
+
+	"github.com/gobwas/ws"
+	"github.com/gobwas/ws/wsutil"
 )
 
 //User is a current user of the app.
 type User struct {
 	user
+	conn net.Conn
+	buff *bytes.Buffer
 }
 
 //Production specifies if we are running in production.
@@ -24,6 +32,14 @@ type user struct {
 
 	indices []int
 	marker  int
+}
+
+//Writer returns a writer for the user.
+func (user User) Writer() io.Writer {
+	if user.conn != nil {
+		return user.buff
+	}
+	return user.ResponseWriter
 }
 
 //SetIndices sets the indicies of a feed request.
@@ -44,7 +60,7 @@ func (user User) Index() int {
 
 //WriteString writes a string to the user.
 func (user User) WriteString(s string) {
-	user.user.ResponseWriter.Write([]byte(s))
+	user.Writer().Write([]byte(s))
 }
 
 //FromHandler returns a user from http.Handler arguments.
@@ -57,14 +73,14 @@ func (User) FromHandler(w http.ResponseWriter, r *http.Request) User {
 			Response:     new(string),
 			Document:     make(map[string]string),
 			LocalStorage: make(map[string]string),
-			script:       bytes.NewBuffer(nil),
+			script:       new(bytes.Buffer),
 		},
 	}}
 }
 
 //Send encodes data as json and sends it to the user.
 func (user User) Send(data interface{}) {
-	json.NewEncoder(user.ResponseWriter).Encode(data)
+	json.NewEncoder(user.Writer()).Encode(data)
 }
 
 var intranet *regexp.Regexp
@@ -79,13 +95,17 @@ func init() {
 
 //NotAuthorised returns a 401 error to the user.
 func (user User) NotAuthorised() {
-	user.ResponseWriter.WriteHeader(401)
+	if user.ResponseWriter != nil {
+		user.ResponseWriter.WriteHeader(401)
+	}
 }
 
 func (user User) Error(err ...string) {
-	user.ResponseWriter.WriteHeader(500)
+	if user.ResponseWriter != nil {
+		user.ResponseWriter.WriteHeader(500)
+	}
 	for _, e := range err {
-		user.user.ResponseWriter.Write([]byte(e))
+		user.Writer().Write([]byte(e))
 	}
 }
 
@@ -96,9 +116,20 @@ func (user User) Close() {
 		len(user.Update.script.Bytes()) > 0 ||
 		len(user.Update.Data) > 0 ||
 		len(*user.Update.Response) > 0 {
+
 		user.Evaluation = user.Update.script.String()
-		json.NewEncoder(user.ResponseWriter).Encode(user.Update)
-	} else {
+		err := json.NewEncoder(user.Writer()).Encode(user.Update)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	} else if user.ResponseWriter != nil {
 		user.ResponseWriter.WriteHeader(http.StatusOK)
+	}
+
+	if user.conn != nil {
+		err := wsutil.WriteServerMessage(user.conn, ws.OpText, user.buff.Bytes())
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	}
 }
