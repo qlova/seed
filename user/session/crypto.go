@@ -53,6 +53,7 @@ func Encrypt(data []byte) string {
 	// if there are any errors, handle them
 	if err != nil {
 		fmt.Println(err)
+		return ""
 	}
 
 	// gcm or Galois/Counter Mode, is a mode of operation
@@ -63,6 +64,7 @@ func Encrypt(data []byte) string {
 	// handle them
 	if err != nil {
 		fmt.Println(err)
+		return ""
 	}
 
 	// creates a new byte array the size of the nonce
@@ -72,6 +74,7 @@ func Encrypt(data []byte) string {
 	// random sequence
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
 		fmt.Println(err)
+		return ""
 	}
 
 	var encrypted = gcm.Seal(nonce, nonce, data, nil)
@@ -81,6 +84,7 @@ func Encrypt(data []byte) string {
 	_, err = encoder.Write(encrypted)
 	if err != nil {
 		fmt.Println(err)
+		return ""
 	}
 	encoder.Close()
 
@@ -94,6 +98,7 @@ func Decrypt(data string) []byte {
 	var encrypted, err = ioutil.ReadAll(decoder)
 	if err != nil {
 		fmt.Println(err)
+		return nil
 	}
 
 	key := Key()
@@ -101,22 +106,26 @@ func Decrypt(data string) []byte {
 	c, err := aes.NewCipher(key[:])
 	if err != nil {
 		fmt.Println(err)
+		return nil
 	}
 
 	gcm, err := cipher.NewGCM(c)
 	if err != nil {
 		fmt.Println(err)
+		return nil
 	}
 
 	nonceSize := gcm.NonceSize()
 	if len(encrypted) < nonceSize {
 		fmt.Println(err)
+		return nil
 	}
 
 	nonce, ciphertext := []byte(encrypted[:nonceSize]), []byte(encrypted[nonceSize:])
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
 		fmt.Println(err)
+		return nil
 	}
 
 	return plaintext
