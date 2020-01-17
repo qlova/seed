@@ -91,7 +91,7 @@ func (manifest *Manifest) SetIcon(path string) {
 	manifest.Icons = nil
 
 	var icon Icon
-	icon.Source = path
+	icon.Source = "/" + path
 	icon.Sizes = getImageDimension("assets/" + path)
 
 	manifest.Icons = append(manifest.Icons, icon)

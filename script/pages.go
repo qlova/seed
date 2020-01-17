@@ -189,6 +189,13 @@ const Goto = `
 		window.localStorage.setItem('*LastGotoTime', Date.now());
 			
 		next_page = null;
+
+		//Set title and path.
+		let data = get(current_page).dataset;
+		if (!data.path) {
+			data.path = "/";
+		}
+		window.history.replaceState(null, data.title, data.path);
 	};
 `
 

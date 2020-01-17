@@ -42,7 +42,7 @@ type Font string
 
 //NewFont registers the font and creates it.
 func NewFont(path string) Font {
-	return Font(path)
+	return Font("/" + path)
 }
 
 //SetFont sets the font of the specified seed.

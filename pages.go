@@ -7,12 +7,14 @@ import (
 
 //Page is a page of an app, or seed.
 type Page struct {
+	Title, Path string
+
 	Seed
 	state State
 }
 
-//NewPage returns a new Page.
-func NewPage() Page {
+//NewPage returns a new Page. The first argument provided is the name of the page, the second is the path.
+func NewPage(args ...string) Page {
 	seed := New()
 	seed.SetCol()
 
@@ -29,7 +31,19 @@ func NewPage() Page {
 	//seed.Style.SetHeight(100)*/
 	seed.Style.SetSize(100, 100)
 
-	var page = Page{seed, NewState(seed.id)}
+	var page = Page{"", "", seed, NewState(seed.id)}
+
+	//Name of the page.
+	if len(args) > 0 {
+		page.Title = args[0]
+		page.Element.Set("data-title", page.Title)
+	}
+
+	//Path of the page in the url.
+	if len(args) > 1 {
+		page.Path = args[1]
+		page.Element.Set("data-path", page.Path)
+	}
 
 	page.OnPageEnter(func(q script.Ctx) {
 		page.state.Set(q)

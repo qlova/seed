@@ -54,7 +54,7 @@ func NewApp(args ...string) *App {
 	app.CSS().SetFlexDirection(css.Column)
 
 	app.Icons = append(app.Icons, manifest.Icon{
-		Source: "Qlovaseed.png",
+		Source: "/Qlovaseed.png",
 		Sizes:  "512x512",
 	})
 
