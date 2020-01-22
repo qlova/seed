@@ -115,7 +115,7 @@ func (page Page) OnBack(f func(q script.Ctx)) {
 	page.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
 		q.Javascript("let old_onback = " + page.Ctx(q).Element() + ".onback;")
-		q.Javascript(page.Ctx(q).Element() + ".onback = function() {")
+		q.Javascript(page.Ctx(q).Element() + ".onback = async function() {")
 		q.Javascript("if (old_onback) old_onback();")
 		f(q)
 		q.Javascript("};")

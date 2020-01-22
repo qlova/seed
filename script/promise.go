@@ -33,6 +33,13 @@ func (promise Promise) Raw() string {
 	return promise.LanguageType().Raw()
 }
 
+//Wait waits for the promise to complete and returns the resulting value.
+func (promise Promise) Wait() Dynamic {
+	var a = Unique()
+	promise.q.Javascript(`let %v = await %v;`, a, promise)
+	return promise.q.Value(`%v`, a).Dynamic()
+}
+
 //Then executes the provided function when the promise succeeds.
 func (promise Promise) Then(f func(value Dynamic)) Promise {
 	promise.q.Javascript(promise.Raw() + ` = ` + promise.Raw() + ".then(function(promise_result) {")

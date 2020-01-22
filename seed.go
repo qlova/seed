@@ -311,8 +311,8 @@ func AddTo(parent Interface) Seed {
 //OnPress is the JS required for OnPress handling.
 const OnPress = `
 	function op(element, func, propagate) {
-		let handler = function(event) {
-			func(event);
+		let handler = async function(event) {
+			await func(event);
 		};
 		
 		let moved = false;
@@ -335,7 +335,7 @@ const OnPress = `
 			if ((a*a + b*b) > 50*50) moved = true;
 		};
 		
-		element.ontouchend = function(ev) {
+		element.ontouchend = async function(ev) {
 			if (ev.stopPropagation && !propagate) ev.stopPropagation(); 
 			ev.preventDefault(); 
 			if (moved) {
@@ -343,7 +343,7 @@ const OnPress = `
 				return; 
 			}
 			ev = ev.changedTouches[0];
-			handler(ev);
+			await handler(ev);
 		};
 
 		element.onclick = handler;
@@ -355,7 +355,7 @@ func (seed Seed) OnClick(f func(script.Ctx)) {
 	seed.onclick = f
 	seed.OnReady(func(q script.Ctx) {
 		q.Require(OnPress)
-		q.Javascript("op(" + seed.Ctx(q).Element() + ", function(event) {")
+		q.Javascript("op(" + seed.Ctx(q).Element() + ", async function(event) {")
 		f(q)
 		q.Javascript("});")
 	})
@@ -366,7 +366,7 @@ func (seed Seed) OnClickThrough(f func(script.Ctx)) {
 	seed.onclick = f
 	seed.OnReady(func(q script.Ctx) {
 		q.Require(OnPress)
-		q.Javascript("op('" + seed.id + "', function(event) {")
+		q.Javascript("op('" + seed.id + "', async function(event) {")
 		f(q)
 		q.Javascript("}, true);")
 	})
@@ -465,7 +465,7 @@ func (seed Seed) OnSwipeLeft(f func(script.Ctx)) {
 	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
 		q.Javascript("let hammertime = new Hammer(" + seed.Ctx(q).Element() + ");")
-		q.Javascript(`hammertime.on("swipeleft", function() {`)
+		q.Javascript(`hammertime.on("swipeleft", async function() {`)
 		f(q)
 		q.Javascript("});")
 		q.Javascript("}")
@@ -478,7 +478,7 @@ func (seed Seed) OnSwipeRight(f func(script.Ctx)) {
 	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
 		q.Javascript("let hammertime = new Hammer(" + seed.Ctx(q).Element() + ");")
-		q.Javascript(`hammertime.on("swiperight", function() {`)
+		q.Javascript(`hammertime.on("swiperight", async function() {`)
 		f(q)
 		q.Javascript("});")
 		q.Javascript("}")
@@ -503,7 +503,7 @@ func (seed Seed) OnInput(f func(script.Ctx)) {
 func (seed Seed) OnEnter(f func(script.Ctx)) {
 	seed.OnReady(func(q script.Ctx) {
 		q.Javascript("{")
-		q.Javascript(`let onenter = function(ev) {if (ev.keyCode == 13 || ev.which == 13){`)
+		q.Javascript(`let onenter = async function(ev) {if (ev.keyCode == 13 || ev.which == 13){ `)
 		f(q)
 		q.Javascript(`}};`)
 		q.Javascript(seed.Ctx(q).Element() + `.onkeypress = onenter;`)
@@ -528,7 +528,7 @@ func (seed Seed) OnLongPress(f func(script.Ctx)) {
 	seed.OnReady(func(q script.Ctx) {
 		q.Require(LongPress)
 		q.Javascript("{")
-		q.Javascript(`let onlongpress = function(ev) {ev.preventDefault()`)
+		q.Javascript(`let onlongpress = async function(ev) {ev.preventDefault();`)
 		f(q)
 		q.Javascript(`};`)
 		q.Javascript(seed.Ctx(q).Element() + `.addEventListener('long-press', onlongpress);`)

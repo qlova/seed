@@ -321,7 +321,7 @@ func (seed Seed) Add(child Seed) {
 
 //OnClick sets the onclick event of this seed.
 func (seed Seed) OnClick(f func()) {
-	seed.Javascript(seed.Element() + `.onclick = function() {`)
+	seed.Javascript(seed.Element() + `.onclick = async function() {`)
 	f()
 	seed.Javascript(`};`)
 }

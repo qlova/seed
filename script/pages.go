@@ -16,7 +16,7 @@ type Page struct {
 
 //Back is the JS code needed for back functionality.
 const Back = `
-function back() {
+async function back() {
 	if (ActivePhotoSwipe) {
 		ActivePhotoSwipe.close();
 		return;
@@ -44,7 +44,7 @@ function back() {
 	//Lol
 	let fallback = get(current_page).dataset.back; 
 	if (fallback) {
-		goto(fallback, true);
+		await goto(fallback, true);
 		return;
 	}
 
@@ -52,7 +52,7 @@ function back() {
 			
 	let old_length = goto_history.length;
 			
-	goto(last_page, true);
+	await goto(last_page, true);
 }
 `
 
@@ -67,13 +67,13 @@ const Goto = `
 	var animating = false;
 	var going_back = false;
 
-	var animation_complete = function() {
+	var animation_complete = async function() {
 		animating = false;
 		
 		//Process goto queue.
 		let next = goto_queue.shift();
 		if (next != null) {
-			goto(next);
+			await goto(next);
 		}
 	}
 
@@ -90,22 +90,20 @@ const Goto = `
 
 	var goto_exitpromise = null;
 
-	var goto = function(next_page_id, private) {
+	var goto = async function(next_page_id, private) {
 		//We are still waiting for the app to load.
 		if (!goto_ready) {
 			return;
 		}
 
 		if (!going_to) {
-			setTimeout(function() {
-				actual_goto(going_to, private);
-				
-			}, 1)
+			await actual_goto(next_page_id, private);
+		} else {
+			going_to = next_page_id;
 		}
-		going_to = next_page_id;
 	}
 	
-	var actual_goto = function(next_page_id, private) {
+	var actual_goto = async function(next_page_id, private) {
 		going_to = null;
 		//We are still waiting for the app to load.
 		if (!goto_ready) {
@@ -114,7 +112,7 @@ const Goto = `
 
 		let template = get(next_page_id+":template");
 		
-		if (template == null || next_page_id == loading_page) {
+		if (template == null || next_page_id == loading_page || !next_page_id) {
 			console.error("invalid page ", next_page_id);
 			next_page_id = starting_page;
 			if (next_page_id == "") return;
@@ -151,7 +149,7 @@ const Goto = `
 					last_page = element.id;
 
 					if (element.onpageexit) {
-						element.onpageexit();
+						await element.onpageexit();
 						if (goto_exitpromise) {
 							goto_exitpromise.then(resolve);
 							goto_exitpromise = null;
@@ -177,11 +175,11 @@ const Goto = `
 
 		let child = get(next_page_id);
 		if (onready[child.id]) {
-			onready[child.id]();
+			await onready[child.id]();
 			delete onready[child.id];
 		}
 		
-		if (child.onpageenter) child.onpageenter();
+		if (child.onpageenter) await child.onpageenter();
 		current_page = next_page_id;
 
 		//Persistence.

@@ -183,9 +183,9 @@ func (app App) HTML() []byte {
 										}
 
 
-										`)
+										(async function() {`)
 		buffer.Write(app.ToJavascript(app.onupdatefound))
-		buffer.WriteString(`
+		buffer.WriteString(`})();
 										
 									} else {
 										
@@ -246,7 +246,7 @@ func (app App) HTML() []byte {
 
 		//User-defined js functions. TODO functions should not be global.
 		for name, function := range functions {
-			buffer.WriteString("function ")
+			buffer.WriteString("async function ")
 			buffer.WriteString(name)
 			buffer.WriteString("() {")
 			buffer.Write(app.ToJavascript(function))
@@ -304,56 +304,57 @@ func (app App) HTML() []byte {
 
 	buffer.WriteString(`<script>`)
 	buffer.Write(DynamicHandlers)
-	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() {`)
-	buffer.Write(OnReady)
+	buffer.WriteString(`document.addEventListener('DOMContentLoaded', function() { (async function() {`)
+	{
+		buffer.Write(OnReady)
 
-	buffer.WriteString(`
-		window.localStorage.setItem("global_state_installed", (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone));
-	`)
+		buffer.WriteString(`
+			window.localStorage.setItem("global_state_installed", (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone));
+		`)
 
-	buffer.Write(StateHandlers)
-	buffer.WriteString(`goto_ready = true;`)
+		buffer.Write(StateHandlers)
+		buffer.WriteString(`goto_ready = true;`)
 
-	buffer.Write(app.RoutingTable())
+		buffer.Write(app.RoutingTable())
 
-	buffer.WriteString(`
+		buffer.WriteString(`
 
-		if (window.localStorage) {
-			if (window.localStorage.getItem("updating")) {
-				window.localStorage.removeItem("updating");
-			}
-
-			if (!window.goto) return;
-			let saved_page = window.localStorage.getItem('*CurrentPage');
-			if (saved_page) {
-				let last_time = +window.localStorage.getItem('*LastGotoTime');
-				let hibiscus = Date.now()-last_time;
-
-				if (hibiscus > 1000*60*10) {
-					window.localStorage.removeItem('*CurrentPage');
-					current_page = loading_page;
-					goto(starting_page);
-					return;
+			if (window.localStorage) {
+				if (window.localStorage.getItem("updating")) {
+					window.localStorage.removeItem("updating");
 				}
 
-				goto(saved_page);
+				if (!window.goto) return;
+				let saved_page = window.localStorage.getItem('*CurrentPage');
+				if (saved_page) {
+					let last_time = +window.localStorage.getItem('*LastGotoTime');
+					let hibiscus = Date.now()-last_time;
 
-				//clear history
-				last_page = null;
-				goto_history = [];
+					if (hibiscus > 1000*60*10) {
+						window.localStorage.removeItem('*CurrentPage');
+						current_page = loading_page;
+						goto(starting_page);
+						return;
+					}
 
-				if (get(saved_page) && get(saved_page).enterpage)
-					get(saved_page).enterpage();
+					goto(saved_page);
+
+					//clear history
+					last_page = null;
+					goto_history = [];
+
+					if (get(saved_page) && get(saved_page).enterpage)
+						get(saved_page).enterpage();
+				} else {
+					current_page = loading_page;
+					goto(starting_page);
+				}
 			} else {
-				current_page = loading_page;
 				goto(starting_page);
 			}
-		} else {
-			goto(starting_page);
-		}
-	`)
-
-	buffer.WriteString(`}, false);`)
+		`)
+	}
+	buffer.WriteString(`})() }, false);`)
 
 	buffer.WriteString(`</script>`)
 

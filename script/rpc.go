@@ -138,7 +138,7 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 	if len(args) > 0 {
 		if formdata == "" || formdata == "undefined" {
 			formdata = Unique()
-			q.Javascript(formdata + ` = new FormData();`)
+			q.Javascript(`let ` + formdata + ` = new FormData();`)
 		}
 
 		for i, arg := range args {
@@ -156,7 +156,7 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 	if nargs != nil {
 		if formdata == "" || formdata == "undefined" {
 			formdata = Unique()
-			q.Javascript(formdata + ` = new FormData();`)
+			q.Javascript(`let ` + formdata + ` = new FormData();`)
 		}
 		for key, value := range nargs {
 			switch value.(type) {

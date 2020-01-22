@@ -60,7 +60,7 @@ func (app *harvester) harvestOnReadyPage(seed Seed) []byte {
 
 	buffer.WriteString("onready['")
 	buffer.WriteString(seed.id)
-	buffer.WriteString("'] = function() {")
+	buffer.WriteString("'] = async function() {")
 
 	seed.page = false
 	buffer.Write(app.harvestOnReady(seed))
@@ -83,7 +83,7 @@ func (app *harvester) harvestOnReady(seed Seed) []byte {
 	//TODO sort?
 	for event, handler := range seed.on {
 		buffer.Write(script.ToJavascript(func(q script.Ctx) {
-			q.Javascript(seed.Ctx(q).Element() + ".on" + event + " = function() {")
+			q.Javascript(seed.Ctx(q).Element() + ".on" + event + " = async function() {")
 			handler(q)
 			q.Javascript("};")
 		}, h.Context))
@@ -93,7 +93,7 @@ func (app *harvester) harvestOnReady(seed Seed) []byte {
 	if (seed.onready != nil) && !seed.Template {
 		buffer.WriteString("get('")
 		buffer.WriteString(seed.id)
-		buffer.WriteString("').onready = function() {")
+		buffer.WriteString("').onready = async function() {")
 		buffer.Write(script.ToJavascript(seed.onready, h.Context))
 		buffer.WriteString("};")
 	}
@@ -103,7 +103,7 @@ func (app *harvester) harvestOnReady(seed Seed) []byte {
 	}
 
 	if (seed.onready != nil) && !seed.Template {
-		buffer.WriteString("get('")
+		buffer.WriteString("await get('")
 		buffer.WriteString(seed.id)
 		buffer.WriteString("').onready();")
 	}
@@ -306,16 +306,17 @@ func (app *harvester) DynamicHandlers() []byte {
 
 	buffer.WriteString("var dynamic = {")
 	for dynamic, handlers := range h.dynamicHandlers {
-		buffer.WriteString("\"" + dynamic + "\": function() {")
+		buffer.WriteString("\"" + dynamic + "\": async function() {")
 		for _, handler := range handlers {
 			buffer.Write([]byte(script.ToJavascript(handler, h.Context)))
 		}
 		buffer.WriteString("},")
 	}
-	buffer.WriteString("};")
+	buffer.WriteString("}; (async function() {")
 	for dynamic := range h.dynamicHandlers {
-		buffer.WriteString("dynamic[\"" + dynamic + "\"]();")
+		buffer.WriteString("await dynamic[\"" + dynamic + "\"]();")
 	}
+	buffer.WriteString("})();")
 
 	return buffer.Bytes()
 }
@@ -342,12 +343,12 @@ func (app *harvester) StateHandlers() []byte {
 	for state, handlers := range h.stateHandlers {
 		var reference = state.Bool.Ref()
 		if state.not {
-			buffer.WriteString("window." + reference + "_unset = function() {")
+			buffer.WriteString("window." + reference + "_unset = async function() {")
 			buffer.Write([]byte(script.ToJavascript(func(q script.Ctx) {
 				state.Bool.Set(q, q.Bool(false))
 			})))
 		} else {
-			buffer.WriteString("window." + reference + "_set = function () {")
+			buffer.WriteString("window." + reference + "_set = async function () {")
 			buffer.Write([]byte(script.ToJavascript(func(q script.Ctx) {
 				state.Bool.Set(q, q.Bool(true))
 			})))
