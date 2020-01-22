@@ -2,6 +2,7 @@ package seed
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	qlova "github.com/qlova/script"
@@ -36,7 +37,8 @@ type Update struct {
 	style.Style
 
 	id string
-	user.User
+
+	user.Ctx
 }
 
 //ID returns the ID of the seed that this is updateing.
@@ -48,7 +50,7 @@ func (update Update) ID() string {
 func (seed Seed) For(u User) Update {
 	var update Update
 	update.id = seed.id
-	update.User = u
+	update.Ctx = u
 	update.Style = style.From(update)
 	return update
 }
@@ -64,17 +66,15 @@ func (update Update) Set(property, value string) {
 
 	fmt.Println(property)
 
-	update.Document["#"+update.id+".style."+property] = value
+	update.Execute(fmt.Sprintf(`#%v.style.%v = %v;`, update.id, property, strconv.Quote(value)))
 }
 
-//Get returns the CSS property of this seed.
+//Get returns an empty string.
 func (update Update) Get(property string) string {
-	property = dashes2camels(property)
-
-	return update.Document["#"+update.id+".style."+property]
+	return ""
 }
 
 //SetText sets the seed's text.
 func (update Update) SetText(text string) {
-	update.Document["#"+update.id+".innerText"] = text
+	update.Execute(fmt.Sprintf(`#%v.innerText = %v;`, update.id, strconv.Quote(text)))
 }

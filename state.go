@@ -136,18 +136,18 @@ func (state State) Unset(q script.Ctx) {
 func (state State) UnsetFor(u User) {
 	var reference = state.Bool.Ref()
 	if state.not {
-		fmt.Fprintf(u.Update.Script(), `if (window.%v_set) %v_set();`, reference, reference)
+		u.Execute(fmt.Sprintf(`if (window.%v_set) %v_set();`, reference, reference))
 		return
 	}
-	fmt.Fprintf(u.Update.Script(), `if (window.%v_unset) %v_unset();`, reference, reference)
+	u.Execute(fmt.Sprintf(`if (window.%v_unset) %v_unset();`, reference, reference))
 }
 
 //SetFor sets a state for tthe specified user.
 func (state State) SetFor(u User) {
 	var reference = state.Bool.Ref()
 	if state.not {
-		fmt.Fprintf(u.Update.Script(), `if (window.%v_unset) %v_unset();`, reference, reference)
+		u.Execute(fmt.Sprintf(`if (window.%v_unset) %v_unset();`, reference, reference))
 		return
 	}
-	fmt.Fprintf(u.Update.Script(), `if (window.%v_set) %v_set();`, reference, reference)
+	u.Execute(fmt.Sprintf(`if (window.%v_set) %v_set();`, reference, reference))
 }

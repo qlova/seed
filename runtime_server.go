@@ -12,7 +12,6 @@ import (
 	"path"
 	"time"
 
-	"github.com/qlova/seed/user"
 	"github.com/radovskyb/watcher"
 )
 
@@ -35,7 +34,6 @@ func init() {
 	for _, arg := range os.Args {
 		if arg == "-production" {
 			Production = true
-			user.Production = true
 			Live = true
 		}
 	}

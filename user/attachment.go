@@ -43,7 +43,7 @@ func (a Attachment) Size() int64 {
 
 //Attachment retrieve either the first attachment or if index is provided, the attachment at the specified index.
 //This can be used to recieve files from the user.
-func (user User) Attachment(index ...int) (attachment Attachment) {
+func (u Ctx) Attachment(index ...int) (attachment Attachment) {
 
 	var i = 1
 	if len(index) > 0 {
@@ -52,7 +52,7 @@ func (user User) Attachment(index ...int) (attachment Attachment) {
 
 	var j = 1
 	for {
-		file, header, err := user.Request.FormFile("attachment-" + strconv.Itoa(i) + "-" + strconv.Itoa(j))
+		file, header, err := u.r.FormFile("attachment-" + strconv.Itoa(i) + "-" + strconv.Itoa(j))
 		if err != nil {
 			println("attachment-"+strconv.Itoa(i)+"-"+strconv.Itoa(j), err.Error())
 			return

@@ -28,7 +28,7 @@ type Interface interface {
 var Dir = filepath.Dir(os.Args[0])
 
 //User is an alias to the user.User type.
-type User = user.User
+type User = user.Ctx
 
 //Arial is a default arial font.
 var Arial = style.Font{

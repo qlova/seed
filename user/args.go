@@ -2,43 +2,37 @@ package user
 
 import (
 	"encoding/json"
-	"log"
 	"strings"
 )
 
-//Argument is a user provided argument.
-type Argument struct {
+//Arg is a user provided argument.
+type Arg struct {
 	string
 }
 
-//Args returns the argument with the given name.
-func (user User) Args(name string) Argument {
-	return Argument{user.Request.FormValue(name)}
+//Arg returns the argument with the given name.
+func (u Ctx) Arg(name string) Arg {
+	return Arg{u.r.FormValue(name)}
 }
 
-func (arg Argument) String() string {
+//String returns the argument as a string.
+func (arg Arg) String() string {
 	return arg.string
 }
 
 //Strings returns the argument as a slice of strings.
-func (arg Argument) Strings() (returns []string) {
-	err := json.NewDecoder(strings.NewReader(arg.string)).Decode(&returns)
-	if err != nil {
-		log.Println(err)
-	}
+func (arg Arg) Strings() (returns []string, err error) {
+	err = json.NewDecoder(strings.NewReader(arg.string)).Decode(&returns)
 	return
 }
 
-//Map returns the argument as a map of interface values.
-func (arg Argument) Map() (returns map[string]interface{}) {
-	err := json.NewDecoder(strings.NewReader(arg.string)).Decode(&returns)
-	if err != nil {
-		log.Println(err)
-	}
+//InterfaceMap returns the argument as a map of interface values.
+func (arg Arg) InterfaceMap() (returns map[string]interface{}, err error) {
+	err = json.NewDecoder(strings.NewReader(arg.string)).Decode(&returns)
 	return
 }
 
-//Decode decodes the value into the provided interface.
-func (arg Argument) Decode(i interface{}) error {
+//Decode decodes the value into the given argument.
+func (arg Arg) Decode(i interface{}) error {
 	return json.NewDecoder(strings.NewReader(arg.string)).Decode(i)
 }

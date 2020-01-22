@@ -2,7 +2,9 @@ package script
 
 import (
 	//Global ids.
+	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -18,25 +20,7 @@ import (
 //Request is the JS code required to make Go calls.
 const Request = `
 function slave(response) {
-	if (response.charAt(0) != "{") return;
-		let json = JSON.parse(response);
-		for (let update in json.Document) {
-			if (update.charAt(0) == "#") {
-				let splits = update.split(".", 2)
-				let id = splits[0];
-				let property = update.slice(update.indexOf(".")+1);
-				eval("get('"+id.substring(1)+"')."+property+" = '"+json.Document[update]+"';");
-			}
-		}
-		for (let update in json.LocalStorage) {
-			window.localStorage.setItem(update, json.LocalStorage[update]);
-		}
-		
-		eval(json.Evaluation);
-
-		if (!json.Response) return null;
-
-		return JSON.parse(json.Response);
+	return (new Function(response))();
 }
 
 function request (method, formdata, url, manual) {
@@ -212,11 +196,11 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 
 	var in []reflect.Value
-	var u = user.User{}.FromHandler(w, r)
+	var u = user.CtxFromHandler(w, r)
 
 	var StartFrom = 0
 	//The function can take an optional client as it's first argument.
-	if f.Type().NumIn() > 0 && f.Type().In(0) == reflect.TypeOf(user.User{}) {
+	if f.Type().NumIn() > 0 && f.Type().In(0) == reflect.TypeOf(user.Ctx{}) {
 		StartFrom = 1
 
 		//Make the user, the first argument.
@@ -225,7 +209,7 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 
 	for i := StartFrom; i < f.Type().NumIn(); i++ {
-		var arg = u.Args(strconv.Itoa(i - StartFrom))
+		var arg = u.Arg(strconv.Itoa(i - StartFrom))
 
 		switch f.Type().In(i).Kind() {
 		case reflect.String:
@@ -244,23 +228,19 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 
 	var results = f.Call(in)
 
-	u.Close()
-
 	if len(results) == 0 {
 		return
 	}
 
-	switch results[0].Kind() {
-
-	case reflect.String:
-		if results[0].Interface().(string) == "" {
-			//Error
-			http.Error(w, "", 500)
-			return
+	if len(results) == 1 {
+		var buffer bytes.Buffer
+		err := json.NewEncoder(&buffer).Encode(results[0].Interface())
+		if err != nil {
+			fmt.Println("rpc function could not send return value: ", err)
 		}
-		fmt.Fprint(w, results[0].Interface())
-
-	default:
-		fmt.Println(results[0].Type().String(), " Unimplemented")
+		u.Execute(fmt.Sprintf(`return %v;`, buffer.String()))
+		return
 	}
+
+	panic("rpc function with more than one return value")
 }

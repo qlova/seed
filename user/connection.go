@@ -4,23 +4,22 @@ import (
 	"bytes"
 	"net/http"
 
-	"github.com/gobwas/ws"
+	"github.com/gorilla/websocket"
 )
 
-//FromConnection creates a new user from an incomming websocket request.
-func FromConnection(r *http.Request, w http.ResponseWriter) (User, error) {
-	conn, _, _, err := ws.UpgradeHTTP(r, w)
-	if err != nil {
-		return User{}, err
+//AreConnected returns true if the user is connected.
+func (u Ctx) AreConnected() bool {
+	if u.conn == nil {
+		return true
 	}
-	return User{user: user{
-		Request: r,
+	return u.conn.WriteMessage(websocket.TextMessage, []byte("{}")) == nil
+}
 
-		Update: Update{
-			Response:     new(string),
-			Document:     make(map[string]string),
-			LocalStorage: make(map[string]string),
-			script:       new(bytes.Buffer),
-		},
-	}, conn: conn, buff: new(bytes.Buffer)}, nil
+//CtxFromSocket creates a new user from an incomming websocket request.
+func CtxFromSocket(r *http.Request, w http.ResponseWriter) (Ctx, error) {
+	conn, err := new(websocket.Upgrader).Upgrade(w, r, nil)
+	if err != nil {
+		return Ctx{}, err
+	}
+	return Ctx{r: r, w: w, conn: conn, buffer: new(bytes.Buffer)}, nil
 }

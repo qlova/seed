@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/user"
 )
 
@@ -42,8 +41,9 @@ func NewString(name ...string) String {
 }
 
 //For gets the session String value for the specified user.
-func (s String) For(u user.User) string {
-	for _, cookie := range u.Cookies() {
+func (s String) For(u user.Ctx) string {
+
+	for _, cookie := range u.Request().Cookies() {
 		if cookie.Name == s.string {
 
 			var data = Decrypt(cookie.Value)
@@ -62,13 +62,13 @@ func (s String) For(u user.User) string {
 }
 
 //SetFor sets the session String value for the specified user.
-func (s String) SetFor(u user.User, value string) {
+func (s String) SetFor(u user.Ctx, value string) {
 	var buffer [8]byte
 	binary.PutVarint(buffer[:], time.Now().Unix())
 
 	var data = append(buffer[:], value...)
 	var cookie = Encrypt(data)
-	http.SetCookie(u.ResponseWriter, &http.Cookie{
+	http.SetCookie(u.ResponseWriter(), &http.Cookie{
 		Name:     s.string,
 		Value:    cookie,
 		Secure:   seed.Production,
@@ -77,9 +77,4 @@ func (s String) SetFor(u user.User, value string) {
 		SameSite: http.SameSiteStrictMode,
 		Path:     "/",
 	})
-}
-
-//Clear clears the session.
-func Clear(q script.Ctx) {
-
 }

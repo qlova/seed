@@ -1,7 +1,6 @@
 package seed
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -97,7 +96,6 @@ func (runtime Runtime) Handler() http.Handler {
 		if request.URL.Path != "/" {
 			if custom != nil {
 				custom(response, request)
-				fmt.Println(response.Header())
 			}
 		}
 
