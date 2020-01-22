@@ -13,6 +13,18 @@ import (
 	"github.com/qlova/seed/script"
 )
 
+var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
+
+func isLocal(r *http.Request) (local bool) {
+	if !Production {
+		local = strings.Contains(r.RemoteAddr, "[::1]") || strings.Contains(r.RemoteAddr, "127.0.0.1")
+		if intranet.Match([]byte(r.RemoteAddr)) {
+			local = true
+		}
+	}
+	return
+}
+
 //Handler returns a http handler that serves this application.
 func (runtime Runtime) Handler() http.Handler {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -30,14 +42,88 @@ func (runtime Runtime) Handler() http.Handler {
 	var worker = runtime.app.Worker.Render()
 	var manifest = runtime.app.Manifest.Render()
 
-	var custom = runtime.app.CustomHandler()
-
 	var LocalClients = 0
 
-	intranet, err := regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
-	if err != nil {
-		panic("invalid regexp!")
+	var router = http.NewServeMux()
+
+	for pattern, handler := range runtime.app.Handlers {
+		router.Handle(pattern, handler)
 	}
+
+	router.Handle("/Qlovaseed.png", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/png")
+		icon, _ := fsByte(false, "/Qlovaseed.png")
+		w.Write(icon)
+		return
+	}))
+
+	router.Handle("/call/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		script.Handler(w, r, r.URL.Path[6:])
+	}))
+
+	router.Handle("/conn/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		script.ConnectionHandler(w, r, r.URL.Path[6:])
+	}))
+
+	router.Handle("/.well-known/assetlinks.json", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if runtime.app.pkg != "" {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`[{
+	"relation": ["delegate_permission/common.handle_all_urls"],
+	"target" : { "namespace": "android_app", "package_name": "` + runtime.app.pkg + `",
+				"sha256_cert_fingerprints": [`))
+
+			for i, hash := range runtime.app.hashes {
+				w.Write([]byte("\"" + hash + "\""))
+				if i < len(runtime.app.hashes)-1 {
+					w.Write([]byte(`,`))
+				}
+			}
+
+			w.Write([]byte(`] }
+	}]`))
+		}
+	}))
+
+	//Socket for qlovaseed app-development features.
+	router.Handle("/socket", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if isLocal(r) {
+			LocalClients++
+			singleLocalConnection = LocalClients == 1
+			socket(w, r)
+		}
+	}))
+
+	router.Handle("/index.js", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if isLocal(r) {
+			//Don't use a web worker if we are running locally.
+			w.Header().Set("content-type", "text/javascript")
+			w.Write([]byte(`self.addEventListener('install', () => {self.skipWaiting();});`))
+		} else {
+			w.Header().Set("content-type", "text/javascript")
+			w.Write(worker)
+		}
+	}))
+
+	router.Handle("/app.webmanifest", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("content-type", "application/json")
+		w.Write(manifest)
+	}))
+
+	router.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		//Serve assets.
+		if path.Ext(r.URL.Path) != "" {
+			http.ServeFile(w, r, dir+"/assets"+r.URL.Path)
+			return
+		}
+
+		if isLocal(r) {
+			w.Write(html)
+		} else {
+			w.Write(minified)
+		}
+	}))
 
 	return gziphandler.GzipHandler(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 		if origin := request.Header.Get("Origin"); origin == "https://"+runtime.app.host && origin != "" {
@@ -51,102 +137,13 @@ func (runtime Runtime) Handler() http.Handler {
 			return
 		}
 
-		var local bool
-
-		if !Production {
-			local = strings.Contains(request.RemoteAddr, "[::1]") || strings.Contains(request.RemoteAddr, "127.0.0.1")
-			if intranet.Match([]byte(request.RemoteAddr)) {
-				local = true
-			}
-
-			//Editmode socket.
-			if request.URL.Path == "/socket" && local {
-				LocalClients++
-				singleLocalConnection = LocalClients == 1
-				socket(response, request)
-				return
-			}
-		}
-
-		if request.URL.Path == "/Qlovaseed.png" {
-			response.Header().Set("Content-Type", "image/png")
-			icon, _ := fsByte(false, "/Qlovaseed.png")
-			response.Write(icon)
-			return
-		}
-
 		//Is this an embedded resource? Imported libraries will add these.
 		if embedded(response, request) {
 			return
 		}
 
-		//Remote procedure calls.
-		if len(request.URL.Path) > 5 && request.URL.Path[:6] == "/call/" {
-			script.Handler(response, request, request.URL.Path[6:])
-			return
-		}
-
-		//Websockets
-		if len(request.URL.Path) > 5 && request.URL.Path[:6] == "/conn/" {
-			script.ConnectionHandler(response, request, request.URL.Path[6:])
-			return
-		}
-
-		//Run custom handlers.
-		if request.URL.Path != "/" {
-			if custom != nil {
-				custom(response, request)
-			}
-		}
-
 		if runtime.app.rest != "" && (request.URL.Host == runtime.app.rest || request.Host == runtime.app.rest) {
 			response.Write([]byte(string("This place is for computers")))
-			return
-
-		}
-
-		if request.URL.Path == "/.well-known/assetlinks.json" && runtime.app.pkg != "" {
-			response.Header().Set("Content-Type", "application/json")
-			response.Write([]byte(`[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target" : { "namespace": "android_app", "package_name": "` + runtime.app.pkg + `",
-               "sha256_cert_fingerprints": [`))
-
-			for i, hash := range runtime.app.hashes {
-				response.Write([]byte("\"" + hash + "\""))
-				if i < len(runtime.app.hashes)-1 {
-					response.Write([]byte(`,`))
-				}
-			}
-
-			response.Write([]byte(`] }
-}]`))
-			return
-		}
-
-		//Serve service worker.
-		if request.URL.Path == "/index.js" {
-			if local {
-				//Don't use a web worker if we are running locally.
-				response.Header().Set("content-type", "text/javascript")
-				response.Write([]byte(`self.addEventListener('install', () => {self.skipWaiting();});`))
-			} else {
-				response.Header().Set("content-type", "text/javascript")
-				response.Write(worker)
-			}
-			return
-		}
-
-		//Serve web manifest.
-		if request.URL.Path == "/app.webmanifest" {
-			response.Header().Set("content-type", "application/json")
-			response.Write(manifest)
-			return
-		}
-
-		//Serve assets.
-		if path.Ext(request.URL.Path) != "" {
-			http.ServeFile(response, request, dir+"/assets"+request.URL.Path)
 			return
 		}
 
@@ -160,11 +157,6 @@ func (runtime Runtime) Handler() http.Handler {
 			}
 		}*/
 
-		//Anything else? Serve application.
-		if local {
-			response.Write(html)
-		} else {
-			response.Write(minified)
-		}
+		router.ServeHTTP(response, request)
 	}))
 }

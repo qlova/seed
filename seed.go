@@ -11,7 +11,6 @@ import (
 	"encoding/base64"
 	"html"
 	"math/big"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -95,8 +94,6 @@ type seed struct {
 	//This is a list of scripts that are needed by this seed.
 	//eg. []string{"jquery.js"}
 	scripts []string
-
-	handlers []func(w http.ResponseWriter, r *http.Request)
 
 	//Special styles.
 	query *query
@@ -418,11 +415,6 @@ func (seed Seed) Add(child Interface) {
 	if seed.Template || seed.TemplateRoot {
 		child.Root().Template = true
 	}
-}
-
-//AddHandler adds a handler to the seed, when this seed is launched as root, the handlers will be executed for each incomming request.
-func (seed Seed) AddHandler(handler func(w http.ResponseWriter, r *http.Request)) {
-	seed.handlers = append(seed.handlers, handler)
 }
 
 //SetContent adds text, html or whatever!

@@ -35,6 +35,8 @@ type App struct {
 	platform   Platform
 
 	built bool
+
+	Handlers map[string]http.Handler
 }
 
 //NewApp creates a new application. The first string argument is the name, the second is a description of the app.
@@ -44,6 +46,7 @@ func NewApp(args ...string) *App {
 		Manifest:  manifest.New(),
 		Worker:    service.NewWorker(),
 		harvester: newHarvester(),
+		Handlers:  make(map[string]http.Handler),
 	}
 
 	app.Seed.app = &app

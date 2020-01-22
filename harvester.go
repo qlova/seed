@@ -2,7 +2,6 @@ package seed
 
 import (
 	"bytes"
-	"net/http"
 	"strconv"
 
 	"github.com/qlova/seed/internal"
@@ -30,8 +29,6 @@ type harvester struct {
 
 	//Dynamic handlers
 	dynamicHandlers map[string][]func(script.Ctx)
-
-	customHandlers []func(response http.ResponseWriter, request *http.Request)
 
 	stateHandlers map[State][]func(script.Ctx)
 
@@ -140,11 +137,6 @@ func (app *harvester) harvest(seed Seed) {
 		for state, handler := range seed.states {
 			h.stateHandlers[state] = append(h.stateHandlers[state], handler)
 		}
-	}
-
-	//Harvest Dynamic Handlers.
-	if seed.handlers != nil {
-		h.customHandlers = append(h.customHandlers, seed.handlers...)
 	}
 
 	//Harvest Fonts.
@@ -371,18 +363,4 @@ func (app *harvester) StateHandlers() []byte {
 	}
 
 	return buffer.Bytes()
-}
-
-func (app *harvester) CustomHandler() func(w http.ResponseWriter, r *http.Request) {
-	var h = app
-
-	if len(h.customHandlers) == 0 {
-		return nil
-	}
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		for _, handler := range h.customHandlers {
-			handler(w, r)
-		}
-	}
 }

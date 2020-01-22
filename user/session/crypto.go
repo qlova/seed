@@ -33,11 +33,18 @@ func Key() (key [32]byte) {
 			cachedKey = make([]byte, 32)
 			_, err = rand.Read(cachedKey)
 			if err != nil {
-				rand.Read(cachedKey)
+				_, err = rand.Read(cachedKey)
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+
+			err := ioutil.WriteFile(seed.Dir+"/session.key", cachedKey, 0755)
+			if err != nil {
+				fmt.Println(err)
 			}
 		}
 
-		ioutil.WriteFile(seed.Dir+"/session.key", cachedKey, 0755)
 	}
 
 	copy(key[:], cachedKey)
