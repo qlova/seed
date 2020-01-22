@@ -47,6 +47,7 @@ function request (method, formdata, url, manual) {
 			if (this.status >= 200 && this.status < 300) {
 				resolve(slave(xhr.response));
 			} else {
+				slave(xhr.response);
 				reject({
 					status: this.status,
 					statusText: xhr.statusText,

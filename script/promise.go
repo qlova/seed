@@ -4,6 +4,15 @@ package script
 type Error struct {
 	Q Ctx
 	String
+	Code Int
+}
+
+//NeedToLogin runs 'f' if the user is Unauthorized.
+func (e Error) NeedToLogin(f func()) {
+	var q = e.Q
+	q.Javascript(`if (%v == 401) {`, e.Code)
+	f()
+	q.Javascript(`}`)
 }
 
 //Connection runs the `f` script if the error is a connection error.
@@ -51,7 +60,7 @@ func (promise Promise) Then(f func(value Dynamic)) Promise {
 //Catch executes the provided function when the promise fails.
 func (promise Promise) Catch(f func(err Error)) Promise {
 	promise.q.Javascript(promise.Raw() + ".catch(function(rpc_result) {")
-	f(Error{promise.q, promise.q.Value("rpc_result.response").String()})
+	f(Error{promise.q, promise.q.Value("rpc_result.response").String(), promise.q.Value("rpc_result.status").Int()})
 	promise.q.Javascript("});")
 	return promise
 }

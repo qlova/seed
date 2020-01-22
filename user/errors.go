@@ -2,18 +2,15 @@ package user
 
 import (
 	"fmt"
-
-	"github.com/gorilla/websocket"
+	"strconv"
 )
 
 //Report reports the provided error to the user, it should not be used for errors containing sensitive information.
 func (u Ctx) Report(err error) {
 	if u.w != nil {
 		u.w.WriteHeader(500)
-		fmt.Fprintln(u.w, err)
-	} else if u.conn != nil {
-		u.conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 	}
+	u.Execute(fmt.Sprintf(`console.error(%v);`, strconv.Quote(err.Error())))
 }
 
 //AreHacking sends an HTTP 400 status code to the user.
