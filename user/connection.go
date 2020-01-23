@@ -23,3 +23,14 @@ func CtxFromSocket(r *http.Request, w http.ResponseWriter) (Ctx, error) {
 	}
 	return Ctx{r: r, w: w, conn: conn, buffer: new(bytes.Buffer)}, nil
 }
+
+//Upgrade converts a incoming user from an HTTP request to a socket.
+func (u *Ctx) Upgrade() error {
+	conn, err := new(websocket.Upgrader).Upgrade(u.w, u.r, nil)
+	if err != nil {
+		return err
+	}
+	u.conn = conn
+	u.buffer = new(bytes.Buffer)
+	return nil
+}
