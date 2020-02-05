@@ -41,5 +41,5 @@ func (url URL) Open() {
 
 //Goto goes directly to the URL if possible..
 func (url URL) Goto() {
-	url.q.Javascript("window.location.href = (" + string(url.location.LanguageType().Raw()) + ");")
+	url.q.Javascript(`if (window.LocalhostWebsocket) LocalhostWebsocket.send("I'll be back"); window.location.href = (` + string(url.location.LanguageType().Raw()) + ");")
 }

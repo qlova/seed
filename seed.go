@@ -81,6 +81,8 @@ type seed struct {
 	page    bool
 	splash  bool
 
+	setup func()
+
 	onclick  func(script.Ctx)
 	onchange func(script.Ctx)
 	onready  func(script.Ctx)
@@ -404,7 +406,10 @@ func (seed Seed) Page() bool {
 //Require requires an external script needed by this seed.
 func (seed Seed) Require(script string) {
 	seed.scripts = append(seed.scripts, script)
-	NewAsset(script).AddTo(seed)
+
+	if len(script) > 0 && script[0] == '/' {
+		NewAsset(script).AddTo(seed)
+	}
 }
 
 //Add a child seed to this seed.

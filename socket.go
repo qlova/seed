@@ -3,6 +3,7 @@
 package seed
 
 import (
+	"bytes"
 	"log"
 	"net/http"
 	"os"
@@ -34,7 +35,15 @@ func socket(w http.ResponseWriter, r *http.Request) {
 	reloading = false
 
 	for {
-		_, _, err := c.ReadMessage()
+		_, message, err := c.ReadMessage()
+
+		if bytes.Equal(message, []byte("I'll be back")) {
+			c.WriteMessage(websocket.TextMessage, []byte("window.LocalhostWebsocket.onclose = function() {};"))
+			delete(localSockets, r.RemoteAddr)
+			localClients--
+			return
+		}
+
 		if err != nil {
 			singleLocalConnection = localClients == 1
 
