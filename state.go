@@ -63,6 +63,13 @@ func (seed Seed) When(state State, f func(q script.Ctx)) {
 	if seed.states == nil {
 		seed.states = make(map[State]func(script.Ctx))
 	}
+	if old, ok := seed.states[state]; ok {
+		seed.states[state] = func(q script.Ctx) {
+			old(q)
+			f(q)
+		}
+		return
+	}
 	seed.states[state] = f
 }
 

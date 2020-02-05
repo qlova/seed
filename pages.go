@@ -55,7 +55,9 @@ func NewPage(args ...string) Page {
 }
 
 func (page Page) Setup(f func(Page)) (ignore struct{}) {
-	f(page)
+	page.setup = func() {
+		f(page)
+	}
 	return
 }
 

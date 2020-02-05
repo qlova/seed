@@ -20,7 +20,7 @@ type Value struct {
 func ValueFromUpdate(u seed.Update) Value {
 	return Value{
 		string: `document.getElementById("` + u.ID() + `")`,
-		writer: u.Script(),
+		writer: u.buff,
 	}
 }
 

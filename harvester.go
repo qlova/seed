@@ -30,7 +30,7 @@ type harvester struct {
 	//Dynamic handlers
 	dynamicHandlers map[string][]func(script.Ctx)
 
-	stateHandlers map[State][]func(script.Ctx)
+	stateHandlers map[State][]byte
 
 	screenSmallerThans map[Unit]style.Sheet
 
@@ -43,7 +43,7 @@ type harvester struct {
 func newHarvester() *harvester {
 	return &harvester{
 		fonts:              make(map[style.Font]struct{}),
-		stateHandlers:      make(map[State][]func(script.Ctx)),
+		stateHandlers:      make(map[State][]byte),
 		screenSmallerThans: make(map[Unit]style.Sheet),
 		dynamicHandlers:    make(map[string][]func(script.Ctx)),
 		routingTable:       make(map[string]string),
@@ -135,13 +135,14 @@ func (app *harvester) harvest(seed Seed) {
 	//Harvest State Handlers.
 	if seed.states != nil {
 		for state, handler := range seed.states {
-			h.stateHandlers[state] = append(h.stateHandlers[state], handler)
+			h.stateHandlers[state] = append(h.stateHandlers[state], script.ToJavascript(handler, h.Context)...)
 		}
 	}
 
 	//Harvest Fonts.
 	if seed.font != "" {
 		var path = string(seed.font)
+
 		if font, ok := app.Context.FontCache[path]; ok {
 			seed.Style.SetFont(font)
 		} else {
@@ -185,13 +186,18 @@ func (app *App) build() {
 
 	var done = make(map[string]bool)
 
+	//Harvest app root.
+	var backup = app.Root().children
+	app.Root().children = nil
+	app.harvester.harvest(app.Root())
+	app.Root().children = backup
+	app.harvester.app = app
+
 	//Recursively harvest children.
 	for _, child := range app.Root().children {
 		app.harvester.harvestOnReady(child.Root())
 		app.harvester.harvest(child.Root())
 	}
-
-	app.harvester.StateHandlers()
 
 	for {
 		var pages = app.Context.Pages
@@ -206,6 +212,7 @@ func (app *App) build() {
 				continue
 			}
 			page := page.(Page)
+			page.setup()
 			app.Add(page.Root())
 			app.harvester.harvestOnReadyPage(page.Root())
 			app.harvester.harvest(page.Root())
@@ -213,12 +220,6 @@ func (app *App) build() {
 			done[id] = true
 		}
 	}
-
-	var backup = app.Root().children
-	app.Root().children = nil
-	app.harvester.harvest(app.Root())
-	app.Root().children = backup
-	app.harvester.app = app
 
 	//Index assets for the application.
 	for _, asset := range app.assets {
@@ -334,6 +335,7 @@ func (app *harvester) StateHandlers() []byte {
 
 	for state, handlers := range h.stateHandlers {
 		var reference = state.Bool.Ref()
+
 		if state.not {
 			buffer.WriteString("window." + reference + "_unset = async function() {")
 			buffer.Write([]byte(script.ToJavascript(func(q script.Ctx) {
@@ -346,9 +348,7 @@ func (app *harvester) StateHandlers() []byte {
 			})))
 		}
 
-		for _, handler := range handlers {
-			buffer.Write([]byte(script.ToJavascript(handler, h.Context)))
-		}
+		buffer.Write(handlers)
 		buffer.WriteByte('}')
 		buffer.WriteByte(';')
 
@@ -358,7 +358,9 @@ func (app *harvester) StateHandlers() []byte {
 		buffer.Write([]byte(script.ToJavascript(func(q script.Ctx) {
 			q.If(state.Get(q), func() {
 				state.Set(q)
-			})
+			}, q.Else(func() {
+				state.Unset(q)
+			}))
 		})))
 	}
 

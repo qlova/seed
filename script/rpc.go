@@ -1,6 +1,9 @@
 package script
 
 import (
+	"log"
+	"strings"
+
 	//Global ids.
 	"bytes"
 	"encoding/base64"
@@ -143,13 +146,7 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 		}
 
 		for i, arg := range args {
-			switch arg.(type) {
-			case String:
-				q.Javascript(`%v.set("%v", %v);`, formdata, i, arg)
-			default:
-				q.Javascript(`%v.set("%v", JSON.stringify(%v));`, formdata, i, arg)
-			}
-
+			q.Javascript(`%v.set("%v", JSON.stringify(%v));`, formdata, i, arg)
 		}
 	}
 
@@ -160,12 +157,7 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 			q.Javascript(`let ` + formdata + ` = new FormData();`)
 		}
 		for key, value := range nargs {
-			switch value.(type) {
-			case Array, Object:
-				q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, JSON.stringify(` + value.LanguageType().Raw() + `));`)
-			default:
-				q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, ` + value.LanguageType().Raw() + `);`)
-			}
+			q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, JSON.stringify(` + value.LanguageType().Raw() + `));`)
 		}
 	}
 
@@ -209,22 +201,24 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 
 	}
 
+	//Parse each argument as JSON.
 	for i := StartFrom; i < f.Type().NumIn(); i++ {
 		var arg = u.Arg(strconv.Itoa(i - StartFrom))
 
-		switch f.Type().In(i).Kind() {
-		case reflect.String:
-
-			in = append(in, reflect.ValueOf(arg.String()))
-
-		case reflect.Int:
-			var number, _ = strconv.Atoi(arg.String())
-			in = append(in, reflect.ValueOf(number))
-
-		default:
-			println("unimplemented callHandler for " + f.Type().String())
+		var shell = reflect.New(f.Type().In(i)).Interface()
+		if err := json.NewDecoder(strings.NewReader(arg.String())).Decode(shell); err != nil {
+			log.Println(err)
 			return
 		}
+
+		var elem = reflect.ValueOf(shell).Elem()
+
+		if elem.Type() != f.Type().In(i) {
+			log.Println("type mismatch")
+			return
+		}
+
+		in = append(in, elem)
 	}
 
 	var results = f.Call(in)

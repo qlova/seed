@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"sort"
+	"strings"
 )
 
 //HTML returns rendered html of the entire app.
@@ -59,7 +60,7 @@ func (app App) HTML() []byte {
 		}
 	}
 
-	buffer.WriteString(`<script>`)
+	buffer.WriteString(`<script> seed = {};`)
 	{
 		if app.production && (app.rest != "") {
 			buffer.WriteString(`var host = "https://` + app.rest + `";`)
@@ -107,6 +108,7 @@ func (app App) HTML() []byte {
 				let url = new URL('/socket', window.location.href);
 				url.protocol = url.protocol.replace('http', 'ws');
 				let Socket = new WebSocket(url.href);
+
 				Socket.onclose = function() {
 					close();
 				}
@@ -116,6 +118,9 @@ func (app App) HTML() []byte {
 				Socket.onmessage = function(event) {
 					eval(event.data);
 				}
+
+				window.LocalhostWebsocket = Socket;
+				
 				//Disable refresh on chrome because otherwise the app will close.
 				document.onkeydown = function() {    
 					switch (event.keyCode) { 
@@ -283,13 +288,13 @@ func (app App) HTML() []byte {
 	{
 		keys := make([]string, 0, len(scripts))
 		for key := range scripts {
-			keys = append(keys, key)
+			if path.Ext(key) == ".js" || strings.HasPrefix(key, "https://js.") {
+				keys = append(keys, key)
+			}
 		}
 		sort.Sort(sort.Reverse(sort.StringSlice(keys)))
 		for _, script := range keys {
-			if path.Ext(script) == ".js" {
-				buffer.Write([]byte(`<script src="` + script + `" defer></script>`))
-			}
+			buffer.Write([]byte(`<script src="` + script + `" defer></script>`))
 		}
 	}
 

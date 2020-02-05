@@ -43,7 +43,7 @@ func (worker Worker) Render() []byte {
   event.waitUntil(
     caches.open("assets").then(function(cache) {
       return cache.addAll(
-        [".", `)
+        ["/", `)
 
 	worker.renderMap(&b, worker.Assets)
 

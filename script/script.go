@@ -62,6 +62,8 @@ func ToJavascript(f func(q Ctx), ctx ...internal.Context) []byte {
 	var context internal.Context
 	if len(ctx) > 0 {
 		context = ctx[0]
+	} else {
+		context = internal.NewContext()
 	}
 
 	return toJavascript(f, context)

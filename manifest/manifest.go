@@ -36,7 +36,7 @@ type Manifest struct {
 //New returns a new webapp manifest.
 func New() Manifest {
 	var manifest Manifest
-	manifest.StartURL = "."
+	manifest.StartURL = "/"
 	manifest.Display = "standalone"
 	manifest.BackgroundColor = "#ffffff"
 	manifest.ThemeColor = "#ffffff"
