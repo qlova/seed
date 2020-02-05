@@ -22,11 +22,18 @@ var connectionHandlers = make(map[string]func(u user.Ctx))
 
 //Open is the JS required for q.Open(..).
 const Open = `
-	function open(path) {
+	seed.connections = {};
+	seed.open = function(path) {
+		if (path in seed.connections && seed.connections[path].readyState != WebSocket.CLOSED) {
+			return;
+		}
+
 		let url = new URL(path, window.location.href);
 		url.protocol = url.protocol.replace('http', 'ws');
 
 		let socket = new WebSocket(url.href);
+
+		seed.connections[path] = socket;
 
 		socket.addEventListener('message', function (event) {
 			slave(event.data);
@@ -52,7 +59,7 @@ func (q Ctx) Open(f func(u user.Ctx)) Connection {
 	q.Require(Request)
 
 	var variable = Unique()
-	q.Javascript(`let %v = open("%v");`, variable, WebSocketEndpoint)
+	q.Javascript(`let %v = seed.open("%v");`, variable, WebSocketEndpoint)
 
 	return Connection{q, q.Value(variable).Native()}
 }

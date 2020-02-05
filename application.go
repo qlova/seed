@@ -197,3 +197,10 @@ func (app *App) Handler() http.Handler {
 func (app *App) OnUpdateFound(f func(script.Ctx)) {
 	app.onupdatefound = f
 }
+
+//While allows a persistent user-connection to be opened when a state is active.
+func (app *App) While(state State, handler user.Handler) {
+	app.When(state, func(q script.Ctx) {
+		q.Open(handler)
+	})
+}
