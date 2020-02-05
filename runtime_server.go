@@ -20,20 +20,12 @@ import (
 //Live signals if the application is live or not.
 var Live bool
 
-//Production signals if the application is in production or not.
-var Production bool
-
 var exporting bool
 
 func init() {
+
 	for _, arg := range os.Args {
 		if arg == "-live" {
-			Live = true
-		}
-	}
-	for _, arg := range os.Args {
-		if arg == "-production" {
-			Production = true
 			Live = true
 		}
 	}
@@ -41,6 +33,10 @@ func init() {
 		if arg == "-export=static" {
 			exporting = true
 		}
+	}
+
+	if Production {
+		Live = true
 	}
 }
 

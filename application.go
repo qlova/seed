@@ -2,6 +2,7 @@ package seed
 
 import (
 	"bytes"
+	"log"
 	"net/http"
 	"os"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/service"
 	"github.com/qlova/seed/style/css"
+	"github.com/qlova/seed/user"
 )
 
 //App is an entire app, with multiple pages and/or seeds.
@@ -166,6 +168,13 @@ func (app *App) SetTrackingCode(code string) {
 //This method is suitable for launching the app in development and in production.
 //However, to actually launch the app in production, a -production flag needs to passed to the app.
 func (app *App) Launch(listen ...string) error {
+
+	if !Production {
+		if err := app.embedAssets(); err != nil {
+			log.Println(err)
+		}
+	}
+
 	app.build()
 
 	if exporting {
