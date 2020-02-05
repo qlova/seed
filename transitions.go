@@ -304,9 +304,7 @@ func setTransitionOut(Page script.Page, trans Transition) {
 	}
 
 	if !trans.When.Null() {
-		q.Print(q.Value(trans.When.Ctx(q).Element()).String(), q.Value(q.NextPage().Element()).String())
 		q.If(q.NextPage().Equals(trans.When.Ctx(q)), func() {
-			q.Print(q.String("woo"))
 			if trans.Then != nil {
 				setTransitionOut(Page, *trans.Then)
 			}
