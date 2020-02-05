@@ -1,11 +1,8 @@
 package seed
 
 import (
-	"log"
 	"net/http"
-	"os"
 	"path"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -27,10 +24,6 @@ func isLocal(r *http.Request) (local bool) {
 
 //Handler returns a http handler that serves this application.
 func (runtime Runtime) Handler() http.Handler {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	minified, err := mini(runtime.app.Render(Default))
 	if err != nil {
@@ -50,12 +43,12 @@ func (runtime Runtime) Handler() http.Handler {
 		router.Handle(pattern, handler)
 	}
 
-	router.Handle("/Qlovaseed.png", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	router.Handle("/Qlovaseed.png", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
 		icon, _ := fsByte(false, "/Qlovaseed.png")
 		w.Write(icon)
 		return
-	}))
+	})))
 
 	router.Handle("/call/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		script.Handler(w, r, r.URL.Path[6:])
@@ -65,7 +58,7 @@ func (runtime Runtime) Handler() http.Handler {
 		script.ConnectionHandler(w, r, r.URL.Path[6:])
 	}))
 
-	router.Handle("/.well-known/assetlinks.json", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	router.Handle("/.well-known/assetlinks.json", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if runtime.app.pkg != "" {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write([]byte(`[{
@@ -83,18 +76,18 @@ func (runtime Runtime) Handler() http.Handler {
 			w.Write([]byte(`] }
 	}]`))
 		}
-	}))
+	})))
 
 	//Socket for qlovaseed app-development features.
-	router.Handle("/socket", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	router.Handle("/socket", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if isLocal(r) {
 			LocalClients++
 			singleLocalConnection = LocalClients == 1
 			socket(w, r)
 		}
-	}))
+	})))
 
-	router.Handle("/index.js", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	router.Handle("/index.js", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if isLocal(r) {
 			//Don't use a web worker if we are running locally.
 			w.Header().Set("content-type", "text/javascript")
@@ -103,18 +96,22 @@ func (runtime Runtime) Handler() http.Handler {
 			w.Header().Set("content-type", "text/javascript")
 			w.Write(worker)
 		}
-	}))
+	})))
 
-	router.Handle("/app.webmanifest", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	router.Handle("/app.webmanifest", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		w.Write(manifest)
-	}))
+	})))
 
-	router.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	router.Handle("/", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		//Serve assets.
 		if path.Ext(r.URL.Path) != "" {
-			http.ServeFile(w, r, dir+"/assets"+r.URL.Path)
+			if Production {
+				embeddedFileServer.ServeHTTP(w, r)
+			} else {
+				http.ServeFile(w, r, Dir+"/assets"+r.URL.Path)
+			}
 			return
 		}
 
@@ -123,9 +120,9 @@ func (runtime Runtime) Handler() http.Handler {
 		} else {
 			w.Write(minified)
 		}
-	}))
+	})))
 
-	return gziphandler.GzipHandler(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
+	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 		if origin := request.Header.Get("Origin"); origin == "https://"+runtime.app.host && origin != "" {
 			response.Header().Set("Access-Control-Allow-Origin", origin)
 		} else {
@@ -158,5 +155,5 @@ func (runtime Runtime) Handler() http.Handler {
 		}*/
 
 		router.ServeHTTP(response, request)
-	}))
+	})
 }
