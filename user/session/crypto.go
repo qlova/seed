@@ -87,7 +87,7 @@ func Encrypt(data []byte) string {
 	var encrypted = gcm.Seal(nonce, nonce, data, nil)
 
 	var result bytes.Buffer
-	var encoder = base64.NewEncoder(base64.StdEncoding, &result)
+	var encoder = base64.NewEncoder(base64.URLEncoding, &result)
 	_, err = encoder.Write(encrypted)
 	if err != nil {
 		fmt.Println(err)
@@ -100,7 +100,7 @@ func Encrypt(data []byte) string {
 
 func Decrypt(data string) []byte {
 
-	var decoder = base64.NewDecoder(base64.StdEncoding, strings.NewReader(data))
+	var decoder = base64.NewDecoder(base64.URLEncoding, strings.NewReader(data))
 
 	var encrypted, err = ioutil.ReadAll(decoder)
 	if err != nil {
