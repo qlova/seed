@@ -49,9 +49,14 @@ func (q Ctx) CheckForUpdates() {
 	q.Javascript(`ServiceWorker_Registration.update();`)
 }
 
-//Restart peforms a hard reboot of the app.
+//Restart peforms a restart of the app.
 func (q Ctx) Restart() {
 	q.Javascript("window.location.reload();")
+}
+
+//HardReset restarts the app and clears all user data.
+func (q Ctx) HardReset() {
+	q.Javascript(`window.localStorage.clear(); window.location = "/";`)
 }
 
 //InstallJS installs the app to the user's device.
