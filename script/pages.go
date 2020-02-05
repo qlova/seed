@@ -133,6 +133,8 @@ const Goto = `
 		if (next_page == next_page_id) return;
 		next_page = next_page_id;
 
+		if (window.flipping) flipping.read();
+
 		for (let element of template.parentElement.childNodes) {
 			if (element.classList.contains("page")) {
 				if (getComputedStyle(element).display != "none") {
@@ -147,9 +149,11 @@ const Goto = `
 						going_back = false;
 					};
 					last_page = element.id;
-
+					
 					if (element.onpageexit) {
-						await element.onpageexit();
+						try {
+							await element.onpageexit();
+						} catch(e) {}
 						if (goto_exitpromise) {
 							goto_exitpromise.then(resolve);
 							goto_exitpromise = null;
@@ -178,8 +182,9 @@ const Goto = `
 			await onready[child.id]();
 			delete onready[child.id];
 		}
-		
-		if (child.onpageenter) await child.onpageenter();
+		try {
+			if (child.onpageenter) await child.onpageenter();
+		} catch(e) {}
 		current_page = next_page_id;
 
 		//Persistence.
@@ -194,6 +199,8 @@ const Goto = `
 			data.path = "/";
 		}
 		window.history.replaceState(null, data.title, data.path);
+
+		try { flipping.flip(); } catch(error) {}
 	};
 `
 
