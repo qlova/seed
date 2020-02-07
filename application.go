@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/qlova/seed/inbed"
 	"github.com/qlova/seed/manifest"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/service"
@@ -169,10 +170,10 @@ func (app *App) SetTrackingCode(code string) {
 //However, to actually launch the app in production, a -production flag needs to passed to the app.
 func (app *App) Launch(listen ...string) error {
 
-	if !Production {
-		if err := app.embedAssets(); err != nil {
-			log.Println(err)
-		}
+	inbed.File("assets")
+
+	if err := inbed.Done(); err != nil {
+		log.Println(err)
 	}
 
 	app.build()

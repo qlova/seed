@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/NYTimes/gziphandler"
+	"github.com/qlova/seed/inbed"
 	"github.com/qlova/seed/script"
 )
 
@@ -24,6 +25,10 @@ func isLocal(r *http.Request) (local bool) {
 
 //Handler returns a http handler that serves this application.
 func (runtime Runtime) Handler() http.Handler {
+
+	var AssetsServer = http.FileServer(inbed.FileSystem{
+		Prefix: "assets",
+	})
 
 	minified, err := mini(runtime.app.Render(Default))
 	if err != nil {
@@ -107,11 +112,7 @@ func (runtime Runtime) Handler() http.Handler {
 
 		//Serve assets.
 		if path.Ext(r.URL.Path) != "" {
-			if Production {
-				embeddedFileServer.ServeHTTP(w, r)
-			} else {
-				http.ServeFile(w, r, Dir+"/assets"+r.URL.Path)
-			}
+			AssetsServer.ServeHTTP(w, r)
 			return
 		}
 
