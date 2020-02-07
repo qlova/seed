@@ -52,7 +52,9 @@ func (promise Promise) Wait() Dynamic {
 //Then executes the provided function when the promise succeeds.
 func (promise Promise) Then(f func(value Dynamic)) Promise {
 	promise.q.Javascript(promise.Raw() + ` = ` + promise.Raw() + ".then(function(promise_result) {")
-	f(promise.q.Value("promise_result").Dynamic())
+	if f != nil {
+		f(promise.q.Value("promise_result").Dynamic())
+	}
 	promise.q.Javascript("});")
 	return promise
 }
@@ -60,7 +62,9 @@ func (promise Promise) Then(f func(value Dynamic)) Promise {
 //Catch executes the provided function when the promise fails.
 func (promise Promise) Catch(f func(err Error)) Promise {
 	promise.q.Javascript(promise.Raw() + ".catch(function(rpc_result) {")
-	f(Error{promise.q, promise.q.Value("rpc_result.response").String(), promise.q.Value("rpc_result.status").Int()})
+	if f != nil {
+		f(Error{promise.q, promise.q.Value("rpc_result.response").String(), promise.q.Value("rpc_result.status").Int()})
+	}
 	promise.q.Javascript("});")
 	return promise
 }
