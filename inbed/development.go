@@ -45,8 +45,8 @@ func embedFile(name string, w *os.File, r *os.File) error {
 		return fmt.Errorf("could not stat file: %w", err)
 	}
 
-	if _, err := w.WriteString(fmt.Sprintf(`	inbed.Data(%q, %v, %v, %v, []byte("`,
-		name, info.Size(), info.ModTime().UnixNano(), uint32(info.Mode()))); err != nil {
+	if _, err := w.WriteString(fmt.Sprintf(`	inbed.Data(%q, %v, %v, []byte("`,
+		name, info.ModTime().UnixNano(), uint32(info.Mode()))); err != nil {
 
 		return fmt.Errorf("could not write assets file: %w", err)
 	}
@@ -160,8 +160,8 @@ func init() {
 				}
 
 				if info.IsDir() {
-					if _, err := assets.WriteString(fmt.Sprintf(`	inbed.Data(%q, %v, %v, %v, nil)`+"\n",
-						path, info.Size(), info.ModTime().UnixNano(), uint32(info.Mode()))); err != nil {
+					if _, err := assets.WriteString(fmt.Sprintf(`	inbed.Data(%q, %v, %v, nil)`+"\n",
+						path, info.ModTime().UnixNano(), uint32(info.Mode()))); err != nil {
 
 						return fmt.Errorf("could not write assets file: %w", err)
 					}

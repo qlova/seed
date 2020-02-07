@@ -21,10 +21,9 @@ func Done() error {
 }
 
 //Data is a low-level function (only available in production) for embedding data.
-func Data(uri string, size int64, modtime int64, mode uint32, data []byte) {
+func Data(uri string, modtime int64, mode uint32, data []byte) {
 	files[uri] = file{
 		name: path.Base(uri),
-		size: size,
 
 		modTime: time.Unix(0, modtime),
 		mode:    os.FileMode(mode),
@@ -47,7 +46,6 @@ var files = make(map[string]file)
 type file struct {
 	name string
 
-	size    int64
 	modTime time.Time
 	mode    os.FileMode
 
@@ -74,7 +72,7 @@ func (f file) Name() string {
 }
 
 func (f file) Size() int64 {
-	return f.size
+	return int64(len(f.data))
 }
 
 func (f file) Mode() os.FileMode {
