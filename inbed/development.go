@@ -4,16 +4,30 @@ package inbed
 
 import (
 	"bufio"
+	"compress/gzip"
 	"encoding/gob"
 	"encoding/hex"
 	"fmt"
+
 	"io"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"unicode/utf8"
+
+	"github.com/tdewolff/minify"
+	"github.com/tdewolff/minify/css"
+	"github.com/tdewolff/minify/html"
+	"github.com/tdewolff/minify/js"
+	"github.com/tdewolff/minify/json"
+	"github.com/tdewolff/minify/svg"
+	"github.com/tdewolff/minify/xml"
 )
+
+const production = false
 
 var embeddings []string
 
@@ -37,10 +51,71 @@ func embeddingsEqual(otherEmbeddings []string) bool {
 	return true
 }
 
-func embedFile(name string, w *os.File, r *os.File) error {
-	reader, writer := bufio.NewReader(r), bufio.NewWriter(w)
+var mini = minify.New()
 
-	info, err := w.Stat()
+func init() {
+	mini.AddFunc("text/css", css.Minify)
+	mini.AddFunc("text/html", html.Minify)
+	mini.AddFunc("image/svg+xml", svg.Minify)
+	mini.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
+	mini.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
+	mini.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
+	mini.AddFunc("encoding/gzip", func(m *minify.M, w io.Writer, r io.Reader, _ map[string]string) error {
+		gw := gzip.NewWriter(w)
+		_, err := io.Copy(gw, r)
+		if err != nil {
+			return fmt.Errorf("could not gzip stream: %w", err)
+		}
+		gw.Close()
+		return nil
+	})
+	/*mini.AddFunc("image/png", func(m *minify.M, w io.Writer, r io.Reader, _ map[string]string) error {
+		img, _, err := image.Decode(r)
+		if err != nil {
+			return fmt.Errorf("could not decode image: %w", err)
+		}
+
+		img = lossypng.Compress(img, lossypng.RGBAConversion, 20)
+
+		return (&png.Encoder{
+			CompressionLevel: png.BestCompression,
+		}).Encode(w, img)
+	})*/
+}
+
+func embedFile(name string, w *os.File, r *os.File) error {
+	info, err := r.Stat()
+	if err != nil {
+		return fmt.Errorf("could not stat file: %w", err)
+	}
+
+	var reader io.Reader
+	var writer io.Writer
+
+	switch path.Ext(info.Name()) {
+	case ".html":
+		reader = mini.Reader("text/html", r)
+	case ".svg":
+		reader = mini.Reader("image/svg+xml", r)
+	case ".css":
+		reader = mini.Reader("text/css", r)
+	case ".js":
+		reader = mini.Reader("application/javascript", r)
+	case ".json":
+		reader = mini.Reader("text/json", r)
+	case ".xml":
+		reader = mini.Reader("text/xml", r)
+	/*case ".png":
+	reader = mini.Reader("image/png", r)*/
+	default:
+		reader = bufio.NewReader(r)
+	}
+
+	reader = bufio.NewReader(mini.Reader("encoding/gzip", reader))
+
+	writer = bufio.NewWriter(w)
+
+	info, err = w.Stat()
 	if err != nil {
 		return fmt.Errorf("could not stat file: %w", err)
 	}
@@ -52,6 +127,9 @@ func embedFile(name string, w *os.File, r *os.File) error {
 	}
 
 	for {
+		reader := reader.(*bufio.Reader)
+		writer := writer.(*bufio.Writer)
+
 		peek, err := reader.Peek(4)
 		if err != nil && len(peek) == 0 {
 			if err == io.EOF {
@@ -113,11 +191,11 @@ func embedFile(name string, w *os.File, r *os.File) error {
 
 	}
 
-	if _, err := writer.WriteString(`"))` + "\n"); err != nil {
+	if _, err := writer.(*bufio.Writer).WriteString(`"))` + "\n"); err != nil {
 		return fmt.Errorf("could not write file: %w", err)
 	}
 
-	if err := writer.Flush(); err != nil {
+	if err := writer.(*bufio.Writer).Flush(); err != nil {
 		return fmt.Errorf("could not write file: %w", err)
 	}
 

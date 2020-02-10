@@ -26,9 +26,9 @@ func isLocal(r *http.Request) (local bool) {
 //Handler returns a http handler that serves this application.
 func (runtime Runtime) Handler() http.Handler {
 
-	var AssetsServer = http.FileServer(inbed.FileSystem{
+	var AssetsServer = inbed.FileSystem{
 		Prefix: "assets",
-	})
+	}
 
 	minified, err := mini(runtime.app.Render(Default))
 	if err != nil {
@@ -108,7 +108,7 @@ func (runtime Runtime) Handler() http.Handler {
 		w.Write(manifest)
 	})))
 
-	router.Handle("/", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	router.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		//Serve assets.
 		if path.Ext(r.URL.Path) != "" {
@@ -121,7 +121,7 @@ func (runtime Runtime) Handler() http.Handler {
 		} else {
 			w.Write(minified)
 		}
-	})))
+	}))
 
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 		if origin := request.Header.Get("Origin"); origin == "https://"+runtime.app.host && origin != "" {

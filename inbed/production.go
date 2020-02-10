@@ -4,12 +4,16 @@ package inbed
 
 import (
 	"bytes"
+	"compress/gzip"
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 	"time"
 )
+
+const production = true
 
 //File embeds the named file inside your code, relative to the location of the binary.
 //If the file is a directory, the entire directory is recursively embedded.
@@ -38,7 +42,7 @@ func Open(name string) (http.File, error) {
 	if !ok {
 		return nil, os.ErrNotExist
 	}
-	return asset.Open(), nil
+	return asset.Open()
 }
 
 var files = make(map[string]file)
@@ -54,9 +58,17 @@ type file struct {
 	*bytes.Reader
 }
 
-func (f file) Open() file {
-	f.Reader = bytes.NewReader(f.data)
-	return f
+func (f file) Open() (file, error) {
+	gr, err := gzip.NewReader(bytes.NewReader(f.data))
+	if err != nil {
+		return f, err
+	}
+	b, err := ioutil.ReadAll(gr)
+	if err != nil {
+		return f, err
+	}
+	f.Reader = bytes.NewReader(b)
+	return f, err
 }
 
 func (f file) Readdir(int) ([]os.FileInfo, error) {
