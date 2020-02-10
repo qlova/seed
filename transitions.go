@@ -201,7 +201,9 @@ var SlideRight = Transition{
 }
 
 var beginTransition = `function beginInTransition(element, animation, duration) {
-	let last=last_page; if (!last || last == loading_page) return;
+	if (element.classList.contains("page")) {
+		let last=last_page; if (!last || last == loading_page) return;
+	}
 
 	set(element, "animation-name", animation);
 	set(element, "animation-direction", "normal");
@@ -218,7 +220,9 @@ var beginTransition = `function beginInTransition(element, animation, duration) 
 	}, 1000*duration);
 }
 function beginOutTransition(element, animation, duration) {
-	let last=last_page; if (!last || last == loading_page) return;
+	if (element.classList.contains("page")) {
+		let last=last_page; if (!last || last == loading_page) return;
+	}
 
 	set(element, "animation-name", animation);
 	set(element, "animation-direction", "normal");
@@ -238,17 +242,17 @@ function beginOutTransition(element, animation, duration) {
 
 const duration = "0.5"
 
-func setTransitionIn(Page script.Page, trans Transition) {
+func SetTransitionIn(Page script.Seed, trans Transition) {
 	var q = Page.Q
 
 	if trans.WhenBack {
 		q.If(q.Value("going_back").Bool(), func() {
 			if trans.Then != nil {
-				setTransitionIn(Page, *trans.Then)
+				SetTransitionIn(Page, *trans.Then)
 			}
 		}, q.Else(func() {
 			if trans.Else != nil {
-				setTransitionIn(Page, *trans.Else)
+				SetTransitionIn(Page, *trans.Else)
 			}
 		}))
 		return
@@ -257,11 +261,11 @@ func setTransitionIn(Page script.Page, trans Transition) {
 	if !trans.When.Null() {
 		q.If(q.LastPage().Equals(trans.When.Ctx(q)), func() {
 			if trans.Then != nil {
-				setTransitionIn(Page, *trans.Then)
+				SetTransitionIn(Page, *trans.Then)
 			}
 		}, q.Else(func() {
 			if trans.Else != nil {
-				setTransitionIn(Page, *trans.Else)
+				SetTransitionIn(Page, *trans.Else)
 			}
 		}))
 		return
@@ -271,11 +275,11 @@ func setTransitionIn(Page script.Page, trans Transition) {
 		q.Javascript(`if (` + q.LastPage().Element() + ` == null) return;`)
 		q.If(q.Value(q.LastPage().Element()+".classList.contains('"+trans.WhenTag+"')").Bool(), func() {
 			if trans.Then != nil {
-				setTransitionIn(Page, *trans.Then)
+				SetTransitionIn(Page, *trans.Then)
 			}
 		}, q.Else(func() {
 			if trans.Else != nil {
-				setTransitionIn(Page, *trans.Else)
+				SetTransitionIn(Page, *trans.Else)
 			}
 		}))
 		return
@@ -287,17 +291,17 @@ func setTransitionIn(Page script.Page, trans Transition) {
 	}
 }
 
-func setTransitionOut(Page script.Page, trans Transition) {
+func SetTransitionOut(Page script.Seed, trans Transition) {
 	var q = Page.Q
 
 	if trans.WhenBack {
 		q.If(q.Value("going_back").Bool(), func() {
 			if trans.Then != nil {
-				setTransitionOut(Page, *trans.Then)
+				SetTransitionOut(Page, *trans.Then)
 			}
 		}, q.Else(func() {
 			if trans.Else != nil {
-				setTransitionOut(Page, *trans.Else)
+				SetTransitionOut(Page, *trans.Else)
 			}
 		}))
 		return
@@ -306,11 +310,11 @@ func setTransitionOut(Page script.Page, trans Transition) {
 	if !trans.When.Null() {
 		q.If(q.NextPage().Equals(trans.When.Ctx(q)), func() {
 			if trans.Then != nil {
-				setTransitionOut(Page, *trans.Then)
+				SetTransitionOut(Page, *trans.Then)
 			}
 		}, q.Else(func() {
 			if trans.Else != nil {
-				setTransitionOut(Page, *trans.Else)
+				SetTransitionOut(Page, *trans.Else)
 			}
 		}))
 		return
@@ -319,11 +323,11 @@ func setTransitionOut(Page script.Page, trans Transition) {
 	if trans.WhenTag != "" {
 		q.If(q.Value(q.LastPage().Element()+".classList.contains('"+trans.WhenTag+"')").Bool(), func() {
 			if trans.Then != nil {
-				setTransitionOut(Page, *trans.Then)
+				SetTransitionOut(Page, *trans.Then)
 			}
 		}, q.Else(func() {
 			if trans.Else != nil {
-				setTransitionOut(Page, *trans.Else)
+				SetTransitionOut(Page, *trans.Else)
 			}
 		}))
 		return
@@ -340,13 +344,13 @@ func (page Page) SetTransition(trans Transition) {
 	if trans.In != nil || !trans.When.Null() || trans.WhenTag != "" || trans.WhenBack {
 		page.OnPageEnter(func(q script.Ctx) {
 			var Page = page.Ctx(q)
-			setTransitionIn(Page, trans)
+			SetTransitionIn(Page.Seed, trans)
 		})
 	}
 	if trans.Out != nil || !trans.When.Null() || trans.WhenTag != "" || trans.WhenBack {
 		page.OnPageExit(func(q script.Ctx) {
 			var Page = page.Ctx(q)
-			setTransitionOut(Page, trans)
+			SetTransitionOut(Page.Seed, trans)
 		})
 	}
 }
