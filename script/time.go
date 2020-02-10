@@ -53,14 +53,14 @@ func (t Time) Month() Month {
 
 //After executes a function after the given number of milliseconds have passed.
 func (q Ctx) After(time float64, f func()) {
-	q.Javascript("setTimeout(function() {")
+	q.Javascript("setTimeout(async function() {")
 	f()
 	q.Javascript("}, " + fmt.Sprint(time) + ");")
 }
 
 //Every executes a function every number of milliseconds.
 func (q Ctx) Every(time float64, f func()) {
-	q.Javascript("setInterval(function() {")
+	q.Javascript("setInterval(async function() {")
 	f()
 	q.Javascript("}, " + fmt.Sprint(time) + ");")
 }
