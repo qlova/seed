@@ -83,9 +83,8 @@ type seed struct {
 
 	setup func()
 
-	onclick  func(script.Ctx)
-	onchange func(script.Ctx)
-	onready  func(script.Ctx)
+	onclick func(script.Ctx)
+	onready func(script.Ctx)
 
 	on map[string]func(script.Ctx)
 
@@ -131,7 +130,17 @@ func (seed Seed) On(event string, callback func(script.Ctx)) {
 
 //Ready returns the ready event handler.
 func (seed Seed) Ready() func(script.Ctx) {
-	return seed.onready
+	return func(q script.Ctx) {
+		if seed.onready != nil {
+			seed.onready(q)
+		}
+
+		for event, handler := range seed.on {
+			q.Javascript(seed.Ctx(q).Element() + ".on" + event + " = async function() {")
+			handler(q)
+			q.Javascript("};")
+		}
+	}
 }
 
 //Is returns true if a and b are the same seed.

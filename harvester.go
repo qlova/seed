@@ -78,12 +78,14 @@ func (app *harvester) harvestOnReady(seed Seed) []byte {
 	var buffer bytes.Buffer
 
 	//TODO sort?
-	for event, handler := range seed.on {
-		buffer.Write(script.ToJavascript(func(q script.Ctx) {
-			q.Javascript(seed.Ctx(q).Element() + ".on" + event + " = async function() {")
-			handler(q)
-			q.Javascript("};")
-		}, h.Context))
+	if !seed.Template {
+		for event, handler := range seed.on {
+			buffer.Write(script.ToJavascript(func(q script.Ctx) {
+				q.Javascript(seed.Ctx(q).Element() + ".on" + event + " = async function() {")
+				handler(q)
+				q.Javascript("};")
+			}, h.Context))
+		}
 	}
 
 	//Harvest onready handlers
