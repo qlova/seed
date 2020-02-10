@@ -90,21 +90,25 @@ const Goto = `
 
 	var goto_exitpromise = null;
 
-	var goto = async function(next_page_id, private) {
+	var goto = function(next_page_id, private) {
 		//We are still waiting for the app to load.
 		if (!goto_ready) {
 			return;
 		}
 
 		if (!going_to) {
-			await actual_goto(next_page_id, private);
-		} else {
 			going_to = next_page_id;
+			setTimeout(async function() {
+				await actual_goto(next_page_id, private);
+			}, 1);
 		}
 	}
 	
 	var actual_goto = async function(next_page_id, private) {
-		going_to = null;
+		console.log(going_to, next_page_id);
+
+		if (!going_to) return;
+
 		//We are still waiting for the app to load.
 		if (!goto_ready) {
 			return;
@@ -115,22 +119,33 @@ const Goto = `
 		if (template == null || next_page_id == loading_page || !next_page_id) {
 			console.error("invalid page ", next_page_id);
 			next_page_id = starting_page;
-			if (next_page_id == "") return;
+			if (next_page_id == "") {
+				going_to = null;
+				return;
+			}
 
 			template = get(starting_page+":template");
 			if (template == null) {
 				console.error("starting page is invalid");
+				going_to = null;
 				return;
 			}
 		}
 	
 		if (animating) {
 			goto_queue.push(next_page_id)
+			going_to = null;
 			return;
 		}
 
-		if (current_page == next_page_id) return;
-		if (next_page == next_page_id) return;
+		if (current_page == next_page_id) {
+			going_to = null;
+			return;
+		}
+		if (next_page == next_page_id) {
+			going_to = null;
+			return;
+		}
 		next_page = next_page_id;
 
 		if (window.flipping) flipping.read();
@@ -201,6 +216,8 @@ const Goto = `
 		window.history.replaceState(null, data.title, data.path);
 
 		try { flipping.flip(); } catch(error) {}
+
+		going_to = null;
 	};
 `
 
