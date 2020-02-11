@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -20,10 +21,9 @@ func (app App) HTML() []byte {
 
 	var buffer bytes.Buffer
 	buffer.WriteString(`<!DOCTYPE html>`)
-	buffer.WriteString(`<html lang="en">`)
+	buffer.WriteString(`<html dir="ltr" lang="en"><meta charset="utf-8">`)
 	buffer.WriteString(`<head>`)
 
-	//Ensure the screen size matches the device size, disable zoom.
 	buffer.WriteString(`<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">`)
 
 	buffer.WriteString(`<meta name="Description" content="` + app.description + `">`)
@@ -41,8 +41,13 @@ func (app App) HTML() []byte {
 		<meta name="theme-color" content="` + app.ThemeColor + `">
 
 		<title>` + app.Name + `</title>
+		<meta name="description" content=` + strconv.Quote(app.description) + `>
 
 		<link rel="manifest" href="/app.webmanifest">
+		
+		<meta name="msapplication-config" content="/browserconfig.xml">
+
+		<meta name="twitter:card" content="app"></meta>
 	`)
 
 	for i, icon := range app.Icons {
@@ -59,6 +64,26 @@ func (app App) HTML() []byte {
 			fmt.Fprintf(&buffer, `<link rel="stylesheet" href="%v" media="none" onload="if(media!='all')media='all'">`, script)
 		}
 	}
+
+	buffer.WriteString(`<style>`)
+	{
+		//Default css from css.go
+		buffer.WriteString(CSS)
+
+		//Dependencies
+		for animation, id := range app.Context.Animations {
+			buffer.WriteString(`@keyframes ` + id + " {")
+			buffer.Write(animation.Bytes())
+			buffer.WriteString(`}`)
+		}
+
+		buffer.Write(app.Fonts())
+		buffer.Write(app.Animations())
+		buffer.Write(Style)
+
+		buffer.Write(app.MediaQueries())
+	}
+	buffer.WriteString(`</style>`)
 
 	buffer.WriteString(`<script> seed = {};`)
 	{
@@ -265,26 +290,6 @@ func (app App) HTML() []byte {
 	}
 	buffer.WriteString(`</script>`)
 
-	buffer.WriteString(`<style>`)
-	{
-		//Default css from css.go
-		buffer.WriteString(CSS)
-
-		//Dependencies
-		for animation, id := range app.Context.Animations {
-			buffer.WriteString(`@keyframes ` + id + " {")
-			buffer.Write(animation.Bytes())
-			buffer.WriteString(`}`)
-		}
-
-		buffer.Write(app.Fonts())
-		buffer.Write(app.Animations())
-		buffer.Write(Style)
-
-		buffer.Write(app.MediaQueries())
-	}
-	buffer.WriteString(`</style>`)
-
 	{
 		keys := make([]string, 0, len(scripts))
 		for key := range scripts {
@@ -314,7 +319,7 @@ func (app App) HTML() []byte {
 		buffer.Write(OnReady)
 
 		buffer.WriteString(`
-			window.localStorage.setItem("global_state_installed", (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone));
+			window.localStorage.setItem(` + strconv.Quote(Installed.Ref()) + `, (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone));
 		`)
 
 		buffer.Write(StateHandlers)
