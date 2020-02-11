@@ -30,7 +30,7 @@ const openURI = `function openURI(uri) {
 		window.location.href = uri;
 		return;
 	} 
-	window.open(uri);
+	window.open(uri, '_blank', 'noopener');
 }`
 
 //Open opens the URL in a new tab if possible.
