@@ -105,8 +105,6 @@ const Goto = `
 	}
 	
 	var actual_goto = async function(next_page_id, private) {
-		console.log(going_to, next_page_id);
-
 		if (!going_to) return;
 
 		//We are still waiting for the app to load.
