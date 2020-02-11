@@ -1,6 +1,7 @@
 package seed
 
 import (
+	"fmt"
 	"net/http"
 	"path"
 	"regexp"
@@ -101,6 +102,30 @@ func (runtime Runtime) Handler() http.Handler {
 			w.Header().Set("content-type", "text/javascript")
 			w.Write(worker)
 		}
+	})))
+
+	router.Handle("/browserconfig.xml", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("content-type", "text.xml")
+
+		var icon string
+		if len(runtime.app.Manifest.Icons) > 0 {
+			icon = runtime.app.Manifest.Icons[0].Source
+		}
+
+		fmt.Fprintf(w, `<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+	<msapplication>
+		<tile>
+			<square70x70logo src="%[1]v"/>
+			<square150x150logo src="%[1]v"/>
+			<wide310x150logo src="%[1]v"/>
+			<square310x310logo src="%[1]v"/>
+			<TileColor>%[2]v</TileColor>
+		</tile>
+	</msapplication>
+</browserconfig>
+`,
+			icon, runtime.app.Manifest.ThemeColor)
 	})))
 
 	router.Handle("/app.webmanifest", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
