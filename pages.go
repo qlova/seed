@@ -1,7 +1,11 @@
 package seed
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/script/global"
 	"github.com/qlova/seed/style/css"
 )
 
@@ -31,7 +35,16 @@ func NewPage(args ...string) Page {
 	//seed.Style.SetHeight(100)*/
 	seed.Style.SetSize(100, 100)
 
-	var page = Page{"", "", seed, NewState(seed.id)}
+	var state = State{
+		Bool: global.Bool{
+			Expression: fmt.Sprintf(`(window.localStorage.getItem("*CurrentPage") != %v)`,
+				strconv.Quote(seed.id)),
+		},
+
+		readonly: true,
+	}
+
+	var page = Page{"", "", seed, state}
 
 	//Name of the page.
 	if len(args) > 0 {

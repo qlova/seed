@@ -11,6 +11,8 @@ import (
 type State struct {
 	global.Bool
 	not bool
+
+	readonly bool
 }
 
 //Null returns true if this is a null state.
@@ -19,11 +21,12 @@ func (state State) Null() bool {
 }
 
 //NewState returns a new globally unique state.
+//Name is ignored when built with 'production' flag.
 func NewState(name ...string) State {
-	if len(name) > 0 {
-		return State{global.NewBool("state_" + name[0]), false}
+	if len(name) > 0 && !Production {
+		return State{global.NewBool("state_" + name[0]), false, false}
 	}
-	return State{global.NewBool(), false}
+	return State{global.NewBool(), false, false}
 }
 
 //Installed is active whenever the app is installed to the device.
@@ -113,6 +116,10 @@ func (state State) Get(q script.Ctx) script.Bool {
 
 //Set sets the state to be active.
 func (state State) Set(q script.Ctx) {
+	if state.readonly {
+		return
+	}
+
 	var reference = state.Bool.Ref()
 	if state.not {
 		state.Bool.Set(q, q.False())
@@ -127,6 +134,10 @@ func (state State) Set(q script.Ctx) {
 
 //Unset sets the state to not be active.
 func (state State) Unset(q script.Ctx) {
+	if state.readonly {
+		return
+	}
+
 	var reference = state.Bool.Ref()
 	if state.not {
 		state.Bool.Set(q, q.True())
@@ -141,6 +152,10 @@ func (state State) Unset(q script.Ctx) {
 
 //UnsetFor unsets a state for tthe specified user.
 func (state State) UnsetFor(u User) {
+	if state.readonly {
+		return
+	}
+
 	var reference = state.Bool.Ref()
 	if state.not {
 		u.Execute(fmt.Sprintf(`if (window.%v_set) %v_set();`, reference, reference))
@@ -151,6 +166,10 @@ func (state State) UnsetFor(u User) {
 
 //SetFor sets a state for tthe specified user.
 func (state State) SetFor(u User) {
+	if state.readonly {
+		return
+	}
+
 	var reference = state.Bool.Ref()
 	if state.not {
 		u.Execute(fmt.Sprintf(`if (window.%v_unset) %v_unset();`, reference, reference))

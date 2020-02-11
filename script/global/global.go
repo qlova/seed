@@ -73,15 +73,19 @@ func (s String) Set(q script.Ctx, value script.String) {
 //Bool is a global Boolean.
 type Bool struct {
 	Reference
+	Expression string
 }
 
 //NewBool returns a reference to a new global boolean.
 func NewBool(name ...string) Bool {
-	return Bool{New(name...)}
+	return Bool{New(name...), ""}
 }
 
 //Get the script.Bool for the global.Bool
 func (b Bool) Get(q script.Ctx) script.Bool {
+	if b.Expression != "" {
+		return q.Value(b.Expression).Bool()
+	}
 	return q.BoolFromLanguageType(Javascript.Bit{
 		Expression: language.Statement(`(window.localStorage.getItem("` + b.string + `") == "true")`),
 	})
