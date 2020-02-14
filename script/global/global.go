@@ -3,9 +3,11 @@ package global
 import (
 	"encoding/base64"
 	"math/big"
+	"strconv"
 
 	"github.com/qlova/script/language"
 	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/user"
 
 	Javascript "github.com/qlova/script/language/javascript"
 )
@@ -31,6 +33,11 @@ func (ref Reference) Ref() string {
 //Set is a set method that should be called whenever the parent value is set.
 func (ref Reference) Set(q script.Ctx) {
 	q.Javascript(`if (dynamic["` + ref.string + `"]) dynamic["` + ref.string + `"]();`)
+}
+
+//SetFor is a set method that should be called whenever the parent value is set.
+func (ref Reference) SetFor(u user.Ctx) {
+	u.Execute(`if (dynamic["` + ref.string + `"]) dynamic["` + ref.string + `"]();`)
 }
 
 //New returns a new globl variable reference.
@@ -68,6 +75,12 @@ func (s String) Get(q script.Ctx) script.String {
 func (s String) Set(q script.Ctx, value script.String) {
 	q.Javascript(`window.localStorage.setItem("` + s.string + `", ` + value.LanguageType().Raw() + `);`)
 	s.Reference.Set(q)
+}
+
+//SetFor the global.String to be  the given value.
+func (s String) SetFor(u user.Ctx, value string) {
+	u.Execute(`window.localStorage.setItem("` + s.string + `", ` + strconv.Quote(value) + `);`)
+	s.Reference.SetFor(u)
 }
 
 //Bool is a global Boolean.
