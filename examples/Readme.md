@@ -2,6 +2,7 @@
 
 Some of the examples are available online:
 
+[Animations/Anime](https://anime.zapps.nz/)  
 [Animations/PageTransition](https://transitions.zapps.nz)  
 [Camera](https://camera.zapps.nz)  
 [Dialogues](https://dialogues.zapps.nz)  
