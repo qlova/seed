@@ -239,7 +239,8 @@ func (app *harvester) RoutingTable() []byte {
 
 	buffer.WriteString(`
 		if (window.location.pathname != "/") {
-			switch (window.location.pathname) {
+			let path = window.location.pathname;
+			switch (path) {
 	`)
 
 	for path, route := range h.routingTable {
@@ -248,6 +249,20 @@ func (app *harvester) RoutingTable() []byte {
 		buffer.WriteString(`: goto(`)
 		buffer.WriteString(strconv.Quote(route))
 		buffer.WriteString(`); return;`)
+	}
+
+	buffer.WriteString(`}
+	
+	let split = path.split("/");
+	if (split.length > 2) {
+	`)
+
+	for path, route := range h.routingTable {
+		buffer.WriteString("if (path.startsWith(")
+		buffer.WriteString(strconv.Quote(path))
+		buffer.WriteString(`)) { goto(`)
+		buffer.WriteString(strconv.Quote(route))
+		buffer.WriteString(`, false, split.slice(2)); console.log("init"); return; }`)
 	}
 
 	buffer.WriteString(`}}`)

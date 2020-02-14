@@ -10,7 +10,7 @@ import (
 type Page struct {
 	Seed
 
-	//Hack.
+	//Hack to allow pages to be lazy added to apps.
 	Page interface{}
 }
 
@@ -73,7 +73,7 @@ const Goto = `
 		//Process goto queue.
 		let next = goto_queue.shift();
 		if (next != null) {
-			await goto(next);
+			await goto(next[0], next[1], next[2]);
 		}
 	}
 
@@ -96,15 +96,22 @@ const Goto = `
 			return;
 		}
 
+		let args = [];
+		if (arguments.length > 2) {
+			for (let i = 2; i < arguments.length; i++) {
+				args.push(arguments[i]);
+			}
+		}
+
 		if (!going_to) {
 			going_to = next_page_id;
 			setTimeout(async function() {
-				await actual_goto(next_page_id, private);
+				await actual_goto(next_page_id, private, args);
 			}, 1);
 		}
 	}
 	
-	var actual_goto = async function(next_page_id, private) {
+	var actual_goto = async function(next_page_id, private, args) {
 		if (!going_to) return;
 
 		//We are still waiting for the app to load.
@@ -115,7 +122,7 @@ const Goto = `
 		let template = get(next_page_id+":template");
 		
 		if (template == null || next_page_id == loading_page || !next_page_id) {
-			console.error("invalid page ", next_page_id);
+			console.error("invalid page ", next_page_id, template);
 			next_page_id = starting_page;
 			if (next_page_id == "") {
 				going_to = null;
@@ -131,7 +138,7 @@ const Goto = `
 		}
 	
 		if (animating) {
-			goto_queue.push(next_page_id)
+			goto_queue.push([next_page_id, private, args])
 			going_to = null;
 			return;
 		}
@@ -190,6 +197,20 @@ const Goto = `
 
 		template.parentElement.appendChild(template.content);
 
+		//Set title and path.
+		let data = get(next_page_id).dataset;
+		let path = data.path;
+		if (!data.path) {
+			path = "/";
+		}
+
+		if (args.length > 0 && path != "/") {
+			for (let arg of args) {
+				path += "/" + arg;
+			}
+		}
+		get(next_page_id).args = args;
+
 		let child = get(next_page_id);
 		if (onready[child.id]) {
 			await onready[child.id]();
@@ -206,12 +227,9 @@ const Goto = `
 			
 		next_page = null;
 
-		//Set title and path.
-		let data = get(current_page).dataset;
-		if (!data.path) {
-			data.path = "/";
-		}
-		window.history.replaceState(null, data.title, data.path);
+		window.localStorage.setItem('*CurrentPath', path);
+
+		window.history.replaceState(null, data.title, path);
 
 		try { flipping.flip(); } catch(error) {}
 
@@ -219,12 +237,25 @@ const Goto = `
 	};
 `
 
+//Arg returns the ith argument to this page.
+func (page Page) Arg(i Int) String {
+	return page.Q.Value("%v.args[%v]", page.Element(), i).String()
+}
+
 //Goto goes to the specified page.
-func (page Page) Goto() {
+//The provided arguments are provided to the page.
+func (page Page) Goto(args ...String) {
 	var q = page.Q
 	q.Require(Goto)
 	q.Require(Back)
-	q.Javascript("goto('" + page.ID + "');")
+
+	var arguments = []Type{q.String(page.ID), q.False()}
+	for _, arg := range args {
+		arguments = append(arguments, arg)
+	}
+
+	q.js.Run("goto", arguments...)
+
 	if page.Page != nil {
 		q.Context.AddPage(page.ID, page.Page)
 	}
