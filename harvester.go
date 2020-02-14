@@ -214,7 +214,9 @@ func (app *App) build() {
 				continue
 			}
 			page := page.(Page)
-			page.setup()
+			if page.setup != nil {
+				page.setup()
+			}
 			app.Add(page.Root())
 			app.harvester.harvestOnReadyPage(page.Root())
 			app.harvester.harvest(page.Root())
