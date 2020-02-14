@@ -21,8 +21,8 @@ func (app App) HTML() []byte {
 
 	var buffer bytes.Buffer
 	buffer.WriteString(`<!DOCTYPE html>`)
-	buffer.WriteString(`<html dir="ltr" lang="en"><meta charset="utf-8">`)
-	buffer.WriteString(`<head>`)
+	buffer.WriteString(`<html dir="ltr" lang="en">`)
+	buffer.WriteString(`<head><meta charset="utf-8">`)
 
 	buffer.WriteString(`<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">`)
 
@@ -33,7 +33,7 @@ func (app App) HTML() []byte {
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
-		<meta name="apple-mobile-web-app-title" content="` + app.Name + `" />
+		<meta name="apple-mobile-web-app-title" content="` + app.Name + `">
 	`)
 
 	//Important meta tags.
@@ -47,7 +47,7 @@ func (app App) HTML() []byte {
 		
 		<meta name="msapplication-config" content="/browserconfig.xml">
 
-		<meta name="twitter:card" content="app"></meta>
+		<meta name="twitter:card" content="app">
 	`)
 
 	for i, icon := range app.Icons {
