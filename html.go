@@ -336,7 +336,8 @@ func (app App) HTML() []byte {
 
 				if (!window.goto) return;
 				let saved_page = window.localStorage.getItem('*CurrentPage');
-				if (saved_page) {
+				let saved_path = window.localStorage.getItem('*CurrentPath');
+				if (saved_page && saved_path) {
 					let last_time = +window.localStorage.getItem('*LastGotoTime');
 					let hibiscus = Date.now()-last_time;
 
@@ -345,6 +346,11 @@ func (app App) HTML() []byte {
 						current_page = loading_page;
 						goto(starting_page);
 						return;
+					}
+
+					let splits = saved_path.split("/");
+					if (splits.length > 2) {
+						goto(saved_page, false, splits.slice(2));
 					}
 
 					goto(saved_page);
