@@ -45,9 +45,38 @@ func main() {
 
 In the same folder, run 'go mod init .' to initialise the project and then 'go build' to create an executable for the app, run this to launch the app. By default, Qlovaseed will start a WebServer and open a browser window displaying your app.
 
-## Widgets and Logic
+## Core Concepts
 
-Create a file called MyApp.go and paste in the following contents:
+Qlovaseed is a full-stack cross-platform application-development framework.  
+This means that Apps created with Qlovaseed under the hood feature both a client and server component.  
+
+Qlovaseed aims to blur the client-server distinction, the app is written as a whole, in Go.
+Then communication is achieved with 'script' and 'user' contexts.
+
+Javascript and http.Handlers are managed by the framework.
+
+This is a script callback that changes the text of the button on the client-side.
+```go
+	Button := button.AddTo(App)
+	Button.OnClick(func(q script.Ctx) {
+		Button.Ctx(q).SetText(q.String("You clicked me!"))
+	})
+```
+
+This is a user handler that changes the text of the button from the server-side.
+```go
+	Button := button.AddTo(App)
+	Button.OnClick(seed.Go(func(u user.Ctx) {
+		Button.For(u).SetText("You clicked me!")
+	}))
+```
+
+Given an App, by default Qlovaseed will create a web server, manage the handlers, HTML, JS & CSS. All these resources are pre-rendered by Qlovaseed.
+Then the app will be launched on the local web browser in kiosk mode (if available).  
+Alternatively, the app can be placed on a remote server and proxied through a webserver with automatic HTTPS (such as [Caddy](https://caddyserver.com/)).  
+This will serve the app as a Lighthouse-compliant progressive WebApp.
+
+## Full App example.
 
 ```go
 package main
@@ -61,21 +90,21 @@ func main() {
 	var App = seed.NewApp("My App")
 
 	//In order to add a widget to your app, or container, use the package's AddTo method.
-	var ClientPowered = button.AddTo(App, "My callback runs on the client")
+	ClientPowered := button.AddTo(App, "My callback runs on the client")
 	
-		ClientPowered.OnClick(func(q script.Ctx) {
-			ClientPowered.Ctx(q).SetText(q.String("You clicked me!"))
-		})
+	ClientPowered.OnClick(func(q script.Ctx) {
+		ClientPowered.Ctx(q).SetText(q.String("You clicked me!"))
+	})
 	
 	
-	var ServerPowered = button.AddTo(App, "My callback runs on the server")
+	ServerPowered := button.AddTo(App, "My callback runs on the server")
 	
-		//You can style widgets with methods of the style package.
-		ServerPowered.SetColor(seed.RGB(100, 100, 0))
-	
-		ServerPowered.OnClick(seed.Go(func(user seed.User) {
-			ServerPowered.For(user).SetText("You clicked me!")
-		}))
+	//You can style widgets with methods of the style package.
+	ServerPowered.SetColor(seed.RGB(100, 100, 0))
+
+	ServerPowered.OnClick(seed.Go(func(u user.Ctx) {
+		ServerPowered.For(u).SetText("You clicked me!")
+	}))
 
 	App.Launch()
 }
@@ -113,5 +142,7 @@ However, there may be good reasons to use these technologies to extend missing f
 ## Community 
 
 There is a reddit community: [/r/Qlovaseed](https://www.reddit.com/r/Qlovaseed/).
+
+Please don't hesitate to ask questions here. I haven't invested a lot of time into documentation yet.
 
 **Please remember**, this framework is in development, it does not have a stable API and features are currently implemented as needed.
