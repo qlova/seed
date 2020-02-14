@@ -1,3 +1,6 @@
+//+build ignore
+
+//Package gl is currently disabled until further notice.
 package gl
 
 import (
