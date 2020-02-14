@@ -8,19 +8,22 @@ import (
 	"strconv"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/user"
 )
 
 //Value is a generic js.Value.
 type Value struct {
 	string
 	writer *bytes.Buffer
+
+	u user.Ctx
 }
 
 //ValueFromUpdate returns a value from a seed.Update
 func ValueFromUpdate(u seed.Update) Value {
 	return Value{
 		string: `document.getElementById("` + u.ID() + `")`,
-		writer: u.buff,
+		writer: bytes.NewBuffer(nil),
 	}
 }
 
@@ -54,6 +57,7 @@ func (v Value) Run(method string, args ...Value) {
 		}
 	}
 	fmt.Fprintf(v.writer, ");")
+	v.u.Execute(v.writer.String())
 }
 
 func (v Value) Call(method string, args ...Value) Value {
@@ -68,11 +72,12 @@ func (v Value) Call(method string, args ...Value) Value {
 	}
 	fmt.Fprintf(&buffer, ")")
 
-	return Value{buffer.String(), v.writer}
+	return Value{buffer.String(), v.writer, v.u}
 }
 
 func (v Value) Set(property string, value Value) {
 	fmt.Fprintf(v.writer, "%v[%v] = %v;", v.string, strconv.Quote(property), value.string)
+	v.u.Execute(v.writer.String())
 }
 
 func (v Value) Get(property string) Value {
@@ -85,6 +90,6 @@ func (v Value) Get(property string) Value {
 func (v Value) Var(name string) Value {
 	fmt.Fprintf(v.writer, "let %v = %v;", name, v.string)
 	return Value{
-		name, v.writer,
+		name, v.writer, v.u,
 	}
 }
