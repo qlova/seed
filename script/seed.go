@@ -200,12 +200,12 @@ func (seed Seed) SetText(s String) {
 
 //SetPath sets the resource source/path of the seed.
 func (seed Seed) SetPath(s String) {
-	seed.Javascript(seed.Element() + `.src = ` + raw(s) + `;`)
+	seed.Javascript(seed.Element() + `.src = "/"+` + raw(s) + `;`)
 }
 
 //SetSource sets the resource source/path of the seed.
 func (seed Seed) SetSource(s String) {
-	seed.Javascript(seed.Element() + `.src = ` + raw(s) + `;`)
+	seed.Javascript(seed.Element() + `.src = "/"+` + raw(s) + `;`)
 }
 
 //Source returns the source of the seed.
