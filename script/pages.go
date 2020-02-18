@@ -73,7 +73,7 @@ const Goto = `
 		//Process goto queue.
 		let next = goto_queue.shift();
 		if (next != null) {
-			await goto(next[0], next[1], next[2]);
+			await goto.apply(null, next);
 		}
 	}
 
@@ -85,6 +85,7 @@ const Goto = `
 	var last_page = null;
 	var current_page = null;
 	var next_page = null;
+	var current_args = null;
 
 	var going_to = null;
 
@@ -138,16 +139,21 @@ const Goto = `
 		}
 	
 		if (animating) {
-			goto_queue.push([next_page_id, private, args])
+			goto_queue.push([next_page_id, private].concat(args))
 			going_to = null;
 			return;
 		}
 
-		if (current_page == next_page_id) {
-			going_to = null;
-			return;
-		}
-		if (next_page == next_page_id) {
+		var json_args = JSON.stringify(args);
+
+		if (current_page == next_page_id || next_page == next_page_id) {
+			if (current_args != json_args) {
+				let child = get(current_page);
+				child.args = args;
+				try {
+					if (child.onpageenter) await child.onpageenter();
+				} catch(e) {}
+			}
 			going_to = null;
 			return;
 		}
@@ -220,6 +226,7 @@ const Goto = `
 			if (child.onpageenter) await child.onpageenter();
 		} catch(e) {}
 		current_page = next_page_id;
+		current_args = json_args;
 
 		//Persistence.
 		window.localStorage.setItem('*CurrentPage', next_page_id);
@@ -240,6 +247,11 @@ const Goto = `
 //Arg returns the ith argument to this page.
 func (page Page) Arg(i Int) String {
 	return page.Q.Value("%v.args[%v]", page.Element(), i).String()
+}
+
+//Args returns the number of arguments to this page.
+func (page Page) Args() Int {
+	return page.Q.Value("%v.args.length", page.Element()).Int()
 }
 
 //Goto goes to the specified page.

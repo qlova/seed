@@ -350,10 +350,10 @@ func (app App) HTML() []byte {
 
 					let splits = saved_path.split("/");
 					if (splits.length > 2) {
-						goto(saved_page, false, splits.slice(2));
+						goto.apply(null, [window.localStorage.getItem('*CurrentPage'), false].concat(window.localStorage.getItem('*CurrentPath').split("/").slice(2)));
+					} else {
+						goto(saved_page);
 					}
-
-					goto(saved_page);
 
 					//clear history
 					last_page = null;

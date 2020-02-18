@@ -262,9 +262,9 @@ func (app *harvester) RoutingTable() []byte {
 	for path, route := range h.routingTable {
 		buffer.WriteString("if (path.startsWith(")
 		buffer.WriteString(strconv.Quote(path))
-		buffer.WriteString(`)) { goto(`)
+		buffer.WriteString(`)) { goto.apply(null, [`)
 		buffer.WriteString(strconv.Quote(route))
-		buffer.WriteString(`, false, split.slice(2)); console.log("init"); return; }`)
+		buffer.WriteString(`, false].concat(split.slice(2))); console.log("init"); return; }`)
 	}
 
 	buffer.WriteString(`}}`)
