@@ -147,61 +147,57 @@ const Goto = `
 		var json_args = JSON.stringify(args);
 
 		if (current_page == next_page_id || next_page == next_page_id) {
-			if (current_args != json_args) {
-				let child = get(current_page);
-				child.args = args;
-				try {
-					if (child.onpageenter) await child.onpageenter();
-				} catch(e) {}
+			if (current_args == json_args) {
+				going_to = null;
+				return;
 			}
-			going_to = null;
-			return;
-		}
-		next_page = next_page_id;
+		} else {
+			next_page = next_page_id;
 
-		if (window.flipping) flipping.read();
-
-		for (let element of template.parentElement.childNodes) {
-			if (element.classList.contains("page")) {
-				if (getComputedStyle(element).display != "none") {
-					var resolve = function() {
-						if (element.id == loading_page) {
-							set(element, "display", "none")
-							return;
+			if (window.flipping) flipping.read();
+	
+			for (let element of template.parentElement.childNodes) {
+				if (element.classList.contains("page")) {
+					if (getComputedStyle(element).display != "none") {
+						var resolve = function() {
+							if (element.id == loading_page) {
+								set(element, "display", "none")
+								return;
+							}
+							set(element, "animation", "")
+							set(element, "z-index", "")
+							get(element.id+":template").content.appendChild(element);
+							going_back = false;
+						};
+						last_page = element.id;
+						
+						if (element.onpageexit) {
+							try {
+								await element.onpageexit();
+							} catch(e) {}
+							if (goto_exitpromise) {
+								goto_exitpromise.then(resolve);
+								goto_exitpromise = null;
+								break;
+							}
 						}
-						set(element, "animation", "")
-						set(element, "z-index", "")
-						get(element.id+":template").content.appendChild(element);
-						going_back = false;
-					};
-					last_page = element.id;
-					
-					if (element.onpageexit) {
-						try {
-							await element.onpageexit();
-						} catch(e) {}
-						if (goto_exitpromise) {
-							goto_exitpromise.then(resolve);
-							goto_exitpromise = null;
-							break;
-						}
+						resolve();
 					}
-					resolve();
 				}
 			}
-		}
 
-		let fallback;
-		if (get(current_page)) {
-			fallback = get(current_page).dataset.back;
-		}
-		
-		
-		if (last_page != null && fallback != next_page_id) {
-			if (!private) goto_history.push(last_page);
-		}
+			let fallback;
+			if (get(current_page)) {
+				fallback = get(current_page).dataset.back;
+			}
+			
+			
+			if (last_page != null && fallback != next_page_id) {
+				if (!private) goto_history.push(last_page);
+			}
 
-		template.parentElement.appendChild(template.content);
+			template.parentElement.appendChild(template.content);
+		}
 
 		//Set title and path.
 		let data = get(next_page_id).dataset;
