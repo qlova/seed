@@ -12,6 +12,8 @@ func (style Style) SetScrollable() {
 	style.CSS().SetOverflowY(css.Auto)
 	style.CSS().SetOverflowX(css.Hidden)
 	style.Compress()
+	style.SetHeight(0)
+	style.CSS().SetFlexBasis(css.Auto)
 	style.CSS().Set("-webkit-overflow-scrolling", "touch")
 	style.CSS().Set("-webkit-overscroll-behavior", "contain")
 	style.CSS().Set("overscroll-behavior", "contain")
