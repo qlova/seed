@@ -3,6 +3,8 @@ package seed
 import (
 	"net/http"
 	"path"
+
+	"github.com/NYTimes/gziphandler"
 )
 
 type embedding struct {
@@ -39,8 +41,10 @@ func Embed(name string, data []byte) {
 
 func embedded(w http.ResponseWriter, r *http.Request) bool {
 	if embedding, ok := embeddings[r.URL.Path]; ok {
-		w.Header().Set("Content-Type", embedding.ContentType)
-		w.Write(embedding.Data)
+		gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", embedding.ContentType)
+			w.Write(embedding.Data)
+		})).ServeHTTP(w, r)
 		return true
 	}
 

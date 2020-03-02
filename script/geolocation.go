@@ -33,7 +33,8 @@ const GeoLocation = `
 //This must be called before q.GeoLocation is called.
 func (q Ctx) RequestGeoLocation() Promise {
 	q.Require(GeoLocation)
-	var variable = q.Value(`requestGeoLocation()`).Native().Var()
+	var variable = q.Value(`requestGeoLocation()`).Native()
+	variable.Var()
 	return Promise{
 		variable, q,
 	}

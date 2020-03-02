@@ -141,11 +141,13 @@ func (runtime Runtime) Handler() http.Handler {
 			return
 		}
 
-		if isLocal(r) {
-			w.Write(html)
-		} else {
-			w.Write(minified)
-		}
+		gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if isLocal(r) {
+				w.Write(html)
+			} else {
+				w.Write(minified)
+			}
+		})).ServeHTTP(w, r)
 	}))
 
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {

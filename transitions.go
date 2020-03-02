@@ -200,9 +200,9 @@ var SlideRight = Transition{
 	},
 }
 
-var beginTransition = `function beginInTransition(element, animation, duration) {
+var beginTransition = `async function beginInTransition(element, animation, duration) {
 	if (element.classList.contains("page")) {
-		let last=last_page; if (!last || last == loading_page) return;
+		if (!seed.LastPage || seed.LastPage.id == loading_page) return;
 	}
 
 	set(element, "animation-name", animation);
@@ -210,18 +210,19 @@ var beginTransition = `function beginInTransition(element, animation, duration) 
 	set(element, "animation-fill-mode", "forwards");
 	set(element, "animation-duration", duration+"s");
 	set(element, "animation-iteration-count", 1);
-
 	set(element, "z-index", "50");
-	animating = true;
-	setTimeout(function() {
-		set(element, "animation", ""); 
-		set(element, "z-index", "");
-		animation_complete();
-	}, 1000*duration);
+
+	seed.goto.in = new Promise(resolve => {
+		setTimeout(function() {
+			set(element, "animation", ""); 
+			set(element, "z-index", "");
+			resolve()
+		}, duration*1000);
+	});
 }
-function beginOutTransition(element, animation, duration) {
+async function beginOutTransition(element, animation, duration) {
 	if (element.classList.contains("page")) {
-		let last=last_page; if (!last || last == loading_page) return;
+		if (!seed.LastPage || seed.LastPage.id == loading_page) return;
 	}
 
 	set(element, "animation-name", animation);
@@ -230,12 +231,13 @@ function beginOutTransition(element, animation, duration) {
 	set(element, "animation-duration", duration+"s");
 	set(element, "animation-iteration-count", 1);
 	set(element, "z-index", "50");
-	animating = true;
-	
-	goto_exitpromise = Promise.resolve().delay(1000*duration).then(function() {
-		set(element, "animation", ""); 
-		set(element, "z-index", "");
-		animation_complete(); 
+
+	seed.goto.out = new Promise(resolve => {
+		setTimeout(function() {
+			set(element, "animation", ""); 
+			set(element, "z-index", "");
+			resolve()
+		}, duration*1000);
 	});
 }
 `
@@ -246,15 +248,15 @@ func SetTransitionIn(Page script.Seed, trans Transition) {
 	var q = Page.Q
 
 	if trans.WhenBack {
-		q.If(q.Value("going_back").Bool(), func() {
+		q.If(q.Value("seed.back.going").Bool(), func() {
 			if trans.Then != nil {
 				SetTransitionIn(Page, *trans.Then)
 			}
-		}, q.Else(func() {
+		}).Else(func() {
 			if trans.Else != nil {
 				SetTransitionIn(Page, *trans.Else)
 			}
-		}))
+		}).End()
 		return
 	}
 
@@ -263,11 +265,11 @@ func SetTransitionIn(Page script.Seed, trans Transition) {
 			if trans.Then != nil {
 				SetTransitionIn(Page, *trans.Then)
 			}
-		}, q.Else(func() {
+		}).Else(func() {
 			if trans.Else != nil {
 				SetTransitionIn(Page, *trans.Else)
 			}
-		}))
+		}).End()
 		return
 	}
 
@@ -277,17 +279,17 @@ func SetTransitionIn(Page script.Seed, trans Transition) {
 			if trans.Then != nil {
 				SetTransitionIn(Page, *trans.Then)
 			}
-		}, q.Else(func() {
+		}).Else(func() {
 			if trans.Else != nil {
 				SetTransitionIn(Page, *trans.Else)
 			}
-		}))
+		}).End()
 		return
 	}
 
 	if trans.In != nil {
 		q.Require(beginTransition)
-		q.Javascript(`beginInTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.In) + `', ` + duration + `);`)
+		q.Javascript(`await beginInTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.In) + `', ` + duration + `);`)
 	}
 }
 
@@ -295,15 +297,15 @@ func SetTransitionOut(Page script.Seed, trans Transition) {
 	var q = Page.Q
 
 	if trans.WhenBack {
-		q.If(q.Value("going_back").Bool(), func() {
+		q.If(q.Value("seed.back.going").Bool(), func() {
 			if trans.Then != nil {
 				SetTransitionOut(Page, *trans.Then)
 			}
-		}, q.Else(func() {
+		}).Else(func() {
 			if trans.Else != nil {
 				SetTransitionOut(Page, *trans.Else)
 			}
-		}))
+		}).End()
 		return
 	}
 
@@ -312,11 +314,11 @@ func SetTransitionOut(Page script.Seed, trans Transition) {
 			if trans.Then != nil {
 				SetTransitionOut(Page, *trans.Then)
 			}
-		}, q.Else(func() {
+		}).Else(func() {
 			if trans.Else != nil {
 				SetTransitionOut(Page, *trans.Else)
 			}
-		}))
+		}).End()
 		return
 	}
 
@@ -325,17 +327,17 @@ func SetTransitionOut(Page script.Seed, trans Transition) {
 			if trans.Then != nil {
 				SetTransitionOut(Page, *trans.Then)
 			}
-		}, q.Else(func() {
+		}).Else(func() {
 			if trans.Else != nil {
 				SetTransitionOut(Page, *trans.Else)
 			}
-		}))
+		}).End()
 		return
 	}
 
 	if trans.Out != nil {
 		q.Require(beginTransition)
-		q.Javascript(`beginOutTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.Out) + `', ` + duration + `);`)
+		q.Javascript(`await beginOutTransition(` + Page.Element() + `, '` + q.Context.Animation(trans.Out) + `', ` + duration + `);`)
 	}
 }
 

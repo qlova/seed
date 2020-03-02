@@ -38,7 +38,7 @@ func (seed Seed) Visible() qlova.Bool {
 
 //SetColor sets the color of this seed.
 func (seed Seed) SetColor(c Color) {
-	seed.Set("background-color", `"+`+c.LanguageType().Raw()+`+"`)
+	seed.Set("background-color", `"+`+seed.Q.Raw(c)+`+"`)
 }
 
 //SetInvisible causes the seed to still take up space but be hidden from view.
@@ -74,7 +74,7 @@ func (seed Seed) SetRow() {
 
 //SetGradient sets the gradient of the seed.
 func (seed Seed) SetGradient(direction complex128, start, end Color) {
-	seed.Set("background-image", fmt.Sprint("linear-gradient(", math.Atan2(imag(direction), real(direction))+math.Pi/2, `deg,"+`, css.ColorValue(start.LanguageType().Raw()), `+","+`, css.ColorValue(end.LanguageType().Raw()), `+")`))
+	seed.Set("background-image", fmt.Sprint("linear-gradient(", math.Atan2(imag(direction), real(direction))+math.Pi/2, `deg,"+`, css.ColorValue(seed.Q.Raw(start)), `+","+`, css.ColorValue(seed.Q.Raw(end)), `+")`))
 }
 
 //ClearGradient clears the gradient of the seed.
@@ -97,13 +97,13 @@ func (seed Seed) RemoveTint() {
 
 //Translate sets the transform of this seed to the specified translation.
 func (seed Seed) Translate(x, y Unit) {
-	seed.Javascript(seed.Element() + `.style.setProperty("--x", "` + x.Raw() + `");`)
-	seed.Javascript(seed.Element() + `.style.setProperty("--y", "` + y.Raw() + `");`)
+	seed.Javascript(seed.Element() + `.style.setProperty("--x", "` + seed.Q.Raw(x) + `");`)
+	seed.Javascript(seed.Element() + `.style.setProperty("--y", "` + seed.Q.Raw(y) + `");`)
 	seed.Set("transform", "rotate(var(--angle, 0)) scale(var(--scale, 1)) translate(var(--x, 0), var(--y, 0))")
 }
 
 //Scale sets the scale of this seed to the specified scalar.
 func (seed Seed) Scale(scalar Float) {
-	seed.Javascript(seed.Element() + `.style.setProperty("--scale", ` + scalar.LanguageType().Raw() + `);`)
+	seed.Javascript(seed.Element() + `.style.setProperty("--scale", ` + seed.Q.Raw(scalar) + `);`)
 	seed.Set("transform", "rotate(var(--angle, 0)) scale(var(--scale, 1)) translate(var(--x, 0), var(--y, 0))")
 }

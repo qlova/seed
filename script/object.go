@@ -17,23 +17,24 @@ func (q Ctx) NewObject() Object {
 }
 
 //Insert sets the value of the object at the given key.
-func (o Object) Insert(key String, value qlova.Type) {
+func (o Object) Insert(key String, value qlova.Value) {
 	var q = o.Q
-	q.Javascript(o.Native.LanguageType().Raw() +
-		`[` + key.LanguageType().Raw() + `] = ` +
-		value.LanguageType().Raw() + ";")
+	q.Javascript(q.Raw(o.Native) +
+		`[` + q.Raw(key) + `] = ` +
+		q.Raw(value.T()) + ";")
 }
 
 //Lookup gets the value of the object at the given key.
 func (o Object) Lookup(key String) Dynamic {
 	var q = o.Q
-	return q.Value(o.Native.LanguageType().Raw() +
-		`[` + key.LanguageType().Raw() + `]`).Dynamic()
+	return q.Value(q.Raw(o.Native) +
+		`[` + q.Raw(key) + `]`).Dynamic()
 }
 
 //Var calls Native.Var(...string).
 func (o Object) Var(name ...string) Object {
-	var variable = o.Native.Var(name...)
+	var variable = o.Native
+	variable.Var(name...)
 	return Object{
 		Q:      o.Q,
 		Native: variable,

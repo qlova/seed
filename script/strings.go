@@ -2,16 +2,16 @@ package script
 
 import (
 	qlova "github.com/qlova/script"
-	"github.com/qlova/script/language"
-	Javascript "github.com/qlova/script/language/javascript"
 )
+
+type AnyString = qlova.AnyString
 
 //SubString returns a slice of s, from start to end.
 func (q Ctx) SubString(s String, start, end Int) String {
-	return q.js.Call(s.LanguageType().Raw()+".substr", start, end).String()
+	return q.Value(`%v.substr(%v, %v)`, s, start, end).String()
 }
 
 //Contains returns true if text contains match.
 func (q Ctx) Contains(text, match qlova.String) qlova.Bool {
-	return q.Script.BoolFromLanguageType(Javascript.Bit{Expression: language.Statement(raw(text) + `.includes(` + raw(match) + `)`)})
+	return q.Value(`%v.includes(%v)`, text, match).Bool()
 }

@@ -278,7 +278,7 @@ var id int64 = 1
 var allSeeds = make(map[string]*seed)
 
 //New create and return a new seed.
-func New() Seed {
+func New(options ...Option) Seed {
 	s := new(seed)
 
 	//Seed identification is compressed to base64.
@@ -306,7 +306,13 @@ func New() Seed {
 	//Intial style.
 	//seed.SetSize(100, 100)
 
-	return Seed{seed: s}
+	var Seed = Seed{seed: s}
+
+	for _, option := range options {
+		option(Seed)
+	}
+
+	return Seed
 }
 
 //AddTo creates and returns a seed attached to the specified parent.

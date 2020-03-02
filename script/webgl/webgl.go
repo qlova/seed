@@ -4,8 +4,6 @@ import (
 	qlova "github.com/qlova/script"
 	"github.com/qlova/script/language"
 	"github.com/qlova/seed/script"
-
-	Javascript "github.com/qlova/script/language/javascript"
 )
 
 //BitField specifies a buffer bit field type.
@@ -104,8 +102,7 @@ func (ctx *Context) Viewport(x, y, w, h qlova.Float) {
 
 //CreateShader returns an empty vertex or fragment shader object based on the type specified.
 func (ctx *Context) CreateShader(T ShaderType) Shader {
-	return Shader{ctx.Q.NativeFromLanguageType(Javascript.Native{
-		Expression: ctx.GL + `.createShader(` + ctx.GL + "." + string(T) + ");"}).Var()}
+	return Shader{script.Native{language.Expression(ctx.Q, ctx.GL+`.createShader(`+ctx.GL+"."+string(T)+");")}}
 }
 
 //ShaderSource sets and replaces shader source code in a shader object.
@@ -120,8 +117,7 @@ func (ctx *Context) CompileShader(shader Shader) {
 
 //CreateProgram creates an empty Program  to which shaders can be bound.
 func (ctx *Context) CreateProgram() Program {
-	return Program{ctx.Q.NativeFromLanguageType(Javascript.Native{
-		Expression: ctx.GL + `.createProgram();`}).Var()}
+	return Program{script.Native{language.Expression(ctx.Q, ctx.GL+`.createProgram();`)}}
 }
 
 //AttachShader attaches a Shader to a Program.
@@ -142,13 +138,12 @@ func (ctx *Context) UseProgram(program Program) {
 
 //CreateBuffer creates and initializes a Buffer.
 func (ctx *Context) CreateBuffer() Buffer {
-	return Buffer{ctx.Q.NativeFromLanguageType(Javascript.Native{
-		Expression: ctx.GL + `.createBuffer();`}).Var()}
+	return Buffer{script.Native{language.Expression(ctx.Q, ctx.GL+`.createBuffer();`)}}
 }
 
 //BindBuffer associates a buffer with a buffer target.
 func (ctx *Context) BindBuffer(target BindingPoint, buffer Buffer) {
-	ctx.Q.Javascript(ctx.GL + `.bindBuffer(` + ctx.GL + "." + string(target) + ", " + buffer.LanguageType().Raw() + ");")
+	ctx.Q.Javascript(ctx.GL + `.bindBuffer(` + ctx.GL + "." + string(target) + ", " + buffer.Raw() + ");")
 }
 
 //BufferData creates a buffer in memory and initializes it with array data.
@@ -156,27 +151,23 @@ func (ctx *Context) BindBuffer(target BindingPoint, buffer Buffer) {
 // panics if data is not a Float List.
 func (ctx *Context) BufferData(target BindingPoint, data qlova.List, usage UsagePattern) {
 
-	if _, ok := data.Subtype().LanguageType().(language.Real); !ok {
-		panic("Invalid data type")
-	}
-
-	ctx.Q.Javascript(ctx.GL + `.bufferData(` + ctx.GL + "." + string(target) + ", new Float32Array(" + data.LanguageType().Raw() + ")," + ctx.GL + "." + string(usage) + ");")
+	ctx.Q.Javascript(ctx.GL + `.bufferData(` + ctx.GL + "." + string(target) + ", new Float32Array(" + data.Raw() + ")," + ctx.GL + "." + string(usage) + ");")
 }
 
 //GetAttribLocation returns a named attribute variable.
 func (ctx *Context) GetAttribLocation(program Program, attrib qlova.String) Attribute {
-	return Attribute{ctx.Q.JS().Call(ctx.GL+`.getAttribLocation`, program, attrib).Native().Var()}
+	return Attribute{ctx.Q.JS().Call(ctx.GL+`.getAttribLocation`, program, attrib).Native()}
 }
 
 //VertexAttribPointer binds the buffer currently bound to gl.ArrayBuffer to a generic vertex attribute of the current vertex buffer object and specifies its layout.
 func (ctx *Context) VertexAttribPointer(attribute Attribute, size qlova.Int, datatype DataType, normalized qlova.Bool, stride, offset qlova.Int) {
 	ctx.Q.Javascript(ctx.GL + `.vertexAttribPointer(` +
-		attribute.LanguageType().Raw() + "," +
-		size.LanguageType().Raw() + "," +
+		attribute.Raw() + "," +
+		size.Raw() + "," +
 		ctx.GL + "." + string(datatype) + "," +
-		normalized.LanguageType().Raw() + "," +
-		stride.LanguageType().Raw() + "," +
-		offset.LanguageType().Raw() + "," +
+		normalized.Raw() + "," +
+		stride.Raw() + "," +
+		offset.Raw() + "," +
 		");")
 }
 
@@ -190,7 +181,7 @@ func (ctx *Context) EnableVertexAttribArray(attribute Attribute) {
 func (ctx *Context) DrawArrays(mode DrawMode, first, count qlova.Int) {
 	ctx.Q.Javascript(ctx.GL + `.drawArrays(` +
 		ctx.GL + "." + string(mode) + "," +
-		first.LanguageType().Raw() + "," +
-		count.LanguageType().Raw() + "," +
+		first.Raw() + "," +
+		count.Raw() + "," +
 		");")
 }

@@ -248,7 +248,7 @@ func (app *harvester) RoutingTable() []byte {
 	for path, route := range h.routingTable {
 		buffer.WriteString("case ")
 		buffer.WriteString(strconv.Quote(path))
-		buffer.WriteString(`: goto(`)
+		buffer.WriteString(`: await seed.goto(`)
 		buffer.WriteString(strconv.Quote(route))
 		buffer.WriteString(`); return;`)
 	}
@@ -262,9 +262,9 @@ func (app *harvester) RoutingTable() []byte {
 	for path, route := range h.routingTable {
 		buffer.WriteString("if (path.startsWith(")
 		buffer.WriteString(strconv.Quote(path))
-		buffer.WriteString(`)) { goto.apply(null, [`)
+		buffer.WriteString(`)) { await seed.goto.apply(null, [`)
 		buffer.WriteString(strconv.Quote(route))
-		buffer.WriteString(`, false].concat(split.slice(2))); console.log("init"); return; }`)
+		buffer.WriteString(`].concat(split.slice(2))); console.log("init"); return; }`)
 	}
 
 	buffer.WriteString(`}}`)
@@ -377,9 +377,9 @@ func (app *harvester) StateHandlers() []byte {
 		buffer.Write([]byte(script.ToJavascript(func(q script.Ctx) {
 			q.If(state.Get(q), func() {
 				state.Set(q)
-			}, q.Else(func() {
+			}).Else(func() {
 				state.Unset(q)
-			}))
+			}).End()
 		})))
 	}
 

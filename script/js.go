@@ -3,10 +3,9 @@ package script
 import (
 	"fmt"
 
+	"github.com/qlova/script"
 	qlova "github.com/qlova/script"
 	"github.com/qlova/script/language"
-
-	Javascript "github.com/qlova/script/language/javascript"
 )
 
 //A nice interface to the Javascript world.
@@ -23,53 +22,53 @@ func (q Ctx) JS() js {
 func (q Ctx) Javascript(js string, args ...interface{}) {
 	var converted = make([]interface{}, len(args))
 	for i := range args {
-		if T, ok := args[i].(Type); ok {
-			converted[i] = T.LanguageType().Raw()
+		if v, ok := args[i].(script.Value); ok {
+			converted[i] = q.Raw(v)
 		} else {
 			converted[i] = args[i]
 		}
 	}
 
 	if len(args) > 0 {
-		q.Raw("Javascript", language.Statement(fmt.Sprintf(js, converted...)))
+		q.Write([]byte(fmt.Sprintf(js, converted...)))
 	} else {
-		q.Raw("Javascript", language.Statement(fmt.Sprint(js)))
+		q.Write([]byte(fmt.Sprint(js)))
 	}
 }
 
 //Value is any script value.
-type Value struct {
+type value struct {
 	q   Ctx
 	raw string
 }
 
 //Int returns the value as an Int.
-func (v Value) Int() Int {
-	return v.q.Script.ValueFromLanguageType(Javascript.Integer{Expression: language.Statement(v.raw)}).Int()
+func (v value) Int() Int {
+	return Int{language.Expression(v.q, v.raw)}
 }
 
 //String returns the value as a String.
-func (v Value) String() String {
-	return v.q.Script.ValueFromLanguageType(Javascript.String{Expression: language.Statement(v.raw)}).String()
+func (v value) String() String {
+	return String{language.Expression(v.q, v.raw)}
 }
 
 //Bool returns the value as a bool.
-func (v Value) Bool() qlova.Bool {
-	return v.q.Script.ValueFromLanguageType(Javascript.Bit{Expression: language.Statement(v.raw)}).Bool()
+func (v value) Bool() qlova.Bool {
+	return Bool{language.Expression(v.q, v.raw)}
 }
 
 //Float returns the value as a float.
-func (v Value) Float() qlova.Float {
-	return v.q.Script.ValueFromLanguageType(Javascript.Real{Expression: language.Statement(v.raw)}).Float()
+func (v value) Float() qlova.Float {
+	return Float{language.Expression(v.q, v.raw)}
 }
 
 //Native returns the value as a native value.
-func (v Value) Native() qlova.Native {
-	return v.q.Script.NativeFromLanguageType(Javascript.Native{Expression: language.Statement(v.raw)})
+func (v value) Native() qlova.Native {
+	return Native{language.Expression(v.q, v.raw)}
 }
 
 //Dynamic returns the value as a native value.
-func (v Value) Dynamic() Dynamic {
+func (v value) Dynamic() Dynamic {
 	return Dynamic{
 		Native: v.Native(),
 		Q:      v.q,
@@ -77,7 +76,7 @@ func (v Value) Dynamic() Dynamic {
 }
 
 //File returns the value as an file.
-func (v Value) File() File {
+func (v value) File() File {
 	return File{
 		Native: v.Native(),
 		Q:      v.q,
@@ -85,7 +84,7 @@ func (v Value) File() File {
 }
 
 //Location returns the value as a GeoLocation.
-func (v Value) Location() Location {
+func (v value) Location() Location {
 	return Location{
 		Native: v.Native(),
 		Q:      v.q,
@@ -93,7 +92,7 @@ func (v Value) Location() Location {
 }
 
 //Array returns the value as an array.
-func (v Value) Array() Array {
+func (v value) Array() Array {
 	return Array{
 		Native: v.Native(),
 		Q:      v.q,
@@ -101,7 +100,7 @@ func (v Value) Array() Array {
 }
 
 //Object returns the value as an object.
-func (v Value) Object() Object {
+func (v value) Object() Object {
 	return Object{
 		Native: v.Native(),
 		Q:      v.q,
@@ -109,41 +108,45 @@ func (v Value) Object() Object {
 }
 
 //Promise returns the value as a promise.
-func (v Value) Promise() Promise {
+func (v value) Promise() Promise {
+
+	var n = v.Native()
+	n.Var()
+
 	return Promise{
-		Native: v.Native().Var(),
+		Native: n,
 		q:      v.q,
 	}
 }
 
 //Unit returns the value as a unit.
-func (v Value) Unit() Unit {
+func (v value) Unit() Unit {
 	return Unit(v.String())
 }
 
 //Value wraps a JS string as a value that can be cast to script.Type.
-func (q Ctx) Value(format string, args ...interface{}) Value {
+func (q Ctx) Value(format string, args ...interface{}) value {
 
 	var converted = make([]interface{}, len(args))
 	for i := range args {
-		if T, ok := args[i].(Type); ok {
-			converted[i] = T.LanguageType().Raw()
+		if v, ok := args[i].(script.Value); ok {
+			converted[i] = q.Raw(v)
 		} else {
 			converted[i] = args[i]
 		}
 	}
 
 	if len(args) > 0 {
-		return Value{q, fmt.Sprintf(format, converted...)}
+		return value{q, fmt.Sprintf(format, converted...)}
 	}
-	return Value{q, format}
+	return value{q, format}
 }
 
-func (j js) Run(function string, args ...qlova.Type) {
+func (j js) Run(function string, args ...qlova.Value) {
 
 	var converted string
 	for i, arg := range args {
-		converted += string(arg.LanguageType().Raw())
+		converted += j.q.Raw(arg)
 		if i <= len(args) {
 			converted += ","
 		}
@@ -152,15 +155,15 @@ func (j js) Run(function string, args ...qlova.Type) {
 	j.q.Javascript(function + "(" + converted + ");")
 }
 
-func (j js) Call(function string, args ...qlova.Type) Value {
+func (j js) Call(function string, args ...qlova.Value) value {
 
 	var converted string
 	for i, arg := range args {
-		converted += string(arg.LanguageType().Raw())
+		converted += j.q.Raw(arg)
 		converted += ","
 		if i <= len(args) {
 		}
 	}
 
-	return Value{j.q, function + "(" + converted + ")"}
+	return value{j.q, function + "(" + converted + ")"}
 }

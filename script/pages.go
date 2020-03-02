@@ -1,9 +1,9 @@
 package script
 
 import (
+	"github.com/qlova/script"
 	qlova "github.com/qlova/script"
 	"github.com/qlova/script/language"
-	Javascript "github.com/qlova/script/language/javascript"
 )
 
 //Page is a script interface to seed.Page.
@@ -16,191 +16,152 @@ type Page struct {
 
 //Back is the JS code needed for back functionality.
 const Back = `
-async function back() {
-	if (ActivePhotoSwipe) {
-		ActivePhotoSwipe.close();
-		return;
-	}
+seed.back = async function() {
 	
-	if (!window.goto) return;
+	if (!seed.goto) return;
 
-	going_back = true;
+	seed.back.going = true;
 
-	let onback = get(current_page).onback;
+	let onback = seed.CurrentPage.onback;
 	if (onback) if (onback()) return;
 	
-	let noback = false;
-	let last_page;
+	let deadend = false;
+	let GotoArgs;
 	
-	if (goto_history.length == 0) {
-		noback = true;
+	if (seed.goto.history.length == 0) {
+		deadend = true;
 	} else {
-		last_page  = goto_history.pop();
-		if (last_page == null || last_page == "") {
-			noback = true;
-		}
+		GotoArgs = seed.goto.history.pop();
+		if (!GotoArgs) deadend = true;
 	}
 
 	//Lol
-	let fallback = get(current_page).dataset.back; 
+	let fallback = seed.CurrentPage.dataset.back; 
 	if (fallback) {
-		await goto(fallback, true);
+		await seed.goto(fallback);
+		seed.goto.history.pop();
 		return;
 	}
 
+	
+	if (!deadend) {
+		await seed.goto.apply(null, GotoArgs);
+		seed.goto.history.pop();
+	}
 
-			
-	let old_length = goto_history.length;
-			
-	await goto(last_page, true);
+	seed.back.going = false;
 }
+
+seed.back.going = false;
 `
 
 //Back returns to the last page on the stack. Popping the current page.
 func (q Ctx) Back() {
-	q.Require(Back)
-	q.js.Run(`back`)
+	q.Require(Goto)
+	q.Javascript(`seed.back.going = true;`)
+	q.js.Run(`window.history.back`)
 }
 
 //Goto is the JS code for goto (page switching) support.
 const Goto = `
-	var animating = false;
-	var going_back = false;
+	seed.CurrentPage = null;
+	seed.NextPage = null;
+	seed.LastPage = null;
 
-	var animation_complete = async function() {
-		animating = false;
-		
-		//Process goto queue.
-		let next = goto_queue.shift();
-		if (next != null) {
-			await goto.apply(null, next);
-		}
-	}
-
-	var goto_queue = [];
-	var goto_history = [];
-
-	var goto_ready = false;
-
-	var last_page = null;
-	var current_page = null;
-	var next_page = null;
-	var current_args = null;
-
-	var going_to = null;
-
-	var goto_exitpromise = null;
-
-	var goto = function(next_page_id, private) {
+	seed.goto = async function(id) {
 		//We are still waiting for the app to load.
-		if (!goto_ready) {
+		if (!seed.goto.ready) {
 			return;
 		}
 
+		//Don't goto if we are already going to something.
+		if (seed.NextPage != null) {
+			seed.goto.queue.push(arguments);
+			return;
+		}
+
+		//Collect arguments.
 		let args = [];
-		if (arguments.length > 2) {
-			for (let i = 2; i < arguments.length; i++) {
+		if (arguments.length > 1) {
+			for (let i = 1; i < arguments.length; i++) {
 				args.push(arguments[i]);
 			}
 		}
 
-		if (!going_to) {
-			going_to = next_page_id;
-			setTimeout(async function() {
-				await actual_goto(next_page_id, private, args);
-			}, 1);
-		}
-	}
-	
-	var actual_goto = async function(next_page_id, private, args) {
-		if (!going_to) return;
+		let NextPageTemplate = get(id+":template");
+		if (NextPageTemplate == null || id == loading_page || !id) {
+			console.error("seed.goto: invalid page ", id, NextPageTemplate);
 
-		//We are still waiting for the app to load.
-		if (!goto_ready) {
+			id = starting_page;
+			if (id == "") {
+				console.error("seed.goto: no starting page to fallback to");
+				return;
+			}
+
+			NextPageTemplate = get(starting_page+":template");
+			if (NextPageTemplate == null) {
+				console.error("seed.goto: starting page is invalid");
+				going_to = null;
+				return;
+			}
+
 			return;
 		}
 
-		let template = get(next_page_id+":template");
+		NextPageTemplate.parentElement.appendChild(NextPageTemplate.content);
+
+		seed.NextPage = get(id);
+
+		//If we are going to the same page then return.
+		if (seed.CurrentPage == seed.NextPage) {
+			if (JSON.stringify(seed.CurrentPage.args) == JSON.stringify(args)) {
+				seed.NextPage = null;
+				return;
+			}
+		}
+
+		if (window.flipping) flipping.read();
+
+		let promises = [];
+
+		if (onready[seed.NextPage.id]) {
+			promises.push(onready[seed.NextPage.id]());
+			delete onready[seed.NextPage.id];
+		}
 		
-		if (template == null || next_page_id == loading_page || !next_page_id) {
-			console.error("invalid page ", next_page_id, template);
-			next_page_id = starting_page;
-			if (next_page_id == "") {
-				going_to = null;
-				return;
-			}
+		seed.LastPage = seed.CurrentPage;
+		seed.CurrentPage = seed.NextPage;
+		seed.CurrentPage.args = args;
 
-			template = get(starting_page+":template");
-			if (template == null) {
-				console.error("starting page is invalid");
-				going_to = null;
-				return;
-			}
-		}
-	
-		if (animating) {
-			goto_queue.push([next_page_id, private].concat(args))
-			going_to = null;
-			return;
+		if (seed.LastPage && seed.LastPage.onpageexit) await seed.LastPage.onpageexit();
+		if (seed.CurrentPage.onpageenter) await seed.CurrentPage.onpageenter();
+
+		if (seed.goto.in) {
+			promises.push(seed.goto.in);
+			seed.goto.in = null;
 		}
 
-		var json_args = JSON.stringify(args);
+		if (seed.goto.out) {
+			promises.push(seed.goto.out);
+			seed.goto.out = null;
+		}
 
-		if (current_page == next_page_id || next_page == next_page_id) {
-			if (current_args == json_args) {
-				going_to = null;
-				return;
-			}
-		} else {
-			next_page = next_page_id;
+		try { flipping.flip(); } catch(error) {}
 
-			if (window.flipping) flipping.read();
-	
-			for (let element of template.parentElement.childNodes) {
-				if (element.classList.contains("page")) {
-					if (getComputedStyle(element).display != "none") {
-						var resolve = function() {
-							if (element.id == loading_page) {
-								set(element, "display", "none")
-								return;
-							}
-							set(element, "animation", "")
-							set(element, "z-index", "")
-							get(element.id+":template").content.appendChild(element);
-							going_back = false;
-						};
-						last_page = element.id;
-						
-						if (element.onpageexit) {
-							try {
-								await element.onpageexit();
-							} catch(e) {}
-							if (goto_exitpromise) {
-								goto_exitpromise.then(resolve);
-								goto_exitpromise = null;
-								break;
-							}
-						}
-						resolve();
-					}
-				}
-			}
+		for (let promise of promises) {
+			await promise;
+		}
 
-			let fallback;
-			if (get(current_page)) {
-				fallback = get(current_page).dataset.back;
+		if (seed.LastPage) {
+			if (seed.LastPage == loading_page) {
+				seed.LastPage.style.display = "none";
+			} else {
+				get(seed.LastPage.id+":template").content.appendChild(seed.LastPage);
 			}
-			
-			
-			if (last_page != null && fallback != next_page_id) {
-				if (!private) goto_history.push(last_page);
-			}
-
-			template.parentElement.appendChild(template.content);
 		}
 
 		//Set title and path.
-		let data = get(next_page_id).dataset;
+		let data = seed.NextPage.dataset;
 		let path = data.path;
 		if (!data.path) {
 			path = "/";
@@ -211,34 +172,44 @@ const Goto = `
 				path += "/" + arg;
 			}
 		}
-		get(next_page_id).args = args;
-
-		let child = get(next_page_id);
-		if (onready[child.id]) {
-			await onready[child.id]();
-			delete onready[child.id];
-		}
-		try {
-			if (child.onpageenter) await child.onpageenter();
-		} catch(e) {}
-		current_page = next_page_id;
-		current_args = json_args;
 
 		//Persistence.
-		window.localStorage.setItem('*CurrentPage', next_page_id);
-		window.localStorage.setItem('*LastGotoTime', Date.now());
-			
-		next_page = null;
+		localStorage.setItem('*CurrentPage', seed.NextPage.id);
+		localStorage.setItem('*LastGotoTime', Date.now());
+		localStorage.setItem('*CurrentPath', path);
 
-		window.localStorage.setItem('*CurrentPath', path);
+		if (!seed.goto.back && production) history.pushState([seed.CurrentPage.id].concat(seed.CurrentPage.args), data.title, path);
 
-		window.history.replaceState(null, data.title, path);
+		seed.animating = false;
+		seed.NextPage = null;
 
-		try { flipping.flip(); } catch(error) {}
+		if (seed.goto.queue.length > 0) {
+			seed.goto.apply(null, seed.goto.queue.shift());
+		}
+	}
 
-		going_to = null;
+	if (production) {
+	window.addEventListener('popstate', async function (event) {
+		if (ActivePhotoSwipe) {
+			ActivePhotoSwipe.close();
+			return;
+		}
+
+		if (event.state == null) {
+			window.history.forward();
+			return;
+		}
+
+		seed.goto.back = true;
+		await seed.goto.apply(null, event.state);
+		seed.goto.back = false;
+	});
 	};
-`
+
+	seed.goto.queue = [];
+	seed.goto.ready = false;
+	seed.goto.back = false;
+` + Back
 
 //Arg returns the ith argument to this page.
 func (page Page) Arg(i Int) String {
@@ -257,67 +228,60 @@ func (page Page) Goto(args ...String) {
 	q.Require(Goto)
 	q.Require(Back)
 
-	var arguments = []Type{q.String(page.ID), q.False()}
+	var arguments = []script.Value{q.String(page.ID)}
 	for _, arg := range args {
 		arguments = append(arguments, arg)
 	}
 
-	q.js.Run("goto", arguments...)
+	q.js.Run("await seed.goto", arguments...)
 
 	if page.Page != nil {
 		q.Context.AddPage(page.ID, page.Page)
 	}
 }
 
-//PrivateGoto goes to the specified page without pushing to the stack.
-func (page Page) PrivateGoto() {
-	var q = page.Q
-	q.Require(Goto)
-	q.Javascript("goto('" + page.ID + "', true);")
-}
-
 //Equals returns true if page is equal to b.
 func (page Page) Equals(b Page) qlova.Bool {
-	return page.Q.BoolFromLanguageType(Javascript.Bit{
-		Expression: language.Statement(`("` + page.ID + `" == "` + b.ID + `")`),
-	})
+	return script.Bool{
+		language.Expression(page.Q, `(`+page.Element()+` == `+b.Element()+`)`),
+	}
 }
 
 //SetCurrent sets the current page to this page. This is a low-level API and shouldn't be called. Use Goto instead.
 func (page Page) SetCurrent() {
-	page.Javascript(`current_page = ` + page.ID + ";")
+	page.Javascript(`seed.CurrentPage = ` + page.ID + ";")
 }
 
 //CurrentPage returns the current page.
 func (q Ctx) CurrentPage() Page {
 	return Page{Seed{
-		ID: `"+current_page+"`,
-		Q:  q,
+		Native: `seed.CurrentPage`,
+		Q:      q,
 	}, nil}
 }
 
 //ClearHistory clears the page history, you should call this after transitioning from a sign-in page.
 func (q Ctx) ClearHistory() {
-	q.Javascript(`goto_history = [];`)
+	q.Javascript(`history.go(-(history.length - 1));`)
 }
 
 //PushHistory pushes the page to history.
 func (q Ctx) PushHistory(page Page) {
-	q.Javascript(`goto_history.push('` + page.ID + `');`)
+	q.Javascript(`seed.goto.history.push('` + page.ID + `');`)
 }
 
 //LastPage returns the last page.
 func (q Ctx) LastPage() Page {
 	return Page{Seed{
-		ID: `"+last_page+"`,
-		Q:  q,
+		Native: `seed.LastPage`,
+		Q:      q,
 	}, nil}
 }
 
 //NextPage returns the next page.
 func (q Ctx) NextPage() Page {
 	return Page{Seed{
-		ID: `"+next_page+"`,
-		Q:  q,
+		Native: `seed.NextPage`,
+		Q:      q,
 	}, nil}
 }

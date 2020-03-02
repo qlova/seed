@@ -36,10 +36,10 @@ const openURI = `function openURI(uri) {
 //Open opens the URL in a new tab if possible.
 func (url URL) Open() {
 	url.q.Require(openURI)
-	url.q.Javascript("openURI(" + string(url.location.LanguageType().Raw()) + ");")
+	url.q.Javascript("openURI(" + url.q.Raw(url.location) + ");")
 }
 
 //Goto goes directly to the URL if possible..
 func (url URL) Goto() {
-	url.q.Javascript(`if (window.LocalhostWebsocket) LocalhostWebsocket.send("I'll be back"); window.location.href = (` + string(url.location.LanguageType().Raw()) + ");")
+	url.q.Javascript(`if (window.LocalhostWebsocket) LocalhostWebsocket.send("I'll be back"); window.location.href = (` + url.q.Raw(url.location) + ");")
 }

@@ -85,7 +85,7 @@ func (app App) HTML() []byte {
 	}
 	buffer.WriteString(`</style>`)
 
-	buffer.WriteString(`<script> seed = {};`)
+	buffer.WriteString(`<script> seed = {}; seeds = {};`)
 	{
 		if app.production && (app.rest != "") {
 			buffer.WriteString(`var host = "https://` + app.rest + `";`)
@@ -119,11 +119,7 @@ func (app App) HTML() []byte {
 					var expires = "expires="+ d.toUTCString();
 					document.cookie = cname + "=" + cvalue + ";" + expires + ";secure;path=/";
 				}
-			history.pushState(null, null, document.URL);
-			window.addEventListener('popstate', function () {
-				back();
-				history.pushState(null, null, document.URL);
-			});`)
+			`)
 		}
 
 		//Some developer-friendly features.
@@ -293,7 +289,7 @@ func (app App) HTML() []byte {
 	{
 		keys := make([]string, 0, len(scripts))
 		for key := range scripts {
-			if path.Ext(key) == ".js" || strings.HasPrefix(key, "https://js.") {
+			if path.Ext(key) == ".js" || strings.HasPrefix(key, "https://js.") || strings.Contains(key, ".js") {
 				keys = append(keys, key)
 			}
 		}
@@ -323,7 +319,7 @@ func (app App) HTML() []byte {
 		`)
 
 		buffer.Write(StateHandlers)
-		buffer.WriteString(`goto_ready = true;`)
+		buffer.WriteString(`if (seed.goto) seed.goto.ready = true;`)
 
 		buffer.Write(app.RoutingTable())
 
@@ -334,7 +330,7 @@ func (app App) HTML() []byte {
 					window.localStorage.removeItem("updating");
 				}
 
-				if (!window.goto) return;
+				if (!seed.goto) return;
 				let saved_page = window.localStorage.getItem('*CurrentPage');
 				let saved_path = window.localStorage.getItem('*CurrentPath');
 				if (saved_page && saved_path) {
@@ -344,15 +340,15 @@ func (app App) HTML() []byte {
 					if (hibiscus > 1000*60*10) {
 						window.localStorage.removeItem('*CurrentPage');
 						current_page = loading_page;
-						goto(starting_page);
+						await seed.goto(starting_page);
 						return;
 					}
 
 					let splits = saved_path.split("/");
 					if (splits.length > 2) {
-						goto.apply(null, [window.localStorage.getItem('*CurrentPage'), false].concat(window.localStorage.getItem('*CurrentPath').split("/").slice(2)));
+						await seed.goto.apply(null, [window.localStorage.getItem('*CurrentPage')].concat(window.localStorage.getItem('*CurrentPath').split("/").slice(2)));
 					} else {
-						goto(saved_page);
+						await seed.goto(saved_page);
 					}
 
 					//clear history
@@ -363,10 +359,10 @@ func (app App) HTML() []byte {
 						get(saved_page).enterpage();
 				} else {
 					current_page = loading_page;
-					goto(starting_page);
+					await seed.goto(starting_page);
 				}
 			} else {
-				goto(starting_page);
+				await seed.goto(starting_page);
 			}
 		`)
 	}

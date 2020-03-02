@@ -28,11 +28,15 @@ const CSS = `
 	footer, header, hgroup, menu, nav, section {
 		display: block;
 	}
+	p {
+		margin: 1em 0;
+	}
 	body {
 		line-height: 1;
 	}
 	ol, ul {
-		list-style: none;
+		list-style: disc;
+		margin-left: 1em;
 	}
 	blockquote, q {
 		quotes: none;

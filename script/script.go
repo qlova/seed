@@ -6,8 +6,6 @@ import (
 
 	qlova "github.com/qlova/script"
 	"github.com/qlova/script/language"
-
-	Javascript "github.com/qlova/script/language/javascript"
 )
 
 //Ctx is a script context. Providing access to script behaviours.
@@ -15,9 +13,22 @@ type Ctx struct {
 	*ctx
 }
 
+type AnyCtx = qlova.AnyCtx
+
+func CtxFromAnyCtx(any AnyCtx) Ctx {
+	if q, ok := any.(Ctx); ok {
+		return q
+	}
+	var context = internal.NewContext()
+	return Ctx{&ctx{
+		Ctx:     any.RootCtx(),
+		Context: context,
+	}}
+}
+
 type ctx struct {
 	internal.Context
-	qlova.Script
+	qlova.Ctx
 
 	js   js
 	Time time
@@ -38,19 +49,8 @@ func (q Ctx) Require(dependency string) {
 	q.Dependencies[dependency] = struct{}{}
 }
 
-//RawString is an internal function and should not be used.
-func (q Ctx) RawString(s qlova.String) string {
-	return raw(s)
-}
-
-func raw(s qlova.String) string {
-	return string(s.LanguageType().(Javascript.String).Expression)
-}
-
 func (q Ctx) wrap(s string) qlova.String {
-	return q.StringFromLanguageType(Javascript.String{
-		Expression: language.Statement(s),
-	})
+	return String{language.Expression(q, s)}
 }
 
 //ToJavascript returns the given script encoded as Javascript.
@@ -70,9 +70,9 @@ func ToJavascript(f func(q Ctx), ctx ...internal.Context) []byte {
 }
 
 func toJavascript(f func(q Ctx), context internal.Context) []byte {
-	var program = qlova.Program(func(q qlova.Script) {
+	var program = qlova.Script(func(q qlova.Ctx) {
 		var s = Ctx{&ctx{
-			Script:  q,
+			Ctx:     q,
 			Context: context,
 		}}
 		s.js.q = s
@@ -81,12 +81,9 @@ func toJavascript(f func(q Ctx), context internal.Context) []byte {
 		f(s)
 	})
 
-	source := program.SourceCode(Javascript.Implementation{})
-	if source.Error {
-		panic(source.ErrorMessage)
-	}
+	source := language.Javascript(program)
 
-	return source.Data
+	return source
 }
 
 //Run runs a Javascript function with the given arguments.
@@ -97,16 +94,9 @@ func (q Ctx) Run(f Function, args ...qlova.Type) {
 //Unit is a display unit, eg. px, em, %
 type Unit qlova.String
 
-//Raw returns the unit as a raw string.
-func (unit Unit) Raw() string {
-	return raw(qlova.String(unit))
-}
-
 //Unit returns a script.Unit from the given unit.
 func (q Ctx) Unit(unit complex128) Unit {
-	return Unit(q.StringFromLanguageType(Javascript.String{
-		Expression: language.Statement(css.Decode(unit)),
-	}))
+	return Unit(String{language.Expression(q, string(css.Decode(unit)))})
 }
 
 //SetClipboard is the JS code requried for Clipboard support.

@@ -7,3 +7,6 @@
 !*.yml
 !go.mod
 !go.sum
+
+**/assets.go
+**/production.go

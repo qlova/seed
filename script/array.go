@@ -14,7 +14,7 @@ type Array struct {
 
 //Strings creates a new script.Array of strings.
 func (q Ctx) Strings(slice ...string) Array {
-	var converted = make([]qlova.Type, len(slice))
+	var converted = make([]qlova.Value, len(slice))
 	for i := range slice {
 		converted[i] = q.String(slice[i])
 	}
@@ -22,10 +22,10 @@ func (q Ctx) Strings(slice ...string) Array {
 }
 
 //NewArray creates a new Array.
-func (q Ctx) NewArray(elements ...qlova.Type) Array {
+func (q Ctx) NewArray(elements ...qlova.Value) Array {
 	var raw = make([]string, len(elements))
 	for i := range elements {
-		raw[i] = elements[i].LanguageType().Raw()
+		raw[i] = q.Raw(elements[i].T())
 	}
 	if len(elements) > 0 {
 		return Array{
@@ -42,27 +42,28 @@ func (q Ctx) NewArray(elements ...qlova.Type) Array {
 //Push pushes a new value to the array.
 func (a Array) Push(v qlova.Type) {
 	var q = a.Q
-	q.Javascript(a.Native.LanguageType().Raw() + `.push(` + v.LanguageType().Raw() + ");")
+	q.Javascript(q.Raw(a.Native) + `.push(` + q.Raw(v) + ");")
 }
 
 //Index returns the value at the given index in the array.
 func (a Array) Index(i Int) Dynamic {
 	var q = a.Q
-	return q.Value(a.Native.LanguageType().Raw() +
-		`[` + i.LanguageType().Raw() + "]").Dynamic()
+	return q.Value(q.Raw(a.Native) +
+		`[` + q.Raw(i) + "]").Dynamic()
 }
 
 //Mutate sets the value at the given index in the array.
 func (a Array) Mutate(i Int, v qlova.Type) {
 	var q = a.Q
-	q.Javascript(a.Native.LanguageType().Raw() +
-		`[` + i.LanguageType().Raw() + "] = " +
-		v.LanguageType().Raw() + ";")
+	q.Javascript(q.Raw(a.Native) +
+		`[` + q.Raw(i) + "] = " +
+		q.Raw(v) + ";")
 }
 
 //Var calls Native.Var(...string).
 func (a Array) Var(name ...string) Array {
-	var variable = a.Native.Var(name...)
+	var variable = a.Native
+	variable.Var(name...)
 	return Array{
 		Q:      a.Q,
 		Native: variable,

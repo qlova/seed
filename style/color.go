@@ -9,6 +9,26 @@ import (
 	"github.com/qlova/seed/style/css"
 )
 
+type Option func(interface{})
+
+func toOption(f func(css.Style)) Option {
+	return func(any interface{}) {
+		if css, ok := any.(css.Style); ok {
+			f(css)
+		}
+	}
+}
+
+type cssable interface {
+	CSS() css.Style
+}
+
+func SetColor(color color.Color) Option {
+	return toOption(func(s css.Style) {
+		s.SetBackgroundColor(css.Colour(color))
+	})
+}
+
 //SetColor sets the color of this element.
 func (style Style) SetColor(color color.Color) {
 	style.CSS().SetBackgroundColor(css.Colour(color))

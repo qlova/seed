@@ -101,9 +101,24 @@ func (seed Seed) OnClickUnsetState(state State) {
 func (state State) Toggle(q script.Ctx) {
 	q.If(state.Get(q), func() {
 		state.Unset(q)
-	}, q.Else(func() {
+	}).Else(func() {
 		state.Set(q)
-	}))
+	}).End()
+}
+
+//BoolFromCtx implements script.AnyBool
+func (state State) BoolFromCtx(ctx script.AnyCtx) script.Bool {
+	q := script.CtxFromAnyCtx(ctx)
+
+	if state.not {
+		return q.Not(state.Bool.Get(q))
+	}
+	return state.Bool.Get(q)
+}
+
+//ValueFromCtx implements script.AnyValue
+func (state State) ValueFromCtx(ctx script.AnyCtx) script.Value {
+	return state.BoolFromCtx(ctx)
 }
 
 //Get gets the state as a bool.
@@ -122,13 +137,13 @@ func (state State) Set(q script.Ctx) {
 
 	var reference = state.Bool.Ref()
 	if state.not {
-		state.Bool.Set(q, q.False())
+		state.Bool.Set(q, q.False)
 		q.Javascript(`if (window.` + reference + `_unset)`)
-		q.Javascript(reference + `_unset();`)
+		q.Javascript(`await ` + reference + `_unset();`)
 	} else {
-		state.Bool.Set(q, q.True())
+		state.Bool.Set(q, q.True)
 		q.Javascript(`if (window.` + reference + `_set)`)
-		q.Javascript(reference + `_set();`)
+		q.Javascript(`await ` + reference + `_set();`)
 	}
 }
 
@@ -140,13 +155,13 @@ func (state State) Unset(q script.Ctx) {
 
 	var reference = state.Bool.Ref()
 	if state.not {
-		state.Bool.Set(q, q.True())
+		state.Bool.Set(q, q.True)
 		q.Javascript(`if (window.` + reference + `_set)`)
-		q.Javascript(reference + `_set();`)
+		q.Javascript(`await ` + reference + `_set();`)
 	} else {
-		state.Bool.Set(q, q.False())
+		state.Bool.Set(q, q.False)
 		q.Javascript(`if (window.` + reference + `_unset)`)
-		q.Javascript(reference + `_unset();`)
+		q.Javascript(`await ` + reference + `_unset();`)
 	}
 }
 
@@ -158,10 +173,10 @@ func (state State) UnsetFor(u User) {
 
 	var reference = state.Bool.Ref()
 	if state.not {
-		u.Execute(fmt.Sprintf(`if (window.%v_set) %v_set();`, reference, reference))
+		u.Execute(fmt.Sprintf(`if (window.%v_set) await %v_set();`, reference, reference))
 		return
 	}
-	u.Execute(fmt.Sprintf(`if (window.%v_unset) %v_unset();`, reference, reference))
+	u.Execute(fmt.Sprintf(`if (window.%v_unset) await %v_unset();`, reference, reference))
 }
 
 //SetFor sets a state for tthe specified user.
@@ -172,8 +187,8 @@ func (state State) SetFor(u User) {
 
 	var reference = state.Bool.Ref()
 	if state.not {
-		u.Execute(fmt.Sprintf(`if (window.%v_unset) %v_unset();`, reference, reference))
+		u.Execute(fmt.Sprintf(`if (window.%v_unset) await %v_unset();`, reference, reference))
 		return
 	}
-	u.Execute(fmt.Sprintf(`if (window.%v_set) %v_set();`, reference, reference))
+	u.Execute(fmt.Sprintf(`if (window.%v_set) await %v_set();`, reference, reference))
 }

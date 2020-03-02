@@ -1,7 +1,5 @@
 package script
 
-import "github.com/qlova/script/language"
-
 //DataRequestJS is the js defined data_request function.
 const DataRequestJS = `
 function data_request (url) {
@@ -44,7 +42,7 @@ func (q Ctx) DataRequest(url String) Promise {
 
 	var variable = Unique()
 
-	q.Raw("Javascript", language.Statement(`let `+variable+` = data_request(`+url.LanguageType().Raw()+`);`))
+	q.Write([]byte(`let ` + variable + ` = data_request(` + q.Raw(url) + `);`))
 
 	return Promise{q.Value(variable).Native(), q}
 }

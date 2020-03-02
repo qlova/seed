@@ -37,21 +37,16 @@ type Promise struct {
 	q Ctx
 }
 
-//Raw returns the raw JS promise.
-func (promise Promise) Raw() string {
-	return promise.LanguageType().Raw()
-}
-
 //Wait waits for the promise to complete and returns the resulting value.
 func (promise Promise) Wait() Dynamic {
 	var a = Unique()
-	promise.q.Javascript(`let %v = await %v;`, a, promise)
-	return promise.q.Value(`%v`, a).Dynamic()
+	promise.q.Javascript(`let %v = await %v;`, a, promise.q.Raw(promise))
+	return promise.q.Value("%v", a).Dynamic()
 }
 
 //Then executes the provided function when the promise succeeds.
 func (promise Promise) Then(f func(value Dynamic)) Promise {
-	promise.q.Javascript(promise.Raw() + ` = ` + promise.Raw() + ".then(async function(promise_result) {")
+	promise.q.Javascript(promise.q.Raw(promise) + ` = ` + promise.q.Raw(promise) + ".then(async function(promise_result) {")
 	if f != nil {
 		f(promise.q.Value("promise_result").Dynamic())
 	}
@@ -61,7 +56,7 @@ func (promise Promise) Then(f func(value Dynamic)) Promise {
 
 //Catch executes the provided function when the promise fails.
 func (promise Promise) Catch(f func(err Error)) Promise {
-	promise.q.Javascript(promise.Raw() + ".catch(async function(rpc_result) {")
+	promise.q.Javascript(promise.q.Raw(promise) + ".catch(async function(rpc_result) {")
 	if f != nil {
 		f(Error{promise.q, promise.q.Value("rpc_result.response").String(), promise.q.Value("rpc_result.status").Int()})
 	}

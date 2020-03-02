@@ -21,7 +21,7 @@ func (i Int) Get(q script.Ctx) script.Int {
 
 //Set the global.Int to be script.Int
 func (i Int) Set(q script.Ctx, value script.Int) {
-	q.Javascript(`window.localStorage.setItem("` + i.string + `", (` + value.LanguageType().Raw() + `).toString());`)
+	q.Javascript(`window.localStorage.setItem("` + i.string + `", (` + q.Raw(value) + `).toString());`)
 	i.Reference.Set(q)
 }
 

@@ -18,7 +18,7 @@ type Month struct {
 
 func (month Month) String() String {
 	month.Q.Require(`var time_months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];`)
-	return month.Q.Value(`(time_months[%v])`, month.LanguageType().Raw()).String()
+	return month.Q.Value(`(time_months[%v])`, month.Q.Raw(month)).String()
 }
 
 //Time is a script interface to a time value.
@@ -33,7 +33,7 @@ func (t time) Now() Time {
 }
 
 func (t Time) String() String {
-	return t.Q.Value(t.LanguageType().Raw() + ".toString()").String()
+	return t.Q.Value(t.Q.Raw(t) + ".toString()").String()
 }
 
 //Unix returns t as a Unix time, the number of seconds elapsed since January 1, 1970 UTC. The result does not depend on the location associated with t.
@@ -43,12 +43,12 @@ func (t Time) Unix() Int {
 
 //Day returns the day of the month specified by t.
 func (t Time) Day() Int {
-	return t.Q.Value(t.LanguageType().Raw() + ".getDate()").Int()
+	return t.Q.Value(t.Q.Raw(t) + ".getDate()").Int()
 }
 
 //Month returns the month of the year specified by t.
 func (t Time) Month() Month {
-	return Month{t.Q, t.Q.Value(t.LanguageType().Raw() + ".getMonth()").Int()}
+	return Month{t.Q, t.Q.Value(t.Q.Raw(t) + ".getMonth()").Int()}
 }
 
 //After executes a function after the given number of milliseconds have passed.

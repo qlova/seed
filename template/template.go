@@ -61,11 +61,11 @@ func (template Seed) OnRefresh(f func(q script.Ctx, data script.Dynamic)) {
 		if old != nil {
 			old(q)
 		}
-		f(q, template.Ctx(q).Data().Dynamic())
+		f(q, template.Ctx(q).Data())
 	}
 }
 
-func (template Seed) renderScriptsTo(q script.Ctx, data script.Type) {
+func (template Seed) renderScriptsTo(q script.Ctx, data script.Value) {
 	for _, child := range template.Children() {
 
 		if ready := child.Root().Ready(); ready != nil {
@@ -84,7 +84,7 @@ func (template Seed) renderScriptsTo(q script.Ctx, data script.Type) {
 	}
 }
 
-func (template Seed) renderTo(q script.Ctx, data script.Type) string {
+func (template Seed) renderTo(q script.Ctx, data script.Value) string {
 	for _, child := range template.Children() {
 		var child = child.Root()
 
@@ -122,16 +122,16 @@ func (template Seed) Ctx(q script.Ctx) Ctx {
 }
 
 //Data returns a reference to the template's data.
-func (ctx Ctx) Data() script.Value {
-	return ctx.Q.Value("data")
+func (ctx Ctx) Data() script.Dynamic {
+	return ctx.Q.Value("data").Dynamic()
 }
 
 //Refresh refreshes the template with the provided data.
 func (ctx Ctx) Refresh(data interface{}) {
 
 	switch v := data.(type) {
-	case script.Type:
-		ctx.Q.Javascript("%v.refresh(%v);", ctx.Element(), v.LanguageType().Raw())
+	case script.Value:
+		ctx.Q.Javascript("%v.refresh(%v);", ctx.Element(), ctx.Q.Raw(v))
 	case func(user seed.User):
 		ctx.Q.Go(v).Then(func(d script.Dynamic) {
 			ctx.Refresh(d)

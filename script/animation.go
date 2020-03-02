@@ -27,11 +27,11 @@ func (seed Seed) SetAnimationReverse() {
 
 //SetAnimationDuration sets the duration that the animation should play for.
 func (seed Seed) SetAnimationDuration(duration Float) {
-	seed.SetDynamic("animation-duration", duration.LanguageType().Raw()+"+'s'")
+	//seed.SetDynamic("animation-duration", duration.LanguageType().Raw()+"+'s'")
 }
 
 //SetAnimationIterations sets how many times the animation should play.
 //0 for infinite.
 func (seed Seed) SetAnimationIterations(iterations Int) {
-	seed.SetDynamic("animation-iteration-count", iterations.LanguageType().Raw())
+	//seed.SetDynamic("animation-iteration-count", iterations.LanguageType().Raw())
 }

@@ -19,3 +19,5 @@ type Float = qlovascript.Float
 
 //Int is the script int type.
 type Int = qlovascript.Int
+
+type Value = qlovascript.Value

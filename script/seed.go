@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/qlova/script"
 	"github.com/qlova/script/language"
-	Javascript "github.com/qlova/script/language/javascript"
 	"github.com/qlova/seed/style/css"
 )
 
@@ -37,9 +37,10 @@ func (ctx Ctx) Seed(options ...string) Seed {
 	if len(options) > 0 {
 		tag = options[0]
 	}
-	var variable = ctx.Value(`document.createElement(` + strconv.Quote(tag) + `)`).Native().Var()
+	var variable = ctx.Value(`document.createElement(` + strconv.Quote(tag) + `)`).Native()
+	variable.Var()
 	var seed = Seed{
-		Native: variable.LanguageType().Raw(),
+		Native: ctx.Raw(variable),
 		Q:      ctx,
 	}
 	seed.Stylable = seed
@@ -88,12 +89,12 @@ func (seed Seed) Get(property string) string {
 
 //Data returns the data associated with this seed.
 func (seed Seed) Data(property String) String {
-	return seed.Q.Value(fmt.Sprint(seed.Element(), ".dataset[", property.LanguageType().Raw(), "]")).String()
+	return seed.Q.Value(fmt.Sprint(seed.Element(), ".dataset[%v]"), property).String()
 }
 
 //SetData sets string Data associated with this seed.
 func (seed Seed) SetData(property, data String) {
-	seed.Q.Javascript(fmt.Sprint(seed.Element(), ".dataset[", property.LanguageType().Raw(), "] = ", data.LanguageType().Raw(), ";"))
+	seed.Q.Javascript(fmt.Sprint(seed.Element(), ".dataset[%v] = %v;"), property, data)
 }
 
 //Bytes TODO this is unimplemented.
@@ -143,7 +144,7 @@ func (seed Seed) Element() string {
 
 //Javascript is shorthand for seed.Q.Javascript
 func (seed Seed) Javascript(js string) {
-	seed.Q.Javascript(language.Statement(js))
+	seed.Q.Javascript(js)
 }
 
 //File is a script interface to a file type.
@@ -154,12 +155,12 @@ type File struct {
 
 //Type returns the type of the file.
 func (f File) Type() String {
-	return f.Q.Value(f.LanguageType().Raw() + `.type`).String()
+	return f.Q.Value(f.Q.Raw(f) + `.type`).String()
 }
 
 //Name returns the name of the file.
 func (f File) Name() String {
-	return f.Q.Value(f.LanguageType().Raw() + `.name`).String()
+	return f.Q.Value(f.Q.Raw(f) + `.name`).String()
 }
 
 //URL returns a url to the file.
@@ -169,15 +170,15 @@ func (f File) URL() Promise {
 		reader.onload = function() {
 			resolve(reader.result);
 		}
-		reader.readAsDataURL(` + f.LanguageType().Raw() + `)
+		reader.readAsDataURL(` + f.Q.Raw(f) + `)
 	});
 	`).Promise()
 }
 
 func (seed Seed) wrap(s string) String {
-	return seed.Q.StringFromLanguageType(Javascript.String{
-		Expression: language.Statement(s),
-	})
+	return script.String{
+		language.Expression(seed.Q, s),
+	}
 }
 
 //Format is required to format text.
@@ -195,17 +196,22 @@ const Format = `function formatText(s) {
 //SetText sets the text of the string.
 func (seed Seed) SetText(s String) {
 	seed.Q.Require(Format)
-	seed.Javascript(seed.Element() + `.innerHTML = formatText(` + raw(s) + `);`)
+	seed.Q.Javascript(seed.Element()+`.innerHTML = formatText(%v);`, seed.Q.Raw(s))
 }
 
 //SetPath sets the resource source/path of the seed.
 func (seed Seed) SetPath(s String) {
-	seed.Javascript(seed.Element() + `.src = "/"+` + raw(s) + `;`)
+	seed.Q.Javascript(seed.Element()+`.src = "/"+%v;`, s)
 }
 
 //SetSource sets the resource source/path of the seed.
 func (seed Seed) SetSource(s String) {
-	seed.Javascript(seed.Element() + `.src = "/"+` + raw(s) + `;`)
+	seed.Q.Javascript(seed.Element()+`.src = "/"+%v;`, s)
+}
+
+//SetOnlineSource sets the resource source/path of the seed.
+func (seed Seed) SetOnlineSource(s String) {
+	seed.Q.Javascript(seed.Element()+`.src = %v;`, s)
 }
 
 //Source returns the source of the seed.
@@ -215,7 +221,7 @@ func (seed Seed) Source() String {
 
 //SetHTML sets the HTML of the seed.
 func (seed Seed) SetHTML(s String) {
-	seed.Javascript(seed.Element() + `.innerHTML = ` + raw(s) + `;`)
+	seed.Q.Javascript(seed.Element()+`.innerHTML = %v;`, s)
 }
 
 //SetHidden sets the seed to be hidden.
@@ -270,17 +276,17 @@ func (seed Seed) Width() Unit {
 
 //SetValue sets the input value of the seed.
 func (seed Seed) SetValue(value String) {
-	seed.Javascript(seed.Element() + `.value = ` + raw(value) + `;`)
+	seed.Q.Javascript(seed.Element()+`.value = %v;`, value)
 }
 
 //SetPlaceholder sets the input placeholder of the seed.
 func (seed Seed) SetPlaceholder(value String) {
-	seed.Javascript(seed.Element() + `.placeholder = ` + raw(value) + `;`)
+	seed.Q.Javascript(seed.Element()+`.placeholder = %v;`, value)
 }
 
 //SetClass sets the class name of this seed.
 func (seed Seed) SetClass(value String) {
-	seed.Javascript(seed.Element() + `.className = ` + raw(value) + `;`)
+	seed.Q.Javascript(seed.Element()+`.className = %v;`, value)
 }
 
 //Value returns the input value of this seed.
@@ -305,13 +311,12 @@ func (seed Seed) HTML() String {
 
 //File returns the first file of this seed.
 func (seed Seed) File() File {
-	return File{seed.Q, seed.Q.NativeFromLanguageType(Javascript.Native{
-		Expression: seed.Element() + `.files[0]`}).Var()}
+	return File{seed.Q, Native{language.Expression(seed.Q, seed.Element()+`.files[0]`)}}
 }
 
 //Load sets the resource location of this seed to the specified file.
 func (seed Seed) Load(f File) {
-	seed.Javascript(seed.Element() + `.src = window.URL.createObjectURL(` + f.LanguageType().Raw() + `);`)
+	seed.Q.Javascript(seed.Element()+`.src = window.URL.createObjectURL(%v);`, f)
 }
 
 //Add a child seed to this seed.

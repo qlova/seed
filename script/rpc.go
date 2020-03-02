@@ -17,13 +17,14 @@ import (
 	"github.com/qlova/seed/user"
 
 	qlova "github.com/qlova/script"
-	"github.com/qlova/script/language"
 )
 
 //Request is the JS code required to make Go calls.
 const Request = `
+var AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
 function slave(response) {
-	return (new Function(response))();
+	return (new AsyncFunction(response))();
 }
 
 function request (method, formdata, url, manual) {
@@ -50,7 +51,7 @@ function request (method, formdata, url, manual) {
 			if (this.status >= 200 && this.status < 300) {
 				resolve(slave(xhr.response));
 			} else {
-				slave(xhr.response);
+				if (this.status != 404) slave(xhr.response);
 				reject({
 					status: this.status,
 					statusText: xhr.statusText,
@@ -99,7 +100,7 @@ type Attached struct {
 }
 
 //Go calls a Go function f, with args. Returns a promise.
-func (c Attached) Go(f interface{}, args ...qlova.Type) Promise {
+func (c Attached) Go(f interface{}, args ...qlova.AnyValue) Promise {
 	return c.q.rpc(f, c.formdata, c.args, args...)
 }
 
@@ -121,7 +122,7 @@ func (q Ctx) With(args Args) Attached {
 
 var rpcID int64 = 1
 
-func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type) Promise {
+func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.AnyValue) Promise {
 	//Get a unique string reference for f.
 	var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
 
@@ -146,7 +147,7 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 		}
 
 		for i, arg := range args {
-			q.Javascript(`%v.set("%v", JSON.stringify(%v));`, formdata, i, arg)
+			q.Javascript(`%v.set("%v", JSON.stringify(%v));`, formdata, i, arg.ValueFromCtx(q))
 		}
 	}
 
@@ -157,12 +158,12 @@ func (q Ctx) rpc(f interface{}, formdata string, nargs Args, args ...qlova.Type)
 			q.Javascript(`let ` + formdata + ` = new FormData();`)
 		}
 		for key, value := range nargs {
-			q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, JSON.stringify(` + value.LanguageType().Raw() + `));`)
+			q.Javascript(formdata + `.set(` + strconv.Quote(key) + `, JSON.stringify(` + q.Raw(value) + `));`)
 		}
 	}
 
 	q.Require(Request)
-	q.Raw("Javascript", language.Statement(`let `+variable+` = request("POST", `+formdata+`, "`+CallingString+`");`))
+	q.Write([]byte(`let ` + variable + ` = request("POST", ` + formdata + `, "` + CallingString + `");`))
 
 	return Promise{q.Value(variable).Native(), q}
 }
