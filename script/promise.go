@@ -1,36 +1,5 @@
 package script
 
-//Error is a Go call error.
-type Error struct {
-	Q Ctx
-	String
-	Code Int
-}
-
-//NeedToLogin runs 'f' if the user is Unauthorized.
-func (e Error) NeedToLogin(f func()) {
-	var q = e.Q
-	q.Javascript(`if (%v == 401) {`, e.Code)
-	f()
-	q.Javascript(`}`)
-}
-
-//Connection runs the `f` script if the error is a connection error.
-func (e Error) Connection(f func()) {
-	var q = e.Q
-	q.Javascript(`if (rpc_result.status != 500) {`)
-	f()
-	q.Javascript(`}`)
-}
-
-//Go runs the `f` script if the error is a Go error.
-func (e Error) Go(f func()) {
-	var q = e.Q
-	q.Javascript(`if (rpc_result.status == 500) {`)
-	f()
-	q.Javascript(`}`)
-}
-
 //Promise represents a future action that can either succeed or fail.
 type Promise struct {
 	Native
@@ -38,17 +7,17 @@ type Promise struct {
 }
 
 //Wait waits for the promise to complete and returns the resulting value.
-func (promise Promise) Wait() Dynamic {
+func (promise Promise) Wait() Interface {
 	var a = Unique()
 	promise.q.Javascript(`let %v = await %v;`, a, promise.q.Raw(promise))
-	return promise.q.Value("%v", a).Dynamic()
+	return promise.q.Value("%v", a).Interface()
 }
 
 //Then executes the provided function when the promise succeeds.
-func (promise Promise) Then(f func(value Dynamic)) Promise {
+func (promise Promise) Then(f func(value Interface)) Promise {
 	promise.q.Javascript(promise.q.Raw(promise) + ` = ` + promise.q.Raw(promise) + ".then(async function(promise_result) {")
 	if f != nil {
-		f(promise.q.Value("promise_result").Dynamic())
+		f(promise.q.Value("promise_result").Interface())
 	}
 	promise.q.Javascript("});")
 	return promise

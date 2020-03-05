@@ -1,23 +1,15 @@
 package script
 
-import qlovascript "github.com/qlova/script"
+import "github.com/qlova/script"
 
-//Type is a qlovascript type.
-type Type = qlovascript.Type
+type Bool = script.Bool
+type AnyCtx = script.AnyCtx
+type String = script.String
+type Native = script.Native
+type Int = script.Int
+type Value = script.Value
 
-//String is the script string type.
-type String = qlovascript.String
-
-//Bool is the script bool type.
-type Bool = qlovascript.Bool
-
-//Native is a native type.
-type Native = qlovascript.Native
-
-//Float is the script float type.
-type Float = qlovascript.Float
-
-//Int is the script int type.
-type Int = qlovascript.Int
-
-type Value = qlovascript.Value
+type Interface struct {
+	Q Ctx
+	Native
+}

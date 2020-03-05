@@ -2,16 +2,26 @@ package main
 
 import (
 	"github.com/qlova/seed"
-	"github.com/qlova/seeds/button"
+	"github.com/qlova/seed/app"
+	"github.com/qlova/seed/s/button"
+	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/state"
+	"github.com/qlova/seed/style"
+	"github.com/qlova/seed/user"
 )
 
 func main() {
-	var App = seed.NewApp("Remote Code")
 
-	var Button = button.AddTo(App, "Click me!")
-	Button.OnClick(seed.Go(func(user seed.User) {
-		Button.For(user).SetText("You clicked me!")
-	}))
+	Message := state.NewString("Click me!")
 
-	App.Launch()
+	app.New("Remote Code",
+		button.Var(Message,
+
+			style.SetTextColor(seed.Red),
+
+			script.OnClick(script.Go(func(u user.Ctx) {
+				Message.For(u).Set("You clicked me!")
+			})),
+		),
+	).Launch()
 }

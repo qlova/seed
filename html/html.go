@@ -1,61 +1,131 @@
 package html
 
-//Attribute is an HTML element attribute.
-type Attribute string
+import (
+	"fmt"
+	"html"
+	"strconv"
 
-//Language is a valid language attribute.
-type Language string
-
-//LinkType indicate the relationship between two documents.
-//See https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types
-type LinkType string
-
-//Collection of attributes.
-const (
-	Source          Attribute = "src"
-	Value           Attribute = "value"
-	AllowFullscreen Attribute = "allowfullscreen"
-	Frameborder     Attribute = "frameborder"
-
-	Download                   Attribute = "download"
-	HypertextReference         Attribute = "href"
-	HypertextReferenceLanguage Attribute = "hreflang"
-	Relationship               Attribute = "rel"
-	Target                     Attribute = "target"
-	Type                       Attribute = "type"
-	Ping                       Attribute = "ping"
+	"github.com/qlova/seed"
+	"github.com/qlova/seed/css"
 )
 
-//Tag is an HTML tag.
-type Tag string
+type data struct {
+	id  *string
+	tag string
 
-//Collection of HTML tags.
-const (
-	HTML    Tag = "html"
-	Divider     = "div"
-)
+	classes []string
 
-//Element is an HTML element.
-type Element struct {
-	Tag
-	Attributes map[Attribute]string
+	innerHTML string
 
-	HTML []byte
+	style map[string]string
+
+	attributes map[string]string
 }
 
-//Set the attribute of an HTML element.
-func (element *Element) Set(attribute Attribute, value ...string) {
-	if element.Attributes == nil {
-		element.Attributes = make(map[Attribute]string)
-	}
-	var v string
-	if len(value) > 0 {
-		v = value[0]
-	}
-	element.Attributes[attribute] = v
+var seeds = make(map[seed.Seed]data)
+
+//SetID returns an option that sets the HTML id associated with the seed.
+func SetID(id string) seed.Option {
+	return seed.NewOption(func(s seed.Any) {
+		data := seeds[s.Root()]
+		data.id = &id
+		seeds[s.Root()] = data
+	}, func(s seed.Ctx) {
+		fmt.Fprintf(s.Ctx, `%v.id = %v;`, s.Element(), strconv.Quote(id))
+	}, func(s seed.Ctx) {
+		data := seeds[s.Root()]
+		if data.id != nil {
+			fmt.Fprintf(s.Ctx, `%v.id = %v;`, s.Element(), strconv.Quote(*data.id))
+		} else {
+			fmt.Fprintf(s.Ctx, `%v.id = %v;`, s.Element(), s.Root())
+		}
+	})
 }
 
-//SetHTML from a string. Shorthand for element.HTML = []byte(html)
-func (element *Element) SetHTML(html string) {
-	element.HTML = []byte(html)
+//AddClass adds a class to the html element.
+func AddClass(class string) seed.Option {
+	return seed.NewOption(func(s seed.Any) {
+		data := seeds[s.Root()]
+		data.classes = append(data.classes, class)
+		seeds[s.Root()] = data
+	}, func(s seed.Ctx) {
+		fmt.Fprintf(s.Ctx, `%v.classList.add(%v);`, s.Element(), strconv.Quote(class))
+	}, func(s seed.Ctx) {
+		fmt.Fprintf(s.Ctx, `%v.classList.remove(%v);`, s.Element(), strconv.Quote(class))
+	})
+}
+
+//SetTag returns an option that sets the HTML tag associated with the seed.
+func SetTag(tag string) seed.Option {
+	return seed.NewOption(func(s seed.Any) {
+		data := seeds[s.Root()]
+		data.tag = tag
+		seeds[s.Root()] = data
+	}, func(s seed.Ctx) {
+		fmt.Fprintf(s.Ctx, `%v = document.createElement("%v"); %v.id = "temp%v";`, s.Element(), tag, s.Element(), s.Root())
+	}, func(s seed.Ctx) {
+		data := seeds[s.Root()]
+		fmt.Fprintf(s.Ctx, `%v = document.createElement("%v"); %v.id = "temp%v";`, s.Element(), data.tag, s.Element(), s.Root())
+	})
+}
+
+//Set returns an option that sets the HTML associated with the seed.
+func Set(html string) seed.Option {
+	return seed.NewOption(func(s seed.Any) {
+		data := seeds[s.Root()]
+		data.innerHTML = html
+		seeds[s.Root()] = data
+	}, func(s seed.Ctx) {
+		fmt.Fprintf(s.Ctx, `%v.innerHTML = %v;`, s.Element(), strconv.Quote(html))
+	}, func(s seed.Ctx) {
+		data := seeds[s.Root()]
+		fmt.Fprintf(s.Ctx, `%v.innerHTML = %v;`, s.Element(), strconv.Quote(data.innerHTML))
+	})
+}
+
+//SetAttribute returns an option that sets an HTML attribute of this seed.
+func SetAttribute(name, value string) seed.Option {
+	return seed.NewOption(func(s seed.Any) {
+		data := seeds[s.Root()]
+		if data.attributes == nil {
+			data.attributes = make(map[string]string)
+		}
+		data.attributes[name] = value
+		seeds[s.Root()] = data
+	}, func(s seed.Ctx) {
+		fmt.Fprintf(s.Ctx, `%v.setAttribute(%v, %v)`, s.Element(), strconv.Quote(name), strconv.Quote(value))
+	}, func(s seed.Ctx) {
+		data := seeds[s.Root()]
+		fmt.Fprintf(s.Ctx, `%v.setAttribute(%v, %v)`, s.Element(), strconv.Quote(name), data.attributes[name])
+	})
+}
+
+//SetStyle returns an option that sets the inline HTML style of the seed.
+func SetStyle(property, value string) seed.Option {
+	return seed.NewOption(func(s seed.Any) {
+		data := seeds[s.Root()]
+		if data.style == nil {
+			data.style = make(map[string]string)
+		}
+		data.style[property] = value
+		seeds[s.Root()] = data
+	}, func(s seed.Ctx) {
+		css.Set(property, value).Apply(s)
+	}, func(s seed.Ctx) {
+		css.Set(property, value).Reset(s)
+	})
+}
+
+//SetInnerText returns an option that sets the HTML innerText associated with the seed.
+func SetInnerText(text string) seed.Option {
+	return seed.NewOption(func(s seed.Any) {
+		data := seeds[s.Root()]
+		data.innerHTML = html.EscapeString(text)
+		seeds[s.Root()] = data
+	}, func(s seed.Ctx) {
+		fmt.Fprintf(s.Ctx, `%v.innerText = %v;`, s.Element(), strconv.Quote(text))
+	}, func(s seed.Ctx) {
+		data := seeds[s.Root()]
+		fmt.Fprintf(s.Ctx, `%v.innerHTML = %v;`, s.Element(), strconv.Quote(data.innerHTML))
+	})
 }

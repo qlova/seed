@@ -5,8 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-
-	"github.com/gorilla/websocket"
 )
 
 //Handler is a user handler.
@@ -16,9 +14,6 @@ type Handler func(Ctx)
 type Ctx struct {
 	w http.ResponseWriter
 	r *http.Request
-
-	conn *websocket.Conn
-	buff *bytes.Buffer
 
 	buffer *bytes.Buffer
 }
@@ -47,8 +42,5 @@ func (u Ctx) Request() *http.Request {
 func (u Ctx) Execute(script string) {
 	if u.w != nil {
 		fmt.Fprint(u.w, script)
-	}
-	if u.conn != nil {
-		u.conn.WriteMessage(websocket.TextMessage, []byte(script))
 	}
 }
