@@ -11,6 +11,7 @@ import (
 //Variable is any global variable.
 type Variable interface {
 	Ref() string
+	GetReference() Reference
 }
 
 //All globals have a unique id.
@@ -22,9 +23,14 @@ type Reference struct {
 	initial string
 }
 
-//Ref returns the raw reference.
+//Ref returns the raw reference as a string.
 func (ref Reference) Ref() string {
 	return ref.string
+}
+
+//Reference returns the raw reference.
+func (ref Reference) GetReference() Reference {
+	return ref
 }
 
 //Set is a set method that should be called whenever the parent value is set.

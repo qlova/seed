@@ -26,3 +26,8 @@ func convertColor(c color.Color) string {
 func SetTextColor(c color.Color) seed.Option {
 	return css.Set("color", convertColor(c))
 }
+
+//SetColumn sets the seed to behave as a column.
+func SetColumn() seed.Option {
+	return css.Set("flex-direction", "column")
+}

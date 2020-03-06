@@ -54,11 +54,14 @@ type Food interface{}
 //New returns a repeater capable of repeating itself based on the given Go data.
 func New(food Food, options ...seed.Option) Seed {
 	var template = template.New()
-	var feed = Seed{div.New(template), Data{}}
+	var feed = Seed{div.New(template,
+		css.Set("display", "flex"),
+		css.Set("flex-direction", "column"),
+	), Data{}}
 
-	template.Add(options...)
+	template.Add(css.SetSelector("#" + html.ID(feed.Seed)).And(options...))
+
 	convertToClasses(template)
-
 	var scripts script.Script
 	for _, child := range template.Root().Children() {
 		scripts = scripts.Then(script.Adopt(child))

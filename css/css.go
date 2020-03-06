@@ -72,7 +72,6 @@ func Set(property, value string) seed.Option {
 	}, func(s seed.Ctx) {
 		fmt.Fprintf(s.Ctx, `%v.style.%v = "%v";`, s.Element(), dashes2camels(property), value)
 	}, func(s seed.Ctx) {
-		data := seeds[s.Root()]
-		fmt.Fprintf(s.Ctx, `%v.style.%v = "%v";`, s.Element(), dashes2camels(property), data.rules[property])
+		fmt.Fprintf(s.Ctx, `%v.style.%v = "";`, s.Element(), dashes2camels(property))
 	})
 }

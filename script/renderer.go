@@ -48,7 +48,7 @@ func Render(root seed.Any) []byte {
 	var b bytes.Buffer
 
 	b.WriteString(`seed = {};
-seed.production = false;
+seed.production = (location.hostname != "localhost" && location.hostname != "127.0.0.1");
 
 seed.get = function(id) {
 	if (id in seed.get.cache) {

@@ -30,6 +30,8 @@ func CtxFrom(ctx script.AnyCtx) Ctx {
 
 type data struct {
 	on map[string]Script
+
+	requires map[string]string
 }
 
 var seeds = make(map[seed.Seed]data)

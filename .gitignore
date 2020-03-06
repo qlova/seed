@@ -1,0 +1,12 @@
+*
+!*/
+!*.go
+!License
+!Readme
+!.gitignore
+!*.yml
+!go.mod
+!go.sum
+
+**/assets.go
+**/production.go

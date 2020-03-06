@@ -77,6 +77,9 @@ func init() {
 			fmt.Fprint(&b, `changed: async function() {`)
 			b.Write(script.ToJavascript(scripts.change))
 			fmt.Fprint(&b, `}};`)
+		}
+
+		for variable, _ := range harvested.variables {
 			fmt.Fprintf(&b, `seed.state["%v"].changed();`, variable.Ref())
 		}
 
