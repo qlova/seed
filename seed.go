@@ -73,30 +73,32 @@ func (o option) Reset(seed Ctx) {
 	o.reset(seed)
 }
 
-//And implements Option.And
-func (o option) And(more ...Option) Option {
+func And(o Option, more ...Option) Option {
 	return option{
 		addto: func(any Any) {
-			o.addto(any)
+			o.AddTo(any)
 			for _, o := range more {
 				o.AddTo(any)
 			}
 		},
 		apply: func(ctx Ctx) {
-			o.apply(ctx)
-			fmt.Println("applying")
+			o.Apply(ctx)
 			for _, o := range more {
-				fmt.Println("applying")
 				o.Apply(ctx)
 			}
 		},
 		reset: func(ctx Ctx) {
-			o.reset(ctx)
+			o.Reset(ctx)
 			for _, o := range more {
 				o.Reset(ctx)
 			}
 		},
 	}
+}
+
+//And implements Option.And
+func (o option) And(more ...Option) Option {
+	return And(o, more...)
 }
 
 //Any is a component of your app.

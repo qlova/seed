@@ -10,4 +10,5 @@ require (
 	github.com/qlova/script v0.1.0
 	github.com/qlova/seeds v0.2.2
 	github.com/tdewolff/minify/v2 v2.5.2
+	github.com/tdewolff/parse v2.3.4+incompatible
 )
