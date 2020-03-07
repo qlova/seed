@@ -265,7 +265,7 @@ func main() {
 			var _, done = DoneType[TypeName]
 			if TypeName != "" && !done {
 				fmt.Println("type " + TypeName + "Value interface {")
-				fmt.Println("\tAnyRule")
+				fmt.Println("\truleable")
 				fmt.Println("\t" + TypeName + "Value()")
 				fmt.Println("}")
 				fmt.Println("type " + TypeName + "Type string")
@@ -292,7 +292,7 @@ func main() {
 
 			if TypeName == "" {
 				fmt.Println("type " + camel + "Value interface {")
-				fmt.Println("\tAnyRule")
+				fmt.Println("\truleable")
 				fmt.Println("\t" + camel + "Value()")
 				fmt.Println("}")
 				fmt.Println("type " + camel + "Type string")

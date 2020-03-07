@@ -7,8 +7,15 @@ import (
 	"github.com/qlova/seed"
 )
 
-//Render renders a css document from the given seed as the root element.
-func Render(seed seed.Any) []byte {
+type Renderer func(root seed.Any) []byte
+
+var renderers []Renderer
+
+func RegisterRenderer(r Renderer) {
+	renderers = append(renderers, r)
+}
+
+func render(seed seed.Any) []byte {
 	var b bytes.Buffer
 	var data = seeds[seed.Root()]
 
@@ -21,7 +28,20 @@ func Render(seed seed.Any) []byte {
 	}
 
 	for _, child := range seed.Root().Children() {
-		b.Write(Render(child))
+		b.Write(render(child))
+	}
+
+	return b.Bytes()
+}
+
+//Render renders a css document from the given seed as the root element.
+func Render(root seed.Any) []byte {
+	var b bytes.Buffer
+
+	b.Write(render(root))
+
+	for _, renderer := range renderers {
+		b.Write(renderer(root))
 	}
 
 	return b.Bytes()

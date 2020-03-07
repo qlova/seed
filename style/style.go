@@ -4,11 +4,23 @@ import (
 	"fmt"
 	"image/color"
 
-	"github.com/qlova/seed"
 	"github.com/qlova/seed/css"
 )
 
-type data map[string]string
+type Unit complex64
+
+func (u Unit) String() string {
+	if u == 0 {
+		return "0"
+	}
+	return fmt.Sprintf("%v%%", real(u))
+}
+
+type data struct {
+	angle, scale float32
+
+	x, y Unit
+}
 
 var seeds = make(map[int]data)
 
@@ -22,12 +34,21 @@ func convertColor(c color.Color) string {
 	}
 }
 
+//Translate the element by the given x and y values.
+//This overrrides any previous calls to Translate.
+func Translate(x, y Unit) css.Rules {
+	return css.Rules{
+		css.Set("--x", x.String()),
+		css.Set("--y", y.String()),
+	}
+}
+
 //SetTextColor sets the color of the seed.
-func SetTextColor(c color.Color) seed.Option {
+func SetTextColor(c color.Color) css.Rule {
 	return css.Set("color", convertColor(c))
 }
 
 //SetColumn sets the seed to behave as a column.
-func SetColumn() seed.Option {
-	return css.Set("flex-direction", "column")
+func SetColumn() css.Rule {
+	return css.SetFlexDirection(css.Column)
 }

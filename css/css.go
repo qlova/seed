@@ -9,12 +9,20 @@ import (
 	"github.com/qlova/seed"
 )
 
-type AnyRule interface {
+type ruleable interface {
 	Rule() Rule
+}
+
+type Style interface {
+	Rules() Rules
 }
 
 //Rule is a single css Rule.
 type Rule string
+
+func (r Rule) Rules() Rules {
+	return Rules{r}
+}
 
 func (r Rule) Split() (property, value string) {
 	split := strings.Split(string(r), ":")
