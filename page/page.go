@@ -79,6 +79,14 @@ func (seed Seed) Goto(page Page) script.Script {
 	}
 }
 
+func OnEnter(f script.Script) seed.Option {
+	return script.On("pageenter", f)
+}
+
+func OnExit(f script.Script) seed.Option {
+	return script.On("pageexit", f)
+}
+
 type Ctx struct {
 	Seed
 	seed.Ctx
