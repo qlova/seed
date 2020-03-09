@@ -36,7 +36,9 @@ type data struct {
 
 var seeds = make(map[seed.Seed]data)
 
-func on(event string, do Script) seed.Option {
+func On(event string, do Script) seed.Option {
+	ToJavascript(do) //Catch errors and harvest pages.
+
 	return seed.NewOption(func(s seed.Any) {
 		s.Root().Use()
 		data := seeds[s.Root()]
@@ -60,11 +62,11 @@ func on(event string, do Script) seed.Option {
 }
 
 func OnClick(do Script) seed.Option {
-	return on("click", do)
+	return On("click", do)
 }
 
 func OnReady(do Script) seed.Option {
-	return on("ready", do)
+	return On("ready", do)
 }
 
 var unique int
