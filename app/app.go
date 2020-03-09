@@ -7,7 +7,6 @@ import (
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/page"
-	"github.com/qlova/seed/script"
 )
 
 //App is a webapp generator.
@@ -53,15 +52,4 @@ func New(name string, options ...seed.Option) App {
 	}
 
 	return app
-}
-
-//SetPage sets the default page for this app.
-func SetPage(page page.Page) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		if app, ok := s.(App); ok {
-			script.OnReady(func(q script.Ctx) {
-				//page.Ctx(q).SetStartingPage()
-			}).AddTo(app)
-		}
-	}, nil, nil)
 }
