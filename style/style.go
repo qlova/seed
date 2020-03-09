@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"image/color"
 
+	"github.com/qlova/seed"
+
 	"github.com/qlova/seed/css"
 )
 
@@ -16,13 +18,10 @@ func (u Unit) String() string {
 	return fmt.Sprintf("%v%%", real(u))
 }
 
-type data struct {
-	angle, scale float32
-
-	x, y Unit
+type Style interface {
+	seed.Option
+	Rules() css.Rules
 }
-
-var seeds = make(map[int]data)
 
 func convertColor(c color.Color) string {
 	var r, g, b, a = c.RGBA()
@@ -51,4 +50,14 @@ func SetTextColor(c color.Color) css.Rule {
 //SetColumn sets the seed to behave as a column.
 func SetColumn() css.Rule {
 	return css.SetFlexDirection(css.Column)
+}
+
+//SetHidden removes the seed.
+func SetHidden() css.Rule {
+	return css.SetDisplay(css.None)
+}
+
+//SetVisible sets the seed to be visible.
+func SetVisible() css.Rule {
+	return css.SetDisplay(css.Flex)
 }
