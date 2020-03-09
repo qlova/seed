@@ -30,14 +30,14 @@ func render(child seed.Any) []byte {
 		b.WriteString(`};`)
 	}
 
+	for _, child := range child.Root().Children() {
+		b.Write(render(child))
+	}
+
 	if _, ok := data.on["ready"]; ok {
 		b.Write(language.Javascript(func(q script.Ctx) {
 			fmt.Fprintf(q, `%[1]v.onready();`, child.Root().Ctx(q).Element())
 		}))
-	}
-
-	for _, child := range child.Root().Children() {
-		b.Write(render(child))
 	}
 
 	return b.Bytes()
@@ -163,15 +163,15 @@ func adopt(child seed.Any) Script {
 		}
 	}
 
+	for _, child := range child.Root().Children() {
+		s = s.Then(adopt(child))
+	}
+
 	if _, ok := data.on["ready"]; ok {
 		s = s.Then(func(q Ctx) {
 			fmt.Fprintf(q, `%[1]v.onready();`, child.Root().Ctx(q).Element())
 		})
 		delete(data.on, "ready")
-	}
-
-	for _, child := range child.Root().Children() {
-		s = s.Then(adopt(child))
 	}
 
 	return s
