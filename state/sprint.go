@@ -6,18 +6,16 @@ import (
 )
 
 //Sprintf returns a new String formatted with the provided values like fmt.Sprintf.
-func Sprintf(format string, a ...Variable) String {
+func Sprintf(format string, a ...AnyValue) String {
 	var converted = make([]interface{}, len(a))
-	var references = make([]Reference, len(a))
+	var references = make([]Value, len(a))
 	for i, arg := range a {
-		converted[i] = `"+(window.localStorage.getItem("` + arg.Ref() + `") || "")+"`
-		references[i] = a[i].GetReference()
+		converted[i] = `"+` + arg.value().getter() + `+"`
+		references[i] = a[i].value()
 	}
 
-	return String{
-		Reference:  NewVariable(format),
-		Expression: fmt.Sprintf(strconv.Quote(format), converted...),
-
-		dependencies: references,
-	}
+	var v = newValue(format)
+	v.dependencies = &references
+	v.raw = fmt.Sprintf(strconv.Quote(format), converted...)
+	return String{v}
 }

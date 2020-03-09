@@ -12,7 +12,7 @@ type harvester struct {
 	states map[State]struct {
 		set, unset script.Script
 	}
-	variables map[Reference]struct {
+	variables map[Value]struct {
 		change script.Script
 	}
 }
@@ -22,7 +22,7 @@ func newHarvester() harvester {
 		make(map[State]struct {
 			set, unset script.Script
 		}),
-		make(map[Reference]struct {
+		make(map[Value]struct {
 			change script.Script
 		}),
 	}
@@ -64,7 +64,7 @@ func init() {
 		b.WriteString(`seed.state = {};`)
 
 		for state, scripts := range harvested.states {
-			fmt.Fprintf(&b, `seed.state["%v"] = {`, state.Ref())
+			fmt.Fprintf(&b, `seed.state["%v"] = {`, state.key)
 			fmt.Fprint(&b, `set: async function() {`)
 			b.Write(script.ToJavascript(scripts.set))
 			fmt.Fprint(&b, `}, unset: async function() {`)
@@ -73,14 +73,14 @@ func init() {
 		}
 
 		for variable, scripts := range harvested.variables {
-			fmt.Fprintf(&b, `seed.state["%v"] = {`, variable.Ref())
+			fmt.Fprintf(&b, `seed.state["%v"] = {`, variable.key)
 			fmt.Fprint(&b, `changed: async function() {`)
 			b.Write(script.ToJavascript(scripts.change))
 			fmt.Fprint(&b, `}};`)
 		}
 
 		for variable, _ := range harvested.variables {
-			fmt.Fprintf(&b, `seed.state["%v"].changed();`, variable.Ref())
+			fmt.Fprintf(&b, `seed.state["%v"].changed();`, variable.key)
 		}
 
 		return b.Bytes()

@@ -11,13 +11,12 @@ import (
 
 //Int is a global Int.
 type Int struct {
-	Reference
-	Expression string
+	Value
 }
 
 //NewInt returns a reference to a new global int.
 func NewInt(initial int) Int {
-	return Int{NewVariable(strconv.Itoa(initial)), ""}
+	return Int{newValue(strconv.Itoa(initial))}
 }
 
 func (i Int) Increment() script.Script {
@@ -37,10 +36,7 @@ func (i Int) ValueFromCtx(q script.AnyCtx) script.Value {
 }
 
 func (i Int) get(q script.Ctx) script.Int {
-	if i.Expression != "" {
-		return q.Value(i.Expression).Int()
-	}
-	return q.Value(`(parseInt(localStorage.getItem("` + i.string + `")) || ` + i.initial + `)`).Int()
+	return q.Value(`parseInt(%v)`, i.Value.get(q)).Int()
 }
 
 //SetL sets the value of the Int with a literal.
@@ -51,21 +47,20 @@ func (i Int) SetL(value int) script.Script {
 }
 
 func (i Int) set(q script.Ctx, value script.Int) {
-	q.Javascript(`localStorage.setItem("` + i.string + `", (` + q.Raw(value) + `).toString()); seed.state["` + i.string + `"].changed();`)
-	i.Reference.Set(q)
+	i.Value.set(q, q.Value(`(%v).toString();`).String())
 }
 
 //SetText sets the seed's text to reflect the value of this Int.
 func (i Int) SetText() seed.Option {
 	return seed.NewOption(func(any seed.Any) {
-		if i.Expression == "" {
+		if i.raw == "" {
 			data := seeds[any.Root()]
 
 			if data.change == nil {
-				data.change = make(map[Reference]script.Script)
+				data.change = make(map[Value]script.Script)
 			}
 
-			data.change[i.Reference] = data.change[i.Reference].Then(func(q script.Ctx) {
+			data.change[i.Value] = data.change[i.Value].Then(func(q script.Ctx) {
 				fmt.Fprintf(q, `%v.innerText = (%v).toString();`, any.Root().Ctx(q).Element(), q.Raw(i.get(q)))
 			})
 			seeds[any.Root()] = data
@@ -94,5 +89,5 @@ func (i Int) For(u user.Ctx) RemoteInt {
 
 //Set sets the value of the RemoteInt.
 func (i RemoteInt) Set(value int) {
-	i.u.Execute(fmt.Sprintf(`window.localStorage.setItem("%v", %v); seed.state["%[1]v"].changed();`, i.i.string, strconv.Itoa(value)))
+	i.i.setFor(i.u, strconv.Itoa(value))
 }

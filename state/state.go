@@ -7,13 +7,11 @@ import (
 
 type State struct {
 	Bool
-
-	//ro is readonly, not is an inverted state.
-	not, ro bool
+	not bool
 }
 
-func New() State {
-	return State{Bool: NewBool()}
+func New(options ...Option) State {
+	return State{NewBool(options...), false}
 }
 
 func (state State) Toggle() script.Script {
@@ -32,14 +30,14 @@ func (state State) Set(q script.Ctx) {
 		return
 	}
 
-	var reference = state.Bool.Ref()
+	var reference = state.key
 	if state.not {
-		state.Bool.Set(q, q.False)
+		state.set(q, q.False)
 		q.Javascript(`if (seed.state["` + reference + `"])`)
 		q.Javascript(`await seed.state["` + reference + `"].unset();`)
 
 	} else {
-		state.Bool.Set(q, q.True)
+		state.set(q, q.True)
 		q.Javascript(`if (seed.state["` + reference + `"])`)
 		q.Javascript(`await seed.state["` + reference + `"].set();`)
 	}
@@ -51,13 +49,13 @@ func (state State) Unset(q script.Ctx) {
 		return
 	}
 
-	var reference = state.Bool.Ref()
+	var reference = state.key
 	if state.not {
-		state.Bool.Set(q, q.True)
+		state.set(q, q.True)
 		q.Javascript(`if (seed.state["` + reference + `"])`)
 		q.Javascript(`await seed.state["` + reference + `"].set();`)
 	} else {
-		state.Bool.Set(q, q.False)
+		state.set(q, q.False)
 		q.Javascript(`if (seed.state["` + reference + `"])`)
 		q.Javascript(`await seed.state["` + reference + `"].unset();`)
 
@@ -66,7 +64,7 @@ func (state State) Unset(q script.Ctx) {
 
 type data struct {
 	set, unset map[State]script.Script
-	change     map[Reference]script.Script
+	change     map[Value]script.Script
 }
 
 var seeds = make(map[seed.Seed]data)
