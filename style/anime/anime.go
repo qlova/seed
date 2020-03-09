@@ -97,6 +97,13 @@ func Loop() css.Rules {
 	}
 }
 
+//Reverse sets the current playing animation to play in reverse.
+func Reverse() css.Rules {
+	return css.Rules{
+		css.SetAnimationDirection(css.AlternateReverse),
+	}
+}
+
 //SetDuration sets the duration of the current playing animation.
 func SetDuration(d time.Duration) css.Rule {
 	return css.SetAnimationDuration(css.Duration(d))
