@@ -30,11 +30,13 @@ func (h harvester) harvest(page Page) seed.Seed {
 		var template = seed.New(
 			html.SetTag("template"),
 		)
+		template.Use()
 		template.AddTo(h.Parent)
 
 		var element = seed.New(
 			html.SetTag("div"),
 		)
+		element.Use()
 		element.AddTo(template)
 
 		h.Map[key] = element.Root()
