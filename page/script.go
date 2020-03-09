@@ -169,7 +169,7 @@ seed.goto.ready = async function(id) {
 			if (seed.get(saved_page) && seed.get(saved_page).enterpage)
 				seed.get(saved_page).enterpage();
 		} else {
-			seed.StartingPage = seed.LoadingPage;
+			if (seed.LoadingPage) seed.StartingPage = seed.LoadingPage;
 			await seed.goto(seed.StartingPage);
 		}
 	} else {
