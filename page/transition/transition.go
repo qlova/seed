@@ -65,7 +65,7 @@ func Out(out anime.Animation) Option {
 	}
 }
 
-func Fade() seed.Option {
+func Fade() Transition {
 	return New(
 		In(fadeIn),
 		Out(fadeOut),

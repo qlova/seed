@@ -36,9 +36,9 @@ func (h Hex) RGBA() (r, g, b, a uint32) {
 	hex.Decode(c[:], []byte(h[1:]))
 	r, g, b, a = uint32(c[0]), uint32(c[1]), uint32(c[2]), uint32(c[3])
 	if a != 255 {
-		r = uint32((float64(r) / 255) * 65535)
-		g = uint32((float64(g) / 255) * 65535)
-		b = uint32((float64(b) / 255) * 65535)
+		r = uint32((float64(r)/255)*65535) * a
+		g = uint32((float64(g)/255)*65535) * a
+		b = uint32((float64(b)/255)*65535) * a
 		a = uint32((float64(a) / 255) * 65535)
 	}
 	return

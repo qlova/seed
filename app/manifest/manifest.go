@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"path/filepath"
 
 	//Need image support for working with mainfest icons.
 	_ "image/jpeg"
@@ -92,7 +93,7 @@ func (manifest *Manifest) SetIcon(path string) {
 
 	var icon Icon
 	icon.Source = "/" + path
-	icon.Sizes = getImageDimension("assets/" + path)
+	icon.Sizes = getImageDimension(filepath.Dir(os.Args[0]) + path)
 
 	manifest.Icons = append(manifest.Icons, icon)
 }

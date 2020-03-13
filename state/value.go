@@ -28,6 +28,16 @@ type Value struct {
 	dependencies *[]Value
 }
 
+//RawValue returns a raw value from a JS expression.
+func RawValue(expr string) Value {
+	id++
+	return Value{
+		key: "state." + base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes()),
+		ro:  true,
+		raw: expr,
+	}
+}
+
 var id int64
 
 //NewValue returns a new state value.
@@ -52,13 +62,15 @@ func (v Value) setFor(u user.Ctx, value string) {
 	if !v.ro {
 		u.Execute(fmt.Sprintf(`%v.setItem("%v", %v); seed.state["%[2]v"].changed();`, v.storage, v.key, strconv.Quote(value)))
 	}
+	u.Execute(fmt.Sprintf(`seed.state["%v"].changed();`, v.key))
 }
 
 //Set the value.
 func (v Value) set(q script.Ctx, value script.String) {
 	if !v.ro {
-		q.Javascript(`%v.setItem("%v", %v); seed.state["%[2]v"].changed();`, v.storage, v.key, q.Raw(value))
+		q.Javascript(`%v.setItem("%v", %v);`, v.storage, v.key, q.Raw(value))
 	}
+	q.Javascript(`seed.state["%v"].changed();`, v.key)
 }
 
 //Get the value.

@@ -24,10 +24,18 @@ func render(child seed.Any) []byte {
 
 	for event, handler := range data.on {
 		b.Write(language.Javascript(func(q script.Ctx) {
-			fmt.Fprintf(q, `%v.on%v = async function() {`, child.Root().Ctx(q).Element(), event)
+			if event == "press" {
+				fmt.Fprintf(q, `seed.op(%v, async function() {`, child.Root().Ctx(q).Element())
+			} else {
+				fmt.Fprintf(q, `%v.on%v = async function() {`, child.Root().Ctx(q).Element(), event)
+			}
 			handler(Ctx{q})
+			if event == "press" {
+				fmt.Fprint(q, `});`)
+			} else {
+				fmt.Fprint(q, `};`)
+			}
 		}))
-		b.WriteString(`};`)
 	}
 
 	for _, child := range child.Root().Children() {
@@ -49,6 +57,45 @@ func Render(root seed.Any) []byte {
 
 	b.WriteString(`seed = {};
 seed.production = (location.hostname != "localhost" && location.hostname != "127.0.0.1");
+
+seed.op = function(element, func, propagate) {
+	let handler = async function(event) {
+		await func(event);
+	};
+	
+	let moved = false;
+	let point = [0, 0];
+	
+	element.ontouchstart = function(e) {
+		var changedTouch = event.changedTouches[0];
+			point[0]  = changedTouch.clientX;
+			point[1]  = changedTouch.clientY;
+	};
+	
+	element.ontouchmove = function(event) {
+		var changedTouch = event.changedTouches[0];
+		var elem = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
+					
+		if (elem != event.target) moved = true;
+					
+		let a = changedTouch.clientX - point[0];
+		let b = changedTouch.clientY - point[1];
+		if ((a*a + b*b) > 50*50) moved = true;
+	};
+	
+	element.ontouchend = async function(ev) {
+		if (ev.stopPropagation && !propagate) ev.stopPropagation(); 
+		ev.preventDefault(); 
+		if (moved) {
+			moved = false; 
+			return; 
+		}
+		ev = ev.changedTouches[0];
+		await handler(ev);
+	};
+
+	element.onclick = handler;
+}
 
 seed.get = function(id) {
 	if (id in seed.get.cache) {
@@ -154,9 +201,17 @@ func adopt(child seed.Any) Script {
 
 	for event, handler := range data.on {
 		s = s.Then(func(q Ctx) {
-			fmt.Fprintf(q, `%v.on%v = async function() {`, child.Root().Ctx(q).Element(), event)
+			if event == "press" {
+				fmt.Fprintf(q, `seed.op(%v, async function() {`, child.Root().Ctx(q).Element())
+			} else {
+				fmt.Fprintf(q, `%v.on%v = async function() {`, child.Root().Ctx(q).Element(), event)
+			}
 			handler(q)
-			fmt.Fprint(q, `};`)
+			if event == "press" {
+				fmt.Fprint(q, `});`)
+			} else {
+				fmt.Fprint(q, `};`)
+			}
 		})
 		if event != "ready" {
 			delete(data.on, event)

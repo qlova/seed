@@ -3,6 +3,7 @@ package textbox
 import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/html"
+	"github.com/qlova/seed/html/attr"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/state"
 )
@@ -21,4 +22,9 @@ func Var(text state.String, options ...seed.Option) seed.Seed {
 			text.Set(q.Value(`%v.value`, c.Ctx(q).Element()).String())(q)
 		}))
 	}).And(options...))
+}
+
+//SetPlaceholder sets the placeholder of the textbox.
+func SetPlaceholder(placeholder string) seed.Option {
+	return attr.Set("placeholder", placeholder)
 }

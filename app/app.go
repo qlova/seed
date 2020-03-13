@@ -7,12 +7,16 @@ import (
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/page"
+	"github.com/qlova/seed/state"
 )
 
-//App is a webapp generator.
 type App struct {
 	seed.Seed
+	*app
+}
 
+//App is a webapp generator.
+type app struct {
 	manifest manifest.Manifest
 	worker   service.Worker
 
@@ -20,22 +24,28 @@ type App struct {
 
 	name string
 
-	page page.Seed
+	page, loadingPage page.Page
 
 	description string
+}
+
+//Installed is true when the app is installed.
+var Installed = state.State{
+	Bool: state.Bool{
+		Value: state.RawValue("(window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone)"),
+	},
 }
 
 //New returns a new App.
 func New(name string, options ...seed.Option) App {
 	var document = html.New()
 
-	var app = App{
-		Seed:     document.Body,
+	var app = App{document.Body, &app{
 		document: document,
 		name:     name,
 		manifest: manifest.New(),
 		worker:   service.NewWorker(),
-	}
+	}}
 
 	document.Body.Add(css.Set("display", "flex"))
 	document.Body.Add(css.Set("flex-direction", "column"))

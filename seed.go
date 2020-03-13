@@ -4,10 +4,17 @@ import (
 	"encoding/base64"
 	"fmt"
 	"math/big"
+	"os"
+	"path/filepath"
 
 	"github.com/qlova/script"
 	"github.com/qlova/script/language"
 )
+
+//Dir is the working directory of the seed.
+var Dir = filepath.Dir(os.Args[0])
+
+const Production = true
 
 //Data is any data associated with a seed.
 //You must provide a way for your data to be deleted.

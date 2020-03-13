@@ -18,6 +18,11 @@ type Animation struct {
 	options   []seed.Option
 }
 
+func (anim Animation) Reverse() Animation {
+	anim.options = append(anim.options, Reverse())
+	return anim
+}
+
 func (anim Animation) AddTo(c seed.Any) {
 	data := seeds[c.Root()]
 	data.animations = append(data.animations, anim)

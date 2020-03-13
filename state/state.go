@@ -3,6 +3,7 @@ package state
 import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/user"
 )
 
 type State struct {
@@ -12,6 +13,11 @@ type State struct {
 
 func New(options ...Option) State {
 	return State{NewBool(options...), false}
+}
+
+func (state State) Not() State {
+	state.not = !state.not
+	return state
 }
 
 func (state State) Toggle() script.Script {
@@ -26,18 +32,18 @@ func (state State) Toggle() script.Script {
 
 //Set sets the state to be active.
 func (state State) Set(q script.Ctx) {
-	if state.ro {
-		return
-	}
-
 	var reference = state.key
 	if state.not {
-		state.set(q, q.False)
+		if !state.ro {
+			state.set(q, q.False)
+		}
 		q.Javascript(`if (seed.state["` + reference + `"])`)
 		q.Javascript(`await seed.state["` + reference + `"].unset();`)
 
 	} else {
-		state.set(q, q.True)
+		if !state.ro {
+			state.set(q, q.True)
+		}
 		q.Javascript(`if (seed.state["` + reference + `"])`)
 		q.Javascript(`await seed.state["` + reference + `"].set();`)
 	}
@@ -45,10 +51,6 @@ func (state State) Set(q script.Ctx) {
 
 //Unset sets the state to not be active.
 func (state State) Unset(q script.Ctx) {
-	if state.ro {
-		return
-	}
-
 	var reference = state.key
 	if state.not {
 		state.set(q, q.True)
@@ -60,6 +62,19 @@ func (state State) Unset(q script.Ctx) {
 		q.Javascript(`await seed.state["` + reference + `"].unset();`)
 
 	}
+}
+
+type RemoteState struct {
+	u user.Ctx
+	s State
+}
+
+func (s State) For(u user.Ctx) RemoteState {
+	return RemoteState{u, s}
+}
+
+func (s RemoteState) Set() {
+	s.s.setFor(s.u, "true")
 }
 
 type data struct {

@@ -47,7 +47,7 @@ func (i Int) SetL(value int) script.Script {
 }
 
 func (i Int) set(q script.Ctx, value script.Int) {
-	i.Value.set(q, q.Value(`(%v).toString();`).String())
+	i.Value.set(q, q.Value(`(%v).toString()`, value).String())
 }
 
 //SetText sets the seed's text to reflect the value of this Int.

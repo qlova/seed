@@ -5,12 +5,6 @@ import (
 	"github.com/qlova/seed/script"
 )
 
-func Goto(page Seed) script.Script {
-	return func(q script.Ctx) {
-
-	}
-}
-
 func init() {
 	script.RegisterRenderer(func(s seed.Any) []byte {
 		return []byte(`
@@ -169,7 +163,6 @@ seed.goto.ready = async function(id) {
 			if (seed.get(saved_page) && seed.get(saved_page).enterpage)
 				seed.get(saved_page).enterpage();
 		} else {
-			if (seed.LoadingPage) seed.StartingPage = seed.LoadingPage;
 			await seed.goto(seed.StartingPage);
 		}
 	} else {

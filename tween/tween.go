@@ -18,6 +18,17 @@ func This() seed.Option {
 	})
 }
 
+//Track tracks this seed with a key, only one seed of any given key should be visible at a time.
+func Track(key string) seed.Option {
+	return seed.Do(func(c seed.Seed) {
+		c.Add(
+			script.Require("/flipping.js", js),
+
+			attr.Set("data-flip-key", key),
+		)
+	})
+}
+
 //Tween attempts to tween any elements with This() options that have changed position, scale or rotation.
 func Tween(s script.Script) script.Script {
 	return func(q script.Ctx) {

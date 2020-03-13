@@ -49,16 +49,36 @@ func On(event string, do Script) seed.Option {
 		data.on[event] = data.on[event].Then(do)
 	}, func(s seed.Ctx) {
 		s.Root().Use()
-		fmt.Fprintf(s.Ctx, `%v.on%v = async function() {`, s.Element(), event)
+		if event == "press" {
+			fmt.Fprintf(s.Ctx, `seed.op(%v, async function() {`, s.Element())
+		} else {
+			fmt.Fprintf(s.Ctx, `%v.on%v = async function() {`, s.Element(), event)
+		}
 		do(Ctx{s.Ctx})
-		fmt.Fprint(s.Ctx, `};`)
+		if event == "press" {
+			fmt.Fprint(s.Ctx, `});`)
+		} else {
+			fmt.Fprint(s.Ctx, `};`)
+		}
 	}, func(s seed.Ctx) {
 		s.Root().Use()
 		data := seeds[s.Root()]
-		fmt.Fprintf(s.Ctx, `%v.on%v = async function() {`, s.Element(), event)
+		if event == "press" {
+			fmt.Fprintf(s.Ctx, `seed.op(%v, async function() {`, s.Element())
+		} else {
+			fmt.Fprintf(s.Ctx, `%v.on%v = async function() {`, s.Element(), event)
+		}
 		s.Ctx.Write(ToJavascript(data.on[event]))
-		fmt.Fprint(s.Ctx, `};`)
+		if event == "press" {
+			fmt.Fprint(s.Ctx, `});`)
+		} else {
+			fmt.Fprint(s.Ctx, `};`)
+		}
 	})
+}
+
+func OnPress(do Script) seed.Option {
+	return On("press", do)
 }
 
 func OnClick(do Script) seed.Option {

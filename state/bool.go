@@ -26,5 +26,5 @@ func (b Bool) get(q script.Ctx) script.Bool {
 
 //Set the global.Bool to be script.Bool
 func (b Bool) set(q script.Ctx, value script.Bool) {
-	b.Value.set(q, q.Value(`(%v).toString();`).String())
+	b.Value.set(q, q.Value(`(%v).toString()`, value).String())
 }

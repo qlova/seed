@@ -69,7 +69,17 @@ func init() {
 			b.Write(script.ToJavascript(scripts.set))
 			fmt.Fprint(&b, `}, unset: async function() {`)
 			b.Write(script.ToJavascript(scripts.unset))
-			fmt.Fprint(&b, `}};`)
+			fmt.Fprint(&b, `}, changed: async function() {}};`)
+		}
+
+		for state := range harvested.states {
+			b.Write(script.ToJavascript(func(q script.Ctx) {
+				q.If(state, func() {
+					state.Set(q)
+				}).Else(func() {
+					state.Unset(q)
+				}).End()
+			}))
 		}
 
 		for variable, scripts := range harvested.variables {

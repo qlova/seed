@@ -57,7 +57,7 @@ func (app App) Launch() error {
 
 	handler := app.Handler()
 
-	launch(":1234")
+	go launch(":1234")
 
 	return http.ListenAndServe(":1234", handler)
 }

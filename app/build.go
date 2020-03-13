@@ -1,13 +1,17 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/app/manifest"
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/html/attr"
+	"github.com/qlova/seed/page"
 	"github.com/qlova/seed/script"
 
+	"github.com/qlova/seed/s/column"
 	"github.com/qlova/seed/s/html/link"
 	"github.com/qlova/seed/s/html/meta"
 	"github.com/qlova/seed/s/html/style"
@@ -19,6 +23,20 @@ import (
 
 //Build builds the app.
 func (app App) build() {
+	app.document.Body.Add(
+		column.New(seed.Do(func(c seed.Seed) {
+			app.loadingPage.Page(page.Scope{Seed: c})
+
+			c.Add(script.OnReady(func(q script.Ctx) {
+				fmt.Fprintf(q, `seed.LoadingPage = seed.get("%v"); seed.CurrentPage = seed.LoadingPage;`, html.ID(c))
+			}))
+		})),
+	)
+
+	app.document.Body.Add(
+		page.Harvest(app.page),
+	)
+
 	var onready = string(script.Render(app))
 	var scripts = script.Scripts(app)
 
@@ -43,6 +61,8 @@ func (app App) build() {
 		meta.Key("apple-mobile-web-app-status-bar-style", "black"),
 		meta.Key("apple-mobile-web-app-title", app.name),
 		meta.Key("twitter:card", "app"),
+
+		meta.Key(`theme-color`, app.manifest.ThemeColor),
 
 		title.New(app.name),
 
@@ -80,7 +100,9 @@ func (app App) build() {
 
 		//Add js.
 		script_html.New(
-			html.Set(`document.addEventListener('DOMContentLoaded', async function() { `+onready+`
+			html.Set(`document.addEventListener('DOMContentLoaded', async function() { 
+
+				`+onready+`
 
 
 				if ('serviceWorker' in navigator) {
@@ -119,6 +141,8 @@ func (app App) build() {
 						
 					});
 				}
+				
+				
 
 				document.addEventListener("contextmenu", function (e) {
 					e.preventDefault();

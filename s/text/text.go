@@ -1,19 +1,20 @@
 package text
 
 import (
-	"image/color"
+	"strings"
+
+	html_go "html"
 
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/state"
-	"github.com/qlova/seed/style"
 )
 
 //New returns a new text widget.
 func New(text string, options ...seed.Option) seed.Seed {
 	return seed.New(
 		html.SetTag("p"),
-		html.SetInnerText(text).And(options...),
+		Set(text).And(options...),
 	)
 }
 
@@ -22,12 +23,12 @@ func Var(text state.String, options ...seed.Option) seed.Seed {
 	return New("", text.SetText().And(options...))
 }
 
-//SetColor sets the color of the text.
-func SetColor(c color.Color) seed.Option {
-	return style.SetTextColor(c)
-}
-
 //Set sets the text content of the text.
 func Set(value string) seed.Option {
-	return html.SetInnerText(value)
+	value = html_go.EscapeString(value)
+	value = strings.Replace(value, "\n", "<br>", -1)
+	value = strings.Replace(value, "  ", "&nbsp;&nbsp;", -1)
+	value = strings.Replace(value, "\t", "&emsp;", -1)
+
+	return html.Set(value)
 }

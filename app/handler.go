@@ -2,11 +2,15 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
 
 	"github.com/NYTimes/gziphandler"
+	//"github.com/qlova/seed/inbed"
+
+	"github.com/qlova/seed/asset/inbed"
 	"github.com/qlova/seed/script"
 )
 
@@ -32,6 +36,15 @@ func isLocal(r *http.Request) (local bool) {
 
 //Handler returns an http.Handler that serve's the app.
 func (app App) Handler() http.Handler {
+
+	var AssetsServer = inbed.FileSystem{}
+
+	inbed.File("assets")
+
+	if err := inbed.Done(); err != nil {
+		log.Println(err)
+	}
+
 	router := http.NewServeMux()
 
 	app.build()
@@ -53,6 +66,10 @@ func (app App) Handler() http.Handler {
 		w.Write(icon)
 		return
 	})))
+
+	router.Handle("/assets/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		AssetsServer.ServeHTTP(w, r)
+	}))
 
 	router.Handle("/call/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		script.Handler(w, r, r.URL.Path[6:])
