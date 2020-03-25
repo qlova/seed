@@ -1,15 +1,17 @@
 package html
 
 import (
-	"fmt"
 	"html"
 	"strconv"
 
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/css"
+	"github.com/qlova/seed/script"
 )
 
 type data struct {
+	seed.Data
+
 	id  *string
 	tag string
 
@@ -26,106 +28,142 @@ var seeds = make(map[seed.Seed]data)
 
 //SetID returns an option that sets the HTML id associated with the seed.
 func SetID(id string) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		data := seeds[s.Root()]
-		data.id = &id
-		seeds[s.Root()] = data
-	}, func(s seed.Ctx) {
-		fmt.Fprintf(s.Ctx, `%v.id = %v;`, s.Element(), strconv.Quote(id))
-	}, func(s seed.Ctx) {
-		data := seeds[s.Root()]
-		if data.id != nil {
-			fmt.Fprintf(s.Ctx, `%v.id = %v;`, s.Element(), strconv.Quote(*data.id))
-		} else {
-			fmt.Fprintf(s.Ctx, `%v.id = %v;`, s.Element(), s.Root())
+	return seed.NewOption(func(c seed.Seed) {
+		var data data
+		c.Read(&data)
+
+		switch q := c.(type) {
+		case script.Seed:
+			q.Javascript(`%v.id = %v;`, q.Element(), strconv.Quote(id))
+		case script.Undo:
+			if data.id != nil {
+				q.Javascript(`%v.id = %v;`, q.Element(), strconv.Quote(*data.id))
+			} else {
+				q.Javascript(`%v.id = %v;`, q.Element(), c.ID())
+			}
+		default:
+			data.id = &id
 		}
+
+		c.Write(data)
 	})
 }
 
 //AddClass adds a class to the html element.
 func AddClass(class string) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		data := seeds[s.Root()]
-		data.classes = append(data.classes, class)
-		seeds[s.Root()] = data
-	}, func(s seed.Ctx) {
-		fmt.Fprintf(s.Ctx, `%v.classList.add(%v);`, s.Element(), strconv.Quote(class))
-	}, func(s seed.Ctx) {
-		fmt.Fprintf(s.Ctx, `%v.classList.remove(%v);`, s.Element(), strconv.Quote(class))
+	return seed.NewOption(func(c seed.Seed) {
+		var data data
+		c.Read(&data)
+
+		switch q := c.(type) {
+		case script.Seed:
+			q.Javascript(`%v.classList.add(%v);`, q.Element(), strconv.Quote(class))
+		case script.Undo:
+			q.Javascript(`%v.classList.remove(%v);`, q.Element(), strconv.Quote(class))
+		default:
+			data.classes = append(data.classes, class)
+		}
+
+		c.Write(data)
 	})
 }
 
 //SetTag returns an option that sets the HTML tag associated with the seed.
 func SetTag(tag string) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		data := seeds[s.Root()]
-		data.tag = tag
-		seeds[s.Root()] = data
-	}, func(s seed.Ctx) {
-		fmt.Fprintf(s.Ctx, `%v = document.createElement("%v"); %v.id = "temp%v";`, s.Element(), tag, s.Element(), s.Root())
-	}, func(s seed.Ctx) {
-		data := seeds[s.Root()]
-		fmt.Fprintf(s.Ctx, `%v = document.createElement("%v"); %v.id = "temp%v";`, s.Element(), data.tag, s.Element(), s.Root())
+	return seed.NewOption(func(c seed.Seed) {
+		var data data
+		c.Read(&data)
+
+		switch q := c.(type) {
+		case script.Seed:
+			q.Javascript(`%v = document.createElement("%v"); %v.id = "temp%v";`, q.Element(), tag, q.Element(), c.ID())
+		case script.Undo:
+			q.Javascript(`%v = document.createElement("%v"); %v.id = "temp%v";`, q.Element(), data.tag, q.Element(), c.ID())
+		default:
+			data.tag = tag
+		}
+
+		c.Write(data)
 	})
 }
 
 //Set returns an option that sets the HTML associated with the seed.
 func Set(html string) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		data := seeds[s.Root()]
-		data.innerHTML = html
-		seeds[s.Root()] = data
-	}, func(s seed.Ctx) {
-		fmt.Fprintf(s.Ctx, `%v.innerHTML = %v;`, s.Element(), strconv.Quote(html))
-	}, func(s seed.Ctx) {
-		data := seeds[s.Root()]
-		fmt.Fprintf(s.Ctx, `%v.innerHTML = %v;`, s.Element(), strconv.Quote(data.innerHTML))
+	return seed.NewOption(func(c seed.Seed) {
+		var data data
+		c.Read(&data)
+
+		switch q := c.(type) {
+		case script.Seed:
+			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(html))
+		case script.Undo:
+			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.innerHTML))
+		default:
+			data.innerHTML = html
+		}
+
+		c.Write(data)
 	})
 }
 
 //SetAttribute returns an option that sets an HTML attribute of this seed.
 func SetAttribute(name, value string) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		data := seeds[s.Root()]
-		if data.attributes == nil {
-			data.attributes = make(map[string]string)
+	return seed.NewOption(func(c seed.Seed) {
+		var data data
+		c.Read(&data)
+
+		switch q := c.(type) {
+		case script.Seed:
+			q.Javascript(`%v.setAttribute(%v, %v)`, q.Element(), strconv.Quote(name), strconv.Quote(value))
+		case script.Undo:
+			q.Javascript(`%v.setAttribute(%v, %v)`, q.Element(), strconv.Quote(name), data.attributes[name])
+		default:
+			if data.attributes == nil {
+				data.attributes = make(map[string]string)
+			}
+			data.attributes[name] = value
 		}
-		data.attributes[name] = value
-		seeds[s.Root()] = data
-	}, func(s seed.Ctx) {
-		fmt.Fprintf(s.Ctx, `%v.setAttribute(%v, %v)`, s.Element(), strconv.Quote(name), strconv.Quote(value))
-	}, func(s seed.Ctx) {
-		data := seeds[s.Root()]
-		fmt.Fprintf(s.Ctx, `%v.setAttribute(%v, %v)`, s.Element(), strconv.Quote(name), data.attributes[name])
+
+		c.Write(data)
 	})
 }
 
 //SetStyle returns an option that sets the inline HTML style of the seed.
 func SetStyle(property, value string) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		data := seeds[s.Root()]
-		if data.style == nil {
-			data.style = make(map[string]string)
+	return seed.NewOption(func(c seed.Seed) {
+		var data data
+		c.Read(&data)
+
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			css.Set(property, value).AddTo(c)
+		default:
+			if data.style == nil {
+				data.style = make(map[string]string)
+			}
+			data.style[property] = value
 		}
-		data.style[property] = value
-		seeds[s.Root()] = data
-	}, func(s seed.Ctx) {
-		css.Set(property, value).Apply(s)
-	}, func(s seed.Ctx) {
-		css.Set(property, value).Reset(s)
+
+		c.Write(data)
 	})
 }
 
 //SetInnerText returns an option that sets the HTML innerText associated with the seed.
 func SetInnerText(text string) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		data := seeds[s.Root()]
-		data.innerHTML = html.EscapeString(text)
-		seeds[s.Root()] = data
-	}, func(s seed.Ctx) {
-		fmt.Fprintf(s.Ctx, `%v.innerText = %v;`, s.Element(), strconv.Quote(text))
-	}, func(s seed.Ctx) {
-		data := seeds[s.Root()]
-		fmt.Fprintf(s.Ctx, `%v.innerHTML = %v;`, s.Element(), strconv.Quote(data.innerHTML))
+	return seed.NewOption(func(c seed.Seed) {
+
+		var data data
+		c.Read(&data)
+
+		switch q := c.(type) {
+		case script.Seed:
+			q.Javascript(`%v.innerText = %v;`, q.Element(), strconv.Quote(text))
+		case script.Undo:
+			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.innerHTML))
+		default:
+			data.innerHTML = html.EscapeString(text)
+		}
+
+		c.Write(data)
 	})
 }

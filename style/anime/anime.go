@@ -23,36 +23,17 @@ func (anim Animation) Reverse() Animation {
 	return anim
 }
 
-func (anim Animation) AddTo(c seed.Any) {
-	data := seeds[c.Root()]
+func (anim Animation) AddTo(c seed.Seed) {
+	var data data
+	c.Read(&data)
+
 	data.animations = append(data.animations, anim)
-	seeds[c.Root()] = data
+
+	c.Write(data)
 
 	css.SetAnimationName(css.AnimationName("a" + strconv.Itoa(anim.id))).AddTo(c)
 	for _, o := range anim.options {
 		o.AddTo(c)
-	}
-}
-
-func (anim Animation) Apply(c seed.Ctx) {
-	data := seeds[c.Root()]
-	data.animations = append(data.animations, anim)
-	seeds[c.Root()] = data
-
-	css.SetAnimationName(css.AnimationName("a" + strconv.Itoa(anim.id))).Apply(c)
-	for _, o := range anim.options {
-		o.Apply(c)
-	}
-}
-
-func (anim Animation) Reset(c seed.Ctx) {
-	data := seeds[c.Root()]
-	data.animations = append(data.animations, anim)
-	seeds[c.Root()] = data
-
-	css.SetAnimationName(css.AnimationName("a" + strconv.Itoa(anim.id))).Reset(c)
-	for _, o := range anim.options {
-		o.Reset(c)
 	}
 }
 
@@ -61,6 +42,8 @@ func (anim Animation) And(more ...seed.Option) seed.Option {
 }
 
 type data struct {
+	seed.Data
+
 	animations []Animation
 }
 

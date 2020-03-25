@@ -37,5 +37,5 @@ func (Other) Page(p page.Seed) {
 }
 
 func main() {
-	app.New("Transitions", page.Set(Home{})).Launch()
+	app.New("Transitions", app.SetPage(Home{})).Launch()
 }

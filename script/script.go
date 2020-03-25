@@ -29,65 +29,16 @@ func CtxFrom(ctx script.AnyCtx) Ctx {
 }
 
 type data struct {
+	seed.Data
+
+	id string
+
 	on map[string]Script
 
 	requires map[string]string
 }
 
 var seeds = make(map[seed.Seed]data)
-
-func On(event string, do Script) seed.Option {
-	ToJavascript(do) //Catch errors and harvest pages.
-
-	return seed.NewOption(func(s seed.Any) {
-		s.Root().Use()
-		data := seeds[s.Root()]
-		if data.on == nil {
-			data.on = make(map[string]Script)
-			seeds[s.Root()] = data
-		}
-		data.on[event] = data.on[event].Then(do)
-	}, func(s seed.Ctx) {
-		s.Root().Use()
-		if event == "press" {
-			fmt.Fprintf(s.Ctx, `seed.op(%v, async function() {`, s.Element())
-		} else {
-			fmt.Fprintf(s.Ctx, `%v.on%v = async function() {`, s.Element(), event)
-		}
-		do(Ctx{s.Ctx})
-		if event == "press" {
-			fmt.Fprint(s.Ctx, `});`)
-		} else {
-			fmt.Fprint(s.Ctx, `};`)
-		}
-	}, func(s seed.Ctx) {
-		s.Root().Use()
-		data := seeds[s.Root()]
-		if event == "press" {
-			fmt.Fprintf(s.Ctx, `seed.op(%v, async function() {`, s.Element())
-		} else {
-			fmt.Fprintf(s.Ctx, `%v.on%v = async function() {`, s.Element(), event)
-		}
-		s.Ctx.Write(ToJavascript(data.on[event]))
-		if event == "press" {
-			fmt.Fprint(s.Ctx, `});`)
-		} else {
-			fmt.Fprint(s.Ctx, `};`)
-		}
-	})
-}
-
-func OnPress(do Script) seed.Option {
-	return On("press", do)
-}
-
-func OnClick(do Script) seed.Option {
-	return On("click", do)
-}
-
-func OnReady(do Script) seed.Option {
-	return On("ready", do)
-}
 
 var unique int
 

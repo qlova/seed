@@ -18,14 +18,15 @@ func newHarvester() harvester {
 	}
 }
 
-func (h harvester) harvest(s seed.Any) map[int]Animation {
-	var data = seeds[s.Root()]
+func (h harvester) harvest(c seed.Seed) map[int]Animation {
+	var data data
+	c.Read(&data)
 
 	for _, anim := range data.animations {
 		h.animations[anim.id] = anim
 	}
 
-	for _, child := range s.Root().Children() {
+	for _, child := range c.Children() {
 		h.harvest(child)
 	}
 
@@ -33,8 +34,8 @@ func (h harvester) harvest(s seed.Any) map[int]Animation {
 }
 
 func init() {
-	css.RegisterRenderer(func(s seed.Any) []byte {
-		var harvested = newHarvester().harvest(s)
+	css.RegisterRenderer(func(c seed.Seed) []byte {
+		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
 		for _, anim := range harvested {

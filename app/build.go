@@ -22,10 +22,15 @@ import (
 )
 
 //Build builds the app.
-func (app App) build() {
+func (a App) build() {
+	var app app
+	a.Seed.Read(&app)
+
 	app.document.Body.Add(
 		column.New(seed.Do(func(c seed.Seed) {
-			app.loadingPage.Page(page.Scope{Seed: c})
+			if app.loadingPage != nil {
+				app.loadingPage.Page(page.Scope(c))
+			}
 
 			c.Add(script.OnReady(func(q script.Ctx) {
 				fmt.Fprintf(q, `seed.LoadingPage = seed.get("%v"); seed.CurrentPage = seed.LoadingPage;`, html.ID(c))
@@ -37,8 +42,8 @@ func (app App) build() {
 		page.Harvest(app.page),
 	)
 
-	var onready = string(script.Render(app))
-	var scripts = script.Scripts(app)
+	var onready = string(script.Render(a))
+	var scripts = script.Scripts(a)
 
 	app.document.Head.Add(
 		meta.Charset("utf-8"),
@@ -88,7 +93,7 @@ func (app App) build() {
 			))
 		})),
 
-		style.New(html.Set(CSS+string(css.Render(app)))),
+		style.New(html.Set(CSS+string(css.Render(a)))),
 
 		//Add external scripts.
 		repeater.New(scripts, repeater.Do(func(c repeater.Seed) {

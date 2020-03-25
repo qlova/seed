@@ -78,6 +78,8 @@ func (s RemoteState) Set() {
 }
 
 type data struct {
+	seed.Data
+
 	set, unset map[State]script.Script
 	change     map[Value]script.Script
 }
@@ -86,26 +88,39 @@ var seeds = make(map[seed.Seed]data)
 
 //If only applies its options if the state is active.
 func (state State) If(options ...seed.Option) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		data := seeds[s.Root()]
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("state.State.If must not be called on a script.Seed")
+		}
+
+		var data data
+		c.Read(&data)
+
 		if data.set == nil {
 			data.set = make(map[State]script.Script)
 			data.unset = make(map[State]script.Script)
 		}
+
 		data.set[state] = data.set[state].Then(func(q script.Ctx) {
 			for _, option := range options {
-				option.Apply(s.Root().Ctx(q))
+				if other, ok := option.(seed.Seed); ok {
+					q.Scope(other).AddTo(q.Scope(c))
+				} else {
+					option.AddTo(q.Scope(c))
+				}
 			}
 		})
 		data.unset[state] = data.unset[state].Then(func(q script.Ctx) {
 			for _, option := range options {
-				option.Reset(s.Root().Ctx(q))
+				if other, ok := option.(seed.Seed); ok {
+					q.Scope(c).Undo(q.Scope(other))
+				} else {
+					q.Scope(c).Undo(option)
+				}
 			}
 		})
-		seeds[s.Root()] = data
-	}, func(s seed.Ctx) {
-		panic("nested state.If is not allowed")
-	}, func(s seed.Ctx) {
-		panic("nested state.If is not allowed")
+
+		c.Write(data)
 	})
 }

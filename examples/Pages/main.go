@@ -31,5 +31,5 @@ func (Other) Page(p page.Seed) {
 }
 
 func main() {
-	app.New("Pages", page.Set(Home{})).Launch()
+	app.New("Pages", app.SetPage(Home{})).Launch()
 }

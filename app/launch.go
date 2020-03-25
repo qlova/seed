@@ -1,6 +1,7 @@
 package app
 
 import (
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -23,10 +24,8 @@ var browsers = []string{
 	"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
 }
 
-func launch(hostport string) {
+func launch(url string) {
 	var err error
-
-	url := "http://localhost" + hostport
 
 	/*if launchNative(url) == nil {
 		return
@@ -57,7 +56,12 @@ func (app App) Launch() error {
 
 	handler := app.Handler()
 
-	go launch(":1234")
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		return err
+	}
 
-	return http.ListenAndServe(":1234", handler)
+	go launch("http://" + listener.Addr().String())
+
+	return http.Serve(listener, handler)
 }

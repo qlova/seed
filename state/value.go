@@ -28,14 +28,18 @@ type Value struct {
 	dependencies *[]Value
 }
 
-//RawValue returns a raw value from a JS expression.
-func RawValue(expr string) Value {
+//Raw returns a raw value from a JS expression.
+func Raw(expr string, options ...Option) Value {
 	id++
-	return Value{
+	v := Value{
 		key: "state." + base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes()),
 		ro:  true,
 		raw: expr,
 	}
+	for _, o := range options {
+		o(&v)
+	}
+	return v
 }
 
 var id int64
@@ -62,7 +66,7 @@ func (v Value) setFor(u user.Ctx, value string) {
 	if !v.ro {
 		u.Execute(fmt.Sprintf(`%v.setItem("%v", %v); seed.state["%[2]v"].changed();`, v.storage, v.key, strconv.Quote(value)))
 	}
-	u.Execute(fmt.Sprintf(`seed.state["%v"].changed();`, v.key))
+	u.Execute(fmt.Sprintf(`if (seed.state["%[1]v"]) seed.state["%[1]v"].changed();`, v.key))
 }
 
 //Set the value.
@@ -70,7 +74,7 @@ func (v Value) set(q script.Ctx, value script.String) {
 	if !v.ro {
 		q.Javascript(`%v.setItem("%v", %v);`, v.storage, v.key, q.Raw(value))
 	}
-	q.Javascript(`seed.state["%v"].changed();`, v.key)
+	q.Javascript(`if (seed.state["%[1]v"]) seed.state["%[1]v"].changed();`, v.key)
 }
 
 //Get the value.

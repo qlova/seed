@@ -19,30 +19,15 @@ type Font struct {
 }
 
 //AddTo impliments seed.Option
-func (f Font) AddTo(c seed.Any) {
-	data := seeds[c.Root()]
+func (f Font) AddTo(c seed.Seed) {
+	var data data
+	c.Read(&data)
+
 	data.fonts = append(data.fonts, f)
-	seeds[c.Root()] = data
+
+	c.Write(data)
 
 	css.SetFontFamily(f).And(asset.New(f.path)).AddTo(c)
-}
-
-//Apply impliments seed.Option
-func (f Font) Apply(c seed.Ctx) {
-	data := seeds[c.Root()]
-	data.fonts = append(data.fonts, f)
-	seeds[c.Root()] = data
-
-	css.SetFontFamily(f).And(asset.New(f.path)).Apply(c)
-}
-
-//Reset impliments seed.Option
-func (f Font) Reset(c seed.Ctx) {
-	data := seeds[c.Root()]
-	data.fonts = append(data.fonts, f)
-	seeds[c.Root()] = data
-
-	css.SetFontFamily(f).And(asset.New(f.path)).Reset(c)
 }
 
 //And impliments seed.Option
@@ -51,6 +36,8 @@ func (f Font) And(more ...seed.Option) seed.Option {
 }
 
 type data struct {
+	seed.Data
+
 	fonts []Font
 }
 

@@ -33,8 +33,12 @@ var embeddings []string
 
 //File embeds the named file inside your code, relative to the location of the binary.
 //If the file is a directory, the entire directory is recursively embedded.
-func File(name string) {
+func File(name string) error {
+	if _, err := os.Open(name); err != nil {
+		return fmt.Errorf("could not embed file %v: %w", name, err)
+	}
 	embeddings = append(embeddings, name)
+	return nil
 }
 
 var done bool
@@ -203,6 +207,7 @@ func embedFile(name string, w *os.File, r *os.File) error {
 }
 
 func buildEmbeddings() error {
+
 	assets, err := os.Create(filepath.Join(Root, PackageName, PackageName+".go"))
 	if err != nil {
 		return fmt.Errorf("could not create inbed package file: %w", err)
@@ -296,15 +301,15 @@ func init() {
 		cache.Close()
 	}
 
+	embeddings = nil
 	return nil
 }
 
 //Done should be called after all calls to File and before any calls to Open.
 func Done() error {
-	if done {
+	if len(embeddings) == 0 {
 		return nil
 	}
-	done = true
 
 	//Create an inbed.go file in the project root
 	if _, err := os.Stat(filepath.Join(Root, ImporterName)); os.IsNotExist(err) {

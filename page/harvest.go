@@ -12,59 +12,76 @@ import (
 )
 
 type harvester struct {
-	Parent seed.Any
+	Parent seed.Seed
 
 	Map map[reflect.Type]seed.Seed
 }
 
-func newHarvester(parent seed.Any) harvester {
+func newHarvester(parent seed.Seed) harvester {
 	return harvester{
 		Parent: parent,
 		Map:    make(map[reflect.Type]seed.Seed),
 	}
 }
 
-func (h harvester) harvest(page Page) seed.Seed {
-	key := reflect.TypeOf(page)
-	if h.Map[key] == 0 {
+func (h harvester) harvest(c seed.Seed) {
+	var data data
+	c.Read(&data)
 
-		//Harvest the page
-		var template = seed.New(
-			html.SetTag("template"),
-		)
-		template.Use()
-		template.AddTo(h.Parent)
+	for _, p := range data.pages {
+		var key = reflect.TypeOf(p)
+		if _, ok := h.Map[key]; !ok {
 
-		var element = seed.New(
-			html.SetTag("div"),
-			css.SetDisplay(css.Flex),
-			css.SetFlexDirection(css.Column),
+			var template = seed.New(
+				html.SetTag("template"),
+			)
+			template.Use()
+			template.AddTo(h.Parent)
 
-			style.SetSize(100, 100),
-		)
-		element.Use()
-		element.AddTo(template)
+			var element = seed.New(
+				html.SetTag("div"),
+				html.SetID(ID(p)),
+				script.SetID(ID(p)),
+				css.SetSelector("#"+ID(p)),
 
-		h.Map[key] = element.Root()
+				css.SetDisplay(css.Flex),
+				css.SetFlexDirection(css.Column),
 
-		page.Page(Scope{element, h})
+				style.SetSize(100, 100),
+			)
+			element.Use()
+			element.AddTo(template)
+
+			h.Map[key] = element
+
+			p.Page(Seed{element})
+
+			h.harvest(element)
+		}
 	}
 
-	return h.Map[key]
+	for _, child := range c.Children() {
+		h.harvest(child)
+	}
 }
 
 //Harvest returns an option that adds all pages to the acting seed.
 //This should normally only be called by app-level runtime packages such as seed/app.
-func Harvest(p Page) seed.Option {
+func Harvest(starting Page) seed.Option {
 	return seed.Do(func(c seed.Seed) {
-		if p == nil {
+		if starting == nil {
 			return
 		}
 
-		id := newHarvester(c).harvest(p)
+		var data data
+		c.Read(&data)
+		data.pages = append(data.pages, starting)
+		c.Write(data)
+
+		newHarvester(c).harvest(c)
 
 		c.Add(script.OnReady(func(q script.Ctx) {
-			fmt.Fprintf(q, `seed.goto.ready("%v");`, html.ID(id))
+			fmt.Fprintf(q, `seed.goto.ready("%v");`, ID(starting))
 		}))
 	})
 }

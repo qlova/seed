@@ -4,13 +4,10 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/qlova/script"
-	"github.com/qlova/script/language"
-
 	"github.com/qlova/seed"
 )
 
-type Renderer func(root seed.Any) []byte
+type Renderer func(root seed.Seed) []byte
 
 var renderers []Renderer
 
@@ -18,33 +15,36 @@ func RegisterRenderer(r Renderer) {
 	renderers = append(renderers, r)
 }
 
-func render(child seed.Any) []byte {
+func render(child seed.Seed) []byte {
 	var b bytes.Buffer
-	var data = seeds[child.Root()]
+	var d data
+	child.Read(&d)
 
-	for event, handler := range data.on {
-		b.Write(language.Javascript(func(q script.Ctx) {
+	for event, handler := range d.on {
+		b.Write(ToJavascript(func(q Ctx) {
 			if event == "press" {
-				fmt.Fprintf(q, `seed.op(%v, async function() {`, child.Root().Ctx(q).Element())
+				q.Javascript(`seed.op(%v, async function() {`, q.Scope(child).Element())
 			} else {
-				fmt.Fprintf(q, `%v.on%v = async function() {`, child.Root().Ctx(q).Element(), event)
+				q.Javascript(`%v.on%v = async function() {`, q.Scope(child).Element(), event)
 			}
-			handler(Ctx{q})
+
+			handler(q)
+
 			if event == "press" {
-				fmt.Fprint(q, `});`)
+				q.Javascript(`});`)
 			} else {
-				fmt.Fprint(q, `};`)
+				q.Javascript(`};`)
 			}
 		}))
 	}
 
-	for _, child := range child.Root().Children() {
+	for _, child := range child.Children() {
 		b.Write(render(child))
 	}
 
-	if _, ok := data.on["ready"]; ok {
-		b.Write(language.Javascript(func(q script.Ctx) {
-			fmt.Fprintf(q, `%[1]v.onready();`, child.Root().Ctx(q).Element())
+	if _, ok := d.on["ready"]; ok {
+		b.Write(ToJavascript(func(q Ctx) {
+			fmt.Fprintf(q, `%[1]v.onready();`, q.Scope(child).Element())
 		}))
 	}
 
@@ -52,11 +52,11 @@ func render(child seed.Any) []byte {
 }
 
 //Render renders the Javascript attached to this seed and its children.
-func Render(root seed.Any) []byte {
+func Render(root seed.Seed) []byte {
 	var b bytes.Buffer
 
 	b.WriteString(`seed = {};
-seed.production = (location.hostname != "localhost" && location.hostname != "127.0.0.1");
+seed.production = (location.hostname != "localhost" && location.hostname != "127.0.0.1" && location.hostname != "[::]");
 
 seed.op = function(element, func, propagate) {
 	let handler = async function(event) {
@@ -187,7 +187,7 @@ seed.dynamic = {};
 }
 
 //Adopt returns and removes the script from the given seed.
-func Adopt(c seed.Any) Script {
+func Adopt(c seed.Seed) Script {
 	var s = Script(func(q Ctx) {})
 
 	s = s.Then(adopt(c))
@@ -195,16 +195,17 @@ func Adopt(c seed.Any) Script {
 	return s
 }
 
-func adopt(child seed.Any) Script {
+func adopt(child seed.Seed) Script {
 	var s = Script(func(q Ctx) {})
-	var data = seeds[child.Root()]
+	var d data
+	child.Read(&d)
 
-	for event, handler := range data.on {
+	for event, handler := range d.on {
 		s = s.Then(func(q Ctx) {
 			if event == "press" {
-				fmt.Fprintf(q, `seed.op(%v, async function() {`, child.Root().Ctx(q).Element())
+				fmt.Fprintf(q, `seed.op(%v, async function() {`, q.Scope(child).Element())
 			} else {
-				fmt.Fprintf(q, `%v.on%v = async function() {`, child.Root().Ctx(q).Element(), event)
+				fmt.Fprintf(q, `%v.on%v = async function() {`, q.Scope(child).Element(), event)
 			}
 			handler(q)
 			if event == "press" {
@@ -214,19 +215,19 @@ func adopt(child seed.Any) Script {
 			}
 		})
 		if event != "ready" {
-			delete(data.on, event)
+			delete(d.on, event)
 		}
 	}
 
-	for _, child := range child.Root().Children() {
+	for _, child := range child.Children() {
 		s = s.Then(adopt(child))
 	}
 
-	if _, ok := data.on["ready"]; ok {
+	if _, ok := d.on["ready"]; ok {
 		s = s.Then(func(q Ctx) {
-			fmt.Fprintf(q, `%[1]v.onready();`, child.Root().Ctx(q).Element())
+			fmt.Fprintf(q, `%[1]v.onready();`, q.Scope(child).Element())
 		})
-		delete(data.on, "ready")
+		delete(d.on, "ready")
 	}
 
 	return s

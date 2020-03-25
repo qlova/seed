@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	script.RegisterRenderer(func(s seed.Any) []byte {
+	script.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
 seed.CurrentPage = null;
 seed.NextPage = null;
@@ -52,8 +52,16 @@ seed.goto = async function(id) {
 	seed.CurrentPage = seed.NextPage;
 	seed.CurrentPage.args = args;
 
-	if (seed.LastPage && seed.LastPage.onpageexit) await seed.LastPage.onpageexit();
-	if (seed.CurrentPage.onpageenter) await seed.CurrentPage.onpageenter();
+	if (seed.LastPage) {
+		if (seed.LastPage.onpageexit) await seed.LastPage.onpageexit();
+		let state = seed.state["page."+seed.LastPage.id];
+		if (state && state.unset) await state.unset();
+	}
+	{
+		if (seed.CurrentPage.onpageenter) await seed.CurrentPage.onpageenter();
+		let state = seed.state["page."+seed.CurrentPage.id];
+		if (state && state.set) await state.set();
+	}
 
 	if (seed.goto.in) {
 		promises.push(seed.goto.in);

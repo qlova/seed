@@ -9,6 +9,7 @@ import (
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/state"
+	"github.com/qlova/seed/tween"
 
 	"github.com/qlova/seed/s/html/div"
 	"github.com/qlova/seed/s/html/template"
@@ -19,9 +20,7 @@ type Data struct {
 }
 
 func (d Data) String() state.String {
-	return state.String{
-		Expression: `data`,
-	}
+	return state.String{Value: state.Raw(`data`, state.Local())}
 }
 
 type Seed struct {
@@ -31,7 +30,7 @@ type Seed struct {
 
 func (c Seed) Refresh() script.Script {
 	return func(q script.Ctx) {
-		fmt.Fprintf(q, `%v.refresh();`, c.Ctx(q).Element())
+		fmt.Fprintf(q, `%v.refresh();`, q.Scope(c).Element())
 	}
 }
 
@@ -42,9 +41,9 @@ func Do(f func(Seed)) seed.Option {
 	})
 }
 
-func convertToClasses(c seed.Any) {
-	for _, child := range c.Root().Children() {
-		child.Add(css.SetSelector(`.`+html.ID(child.Root())), html.SetID(""), html.AddClass(html.ID(child.Root())))
+func convertToClasses(c seed.Seed) {
+	for _, child := range c.Children() {
+		child.Add(css.SetSelector(`.`+html.ID(child)), html.SetID(""), html.AddClass(html.ID(child)))
 	}
 }
 
@@ -59,11 +58,13 @@ func New(food Food, options ...seed.Option) Seed {
 		css.Set("flex-direction", "column"),
 	), Data{}}
 
+	feed.Add(tween.This())
+
 	template.Add(css.SetSelector("#" + html.ID(feed.Seed)).And(options...))
 
 	convertToClasses(template)
 	var scripts script.Script
-	for _, child := range template.Root().Children() {
+	for _, child := range template.Children() {
 		scripts = scripts.Then(script.Adopt(child))
 	}
 
@@ -75,24 +76,24 @@ func New(food Food, options ...seed.Option) Seed {
 	}
 
 	feed.Add(script.OnReady(func(q script.Ctx) {
-		fmt.Fprintf(q, `%v.refresh = async function() {`, template.Ctx(q).Element())
+		fmt.Fprintf(q, `%v.refresh = async function() {`, q.Scope(template).Element())
 
-		fmt.Fprintf(q, `while (%[1]v.childNodes.length > 1) %[1]v.removeChild(%[1]v.lastChild);`, feed.Ctx(q).Element())
+		fmt.Fprintf(q, `while (%[1]v.childNodes.length > 1) %[1]v.removeChild(%[1]v.lastChild);`, q.Scope(feed).Element())
 
 		var data = q.Go(food).Wait().Native
 		fmt.Fprintf(q, `if (!Array.isArray(%[1]v)) %[1]v = [%[1]v];`, q.Raw(data))
 		fmt.Fprintf(q, `for (let value of %v) {`, q.Raw(data))
 		{
-			fmt.Fprintf(q, `let data = value; let clone = %v.content.cloneNode(true);`, template.Ctx(q).Element())
+			fmt.Fprintf(q, `let data = value; let clone = %v.content.cloneNode(true);`, q.Scope(template).Element())
 
 			fmt.Fprintf(q, `let cache = seed.get.cache; let old = seed.get; let parent = %v; seed.get = function(id) {
 				let get = old(id);
 				if (!get) return clone.querySelector("."+id);
 				return get;
-			};seed.get.cache = cache; `, feed.Ctx(q).Element())
+			};seed.get.cache = cache; `, q.Scope(feed).Element())
 			scripts(q)
 			fmt.Fprintf(q, `seed.get = old;`)
-			fmt.Fprintf(q, `clone = %v.appendChild(clone)`, feed.Ctx(q).Element())
+			fmt.Fprintf(q, `clone = %v.appendChild(clone)`, q.Scope(feed).Element())
 		}
 		fmt.Fprintf(q, `}};`)
 	}))

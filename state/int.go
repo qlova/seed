@@ -52,27 +52,30 @@ func (i Int) set(q script.Ctx, value script.Int) {
 
 //SetText sets the seed's text to reflect the value of this Int.
 func (i Int) SetText() seed.Option {
-	return seed.NewOption(func(any seed.Any) {
-		if i.raw == "" {
-			data := seeds[any.Root()]
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("state.Int.SetText must not be called on a script.Seed")
+		}
 
-			if data.change == nil {
-				data.change = make(map[Value]script.Script)
+		if i.raw == "" {
+			var d data
+			c.Read(&d)
+
+			if d.change == nil {
+				d.change = make(map[Value]script.Script)
 			}
 
-			data.change[i.Value] = data.change[i.Value].Then(func(q script.Ctx) {
-				fmt.Fprintf(q, `%v.innerText = (%v).toString();`, any.Root().Ctx(q).Element(), q.Raw(i.get(q)))
+			d.change[i.Value] = d.change[i.Value].Then(func(q script.Ctx) {
+				q.Javascript(`%v.innerText = (%v).toString();`, q.Scope(c).Element(), q.Raw(i.get(q)))
 			})
-			seeds[any.Root()] = data
+
+			c.Write(d)
 		} else {
-			any.Add(script.OnReady(func(q script.Ctx) {
-				fmt.Fprintf(q, `%v.innerText = (%v).toString();`, any.Root().Ctx(q).Element(), q.Raw(i.get(q)))
+			c.Add(script.OnReady(func(q script.Ctx) {
+				fmt.Fprintf(q, `%v.innerText = (%v).toString();`, q.Scope(c).Element(), q.Raw(i.get(q)))
 			}))
 		}
-	}, func(seed seed.Ctx) {
-		panic(".Var seeds not allowed in conditional")
-	}, func(seed seed.Ctx) {
-		panic(".Var seeds not allowed in conditional")
 	})
 }
 

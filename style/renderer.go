@@ -18,8 +18,9 @@ func newHarvester() harvester {
 	}
 }
 
-func (h harvester) harvest(s seed.Any) map[string]*bytes.Buffer {
-	var data = seeds[s.Root()]
+func (h harvester) harvest(c seed.Seed) map[string]*bytes.Buffer {
+	var data data
+	c.Read(&data)
 
 	for query, rules := range data.queries {
 		if b, ok := h.queries[query]; !ok {
@@ -28,12 +29,12 @@ func (h harvester) harvest(s seed.Any) map[string]*bytes.Buffer {
 		}
 
 		b := h.queries[query]
-		fmt.Fprintf(b, `%v {`, css.Selector(s))
+		fmt.Fprintf(b, `%v {`, css.Selector(c))
 		b.WriteString(rules)
 		fmt.Fprint(b, `}`)
 	}
 
-	for _, child := range s.Root().Children() {
+	for _, child := range c.Children() {
 		h.harvest(child)
 	}
 
@@ -41,8 +42,8 @@ func (h harvester) harvest(s seed.Any) map[string]*bytes.Buffer {
 }
 
 func init() {
-	css.RegisterRenderer(func(s seed.Any) []byte {
-		var harvested = newHarvester().harvest(s)
+	css.RegisterRenderer(func(c seed.Seed) []byte {
+		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
 		for query, rules := range harvested {

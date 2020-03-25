@@ -7,7 +7,20 @@ import (
 	"strings"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/script"
 )
+
+type data struct {
+	seed.Data
+
+	selector string
+
+	rules
+
+	prefix, suffix rules
+
+	queries map[string]*data
+}
 
 type ruleable interface {
 	Rule() Rule
@@ -38,24 +51,26 @@ func (r Rule) Value() string {
 	return value[:len(value)-1]
 }
 
-func (r Rule) AddTo(c seed.Any) {
-	data := seeds[c.Root()]
-	if data.rules == nil {
-		data.rules = make(rules)
+func (r Rule) AddTo(c seed.Seed) {
+	var d data
+	c.Read(&d)
+
+	switch c := c.(type) {
+	case script.Seed:
+		property, value := r.Split()
+		fmt.Fprintf(c.Ctx, `%v.style.%v = "%v";`, c.Element(), dashes2camels(property), value)
+	case script.Undo:
+		property := r.Property()
+		fmt.Fprintf(c.Ctx, `%v.style.%v = "";`, c.Element(), dashes2camels(property))
+	default:
+		if d.rules == nil {
+			d.rules = make(rules)
+		}
+		property, value := r.Split()
+		d.rules[property] = value
 	}
-	property, value := r.Split()
-	data.rules[property] = value
-	seeds[c.Root()] = data
-}
 
-func (r Rule) Apply(c seed.Ctx) {
-	property, value := r.Split()
-	fmt.Fprintf(c.Ctx, `%v.style.%v = "%v";`, c.Element(), dashes2camels(property), value)
-}
-
-func (r Rule) Reset(c seed.Ctx) {
-	property := r.Property()
-	fmt.Fprintf(c.Ctx, `%v.style.%v = "";`, c.Element(), dashes2camels(property))
+	c.Write(d)
 }
 
 func (r Rule) And(options ...seed.Option) seed.Option {
@@ -67,29 +82,20 @@ func (r Rule) Important() Rule {
 	return r[:len(r)-1] + " !important;"
 }
 
-type data struct {
-	selector string
-
-	rules
-
-	prefix, suffix rules
-
-	queries map[string]*data
-}
-
-var seeds = make(map[seed.Seed]data)
-
 type rules map[string]string
 
 //Selector returns the css selector of this seed.
-func Selector(c seed.Any) string {
-	c.Root().Use()
-	data := seeds[c.Root()]
-	if data.selector != "" {
-		return data.selector
+func Selector(c seed.Seed) string {
+	c.Use()
+
+	var d data
+	c.Read(&d)
+
+	if d.selector != "" {
+		return d.selector
 	}
 
-	return "#" + base64.RawURLEncoding.EncodeToString(big.NewInt(int64(c.Root())).Bytes())
+	return "#" + base64.RawURLEncoding.EncodeToString(big.NewInt(int64(c.ID())).Bytes())
 }
 
 func dashes2camels(s string) string {
@@ -107,14 +113,16 @@ func dashes2camels(s string) string {
 
 //SetSelector sets the CSS selector of this seed.
 func SetSelector(selector string) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		data := seeds[s.Root()]
-		data.selector = selector
-		seeds[s.Root()] = data
-	}, func(s seed.Ctx) {
-		panic("css.SetSelector must be called at buildtime")
-	}, func(s seed.Ctx) {
-		panic("css.SetSelector must be called at buildtime")
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("css.SetSelector must not be called on a script.Seed")
+		}
+
+		var d data
+		c.Read(&d)
+		d.selector = selector
+		c.Write(d)
 	})
 }
 

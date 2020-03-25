@@ -2,34 +2,35 @@ package html
 
 import (
 	"bytes"
-	"encoding/base64"
 	"fmt"
-	"math/big"
 	"strconv"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/script"
 )
 
 //ID returns the html ID of this seed.
 func ID(root seed.Seed) string {
-	return base64.RawURLEncoding.EncodeToString(big.NewInt(int64(root)).Bytes())
+	return script.ID(root)
 }
 
 //Render renders the html of a seed.
-func Render(seed seed.Any) []byte {
+func Render(c seed.Seed) []byte {
 	var b bytes.Buffer
-	var data = seeds[seed.Root()]
+	var data data
+
+	c.Read(&data)
 
 	if data.tag != "" {
 		fmt.Fprintf(&b, `<%v`, data.tag)
 
-		if seed.Root().Used() {
+		if c.Used() {
 			if data.id != nil {
 				if *data.id != "" {
 					fmt.Fprintf(&b, ` id=%v`, strconv.Quote(*data.id))
 				}
 			} else {
-				fmt.Fprintf(&b, ` id=%v`, ID(seed.Root()))
+				fmt.Fprintf(&b, ` id=%v`, ID(c))
 			}
 		}
 
@@ -47,10 +48,15 @@ func Render(seed seed.Any) []byte {
 			fmt.Fprint(&b, `" `)
 		}
 
-		if data.style != nil {
+		_, ok := c.(script.Seed)
+
+		if data.style != nil || ok {
 			fmt.Fprint(&b, ` style="`)
 			for property, value := range data.style {
 				fmt.Fprintf(&b, "%v: %v;", property, value)
+			}
+			if ok {
+				fmt.Fprint(&b, `display: none;`)
 			}
 			fmt.Fprint(&b, `" `)
 		}
@@ -60,7 +66,7 @@ func Render(seed seed.Any) []byte {
 		b.WriteString(data.innerHTML)
 	}
 
-	for _, child := range seed.Root().Children() {
+	for _, child := range c.Children() {
 		b.Write(Render(child))
 	}
 

@@ -1,14 +1,9 @@
 package seed
 
 import (
-	"encoding/base64"
-	"fmt"
-	"math/big"
 	"os"
 	"path/filepath"
-
-	"github.com/qlova/script"
-	"github.com/qlova/script/language"
+	"reflect"
 )
 
 //Dir is the working directory of the seed.
@@ -19,239 +14,181 @@ const Production = true
 //Data is any data associated with a seed.
 //You must provide a way for your data to be deleted.
 type Data interface {
-	Delete(Seed)
+	data()
 }
 
+var id int
+
 type data struct {
+	Data
+
+	id int
+
 	used bool
 
 	parent Seed
 
-	children []Any
-}
-
-var seeds = make(map[Seed]data)
-
-type options []Option
-
-func (o options) With(more ...Option) options {
-	return append(o, more...)
-}
-
-func Options(options ...Option) options {
-	return options
+	children []Seed
 }
 
 //Option can be used to modify a seed.
 type Option interface {
-	AddTo(Any)
-	Apply(Ctx)
-	Reset(Ctx)
-
+	AddTo(Seed)
 	And(...Option) Option
 }
 
-type option struct {
-	addto func(Any)
+//OptionFunc can be used to create an Option.
+type OptionFunc func(c Seed)
 
-	apply, reset func(Ctx)
-}
-
-func NewOption(addto func(Any), apply, reset func(Ctx)) Option {
-	return option{
-		addto: addto,
-		apply: apply,
-		reset: reset,
-	}
-}
+//NewOption can be used to create options.
+type NewOption = OptionFunc
 
 //AddTo implements Option.AddTo
-func (o option) AddTo(seed Any) {
-	o.addto(seed)
-}
-
-//AddTo implements Option.AddTo
-func (o option) Apply(seed Ctx) {
-	o.apply(seed)
-}
-
-//Reset implements Option.Reset
-func (o option) Reset(seed Ctx) {
-	o.reset(seed)
-}
-
-func And(o Option, more ...Option) Option {
-	return option{
-		addto: func(any Any) {
-			o.AddTo(any)
-			for _, o := range more {
-				o.AddTo(any)
-			}
-		},
-		apply: func(ctx Ctx) {
-			o.Apply(ctx)
-			for _, o := range more {
-				o.Apply(ctx)
-			}
-		},
-		reset: func(ctx Ctx) {
-			o.Reset(ctx)
-			for _, o := range more {
-				o.Reset(ctx)
-			}
-		},
-	}
+func (o OptionFunc) AddTo(c Seed) {
+	o(c)
 }
 
 //And implements Option.And
-func (o option) And(more ...Option) Option {
+func (o OptionFunc) And(more ...Option) Option {
 	return And(o, more...)
 }
 
-//Any is a component of your app.
-type Any interface {
-	Root() Seed
-	Add(...Option)
+//And implements Option.And
+func And(o Option, more ...Option) Option {
+	return NewOption(func(c Seed) {
+		o.AddTo(c)
+		for _, o = range more {
+			o.AddTo(c)
+		}
+	})
+}
+
+//Seed is a generic reference component, 'everything is a seed'.
+//Like an enitity in a ECS, other packages can associate Data with this reference.
+type Seed interface {
 	Option
+
+	ID() int
+	Use()
+	Used() bool
+
+	Read(Data)
+	Write(Data)
+
+	Parent() Seed
+	Children() []Seed
+
+	Add(...Option)
 }
 
-type Seed int
+type seed map[reflect.Type]reflect.Value
 
-func (s Seed) Use() {
-	var data = seeds[s]
-	data.used = true
-	seeds[s] = data
+func (c seed) seed() seed {
+	return c
 }
 
-func (s Seed) Used() bool {
-	data := seeds[s]
-	return data.used
+func (c seed) Read(d Data) {
+	t := reflect.TypeOf(d).Elem()
+	if v, ok := c[t]; ok {
+		reflect.ValueOf(d).Elem().Set(v)
+		return
+	}
+	reflect.ValueOf(d).Elem().Set(reflect.Zero(t))
 }
 
-func (s Seed) Root() Seed {
-	return s
+func (c seed) Write(d Data) {
+	t := reflect.TypeOf(d)
+	if t.Kind() == reflect.Ptr {
+		panic("do not pass pointer to seed.Seed.Write")
+	}
+	c[t] = reflect.ValueOf(d)
 }
 
-func (s Seed) Parent() Seed {
-	data := seeds[s]
-	return data.parent
+//ID returns a unique id for the seed.
+func (c seed) ID() int {
+	var d data
+	c.Read(&d)
+	return d.id
 }
 
-func (s Seed) Children() []Any {
-	data := seeds[s]
-	return data.children
+//Parent returns the parent seed.
+func (c seed) Parent() Seed {
+	var d data
+	c.Read(&d)
+	return d.parent
 }
 
-func (s Seed) Add(options ...Option) {
+//Parent returns the parent seed.
+func (c seed) Use() {
+	var d data
+	c.Read(&d)
+	d.used = true
+	c.Write(d)
+}
+
+//Parent returns the parent seed.
+func (c seed) Used() bool {
+	var d data
+	c.Read(&d)
+	return d.used
+}
+
+//Children returns the children of this seed.
+func (c seed) Children() []Seed {
+	var d data
+	c.Read(&d)
+	return d.children
+}
+
+//Add options to this seed.
+func (c seed) Add(options ...Option) {
 	for _, o := range options {
-		o.AddTo(s)
+		o.AddTo(c)
 	}
 }
 
-func (s Seed) AddTo(other Any) {
-	if s == 0 {
-		panic("seed must not be 0")
-	}
-	if s == other {
-		panic("child must not contain itself")
-	}
-	data := seeds[other.Root()]
-	data.children = append(data.children, s)
-	seeds[other.Root()] = data
+func Add(a, b Seed) {
+	var d data
+	b.Read(&d)
+	d.children = append(d.children, a)
+	b.Write(d)
 
-	data = seeds[s.Root()]
-	data.parent = other.Root()
-	seeds[s.Root()] = data
+	a.Read(&d)
+	d.parent = b
+	a.Write(d)
 }
 
-var Apply = func(s Seed, other Ctx) {
-	panic("cannot apply a seed on another seed")
+func (c seed) AddTo(other Seed) {
+	Add(c, other)
 }
 
-func (s Seed) Apply(other Ctx) {
-	Apply(s, other)
+func (c seed) And(more ...Option) Option {
+	return And(c, more...)
 }
-
-var Reset = func(s Seed, other Ctx) {
-	panic("cannot apply a seed on another seed")
-}
-
-func (s Seed) Reset(other Ctx) {
-	Reset(s, other)
-}
-
-func (s Seed) And(more ...Option) Option {
-	return option{
-		addto: func(any Any) {
-			s.AddTo(any)
-			for _, o := range more {
-				o.AddTo(any)
-			}
-		},
-		apply: func(ctx Ctx) {
-			panic("cannot apply a seed on another seed")
-			for _, o := range more {
-				o.Apply(ctx)
-			}
-		},
-		reset: func(ctx Ctx) {
-			panic("cannot reset a seed on another seed")
-			for _, o := range more {
-				o.Reset(ctx)
-			}
-		},
-	}
-}
-
-type Ctx struct {
-	root Seed
-	script.Native
-}
-
-func (s Seed) Ctx(q script.AnyCtx) Ctx {
-	var id = base64.RawURLEncoding.EncodeToString(big.NewInt(int64(s)).Bytes())
-	return Ctx{s, script.Native{Type: language.Expression(q, fmt.Sprintf(`seed.get("%v")`, id))}}
-}
-
-func (s Ctx) Element() string {
-	s.root.Use()
-	return s.Ctx.Raw(s.Native)
-}
-
-func (s Ctx) Root() Seed {
-	return s.root
-}
-
-var id Seed
 
 //New returns a new seed with the applied options.
 func New(options ...Option) Seed {
+	c := make(seed)
+
 	id++
-	var seed = id
+	var d data
+	c.Read(&d)
+	d.id = id
+	c.Write(d)
+
 	for _, o := range options {
-		o.AddTo(seed)
+		o.AddTo(c)
 	}
-	return seed
+
+	return c
 }
 
 //If applies the options if the condition is true.
 func If(condition bool, options ...Option) Option {
-	return NewOption(func(any Any) {
+	return NewOption(func(c Seed) {
 		if condition {
 			for _, o := range options {
-				o.AddTo(any)
-			}
-		}
-	}, func(s Ctx) {
-		if condition {
-			for _, o := range options {
-				o.Apply(s)
-			}
-		}
-	}, func(s Ctx) {
-		if condition {
-			for _, o := range options {
-				o.Reset(s)
+				o.AddTo(c)
 			}
 		}
 	})
@@ -259,11 +196,7 @@ func If(condition bool, options ...Option) Option {
 
 //Do runs a function with the seed scoped as the first argument.
 func Do(f func(c Seed)) Option {
-	return NewOption(func(c Any) {
-		f(c.Root())
-	}, func(c Ctx) {
-		f(c.Root())
-	}, func(c Ctx) {
-		f(c.Root())
+	return NewOption(func(c Seed) {
+		f(c)
 	})
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/qlova/seed/s/text"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/style/align"
+	"github.com/qlova/seed/style/font"
 )
 
 func GetFeed() []string {
@@ -24,14 +25,11 @@ func main() {
 
 				text.Var(f.Data.String()),
 				text.New("hello",
-					text.SetColor(seed.Red),
+					font.SetColor(seed.Red),
 					script.OnClick(func(q script.Ctx) {
 						q.Print(f.Data.String())
 					}),
 				),
-
-				//script.OnReady(f.Refresh()),
-
 			)
 			b.Add(script.OnClick(f.Refresh()))
 		})),

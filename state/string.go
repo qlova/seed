@@ -57,35 +57,39 @@ func (s RemoteString) Set(value string) {
 }
 
 func (s String) SetText() seed.Option {
-	return seed.NewOption(func(any seed.Any) {
-		if s.raw == "" {
-			any.Add(script.OnReady(func(q script.Ctx) {
-				fmt.Fprintf(q, `%v.innerText = %v;`, any.Root().Ctx(q).Element(), q.Raw(s.get(q)))
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("state.String.SetText must not be called on a script.Seed")
+		}
+
+		if s.raw != "" {
+			c.Add(script.OnReady(func(q script.Ctx) {
+				fmt.Fprintf(q, `%v.innerText = %v;`, q.Scope(c).Element(), q.Raw(s.get(q)))
 			}))
 		}
 
 		if s.key != "" {
-			data := seeds[any.Root()]
+			var data data
+			c.Read(&data)
 
 			if data.change == nil {
 				data.change = make(map[Value]script.Script)
 			}
 
 			data.change[s.Value] = data.change[s.Value].Then(func(q script.Ctx) {
-				fmt.Fprintf(q, `%v.innerText = %v;`, any.Root().Ctx(q).Element(), q.Raw(s.get(q)))
+				q.Javascript(`%v.innerText = %v;`, q.Scope(c).Element(), q.Raw(s.get(q)))
 			})
 
-			for _, dep := range *s.dependencies {
-				data.change[dep] = data.change[dep].Then(func(q script.Ctx) {
-					fmt.Fprintf(q, `seed.state["%v"].changed();`, s.key)
-				})
+			if s.dependencies != nil {
+				for _, dep := range *s.dependencies {
+					data.change[dep] = data.change[dep].Then(func(q script.Ctx) {
+						q.Javascript(`seed.state["%v"].changed();`, s.key)
+					})
+				}
 			}
 
-			seeds[any.Root()] = data
+			c.Write(data)
 		}
-	}, func(seed seed.Ctx) {
-		panic(".Var seeds not allowed in conditional")
-	}, func(seed seed.Ctx) {
-		panic(".Var seeds not allowed in conditional")
 	})
 }

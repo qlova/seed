@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"image/color"
 	"strconv"
 
@@ -9,46 +8,56 @@ import (
 	"github.com/qlova/seed/asset"
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/page"
+	"github.com/qlova/seed/script"
 )
 
 //SetPage sets the starting page of this app.
 func SetPage(p page.Page) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		if app, ok := s.(App); ok {
-			app.page = p
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("app.SetPage must not be called on a script.Seed")
 		}
-	}, func(c seed.Ctx) {
-		panic("cannot conditionally apply app.SetPage")
-	}, func(c seed.Ctx) {
-		panic("cannot conditionally apply app.SetPage")
+
+		var app app
+		c.Read(&app)
+		app.page = p
+		c.Write(app)
 	})
 }
 
 //SetLoadingPage sets the loading page of this app.
 func SetLoadingPage(p page.Page) seed.Option {
-	return seed.NewOption(func(s seed.Any) {
-		if app, ok := s.(App); ok {
-			app.loadingPage = p
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("app.SetLoadingPage must not be called on a script.Seed")
 		}
-	}, func(c seed.Ctx) {
-		panic("cannot conditionally apply app.SetPage")
-	}, func(c seed.Ctx) {
-		panic("cannot conditionally apply app.SetPage")
+
+		var app app
+		c.Read(&app)
+		app.loadingPage = p
+		c.Write(app)
 	})
 }
 
 //SetColor sets the color of the app.
 func SetColor(col color.Color) seed.Option {
-	var backup color.Color
-	return seed.NewOption(func(s seed.Any) {
-		if app, ok := s.(App); ok {
-			backup = col
+	return seed.NewOption(func(c seed.Seed) {
+		var app app
+		c.Read(&app)
+
+		switch q := c.(type) {
+		case script.Seed:
+			q.Javascript(`document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: col}.Rule())
+		case script.Undo:
+			q.Javascript(`document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: app.color}.Rule())
+		default:
 			app.manifest.SetThemeColor(col)
+			app.color = col
 		}
-	}, func(c seed.Ctx) {
-		fmt.Fprintf(c.Ctx, `document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: col}.Rule())
-	}, func(c seed.Ctx) {
-		fmt.Fprintf(c.Ctx, `document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: backup}.Rule())
+
+		c.Write(app)
 	})
 }
 
@@ -56,27 +65,33 @@ func SetColor(col color.Color) seed.Option {
 func SetIcon(icon string) seed.Option {
 	icon = asset.Path(icon)
 
-	return seed.NewOption(func(s seed.Any) {
-		if app, ok := s.(App); ok {
+	return seed.NewOption(func(c seed.Seed) {
+		var app app
+		c.Read(&app)
+
+		switch q := c.(type) {
+		case script.Seed:
+			q.Javascript(`
+			{
+				let head = document.head || document.getElementsByTagName('head')[0];
+
+				let link = document.createElement('link'),
+				let oldLink = document.getElementById('dynamic-favicon');
+				link.id = 'dynamic-favicon';
+				link.rel = 'shortcut icon';
+				link.href = %v;
+				if (oldLink) {
+					head.removeChild(oldLink);
+				}
+				head.appendChild(link);
+			}
+			`, strconv.Quote(icon))
+		case script.Undo:
+			q.Javascript(`document.getElementById('dynamic-favicon').removeChild(oldLink);`)
+		default:
 			app.manifest.SetIcon(icon)
 		}
-	}, func(c seed.Ctx) {
-		fmt.Fprintf(c.Ctx, `
-		{
-			let head = document.head || document.getElementsByTagName('head')[0];
 
-			let link = document.createElement('link'),
-			let oldLink = document.getElementById('dynamic-favicon');
-			link.id = 'dynamic-favicon';
-			link.rel = 'shortcut icon';
-			link.href = %v;
-			if (oldLink) {
-				head.removeChild(oldLink);
-			}
-			head.appendChild(link);
-		}
-		`, strconv.Quote(icon))
-	}, func(c seed.Ctx) {
-		fmt.Fprintf(c.Ctx, `document.getElementById('dynamic-favicon').removeChild(oldLink);`)
+		c.Write(app)
 	})
 }

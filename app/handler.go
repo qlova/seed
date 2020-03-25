@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/NYTimes/gziphandler"
-	//"github.com/qlova/seed/inbed"
 
 	"github.com/qlova/seed/asset/inbed"
 	"github.com/qlova/seed/script"
@@ -18,6 +17,9 @@ var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])
 
 func isLocal(r *http.Request) (local bool) {
 	local = strings.Contains(r.RemoteAddr, "[::1]") || strings.Contains(r.RemoteAddr, "127.0.0.1")
+	if local {
+		return
+	}
 	if intranet.Match([]byte(r.RemoteAddr)) {
 		local = true
 	}
@@ -35,7 +37,9 @@ func isLocal(r *http.Request) (local bool) {
 }
 
 //Handler returns an http.Handler that serve's the app.
-func (app App) Handler() http.Handler {
+func (a App) Handler() http.Handler {
+	var app app
+	a.Read(&app)
 
 	var AssetsServer = inbed.FileSystem{}
 
@@ -47,7 +51,7 @@ func (app App) Handler() http.Handler {
 
 	router := http.NewServeMux()
 
-	app.build()
+	a.build()
 
 	var rendered = app.document.Render()
 

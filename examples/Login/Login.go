@@ -7,6 +7,7 @@ import (
 	"github.com/qlova/seed/s/text"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/state"
+	"github.com/qlova/seed/style/font"
 )
 
 var LoggedIn = state.New()
@@ -17,7 +18,7 @@ func main() {
 		LoggedIn.If(
 			text.New("You are logged in",
 
-				text.SetColor(seed.Green),
+				font.SetColor(seed.Green),
 			),
 		),
 

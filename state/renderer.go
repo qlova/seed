@@ -28,8 +28,9 @@ func newHarvester() harvester {
 	}
 }
 
-func (h harvester) harvest(s seed.Any) harvester {
-	var data = seeds[s.Root()]
+func (h harvester) harvest(c seed.Seed) harvester {
+	var data data
+	c.Read(&data)
 
 	for state, script := range data.set {
 		harvest := h.states[state]
@@ -49,7 +50,7 @@ func (h harvester) harvest(s seed.Any) harvester {
 		h.variables[variable] = harvest
 	}
 
-	for _, child := range s.Root().Children() {
+	for _, child := range c.Children() {
 		h.harvest(child)
 	}
 
@@ -57,32 +58,43 @@ func (h harvester) harvest(s seed.Any) harvester {
 }
 
 func init() {
-	script.RegisterRenderer(func(s seed.Any) []byte {
-		var harvested = newHarvester().harvest(s)
+	script.RegisterRenderer(func(c seed.Seed) []byte {
+		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
 		b.WriteString(`seed.state = {};`)
 
 		for state, scripts := range harvested.states {
+			if state.storage == "" {
+				continue
+			}
 			fmt.Fprintf(&b, `seed.state["%v"] = {`, state.key)
 			fmt.Fprint(&b, `set: async function() {`)
 			b.Write(script.ToJavascript(scripts.set))
 			fmt.Fprint(&b, `}, unset: async function() {`)
 			b.Write(script.ToJavascript(scripts.unset))
-			fmt.Fprint(&b, `}, changed: async function() {}};`)
+			fmt.Fprint(&b, `}, changed: async function() {`)
+			b.Write(script.ToJavascript(func(q script.Ctx) {
+				q.If(state, func() {
+					fmt.Fprintf(q, `seed.state["%v"].set();`, state.key)
+				}).Else(func() {
+					fmt.Fprintf(q, `seed.state["%v"].unset();`, state.key)
+				}).End()
+			}))
+			fmt.Fprint(&b, `}};`)
 		}
 
 		for state := range harvested.states {
-			b.Write(script.ToJavascript(func(q script.Ctx) {
-				q.If(state, func() {
-					state.Set(q)
-				}).Else(func() {
-					state.Unset(q)
-				}).End()
-			}))
+			if state.storage == "" {
+				continue
+			}
+			fmt.Fprintf(&b, `seed.state["%v"].changed();`, state.key)
 		}
 
 		for variable, scripts := range harvested.variables {
+			if variable.storage == "" {
+				continue
+			}
 			fmt.Fprintf(&b, `seed.state["%v"] = {`, variable.key)
 			fmt.Fprint(&b, `changed: async function() {`)
 			b.Write(script.ToJavascript(scripts.change))
@@ -90,6 +102,9 @@ func init() {
 		}
 
 		for variable, _ := range harvested.variables {
+			if variable.storage == "" {
+				continue
+			}
 			fmt.Fprintf(&b, `seed.state["%v"].changed();`, variable.key)
 		}
 

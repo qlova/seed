@@ -61,27 +61,12 @@ func (v Viewport) render() string {
 	return result[:len(result)-1]
 }
 
-//Option returns the viewport's option.
-func (v Viewport) option() seed.Option {
-	return attr.Set("name", "viewport").And(attr.Set("content", v.render()))
-}
-
 //AddTo implements seed.Option.AddTo
-func (v Viewport) AddTo(any seed.Any) {
-	v.option().AddTo(any)
-}
-
-//Apply implements seed.Option.Apply
-func (v Viewport) Apply(any seed.Ctx) {
-	v.option().Apply(any)
-}
-
-//Reset implements seed.Option.Apply
-func (v Viewport) Reset(any seed.Ctx) {
-	v.option().Reset(any)
+func (v Viewport) AddTo(c seed.Seed) {
+	attr.Set("name", "viewport").And(attr.Set("content", v.render())).AddTo(c)
 }
 
 //And implements seed.Option.And
 func (v Viewport) And(options ...seed.Option) seed.Option {
-	return v.option().And(options...)
+	return seed.And(v, options...)
 }

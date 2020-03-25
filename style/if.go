@@ -12,6 +12,8 @@ const LargeMin = `80rem`
 const LargeMax = `100rem`
 
 type data struct {
+	seed.Data
+
 	queries map[string]string
 }
 
@@ -23,53 +25,47 @@ type Condition struct {
 	styles                     []Style
 }
 
-func (c Condition) AddTo(s seed.Any) {
-	data := seeds[s.Root()]
+func (con Condition) AddTo(c seed.Seed) {
+	var data data
+	c.Read(&data)
+
 	if data.queries == nil {
 		data.queries = make(map[string]string)
 	}
 
 	var rules string
 
-	for _, style := range c.styles {
+	for _, style := range con.styles {
 		for _, rule := range style.Rules() {
 			rules += string(rule)
 		}
 	}
 
 	var q = `@media`
-	if c.portrait != "" {
-		q += ` screen and ` + c.portrait + ` and (orientation:portrait)`
-		if c.landscape != "" {
+	if con.portrait != "" {
+		q += ` screen and ` + con.portrait + ` and (orientation:portrait)`
+		if con.landscape != "" {
 			q += ","
 		}
 	}
-	if c.landscape != "" {
-		q += ` screen and ` + c.landscape + ` and (orientation:landscape)`
+	if con.landscape != "" {
+		q += ` screen and ` + con.landscape + ` and (orientation:landscape)`
 	}
-	if c.portrait == "" && c.landscape == "" {
-		q += ` screen and ` + c.query
+	if con.portrait == "" && con.landscape == "" {
+		q += ` screen and ` + con.query
 	}
 
 	data.queries[q] = rules
 
-	seeds[s.Root()] = data
+	c.Write(data)
 }
 
-func (c Condition) Apply(seed.Ctx) {
-	panic("cannot apply a style.Condition")
-}
-
-func (c Condition) Reset(seed.Ctx) {
-	panic("cannot reset a style.Condition")
-}
-
-func (c Condition) And(options ...seed.Option) seed.Option {
-	return seed.And(c, options...)
+func (con Condition) And(options ...seed.Option) seed.Option {
+	return seed.And(con, options...)
 }
 
 //Tiny applies the styles on tiny screens. ie. SmartWatches.
-func (c Condition) Tiny(styles ...Style) Condition {
+func (con Condition) Tiny(styles ...Style) Condition {
 	return Condition{
 		portrait:  `(max-width: 9.9999rem)`,
 		landscape: `(max-height: 9.9999rem)`,
@@ -77,7 +73,7 @@ func (c Condition) Tiny(styles ...Style) Condition {
 	}
 }
 
-func (c Condition) Small(styles ...Style) Condition {
+func (con Condition) Small(styles ...Style) Condition {
 	return Condition{
 		portrait:  `(min-width: 10rem) and (max-width: 24.999rem)`,
 		landscape: `(min-height: 10rem) and (max-height: 24.999rem)`,
@@ -85,7 +81,7 @@ func (c Condition) Small(styles ...Style) Condition {
 	}
 }
 
-func (c Condition) Medium(styles ...Style) Condition {
+func (con Condition) Medium(styles ...Style) Condition {
 	return Condition{
 		portrait:  `(min-width: 25rem) and (max-width: 49.999rem)`,
 		landscape: `(min-height: 25rem) and (max-height: 49.999rem)`,
@@ -93,7 +89,7 @@ func (c Condition) Medium(styles ...Style) Condition {
 	}
 }
 
-func (c Condition) Large(styles ...Style) Condition {
+func (con Condition) Large(styles ...Style) Condition {
 	return Condition{
 		portrait:  `(min-width: 50rem) and (max-width: 64.999rem)`,
 		landscape: `(min-height: 50rem) and (max-height: 64.999rem)`,
@@ -101,7 +97,7 @@ func (c Condition) Large(styles ...Style) Condition {
 	}
 }
 
-func (c Condition) Huge(styles ...Style) Condition {
+func (con Condition) Huge(styles ...Style) Condition {
 	return Condition{
 		portrait:  `(min-width: 65rem)`,
 		landscape: `(min-height: 65rem)`,
@@ -109,18 +105,18 @@ func (c Condition) Huge(styles ...Style) Condition {
 	}
 }
 
-func (c Condition) Portrait(styles ...Style) Condition {
-	c.query = `(orientation: portrait)`
-	c.landscape = ""
-	c.styles = append(c.styles, styles...)
-	return c
+func (con Condition) Portrait(styles ...Style) Condition {
+	con.query = `(orientation: portrait)`
+	con.landscape = ""
+	con.styles = append(con.styles, styles...)
+	return con
 }
 
-func (c Condition) Landscape(styles ...Style) Condition {
-	c.query = `(orientation: landscape)`
-	c.portrait = ""
-	c.styles = append(c.styles, styles...)
-	return c
+func (con Condition) Landscape(styles ...Style) Condition {
+	con.query = `(orientation: landscape)`
+	con.portrait = ""
+	con.styles = append(con.styles, styles...)
+	return con
 }
 
 //If allows conditional styles.

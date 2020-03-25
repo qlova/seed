@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	script.RegisterRenderer(func(s seed.Any) []byte {
+	script.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
 		seed.in = function(element, duration) {
 			if (element.classList.contains("page")) {

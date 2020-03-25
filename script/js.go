@@ -58,6 +58,11 @@ func (v value) Promise() Promise {
 	return Promise{Native{language.Expression(v.q, v.raw)}, v.q}
 }
 
+//Promise returns the value as a promise.
+func (v value) File() File {
+	return File{v.Interface()}
+}
+
 //Interface returns the value as a interface.
 func (v value) Interface() Interface {
 	return Interface{v.q, Native{language.Expression(v.q, v.raw)}}

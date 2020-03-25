@@ -31,11 +31,11 @@ type Seed struct {
 	Data Data
 }
 
-type data struct {
+type seedData struct {
+	seed.Data
+
 	data Data
 }
-
-var seeds = make(map[seed.Seed]data)
 
 //New returns a repeater capable of repeating itself based on the given Go data.
 func New(data interface{}, options ...seed.Option) seed.Seed {
@@ -44,18 +44,24 @@ func New(data interface{}, options ...seed.Option) seed.Seed {
 	switch reflect.TypeOf(data).Kind() {
 	case reflect.Slice:
 		for i := 0; i < value.Len(); i++ {
-			data := seeds[repeater]
-			data.data = Data{i, value.Index(i).Interface()}
-			seeds[repeater] = data
+			var d seedData
+			repeater.Read(&d)
+
+			d.data = Data{i, value.Index(i).Interface()}
+			repeater.Write(d)
+
 			for _, o := range options {
 				repeater.Add(o)
 			}
 		}
 	case reflect.Map:
 		for _, i := range value.MapKeys() {
-			data := seeds[repeater]
-			data.data = Data{i.Interface(), value.MapIndex(i).Interface()}
-			seeds[repeater] = data
+			var d seedData
+			repeater.Read(&d)
+
+			d.data = Data{i.Interface(), value.MapIndex(i).Interface()}
+			repeater.Write(d)
+
 			for _, o := range options {
 				repeater.Add(o)
 			}
@@ -69,7 +75,9 @@ func New(data interface{}, options ...seed.Option) seed.Seed {
 
 //Do runs f.
 func Do(f func(Seed)) seed.Option {
-	return seed.Do(func(s seed.Seed) {
-		f(Seed{s, seeds[s].data})
+	return seed.Do(func(c seed.Seed) {
+		var d seedData
+		c.Read(&d)
+		f(Seed{c, d.data})
 	})
 }

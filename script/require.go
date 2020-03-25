@@ -6,20 +6,26 @@ import (
 
 //Require js script.
 func Require(path string, contents string) seed.Option {
-	return seed.Do(func(s seed.Seed) {
-		s.Root().Use()
-		data := seeds[s.Root()]
-		if data.requires == nil {
-			data.requires = make(map[string]string)
-			seeds[s.Root()] = data
+	return seed.Do(func(c seed.Seed) {
+		c.Use()
+
+		var d data
+		c.Read(&d)
+
+		if d.requires == nil {
+			d.requires = make(map[string]string)
 		}
 
-		data.requires[path] = contents
+		d.requires[path] = contents
+
+		c.Write(d)
 	})
 }
 
 func scripts(c seed.Seed, fill map[string]string) {
-	data := seeds[c]
+	var data data
+	c.Read(&data)
+
 	if data.requires != nil {
 		for path, contents := range data.requires {
 			fill[path] = contents
@@ -27,13 +33,13 @@ func scripts(c seed.Seed, fill map[string]string) {
 	}
 
 	for _, child := range c.Children() {
-		scripts(child.Root(), fill)
+		scripts(child, fill)
 	}
 }
 
 //Scripts returns the external scripts needed by this seed.
-func Scripts(root seed.Any) map[string]string {
+func Scripts(root seed.Seed) map[string]string {
 	result := make(map[string]string)
-	scripts(root.Root(), result)
+	scripts(root, result)
 	return result
 }

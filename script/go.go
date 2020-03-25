@@ -17,7 +17,7 @@ import (
 )
 
 //Go calls the given go function and tries to convert arguments to Go types.
-//To check error, call .Error() on the result.
+//To check error, call .Catch() on the result.
 func Go(f interface{}, args ...script.AnyValue) Script {
 	return func(q Ctx) {
 		q.rpc(f, args...)
@@ -25,7 +25,7 @@ func Go(f interface{}, args ...script.AnyValue) Script {
 }
 
 //Go calls the given go function and tries to convert arguments to Go types.
-//To check error, call .Error() on the result.
+//To check error, call .Catch() on the result.
 func (q Ctx) Go(f interface{}, args ...script.AnyValue) Promise {
 	return q.rpc(f, args...)
 }
@@ -53,9 +53,14 @@ func (q Ctx) rpc(f interface{}, args ...script.AnyValue) Promise {
 
 	//Get all positional arguments and add them to the formdata.
 	if len(args) > 0 {
-
 		for i, arg := range args {
-			q.Javascript(`%v.set("%v", JSON.stringify(%v));`, formdata, i, arg.ValueFromCtx(q))
+			var val = arg.ValueFromCtx(q)
+			switch val.(type) {
+			case File:
+				q.Javascript(`%v.set("%v", %v);`, formdata, i, val)
+			default:
+				q.Javascript(`%v.set("%v", JSON.stringify(%v));`, formdata, i, val)
+			}
 		}
 	}
 
@@ -90,13 +95,20 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	for i := StartFrom; i < f.Type().NumIn(); i++ {
 		var arg = u.Arg(strconv.Itoa(i - StartFrom))
 
-		var shell = reflect.New(f.Type().In(i)).Interface()
-		if err := json.NewDecoder(strings.NewReader(arg.String())).Decode(shell); err != nil {
-			log.Println(err)
-			return
-		}
+		var elem reflect.Value
 
-		var elem = reflect.ValueOf(shell).Elem()
+		switch f.Type().In(i) {
+		case reflect.TypeOf(user.File{}):
+			elem = reflect.ValueOf(arg.File())
+		default:
+			var shell = reflect.New(f.Type().In(i)).Interface()
+			if err := json.NewDecoder(strings.NewReader(arg.String())).Decode(shell); err != nil {
+				log.Println(err)
+				return
+			}
+
+			elem = reflect.ValueOf(shell).Elem()
+		}
 
 		if elem.Type() != f.Type().In(i) {
 			log.Println("type mismatch")

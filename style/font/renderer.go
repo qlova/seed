@@ -18,14 +18,15 @@ func newHarvester() harvester {
 	}
 }
 
-func (h harvester) harvest(s seed.Any) map[string]Font {
-	var data = seeds[s.Root()]
+func (h harvester) harvest(c seed.Seed) map[string]Font {
+	var data data
+	c.Read(&data)
 
 	for _, font := range data.fonts {
 		h.fonts[font.name] = font
 	}
 
-	for _, child := range s.Root().Children() {
+	for _, child := range c.Children() {
 		h.harvest(child)
 	}
 
@@ -33,8 +34,8 @@ func (h harvester) harvest(s seed.Any) map[string]Font {
 }
 
 func init() {
-	css.RegisterRenderer(func(s seed.Any) []byte {
-		var harvested = newHarvester().harvest(s)
+	css.RegisterRenderer(func(c seed.Seed) []byte {
+		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
 		for _, font := range harvested {

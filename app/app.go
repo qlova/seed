@@ -1,6 +1,8 @@
 package app
 
 import (
+	"image/color"
+
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/app/manifest"
 	"github.com/qlova/seed/app/service"
@@ -12,11 +14,12 @@ import (
 
 type App struct {
 	seed.Seed
-	*app
 }
 
 //App is a webapp generator.
 type app struct {
+	seed.Data
+
 	manifest manifest.Manifest
 	worker   service.Worker
 
@@ -27,12 +30,14 @@ type app struct {
 	page, loadingPage page.Page
 
 	description string
+
+	color color.Color
 }
 
 //Installed is true when the app is installed.
 var Installed = state.State{
 	Bool: state.Bool{
-		Value: state.RawValue("(window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone)"),
+		Value: state.Raw("(window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone)"),
 	},
 }
 
@@ -40,12 +45,12 @@ var Installed = state.State{
 func New(name string, options ...seed.Option) App {
 	var document = html.New()
 
-	var app = App{document.Body, &app{
+	var app = app{
 		document: document,
 		name:     name,
 		manifest: manifest.New(),
 		worker:   service.NewWorker(),
-	}}
+	}
 
 	document.Body.Add(css.Set("display", "flex"))
 	document.Body.Add(css.Set("flex-direction", "column"))
@@ -57,9 +62,15 @@ func New(name string, options ...seed.Option) App {
 		Sizes:  "512x512",
 	})
 
+	document.Body.Write(app)
+
 	for _, o := range options {
-		o.AddTo(app)
+		o.AddTo(document.Body)
 	}
 
-	return app
+	document.Body.Read(&app)
+
+	document.Write(app)
+
+	return App{document}
 }
