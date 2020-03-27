@@ -22,6 +22,7 @@ var browsers = []string{
 	"/Applications/Chromium.app/Contents/MacOS/Chromium",
 	"C:/Users/" + os.Getenv("USERNAME") + "/AppData/Local/Google/Chrome/Application/chrome.exe",
 	"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+	"C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
 }
 
 func launch(url string) {
