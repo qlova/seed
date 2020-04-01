@@ -22,19 +22,9 @@ func render(child seed.Seed) []byte {
 
 	for event, handler := range d.on {
 		b.Write(ToJavascript(func(q Ctx) {
-			if event == "press" {
-				q.Javascript(`seed.op(%v, async function() {`, q.Scope(child).Element())
-			} else {
-				q.Javascript(`%v.on%v = async function() {`, q.Scope(child).Element(), event)
-			}
-
+			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, q.Scope(child).Element(), event)
 			handler(q)
-
-			if event == "press" {
-				q.Javascript(`});`)
-			} else {
-				q.Javascript(`};`)
-			}
+			q.Javascript(`});`)
 		}))
 	}
 
@@ -96,6 +86,33 @@ seed.op = function(element, func, propagate) {
 
 	element.onclick = handler;
 }
+
+//seed.report is the error handling function. Pass the current element for 'OnError' based error handling.
+seed.report = function(err, element) {
+	if (element) {
+		while (true) {
+			if (element.onerror) element.onerror(err);
+			element = element.parentElement;
+			if (!element) break;
+		}
+	}
+	console.error(err);
+};
+
+seed.on = function(element, event, handler) {
+	let f = async function(ev) {
+		try {
+			await handler(ev);
+		} catch(e) {
+			seed.report(e, element);
+		}
+	};
+	if (event == "press") {
+		seed.op(element, f);
+	} else {
+		element["on"+event] = f;
+	}
+};
 
 seed.get = function(id) {
 	if (id in seed.get.cache) {
@@ -202,17 +219,9 @@ func adopt(child seed.Seed) Script {
 
 	for event, handler := range d.on {
 		s = s.Then(func(q Ctx) {
-			if event == "press" {
-				fmt.Fprintf(q, `seed.op(%v, async function() {`, q.Scope(child).Element())
-			} else {
-				fmt.Fprintf(q, `%v.on%v = async function() {`, q.Scope(child).Element(), event)
-			}
+			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, q.Scope(child).Element(), event)
 			handler(q)
-			if event == "press" {
-				fmt.Fprint(q, `});`)
-			} else {
-				fmt.Fprint(q, `};`)
-			}
+			fmt.Fprint(q, `});`)
 		})
 		if event != "ready" {
 			delete(d.on, event)

@@ -5,9 +5,19 @@ import (
 	"github.com/qlova/seed/style"
 )
 
+//Left aligns the seed to the start or left of its container.
+func Left() css.Rule {
+	return css.SetAlignSelf(css.FlexStart)
+}
+
 //Center center's the seed.
 func Center() css.Rule {
 	return css.SetAlignSelf(css.Center)
+}
+
+//Right aligns the seed to the end or right of its container.
+func Right() css.Rule {
+	return css.SetAlignSelf(css.FlexEnd)
 }
 
 //Aligner can align things.

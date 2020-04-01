@@ -4,6 +4,7 @@ package page
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/script"
@@ -11,7 +12,7 @@ import (
 )
 
 func ID(p Page) string {
-	return reflect.TypeOf(p).String()
+	return strings.Replace(reflect.TypeOf(p).String(), ".", "_", -1)
 }
 
 type Page interface {

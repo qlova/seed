@@ -10,6 +10,7 @@ import (
 	"github.com/qlova/seed/html/attr"
 	"github.com/qlova/seed/page"
 	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/script/window"
 
 	"github.com/qlova/seed/s/column"
 	"github.com/qlova/seed/s/html/link"
@@ -27,6 +28,10 @@ func (a App) build() {
 	a.Seed.Read(&app)
 
 	app.document.Body.Add(
+		script.OnError(func(q script.Ctx, err script.Error) {
+			window.Alert(err.String)(q)
+		}),
+
 		column.New(seed.Do(func(c seed.Seed) {
 			if app.loadingPage != nil {
 				app.loadingPage.Page(page.Scope(c))
@@ -175,6 +180,11 @@ func (a App) build() {
 								args.push(arg);
 							}
 							Socket.send(JSON.stringify(args));
+						};
+						let old = console.error;
+						console.error = function() {
+							old.apply(null, arguments);
+							console.log.apply(null, arguments);
 						};
 					}
 

@@ -104,21 +104,18 @@ func (c seed) Write(d Data) {
 	c[t] = reflect.ValueOf(d)
 }
 
-//ID returns a unique id for the seed.
 func (c seed) ID() int {
 	var d data
 	c.Read(&d)
 	return d.id
 }
 
-//Parent returns the parent seed.
 func (c seed) Parent() Seed {
 	var d data
 	c.Read(&d)
 	return d.parent
 }
 
-//Parent returns the parent seed.
 func (c seed) Use() {
 	var d data
 	c.Read(&d)
@@ -126,21 +123,18 @@ func (c seed) Use() {
 	c.Write(d)
 }
 
-//Parent returns the parent seed.
 func (c seed) Used() bool {
 	var d data
 	c.Read(&d)
 	return d.used
 }
 
-//Children returns the children of this seed.
 func (c seed) Children() []Seed {
 	var d data
 	c.Read(&d)
 	return d.children
 }
 
-//Add options to this seed.
 func (c seed) Add(options ...Option) {
 	for _, o := range options {
 		o.AddTo(c)

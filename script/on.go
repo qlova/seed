@@ -13,31 +13,15 @@ func On(event string, do Script) seed.Option {
 
 		switch q := c.(type) {
 		case Seed:
-			//s.Root().Use()
-			if event == "press" {
-				q.Javascript(`seed.op(%v, async function() {`, q.Element())
-			} else {
-				q.Javascript(`%v.on%v = async function() {`, q.Element(), event)
-			}
+			c.Use()
+			q.Javascript(`seed.on(%v, "%v", async function() {`, q.Element(), event)
 			do(q.Ctx)
-			if event == "press" {
-				q.Javascript(`});`)
-			} else {
-				q.Javascript(`};`)
-			}
+			q.Javascript(`});`)
 		case Undo:
 			//s.Root().Use()
-			if event == "press" {
-				q.Javascript(`seed.op(%v, async function() {`, q.Element())
-			} else {
-				q.Javascript(`%v.on%v = async function() {`, q.Element(), event)
-			}
+			q.Javascript(`seed.on(%v, "%v", async function() {`, q.Element(), event)
 			q.Ctx.Write(ToJavascript(d.on[event]))
-			if event == "press" {
-				q.Javascript(`});`)
-			} else {
-				q.Javascript(`};`)
-			}
+			q.Javascript(`});`)
 		default:
 			//s.Root().Use()
 			if d.on == nil {
@@ -64,4 +48,11 @@ func OnReady(do Script) seed.Option {
 
 func OnInput(do Script) seed.Option {
 	return On("input", do)
+}
+
+//OnError calls the provided script when there is an error not handled by this seed or any children seeds.
+func OnError(do func(q Ctx, err Error)) seed.Option {
+	return On("error", func(q Ctx) {
+		do(q, Error{q, q.Value(`arguments[0]`).String(), q.Int(1)})
+	})
 }
