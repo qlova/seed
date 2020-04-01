@@ -8,3 +8,10 @@ func Alert(msg script.String) script.Script {
 		q.Javascript(`window.alert(%v)`, msg)
 	}
 }
+
+//Close attempts to close the window.
+func Close() script.Script {
+	return func(q script.Ctx) {
+		q.Javascript(`window.close()`)
+	}
+}
