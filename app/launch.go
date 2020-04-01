@@ -26,6 +26,12 @@ var browsers = []string{
 }
 
 func launch(url string) {
+
+	//fix strange windows bug.
+	if runtime.GOOS == "windows" {
+		url = strings.Replace(url, "[::]", "[::1]", 1)
+	}
+
 	var err error
 
 	/*if launchNative(url) == nil {
