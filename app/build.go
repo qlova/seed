@@ -9,6 +9,7 @@ import (
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/html/attr"
 	"github.com/qlova/seed/page"
+	"github.com/qlova/seed/popup"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/script/window"
 
@@ -45,6 +46,7 @@ func (a App) build() {
 
 	app.document.Body.Add(
 		page.Harvest(app.page),
+		popup.Harvest(),
 	)
 
 	var onready = string(script.Render(a))
