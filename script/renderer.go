@@ -91,7 +91,10 @@ seed.op = function(element, func, propagate) {
 seed.report = function(err, element) {
 	if (element) {
 		while (true) {
-			if (element.onerror) element.onerror(err);
+			if (element.onerror) {
+				element.onerror(err);
+				break;
+			}
 			element = element.parentElement;
 			if (!element) break;
 		}
