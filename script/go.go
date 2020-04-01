@@ -5,12 +5,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"math/big"
 	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/qlova/script"
 	"github.com/qlova/seed/user"
@@ -20,7 +22,7 @@ import (
 //To check error, call .Catch() on the result.
 func Go(f interface{}, args ...script.AnyValue) Script {
 	return func(q Ctx) {
-		q.rpc(f, args...)
+		q.Go(f, args...).Wait()
 	}
 }
 
@@ -96,10 +98,19 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 		var arg = u.Arg(strconv.Itoa(i - StartFrom))
 
 		var elem reflect.Value
+		var reader *io.Reader
 
 		switch f.Type().In(i) {
 		case reflect.TypeOf(user.File{}):
 			elem = reflect.ValueOf(arg.File())
+		case reflect.TypeOf(reader).Elem():
+			elem = reflect.ValueOf(arg.File())
+		case reflect.TypeOf(time.Time{}):
+			t, err := time.Parse(`"2006-01-02"`, arg.String())
+			if err != nil {
+				t, err = time.Parse(`"2006-01"`, arg.String())
+			}
+			elem = reflect.ValueOf(t)
 		default:
 			var shell = reflect.New(f.Type().In(i)).Interface()
 			if err := json.NewDecoder(strings.NewReader(arg.String())).Decode(shell); err != nil {
@@ -110,9 +121,12 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 			elem = reflect.ValueOf(shell).Elem()
 		}
 
-		if elem.Type() != f.Type().In(i) {
-			log.Println("type mismatch")
-			return
+		var ElemType, ArgType = elem.Type(), f.Type().In(i)
+		if ElemType != ArgType {
+			if !(ArgType.Kind() == reflect.Interface && ElemType.Implements(ArgType)) {
+				log.Println("type mismatch")
+				return
+			}
 		}
 
 		in = append(in, elem)
@@ -125,6 +139,10 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 
 	if len(results) == 1 {
+		if err, ok := results[0].Interface().(error); ok {
+			u.Report(err)
+			return
+		}
 		var buffer bytes.Buffer
 		err := json.NewEncoder(&buffer).Encode(results[0].Interface())
 		if err != nil {
