@@ -5,42 +5,51 @@ import (
 )
 
 type Attacher interface {
-	Top() Style
-	Left() Style
-	Right() Style
-	Bottom() Style
+	Style
+
+	Top() Attacher
+	Left() Attacher
+	Right() Attacher
+	Bottom() Attacher
 }
 
 func AttachToParent() Attacher {
 	return parentAttacher{}
 }
 
-type parentAttacher struct{}
+type parentAttacher struct {
+	Style
+	rules css.Rules
+}
 
-func (parentAttacher) Top() Style {
-	return css.Rules{
+func (p parentAttacher) Top() Attacher {
+	p.rules = append(p.rules,
 		css.SetTop(css.Zero),
 		css.SetPosition(css.Absolute),
-	}
+	)
+	return parentAttacher{p.rules, p.rules}
 }
 
-func (parentAttacher) Left() Style {
-	return css.Rules{
+func (p parentAttacher) Left() Attacher {
+	p.rules = append(p.rules,
 		css.SetLeft(css.Zero),
 		css.SetPosition(css.Absolute),
-	}
+	)
+	return parentAttacher{p.rules, p.rules}
 }
 
-func (parentAttacher) Right() Style {
-	return css.Rules{
+func (p parentAttacher) Right() Attacher {
+	p.rules = append(p.rules,
 		css.SetRight(css.Zero),
 		css.SetPosition(css.Absolute),
-	}
+	)
+	return parentAttacher{p.rules, p.rules}
 }
 
-func (parentAttacher) Bottom() Style {
-	return css.Rules{
+func (p parentAttacher) Bottom() Attacher {
+	p.rules = append(p.rules,
 		css.SetBottom(css.Zero),
 		css.SetPosition(css.Absolute),
-	}
+	)
+	return parentAttacher{p.rules, p.rules}
 }

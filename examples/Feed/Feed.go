@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/app"
+	"github.com/qlova/seed/js/console"
 	"github.com/qlova/seed/s/button"
 	"github.com/qlova/seed/s/feed"
 	"github.com/qlova/seed/s/text"
@@ -27,7 +28,7 @@ func main() {
 				text.New("hello",
 					font.SetColor(seed.Red),
 					script.OnClick(func(q script.Ctx) {
-						q.Print(f.Data.String())
+						console.Log(f.Data.String())
 					}),
 				),
 			)

@@ -114,9 +114,13 @@ func SetAttribute(name, value string) seed.Option {
 
 		switch q := c.(type) {
 		case script.Seed:
-			q.Javascript(`%v.setAttribute(%v, %v)`, q.Element(), strconv.Quote(name), strconv.Quote(value))
+			q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(value))
 		case script.Undo:
-			q.Javascript(`%v.setAttribute(%v, %v)`, q.Element(), strconv.Quote(name), data.attributes[name])
+			if attr, ok := data.attributes[name]; ok {
+				q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(attr))
+			} else {
+				q.Javascript(`%v.removeAttribute(%v);`, q.Element(), strconv.Quote(name))
+			}
 		default:
 			if data.attributes == nil {
 				data.attributes = make(map[string]string)

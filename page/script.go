@@ -106,6 +106,7 @@ seed.goto = async function(id) {
 	localStorage.setItem('*CurrentPath', path);
 
 	if (!seed.goto.back && seed.production) history.pushState([seed.CurrentPage.id].concat(seed.CurrentPage.args), data.title, path);
+	if (!seed.goto.back && !seed.production) history.replaceState([seed.CurrentPage.id].concat(seed.CurrentPage.args), data.title, path);
 
 	seed.animating = false;
 	seed.NextPage = null;

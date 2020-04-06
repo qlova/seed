@@ -25,6 +25,8 @@ seed.show = async function(id) {
 	popup.template = popup.parent;
 
 	popup.parent.parentElement.appendChild(popup);
+
+	if (popup.onshow) await popup.onshow();
 };
 
 seed.hide = async function(id) {
@@ -33,6 +35,9 @@ seed.hide = async function(id) {
 		console.error("seed.show: invalid popup ", id);
 		return;
 	}
+
+	if (popup.onhide) await popup.onhide();
+
 	popup.template.content.appendChild(popup);
 };`)
 	})

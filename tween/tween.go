@@ -32,8 +32,8 @@ func Track(key string) seed.Option {
 //Tween attempts to tween any elements with This() options that have changed position, scale or rotation.
 func Tween(s script.Script) script.Script {
 	return func(q script.Ctx) {
-		q.Javascript(`try { flipping.read(); } catch(error) {}`)
+		q(`try { flipping.read(); } catch(error) {}`)
 		s(q)
-		q.Javascript(`try { flipping.flip(); } catch(error) {}`)
+		q(`try { flipping.flip(); } catch(error) {}`)
 	}
 }

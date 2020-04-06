@@ -41,11 +41,11 @@ func New(options ...Option) Transition {
 	t.Option = seed.Do(func(c seed.Seed) {
 		c.Add(
 			page.OnEnter(func(q script.Ctx) {
-				t.In.AddTo(q.Scope(c))
-				fmt.Fprintf(q, `seed.in(%v, 0.4);`, q.Scope(c).Element())
+				t.In.AddTo(script.Scope(c, q))
+				fmt.Fprintf(q, `seed.in(%v, 0.4);`, script.Scope(c, q).Element())
 			}).And(page.OnExit(func(q script.Ctx) {
-				t.Out.AddTo(q.Scope(c))
-				fmt.Fprintf(q, `seed.out(%v, 0.4);`, q.Scope(c).Element())
+				t.Out.AddTo(script.Scope(c, q))
+				fmt.Fprintf(q, `seed.out(%v, 0.4);`, script.Scope(c, q).Element())
 			})),
 		)
 	})

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/js"
 )
 
 type Renderer func(root seed.Seed) []byte
@@ -21,11 +22,11 @@ func render(child seed.Seed) []byte {
 	child.Read(&d)
 
 	for event, handler := range d.on {
-		b.Write(ToJavascript(func(q Ctx) {
-			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, q.Scope(child).Element(), event)
+		js.NewCtx(&b)(func(q Ctx) {
+			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Scope(child, q).Element(), event)
 			handler(q)
-			q.Javascript(`});`)
-		}))
+			q(`});`)
+		})
 	}
 
 	for _, child := range child.Children() {
@@ -33,9 +34,9 @@ func render(child seed.Seed) []byte {
 	}
 
 	if _, ok := d.on["ready"]; ok {
-		b.Write(ToJavascript(func(q Ctx) {
-			fmt.Fprintf(q, `%[1]v.onready();`, q.Scope(child).Element())
-		}))
+		js.NewCtx(&b)(func(q Ctx) {
+			fmt.Fprintf(q, `%[1]v.onready();`, Scope(child, q).Element())
+		})
 	}
 
 	return b.Bytes()
@@ -112,6 +113,12 @@ seed.on = function(element, event, handler) {
 	};
 	if (event == "press") {
 		seed.op(element, f);
+	} else if (event == "enter") {
+		element["onkeypress"] = async function(ev) {
+			if (ev.keyCode == 13 || ev.which == 13) { 
+				await f(ev);
+			}
+		};
 	} else {
 		element["on"+event] = f;
 	}
@@ -210,7 +217,7 @@ seed.dynamic = {};
 func Adopt(c seed.Seed) Script {
 	var s = Script(func(q Ctx) {})
 
-	s = s.Then(adopt(c))
+	s = s.Append(adopt(c))
 
 	return s
 }
@@ -221,8 +228,8 @@ func adopt(child seed.Seed) Script {
 	child.Read(&d)
 
 	for event, handler := range d.on {
-		s = s.Then(func(q Ctx) {
-			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, q.Scope(child).Element(), event)
+		s = s.Append(func(q Ctx) {
+			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Scope(child, q).Element(), event)
 			handler(q)
 			fmt.Fprint(q, `});`)
 		})
@@ -232,12 +239,12 @@ func adopt(child seed.Seed) Script {
 	}
 
 	for _, child := range child.Children() {
-		s = s.Then(adopt(child))
+		s = s.Append(adopt(child))
 	}
 
 	if _, ok := d.on["ready"]; ok {
-		s = s.Then(func(q Ctx) {
-			fmt.Fprintf(q, `%[1]v.onready();`, q.Scope(child).Element())
+		s = s.Append(func(q Ctx) {
+			fmt.Fprintf(q, `%[1]v.onready();`, Scope(child, q).Element())
 		})
 		delete(d.on, "ready")
 	}

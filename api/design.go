@@ -2,37 +2,102 @@
 package api
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"reflect"
-	"strconv"
 
-	"github.com/qlova/seed/app"
+	"github.com/qlova/seed"
 	"github.com/qlova/seed/user"
 )
 
+type Option func(*Design)
+
 //Endpoint is an API endpoint with a route and handler.
-type Endpoint struct {
-	Route   string
-	Handler interface{}
+func Endpoint(route string, handler interface{}) Option {
+	return func(d *Design) {
+		d.endpoints = append(d.endpoints, endpoint{
+			route:   route,
+			handler: handler,
+		})
+	}
+}
+
+type endpoint struct {
+	route   string
+	handler interface{}
 }
 
 //Design is an API design for your app.
 type Design struct {
-	Endpoints []Endpoint
+	endpoints []endpoint
 }
 
 //New returns a new API design.
-func New() Design {
-	return Design{}
+func New(options ...Option) Design {
+	d := Design{}
+	for _, o := range options {
+		o(&d)
+	}
+	return d
+}
+
+type data struct {
+	seed.Data
+
+	handlers map[string]http.Handler
+}
+
+func (d Design) And(more ...seed.Option) seed.Option {
+	return seed.And(d, more...)
 }
 
 //AddTo app.
-func (d Design) AddTo(app app.App) {
-	for _, endpoint := range d.Endpoints {
-		var f = reflect.ValueOf(endpoint.Handler)
+func (d Design) AddTo(c seed.Seed) {
+	var data data
+	c.Read(&data)
+
+	if data.handlers == nil {
+		data.handlers = make(map[string]http.Handler)
+		c.Write(data)
+	}
+
+	for _, endpoint := range d.endpoints {
+		var route = endpoint.route
+		var handler = endpoint.handler
+		data.handlers[route] = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var path = r.URL.Path
+			if len(path) > len(route) && path[0:len(route)] == route {
+				r.URL.Path = path[len(route):]
+			}
+
+			var u = user.CtxFromHandler(w, r)
+
+			//Create API struct
+			T := reflect.TypeOf(handler)
+			if T.NumIn() == 2 {
+				var args = reflect.New(T.In(1))
+
+				for i := 0; i < args.Elem().NumField(); i++ {
+					var field = args.Elem().Type().Field(i)
+					switch field.Type {
+					case reflect.TypeOf(""):
+						args.Elem().Field(i).Set(reflect.ValueOf(u.Arg(field.Name).String()))
+					}
+
+				}
+
+				var in = []reflect.Value{reflect.ValueOf(u), args.Elem()}
+
+				reflect.ValueOf(handler).Call(in)
+			} else if T.NumIn() == 1 {
+				var in = []reflect.Value{reflect.ValueOf(u)}
+
+				reflect.ValueOf(handler).Call(in)
+			}
+		})
+	}
+
+	/*
+		var f = reflect.ValueOf(endpoint.handler)
 		var route = endpoint.Route
 		app.Handlers[route] = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -88,21 +153,5 @@ func (d Design) AddTo(app app.App) {
 				return
 			}
 		})
-	}
-}
-
-//Endpoint creates a new endpoint for your API.
-//This will panic if the handler is invalid.
-func (d *Design) Endpoint(route string, handler interface{}) error {
-
-	if handler == nil {
-		panic("handler is nil")
-	}
-
-	d.Endpoints = append(d.Endpoints, Endpoint{
-		Route:   route,
-		Handler: handler,
-	})
-
-	return nil
+	}*/
 }

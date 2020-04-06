@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"strconv"
 
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/user"
 )
@@ -72,20 +73,20 @@ func (v Value) setFor(u user.Ctx, value string) {
 //Set the value.
 func (v Value) set(q script.Ctx, value script.String) {
 	if !v.ro {
-		q.Javascript(`%v.setItem("%v", %v);`, v.storage, v.key, q.Raw(value))
+		q(fmt.Sprintf(`%v.setItem("%v", %v);`, v.storage, v.key, value))
 	}
-	q.Javascript(`if (seed.state["%[1]v"]) seed.state["%[1]v"].changed();`, v.key)
+	q(fmt.Sprintf(`if (seed.state["%[1]v"]) seed.state["%[1]v"].changed();`, v.key))
 }
 
 //Get the value.
-func (v Value) get(q script.Ctx) script.String {
+func (v Value) get() script.String {
 	if v.raw != "" {
-		return q.Value(v.raw).String()
+		return js.String{js.NewValue(v.raw)}
 	}
-	return q.Value(v.getter()).String()
+	return js.String{v.getter()}
 }
 
 //Get the value.
-func (v Value) getter() string {
-	return fmt.Sprintf(`(%v.getItem("%v") || %v)`, v.storage, v.key, v.fallback)
+func (v Value) getter() js.Value {
+	return js.NewValue(fmt.Sprintf(`(%v.getItem("%v") || %v)`, v.storage, v.key, strconv.Quote(v.fallback)))
 }

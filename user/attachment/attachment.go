@@ -2,8 +2,10 @@ package attachment
 
 import (
 	"encoding/base64"
+	"fmt"
 	"math/big"
 
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 )
 
@@ -13,13 +15,13 @@ type Attachment struct {
 
 func (a Attachment) Set(v script.Value) func(script.Ctx) {
 	return func(q script.Ctx) {
-		q.Javascript(`if (!window.attachments) window.attachments = {};`)
-		q.Javascript(`window.attachments["%v"] = %v;`, a.string, q.Raw(v))
+		q(`if (!window.attachments) window.attachments = {};`)
+		q(fmt.Sprintf(`window.attachments["%v"] = %v;`, a.string, v))
 	}
 }
 
-func (a Attachment) ValueFromCtx(q script.AnyCtx) script.Value {
-	return script.CtxFrom(q).Value(`window.attachments["%v"]`, a.string).File()
+func (a Attachment) GetValue() script.Value {
+	return js.NewValue(`window.attachments[%v]`, js.NewString(a.string))
 }
 
 var id int64

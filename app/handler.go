@@ -9,6 +9,7 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 
+	"github.com/qlova/seed/api"
 	"github.com/qlova/seed/asset/inbed"
 	"github.com/qlova/seed/script"
 )
@@ -103,6 +104,10 @@ func (a App) Handler() http.Handler {
 			w.Write(worker)
 		}
 	})))
+
+	for route, handler := range api.Routes(app.document) {
+		router.Handle(route, handler)
+	}
 
 	router.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

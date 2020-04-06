@@ -14,61 +14,56 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qlova/script"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/user"
 )
 
-//Go calls the given go function and tries to convert arguments to Go types.
-//To check error, call .Catch() on the result.
-func Go(f interface{}, args ...script.AnyValue) Script {
-	return func(q Ctx) {
-		q.Go(f, args...).Wait()
-	}
-}
-
-//Go calls the given go function and tries to convert arguments to Go types.
-//To check error, call .Catch() on the result.
-func (q Ctx) Go(f interface{}, args ...script.AnyValue) Promise {
-	return q.rpc(f, args...)
-}
-
 var rpcID int64 = 1
 
-func (q Ctx) rpc(f interface{}, args ...script.AnyValue) Promise {
-	//Get a unique string reference for f.
-	var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
-
-	rpcID++
-
-	var value = reflect.ValueOf(f)
-
-	if value.Kind() != reflect.Func || value.Type().NumOut() > 1 {
-		panic("Script.Call: Must pass a Go function without zero or one return values, not a " + reflect.TypeOf(f).String())
+//Go calls the given go function and tries to convert arguments to Go types.
+func Go(f interface{}, args ...AnyValue) Script {
+	return func(q Ctx) {
+		RPC(f, args...)
 	}
-	Exports[name] = value
+}
 
-	var CallingString = `/call/` + name
+func RPC(f interface{}, args ...AnyValue) func(q Ctx) Value {
+	return func(q Ctx) Value {
+		//Get a unique string reference for f.
+		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
 
-	var variable = Unique()
-	var formdata = Unique()
-	q.Javascript(`let ` + formdata + ` = new FormData();`)
+		rpcID++
 
-	//Get all positional arguments and add them to the formdata.
-	if len(args) > 0 {
-		for i, arg := range args {
-			var val = arg.ValueFromCtx(q)
-			switch val.(type) {
-			case File:
-				q.Javascript(`%v.set("%v", %v);`, formdata, i, val)
-			default:
-				q.Javascript(`%v.set("%v", JSON.stringify(%v));`, formdata, i, val)
+		var value = reflect.ValueOf(f)
+
+		if value.Kind() != reflect.Func || value.Type().NumOut() > 1 {
+			panic("Script.Call: Must pass a Go function without zero or one return values, not a " + reflect.TypeOf(f).String())
+		}
+		Exports[name] = value
+
+		var CallingString = `/call/` + name
+
+		var formdata = Unique()
+		var variable = Unique()
+
+		q(`let ` + formdata + ` = new FormData();`)
+
+		//Get all positional arguments and add them to the formdata.
+		if len(args) > 0 {
+			for i, arg := range args {
+				switch arg.(type) {
+				case AnyFile:
+					q.Run(formdata+`.set`, q.String(strconv.Itoa(i)), arg)
+				default:
+					q.Run(formdata+`.set`, q.String(strconv.Itoa(i)), js.NewValue(`JSON.stringify(%v)`, arg))
+				}
 			}
 		}
+
+		q([]byte(`let ` + variable + ` = await seed.request("POST", ` + formdata + `, "` + CallingString + `");`))
+
+		return js.NewValue(variable)
 	}
-
-	q.Write([]byte(`let ` + variable + ` = seed.request("POST", ` + formdata + `, "` + CallingString + `");`))
-
-	return q.Value(variable).Promise()
 }
 
 var Exports = make(map[string]reflect.Value)

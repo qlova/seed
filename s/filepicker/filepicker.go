@@ -3,6 +3,7 @@ package filepicker
 import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/html/attr"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/user/attachment"
 
@@ -18,7 +19,7 @@ func New(options ...seed.Option) seed.Seed {
 func Var(a attachment.Attachment, options ...seed.Option) seed.Seed {
 	return New(seed.Do(func(c seed.Seed) {
 		c.Add(script.On("input", func(q script.Ctx) {
-			a.Set(q.Value(`%[1]v.files[0]`, q.Scope(c).Element()).File())(q)
+			a.Set(js.NewValue(script.Scope(c, q).Element() + `.files[0]`))(q)
 		}))
 	}).And(options...))
 }

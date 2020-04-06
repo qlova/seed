@@ -37,6 +37,18 @@ type Option interface {
 	And(...Option) Option
 }
 
+type Options []Option
+
+func (options Options) AddTo(c Seed) {
+	for _, o := range options {
+		o.AddTo(c)
+	}
+}
+
+func (options Options) And(more ...Option) Option {
+	return append(options, more...)
+}
+
 //OptionFunc can be used to create an Option.
 type OptionFunc func(c Seed)
 
@@ -78,7 +90,7 @@ type Seed interface {
 	Parent() Seed
 	Children() []Seed
 
-	Add(...Option)
+	Add(...Option) Option
 }
 
 type seed map[reflect.Type]reflect.Value
@@ -135,10 +147,11 @@ func (c seed) Children() []Seed {
 	return d.children
 }
 
-func (c seed) Add(options ...Option) {
+func (c seed) Add(options ...Option) Option {
 	for _, o := range options {
 		o.AddTo(c)
 	}
+	return NewOption(func(Seed) {})
 }
 
 func Add(a, b Seed) {

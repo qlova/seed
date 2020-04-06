@@ -2,6 +2,7 @@ package state
 
 import (
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/user"
 )
@@ -22,11 +23,11 @@ func (state State) Not() State {
 
 func (state State) Toggle() script.Script {
 	return func(q script.Ctx) {
-		q.If(state, func() {
+		q.If(state, func(q script.Ctx) {
 			state.Unset(q)
-		}).Else(func() {
+		}).Else(func(q script.Ctx) {
 			state.Set(q)
-		}).End()
+		})
 	}
 }
 
@@ -35,17 +36,17 @@ func (state State) Set(q script.Ctx) {
 	var reference = state.key
 	if state.not {
 		if !state.ro {
-			state.set(q, q.False)
+			state.set(q, js.False)
 		}
-		q.Javascript(`if (seed.state["` + reference + `"])`)
-		q.Javascript(`await seed.state["` + reference + `"].unset();`)
+		q(`if (seed.state["` + reference + `"])`)
+		q(`await seed.state["` + reference + `"].unset();`)
 
 	} else {
 		if !state.ro {
-			state.set(q, q.True)
+			state.set(q, js.True)
 		}
-		q.Javascript(`if (seed.state["` + reference + `"])`)
-		q.Javascript(`await seed.state["` + reference + `"].set();`)
+		q(`if (seed.state["` + reference + `"])`)
+		q(`await seed.state["` + reference + `"].set();`)
 	}
 }
 
@@ -53,13 +54,13 @@ func (state State) Set(q script.Ctx) {
 func (state State) Unset(q script.Ctx) {
 	var reference = state.key
 	if state.not {
-		state.set(q, q.True)
-		q.Javascript(`if (seed.state["` + reference + `"])`)
-		q.Javascript(`await seed.state["` + reference + `"].set();`)
+		state.set(q, js.True)
+		q(`if (seed.state["` + reference + `"])`)
+		q(`await seed.state["` + reference + `"].set();`)
 	} else {
-		state.set(q, q.False)
-		q.Javascript(`if (seed.state["` + reference + `"])`)
-		q.Javascript(`await seed.state["` + reference + `"].unset();`)
+		state.set(q, js.False)
+		q(`if (seed.state["` + reference + `"])`)
+		q(`await seed.state["` + reference + `"].unset();`)
 
 	}
 }
@@ -102,21 +103,21 @@ func (state State) If(options ...seed.Option) seed.Option {
 			data.unset = make(map[State]script.Script)
 		}
 
-		data.set[state] = data.set[state].Then(func(q script.Ctx) {
+		data.set[state] = data.set[state].Append(func(q script.Ctx) {
 			for _, option := range options {
 				if other, ok := option.(seed.Seed); ok {
-					q.Scope(other).AddTo(q.Scope(c))
+					script.Scope(other, q).AddTo(script.Scope(c, q))
 				} else {
-					option.AddTo(q.Scope(c))
+					option.AddTo(script.Scope(c, q))
 				}
 			}
 		})
-		data.unset[state] = data.unset[state].Then(func(q script.Ctx) {
+		data.unset[state] = data.unset[state].Append(func(q script.Ctx) {
 			for _, option := range options {
 				if other, ok := option.(seed.Seed); ok {
-					q.Scope(c).Undo(q.Scope(other))
+					script.Scope(c, q).Undo(script.Scope(other, q))
 				} else {
-					q.Scope(c).Undo(option)
+					script.Scope(c, q).Undo(option)
 				}
 			}
 		})

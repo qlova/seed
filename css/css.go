@@ -58,10 +58,10 @@ func (r Rule) AddTo(c seed.Seed) {
 	switch c := c.(type) {
 	case script.Seed:
 		property, value := r.Split()
-		fmt.Fprintf(c.Ctx, `%v.style.%v = "%v";`, c.Element(), dashes2camels(property), value)
+		fmt.Fprintf(c.Q, `%v.style.%v = "%v";`, c.Element(), dashes2camels(property), value)
 	case script.Undo:
 		property := r.Property()
-		fmt.Fprintf(c.Ctx, `%v.style.%v = "";`, c.Element(), dashes2camels(property))
+		fmt.Fprintf(c.Q, `%v.style.%v = "";`, c.Element(), dashes2camels(property))
 	default:
 		if d.rules == nil {
 			d.rules = make(rules)

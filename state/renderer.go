@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 )
 
@@ -34,19 +35,19 @@ func (h harvester) harvest(c seed.Seed) harvester {
 
 	for state, script := range data.set {
 		harvest := h.states[state]
-		harvest.set = harvest.set.Then(script)
+		harvest.set = harvest.set.Append(script)
 		h.states[state] = harvest
 	}
 
 	for state, script := range data.unset {
 		harvest := h.states[state]
-		harvest.unset = harvest.unset.Then(script)
+		harvest.unset = harvest.unset.Append(script)
 		h.states[state] = harvest
 	}
 
 	for variable, script := range data.change {
 		harvest := h.variables[variable]
-		harvest.change = harvest.change.Then(script)
+		harvest.change = harvest.change.Append(script)
 		h.variables[variable] = harvest
 	}
 
@@ -70,17 +71,17 @@ func init() {
 			}
 			fmt.Fprintf(&b, `seed.state["%v"] = {`, state.key)
 			fmt.Fprint(&b, `set: async function() {`)
-			b.Write(script.ToJavascript(scripts.set))
+			js.NewCtx(&b)(scripts.set)
 			fmt.Fprint(&b, `}, unset: async function() {`)
-			b.Write(script.ToJavascript(scripts.unset))
+			js.NewCtx(&b)(scripts.unset)
 			fmt.Fprint(&b, `}, changed: async function() {`)
-			b.Write(script.ToJavascript(func(q script.Ctx) {
-				q.If(state, func() {
+			js.NewCtx(&b)(func(q script.Ctx) {
+				q.If(state, func(q script.Ctx) {
 					fmt.Fprintf(q, `seed.state["%v"].set();`, state.key)
-				}).Else(func() {
+				}).Else(func(q script.Ctx) {
 					fmt.Fprintf(q, `seed.state["%v"].unset();`, state.key)
-				}).End()
-			}))
+				})
+			})
 			fmt.Fprint(&b, `}};`)
 		}
 
@@ -97,7 +98,7 @@ func init() {
 			}
 			fmt.Fprintf(&b, `seed.state["%v"] = {`, variable.key)
 			fmt.Fprint(&b, `changed: async function() {`)
-			b.Write(script.ToJavascript(scripts.change))
+			js.NewCtx(&b)(scripts.change)
 			fmt.Fprint(&b, `}};`)
 		}
 

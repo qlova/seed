@@ -19,14 +19,14 @@ func NewString(initial string, options ...Option) String {
 	return String{newValue(strconv.Quote(initial), options...)}
 }
 
-//StringFromCtx implements script.AnyString
-func (s String) StringFromCtx(q script.AnyCtx) script.String {
-	return s.get(script.CtxFrom(q))
+//GetString implements script.AnyString
+func (s String) GetString() script.String {
+	return s.get()
 }
 
-//ValueFromCtx implements script.AnyValue
-func (s String) ValueFromCtx(q script.AnyCtx) script.Value {
-	return s.get(script.CtxFrom(q))
+//GetValue implements script.AnyValue
+func (s String) GetValue() script.Value {
+	return s.get().Value
 }
 
 //Set allows setting the value of a String in the given script ctx.
@@ -65,7 +65,7 @@ func (s String) SetText() seed.Option {
 
 		if s.raw != "" {
 			c.Add(script.OnReady(func(q script.Ctx) {
-				fmt.Fprintf(q, `%v.innerText = %v;`, q.Scope(c).Element(), q.Raw(s.get(q)))
+				fmt.Fprintf(q, `%v.innerText = %v;`, script.Scope(c, q).Element(), s.get())
 			}))
 		}
 
@@ -77,14 +77,14 @@ func (s String) SetText() seed.Option {
 				data.change = make(map[Value]script.Script)
 			}
 
-			data.change[s.Value] = data.change[s.Value].Then(func(q script.Ctx) {
-				q.Javascript(`%v.innerText = %v;`, q.Scope(c).Element(), q.Raw(s.get(q)))
+			data.change[s.Value] = data.change[s.Value].Append(func(q script.Ctx) {
+				q(fmt.Sprintf(`%v.innerText = %v;`, script.Scope(c, q).Element(), s.get()))
 			})
 
 			if s.dependencies != nil {
 				for _, dep := range *s.dependencies {
-					data.change[dep] = data.change[dep].Then(func(q script.Ctx) {
-						q.Javascript(`seed.state["%v"].changed();`, s.key)
+					data.change[dep] = data.change[dep].Append(func(q script.Ctx) {
+						q(fmt.Sprintf(`seed.state["%v"].changed();`, s.key))
 					})
 				}
 			}

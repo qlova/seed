@@ -39,25 +39,26 @@ type Undo struct {
 }
 
 func (c Undo) AddTo(other seed.Seed) {
-	c.Javascript(`%v.style.display = "none";`, c.Element())
+	c.Q(fmt.Sprintf(`%v.style.display = "none";`, c.Element()))
 }
 
-func (c Undo) Add(options ...seed.Option) {
+func (c Undo) Add(options ...seed.Option) seed.Option {
 	for _, o := range options {
 		if other, ok := o.(seed.Seed); ok {
-			o = Undo{c.Scope(other)}
+			o = Undo{Scope(other, c.Q)}
 		}
 		o.AddTo(c)
 	}
+	return seed.NewOption(func(seed.Seed) {})
 }
 
 //Seed is the script Ctx of a seed.
 type Seed struct {
 	seed.Seed
-	Ctx
+	Q Ctx
 }
 
-func (q Ctx) Scope(c seed.Seed) Seed {
+func Scope(c seed.Seed, q Ctx) Seed {
 	return Seed{c, q}
 }
 
@@ -70,15 +71,20 @@ func (c Seed) Undo(options ...seed.Option) {
 	Undo{c}.Add(options...)
 }
 
-func (c Seed) Add(options ...seed.Option) {
+func (c Seed) Javascript(format string, args ...interface{}) {
+	c.Q(fmt.Sprintf(format, args...))
+}
+
+func (c Seed) Add(options ...seed.Option) seed.Option {
 	for _, o := range options {
 		o.AddTo(c)
 	}
+	return seed.NewOption(func(seed.Seed) {})
 }
 
 var p = 0
 
 func (c Seed) AddTo(other seed.Seed) {
-	c.Javascript(`%v.style.display = "";`, c.Element())
+	c.Q(fmt.Sprintf(`%v.style.display = "";`, c.Element()))
 	seed.Add(c, other)
 }

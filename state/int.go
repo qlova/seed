@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/user"
 )
@@ -21,33 +22,33 @@ func NewInt(initial int) Int {
 
 func (i Int) Increment() script.Script {
 	return func(q script.Ctx) {
-		i.set(q, i.get(q).Plus(q.Int(1)))
+		i.set(q, i.get().Plus(q.Number(1)))
 	}
 }
 
-//IntFromCtx implements script.AnyInt
-func (i Int) IntFromCtx(q script.AnyCtx) script.Int {
-	return i.get(script.CtxFrom(q))
+//GetNumber implements script.AnyNumber
+func (i Int) GetNumber() script.Number {
+	return i.get()
 }
 
-//ValueFromCtx implements script.AnyValue
-func (i Int) ValueFromCtx(q script.AnyCtx) script.Value {
-	return i.get(script.CtxFrom(q))
+//GetValue implements script.AnyValue
+func (i Int) GetValue() script.Value {
+	return i.get().Value
 }
 
-func (i Int) get(q script.Ctx) script.Int {
-	return q.Value(`parseInt(%v)`, i.Value.get(q)).Int()
+func (i Int) get() script.Number {
+	return js.Number{Value: js.NewValue(`parseInt(%v)`, i.Value.get())}
 }
 
 //SetL sets the value of the Int with a literal.
 func (i Int) SetL(value int) script.Script {
 	return func(q script.Ctx) {
-		i.set(q, q.Int(value))
+		i.set(q, q.Number(float64(value)))
 	}
 }
 
-func (i Int) set(q script.Ctx, value script.Int) {
-	i.Value.set(q, q.Value(`(%v).toString()`, value).String())
+func (i Int) set(q script.Ctx, value script.Number) {
+	i.Value.set(q, js.String{Value: js.NewValue(`(%v).toString()`, value)})
 }
 
 //SetText sets the seed's text to reflect the value of this Int.
@@ -66,14 +67,14 @@ func (i Int) SetText() seed.Option {
 				d.change = make(map[Value]script.Script)
 			}
 
-			d.change[i.Value] = d.change[i.Value].Then(func(q script.Ctx) {
-				q.Javascript(`%v.innerText = (%v).toString();`, q.Scope(c).Element(), q.Raw(i.get(q)))
+			d.change[i.Value] = d.change[i.Value].Append(func(q script.Ctx) {
+				q(fmt.Sprintf(`%v.innerText = (%v).toString();`, script.Scope(c, q).Element(), i.get().GetValue()))
 			})
 
 			c.Write(d)
 		} else {
 			c.Add(script.OnReady(func(q script.Ctx) {
-				fmt.Fprintf(q, `%v.innerText = (%v).toString();`, q.Scope(c).Element(), q.Raw(i.get(q)))
+				fmt.Fprintf(q, `%v.innerText = (%v).toString();`, script.Scope(c, q).Element(), i.get().GetValue())
 			}))
 		}
 	})

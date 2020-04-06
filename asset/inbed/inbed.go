@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -48,6 +49,10 @@ func (fs FileSystem) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if production {
 		w.Header().Set("Content-Encoding", "gzip")
+	}
+
+	if path.Ext(info.Name()) == ".wasm" {
+		w.Header().Set("Content-Type", "application/wasm")
 	}
 
 	if b, ok := info.Sys().([]byte); ok {

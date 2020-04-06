@@ -10,7 +10,7 @@ func Sprintf(format string, a ...AnyValue) String {
 	var converted = make([]interface{}, len(a))
 	var references = make([]Value, len(a))
 	for i, arg := range a {
-		converted[i] = `"+` + arg.value().getter() + `+"`
+		converted[i] = fmt.Sprintf(`"+%v+"`, arg.value().getter())
 		references[i] = a[i].value()
 	}
 

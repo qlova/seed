@@ -3,6 +3,7 @@ package textbox
 import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/html/attr"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/state"
 
@@ -18,7 +19,7 @@ func New(options ...seed.Option) seed.Seed {
 func Var(text state.String, options ...seed.Option) seed.Seed {
 	return New(seed.Do(func(c seed.Seed) {
 		c.Add(script.On("input", func(q script.Ctx) {
-			text.Set(q.Value(`%v.value`, q.Scope(c).Element()).String())(q)
+			text.Set(js.String{js.NewValue(script.Scope(c, q).Element() + `.value`)})(q)
 		}))
 	}).And(options...))
 }
@@ -26,4 +27,16 @@ func Var(text state.String, options ...seed.Option) seed.Seed {
 //SetPlaceholder sets the placeholder of the textbox.
 func SetPlaceholder(placeholder string) seed.Option {
 	return attr.Set("placeholder", placeholder)
+}
+
+//SetReadOnly sets the textbox to be readonly.
+func SetReadOnly() seed.Option {
+	return attr.Set("readonly", "")
+}
+
+//Focus focuses the textbox.
+func Focus(c seed.Seed) script.Script {
+	return func(q script.Ctx) {
+		q.Run(script.Scope(c, q).Element() + `.focus`)
+	}
 }

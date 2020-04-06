@@ -1,13 +1,20 @@
 package script
 
-import "github.com/qlova/script"
+import (
+	"github.com/qlova/seed/js"
+)
 
-type Bool = script.Bool
-type AnyCtx = script.AnyCtx
-type String = script.String
-type Native = script.Native
-type Int = script.Int
-type Value = script.Value
+type Native = js.Value
+
+type Bool = js.Bool
+type String = js.String
+type Number = js.Number
+type Value = js.Value
+
+type AnyValue = js.AnyValue
+
+type Ctx = js.Ctx
+type Script = js.Script
 
 type Interface struct {
 	Q Ctx

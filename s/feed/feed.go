@@ -30,7 +30,7 @@ type Seed struct {
 
 func (c Seed) Refresh() script.Script {
 	return func(q script.Ctx) {
-		fmt.Fprintf(q, `%v.refresh();`, q.Scope(c).Element())
+		fmt.Fprintf(q, `%v.refresh();`, script.Scope(c, q).Element())
 	}
 }
 
@@ -65,7 +65,7 @@ func New(food Food, options ...seed.Option) Seed {
 	convertToClasses(template)
 	var scripts script.Script
 	for _, child := range template.Children() {
-		scripts = scripts.Then(script.Adopt(child))
+		scripts = scripts.Append(script.Adopt(child))
 	}
 
 	switch reflect.TypeOf(food).Kind() {
@@ -76,24 +76,24 @@ func New(food Food, options ...seed.Option) Seed {
 	}
 
 	feed.Add(script.OnReady(func(q script.Ctx) {
-		fmt.Fprintf(q, `%v.refresh = async function() {`, q.Scope(template).Element())
+		fmt.Fprintf(q, `%v.refresh = async function() {`, script.Scope(template, q).Element())
 
-		fmt.Fprintf(q, `while (%[1]v.childNodes.length > 1) %[1]v.removeChild(%[1]v.lastChild);`, q.Scope(feed).Element())
+		fmt.Fprintf(q, `while (%[1]v.childNodes.length > 1) %[1]v.removeChild(%[1]v.lastChild);`, script.Scope(feed, q).Element())
 
-		var data = q.Go(food).Wait().Native
-		fmt.Fprintf(q, `if (!Array.isArray(%[1]v)) %[1]v = [%[1]v];`, q.Raw(data))
-		fmt.Fprintf(q, `for (let value of %v) {`, q.Raw(data))
+		var data = script.RPC(food)(q)
+		fmt.Fprintf(q, `if (!Array.isArray(%[1]v)) %[1]v = [%[1]v];`, data)
+		fmt.Fprintf(q, `for (let value of %v) {`, data)
 		{
-			fmt.Fprintf(q, `let data = value; let clone = %v.content.cloneNode(true);`, q.Scope(template).Element())
+			fmt.Fprintf(q, `let data = value; let clone = %v.content.cloneNode(true);`, script.Scope(template, q).Element())
 
 			fmt.Fprintf(q, `let cache = seed.get.cache; let old = seed.get; let parent = %v; seed.get = function(id) {
 				let get = old(id);
 				if (!get) return clone.querySelector("."+id);
 				return get;
-			};seed.get.cache = cache; `, q.Scope(feed).Element())
+			};seed.get.cache = cache; `, script.Scope(feed, q).Element())
 			scripts(q)
 			fmt.Fprintf(q, `seed.get = old;`)
-			fmt.Fprintf(q, `clone = %v.appendChild(clone)`, q.Scope(feed).Element())
+			fmt.Fprintf(q, `clone = %v.appendChild(clone)`, script.Scope(feed, q).Element())
 		}
 		fmt.Fprintf(q, `}};`)
 	}))

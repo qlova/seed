@@ -8,10 +8,10 @@ import (
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/html/attr"
+	"github.com/qlova/seed/js/window"
 	"github.com/qlova/seed/page"
 	"github.com/qlova/seed/popup"
 	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/script/window"
 
 	"github.com/qlova/seed/s/column"
 	"github.com/qlova/seed/s/html/link"
@@ -30,7 +30,7 @@ func (a App) build() {
 
 	app.document.Body.Add(
 		script.OnError(func(q script.Ctx, err script.Error) {
-			window.Alert(err.String)(q)
+			q(window.Alert(err.String))
 		}),
 
 		column.New(seed.Do(func(c seed.Seed) {
