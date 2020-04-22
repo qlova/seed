@@ -8,7 +8,6 @@ import (
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/style"
 )
 
 type harvester struct {
@@ -38,23 +37,16 @@ func (h harvester) harvest(c seed.Seed) {
 			template.Use()
 			template.AddTo(h.Parent)
 
-			var element = seed.New(
-				html.SetTag("div"),
+			var element = p.Page(RouterOf(template))
+			element.Add(
 				html.SetID(ID(p)),
 				script.SetID(ID(p)),
 				css.SetSelector("#"+ID(p)),
-
-				css.SetDisplay(css.Flex),
-				css.SetFlexDirection(css.Column),
-
-				style.SetSize(100, 100),
 			)
 			element.Use()
 			element.AddTo(template)
 
 			h.Map[key] = element
-
-			p.Page(Seed{element})
 
 			h.harvest(element)
 		}

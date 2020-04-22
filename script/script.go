@@ -12,8 +12,6 @@ type data struct {
 	id string
 
 	on map[string]Script
-
-	requires map[string]string
 }
 
 var seeds = make(map[seed.Seed]data)
@@ -24,4 +22,11 @@ var unique int
 func Unique() string {
 	unique++
 	return fmt.Sprint("unique_", unique)
+}
+
+//Download downloads a requested resource with given name and path.
+func Download(name, path string) Script {
+	return func(q Ctx) {
+		q.Run("await seed.download", q.String(name), q.String(path))
+	}
 }

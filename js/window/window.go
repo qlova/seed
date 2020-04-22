@@ -19,7 +19,7 @@ func Confirm(msg js.AnyString) js.Bool {
 //Close attempts to close the window.
 func Close() js.Script {
 	return func(q js.Ctx) {
-		q.Run(`window.close()`)
+		q.Run(`window.close`)
 	}
 }
 

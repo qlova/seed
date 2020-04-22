@@ -1,7 +1,7 @@
 package script
 
 type File struct {
-	Interface
+	Value
 }
 
 func (f File) GetFile() File {

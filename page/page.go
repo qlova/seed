@@ -2,29 +2,73 @@
 package page
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/css"
+	"github.com/qlova/seed/html"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/state"
+	"github.com/qlova/seed/style"
 )
 
+//ID returns the DOM id of the provided page.
 func ID(p Page) string {
 	return strings.Replace(reflect.TypeOf(p).String(), ".", "_", -1)
 }
 
+//Router is responsible for showing the current page and routing urls to the approproate page.
+type Router struct {
+	c seed.Seed
+}
+
+//RouterOf returns the Router for the given seed.
+func RouterOf(c seed.Seed) Router {
+	return Router{c}
+}
+
+//Goto returns a script that goes to the given page.
+func (r Router) Goto(page Page) js.Script {
+	//Sort out script arguments of the page.
+	page, args, path := parseArgs(page)
+
+	var data data
+	r.c.Read(&data)
+	data.pages = append(data.pages, page)
+	r.c.Write(data)
+
+	return js.Run(`seed.goto`, js.NewString(ID(page)), args, path)
+}
+
+//Page is a global view.
 type Page interface {
-	Page(Seed)
+	Page(Router) Seed
 }
 
 type Seed struct {
 	seed.Seed
 }
 
-func Scope(c seed.Seed) Seed {
-	return Seed{c}
+func New(options ...seed.Option) Seed {
+	return Seed{seed.New(
+		html.SetTag("div"),
+		html.AddClass("page"),
+
+		css.SetDisplay(css.Flex),
+		css.SetFlexDirection(css.Column),
+
+		style.SetSize(100, 100),
+
+		seed.Do(func(c seed.Seed) {
+			c.Add(
+				OnEnter(state.Refresh(c)),
+			)
+		}),
+
+		seed.Options(options),
+	)}
 }
 
 type data struct {
@@ -34,17 +78,6 @@ type data struct {
 }
 
 var seeds = make(map[seed.Seed]data)
-
-func (c Seed) Goto(page Page) script.Script {
-	var data data
-	c.Read(&data)
-	data.pages = append(data.pages, page)
-	c.Write(data)
-
-	return func(q script.Ctx) {
-		fmt.Fprintf(q, `seed.goto("%v");`, ID(page))
-	}
-}
 
 func OnEnter(f script.Script) seed.Option {
 	return script.On("pageenter", f)

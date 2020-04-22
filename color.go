@@ -7,12 +7,15 @@ import (
 
 //Some colors as constants.
 const (
-	White Hex = "#ffffff"
-	Black Hex = "#000000"
-	Red   Hex = "#ff0000"
-	Green Hex = "#00ff00"
-	Blue  Hex = "#0000ff"
+	White  Hex = "#ffffff"
+	Black  Hex = "#000000"
+	Red    Hex = "#ff0000"
+	Green  Hex = "#00ff00"
+	Blue   Hex = "#0000ff"
+	Yellow Hex = "#FFFF00"
 )
+
+type Color = color.Color
 
 //RGB returns a new color from the specified r, g and b values.
 func RGB(r, g, b uint8) color.Color {

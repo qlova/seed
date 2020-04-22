@@ -65,9 +65,11 @@ func (v Value) value() Value {
 
 func (v Value) setFor(u user.Ctx, value string) {
 	if !v.ro {
-		u.Execute(fmt.Sprintf(`%v.setItem("%v", %v); seed.state["%[2]v"].changed();`, v.storage, v.key, strconv.Quote(value)))
+		u.Execute(js.Run(v.storage+`.setItem`, js.NewString(v.key), js.NewString(value)))
 	}
-	u.Execute(fmt.Sprintf(`if (seed.state["%[1]v"]) seed.state["%[1]v"].changed();`, v.key))
+	u.Execute(func(q js.Ctx) {
+		q(fmt.Sprintf(`if (seed.state["%[1]v"]) seed.state["%[1]v"].changed();`, v.key))
+	})
 }
 
 //Set the value.

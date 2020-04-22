@@ -11,6 +11,7 @@ import (
 
 	"github.com/qlova/seed/api"
 	"github.com/qlova/seed/asset/inbed"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 )
 
@@ -61,7 +62,8 @@ func (a App) Handler() http.Handler {
 		document = rendered
 	}
 
-	var scripts = script.Scripts(app.document)
+	var scripts = js.Scripts(app.document)
+	var imports = js.Imports()
 
 	var worker = app.worker.Render()
 
@@ -112,7 +114,13 @@ func (a App) Handler() http.Handler {
 	router.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if content, ok := scripts[r.URL.Path]; ok {
-			w.Header().Set("Content-Type", "application/js")
+			w.Header().Set("Content-Type", "text/javascript")
+			fmt.Fprint(w, content)
+			return
+		}
+
+		if content, ok := imports[r.URL.Path]; ok {
+			w.Header().Set("Content-Type", "text/javascript")
 			fmt.Fprint(w, content)
 			return
 		}

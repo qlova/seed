@@ -4,6 +4,7 @@ import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/html/attr"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 )
 
@@ -11,7 +12,7 @@ import (
 func This() seed.Option {
 	return seed.Do(func(c seed.Seed) {
 		c.Add(
-			script.Require("/flipping.js", js),
+			js.Require("/flipping.js", flipping),
 
 			attr.Set("data-flip-key", html.ID(c)),
 		)
@@ -22,7 +23,7 @@ func This() seed.Option {
 func Track(key string) seed.Option {
 	return seed.Do(func(c seed.Seed) {
 		c.Add(
-			script.Require("/flipping.js", js),
+			js.Require("/flipping.js", flipping),
 
 			attr.Set("data-flip-key", key),
 		)

@@ -3,8 +3,9 @@ package user
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
+
+	"github.com/qlova/seed/js"
 )
 
 //Handler is a user handler.
@@ -39,8 +40,8 @@ func (u Ctx) Request() *http.Request {
 }
 
 //Execute sends and evaluates the provided javascript.
-func (u Ctx) Execute(script string) {
+func (u Ctx) Execute(script js.Script) {
 	if u.w != nil {
-		fmt.Fprint(u.w, script)
+		js.NewCtx(u.w)(script)
 	}
 }

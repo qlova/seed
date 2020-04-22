@@ -23,7 +23,7 @@ var rpcID int64 = 1
 //Go calls the given go function and tries to convert arguments to Go types.
 func Go(f interface{}, args ...AnyValue) Script {
 	return func(q Ctx) {
-		RPC(f, args...)
+		RPC(f, args...)(q)
 	}
 }
 
@@ -109,7 +109,7 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 		default:
 			var shell = reflect.New(f.Type().In(i)).Interface()
 			if err := json.NewDecoder(strings.NewReader(arg.String())).Decode(shell); err != nil {
-				log.Println(err)
+				log.Println("could not decode argument: ", err)
 				return
 			}
 
@@ -143,7 +143,9 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 		if err != nil {
 			fmt.Println("rpc function could not send return value: ", err)
 		}
-		u.Execute(fmt.Sprintf(`return %v;`, buffer.String()))
+		u.Execute(func(q Ctx) {
+			q(fmt.Sprintf(`return %v;`, buffer.String()))
+		})
 		return
 	}
 

@@ -3,13 +3,14 @@ package feed
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/state"
-	"github.com/qlova/seed/tween"
 
 	"github.com/qlova/seed/s/html/div"
 	"github.com/qlova/seed/s/html/template"
@@ -20,7 +21,11 @@ type Data struct {
 }
 
 func (d Data) String() state.String {
-	return state.String{Value: state.Raw(`data`, state.Local())}
+	return state.String{Value: state.Raw(d.string, state.Local())}
+}
+
+func (d Data) Get(name string) Data {
+	return Data{fmt.Sprintf(`%v[%q]`, d.string, name)}
 }
 
 type Seed struct {
@@ -30,25 +35,53 @@ type Seed struct {
 
 func (c Seed) Refresh() script.Script {
 	return func(q script.Ctx) {
-		fmt.Fprintf(q, `%v.refresh();`, script.Scope(c, q).Element())
+		fmt.Fprintf(q, `await %v.refresh();`, script.Scope(c, q).Element())
 	}
 }
 
 //Do runs f.
 func Do(f func(Seed)) seed.Option {
 	return seed.Do(func(s seed.Seed) {
-		f(Seed{s, Data{}})
+		f(Seed{s, Data{"data"}})
 	})
 }
 
 func convertToClasses(c seed.Seed) {
 	for _, child := range c.Children() {
-		child.Add(css.SetSelector(`.`+html.ID(child)), html.SetID(""), html.AddClass(html.ID(child)))
+		child.Add(
+			css.SetSelector(`.`+html.ID(child)),
+			html.SetID(""),
+			html.AddClass(html.ID(child)),
+		)
+
+		convertToClasses(child)
 	}
 }
 
 //Food is fed to a feed to populate it with items.
 type Food interface{}
+
+type rpc struct {
+	f    interface{}
+	args []script.AnyValue
+}
+
+func Go(f interface{}, args ...script.AnyValue) Food {
+	return rpc{f, args}
+}
+
+func food2Data(food Food, q script.Ctx) script.Value {
+	switch reflect.TypeOf(food).Kind() {
+	case reflect.Func:
+		return script.RPC(food)(q)
+	default:
+		switch f := food.(type) {
+		case rpc:
+			return script.RPC(f.f, f.args...)(q)
+		}
+		panic("unsupported data type")
+	}
+}
 
 //New returns a repeater capable of repeating itself based on the given Go data.
 func New(food Food, options ...seed.Option) Seed {
@@ -58,44 +91,28 @@ func New(food Food, options ...seed.Option) Seed {
 		css.Set("flex-direction", "column"),
 	), Data{}}
 
-	feed.Add(tween.This())
-
 	template.Add(css.SetSelector("#" + html.ID(feed.Seed)).And(options...))
 
 	convertToClasses(template)
-	var scripts script.Script
+	var scripts script.Script = func(js.Ctx) {}
 	for _, child := range template.Children() {
 		scripts = scripts.Append(script.Adopt(child))
 	}
 
-	switch reflect.TypeOf(food).Kind() {
-	case reflect.Func:
-
-	default:
-		panic("unsupported data type")
-	}
-
 	feed.Add(script.OnReady(func(q script.Ctx) {
-		fmt.Fprintf(q, `%v.refresh = async function() {`, script.Scope(template, q).Element())
+		fmt.Fprintf(q, `%v.refresh = async function() {let cache = seed.get.cache; seed.get.cache = null;`, js.NewValue(script.Scope(template, q).Element()))
 
 		fmt.Fprintf(q, `while (%[1]v.childNodes.length > 1) %[1]v.removeChild(%[1]v.lastChild);`, script.Scope(feed, q).Element())
 
-		var data = script.RPC(food)(q)
-		fmt.Fprintf(q, `if (!Array.isArray(%[1]v)) %[1]v = [%[1]v];`, data)
-		fmt.Fprintf(q, `for (let value of %v) {`, data)
-		{
-			fmt.Fprintf(q, `let data = value; let clone = %v.content.cloneNode(true);`, script.Scope(template, q).Element())
+		var data = food2Data(food, q)
 
-			fmt.Fprintf(q, `let cache = seed.get.cache; let old = seed.get; let parent = %v; seed.get = function(id) {
-				let get = old(id);
-				if (!get) return clone.querySelector("."+id);
-				return get;
-			};seed.get.cache = cache; `, script.Scope(feed, q).Element())
-			scripts(q)
-			fmt.Fprintf(q, `seed.get = old;`)
-			fmt.Fprintf(q, `clone = %v.appendChild(clone)`, script.Scope(feed, q).Element())
-		}
-		fmt.Fprintf(q, `}};`)
+		var scriptsString strings.Builder
+		scriptsString.WriteString(`async function(data) {`)
+		js.NewCtx(&scriptsString)(scripts)
+		scriptsString.WriteString(`}`)
+
+		q.Run(`await seeds.feed.refresh`, js.NewValue(script.Scope(template, q).Element()), data, js.NewValue(scriptsString.String()))
+		fmt.Fprintf(q, `seed.get.cache = cache;};`)
 	}))
 
 	return feed

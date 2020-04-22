@@ -20,8 +20,12 @@ func (a Attachment) Set(v script.Value) func(script.Ctx) {
 	}
 }
 
+func (a Attachment) GetFile() script.File {
+	return script.File{js.NewValue(`window.attachments[%v]`, js.NewString(a.string))}
+}
+
 func (a Attachment) GetValue() script.Value {
-	return js.NewValue(`window.attachments[%v]`, js.NewString(a.string))
+	return a.GetFile().Value
 }
 
 var id int64

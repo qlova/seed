@@ -8,6 +8,7 @@ import (
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/html/attr"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/js/window"
 	"github.com/qlova/seed/page"
 	"github.com/qlova/seed/popup"
@@ -35,7 +36,7 @@ func (a App) build() {
 
 		column.New(seed.Do(func(c seed.Seed) {
 			if app.loadingPage != nil {
-				app.loadingPage.Page(page.Scope(c))
+				app.loadingPage.Page(page.RouterOf(c))
 			}
 
 			c.Add(script.OnReady(func(q script.Ctx) {
@@ -50,7 +51,7 @@ func (a App) build() {
 	)
 
 	var onready = string(script.Render(a))
-	var scripts = script.Scripts(a)
+	var scripts = js.Scripts(a)
 
 	app.document.Head.Add(
 		meta.Charset("utf-8"),
@@ -166,10 +167,10 @@ func (a App) build() {
 					let Socket = new WebSocket(url.href);
 
 					Socket.onclose = function() {
-						close();
+						///close();
 					}
 					Socket.onerror = function() {
-						close();
+						//close();
 					}
 					Socket.onmessage = function(event) {
 						eval(event.data);

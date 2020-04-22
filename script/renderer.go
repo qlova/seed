@@ -35,7 +35,7 @@ func render(child seed.Seed) []byte {
 
 	if _, ok := d.on["ready"]; ok {
 		js.NewCtx(&b)(func(q Ctx) {
-			fmt.Fprintf(q, `%[1]v.onready();`, Scope(child, q).Element())
+			fmt.Fprintf(q, `await %[1]v.onready();`, Scope(child, q).Element())
 		})
 	}
 
@@ -46,7 +46,7 @@ func render(child seed.Seed) []byte {
 func Render(root seed.Seed) []byte {
 	var b bytes.Buffer
 
-	b.WriteString(`seed = {};
+	b.WriteString(`seed = {}; seeds = {};
 seed.production = (location.hostname != "localhost" && location.hostname != "127.0.0.1" && location.hostname != "[::]");
 
 seed.op = function(element, func, propagate) {
@@ -125,14 +125,14 @@ seed.on = function(element, event, handler) {
 };
 
 seed.get = function(id) {
-	if (id in seed.get.cache) {
+	if (seed.get.cache && id in seed.get.cache) {
 		return seed.get.cache[id];
 	}
 
 	let element = document.getElementById(id);
 	
 	if (element) {
-		seed.get.cache[id] = element;
+		if (seed.get.cache) seed.get.cache[id] = element;
 		return element;
 	}
 	
@@ -141,7 +141,7 @@ seed.get = function(id) {
 	for (let template of templates) {
 		element = template.content.getElementById(id);
 		if (element) {
-			seed.get.cache[id] = element;
+			if (seed.get.cache) seed.get.cache[id] = element;
 			if (!element.parentElement) {
 				element.parent = template;
 			}
@@ -152,6 +152,16 @@ seed.get = function(id) {
 	return null;
 }
 seed.get.cache = {};
+
+seed.download = async function(name, path) {
+	let link = document.createElement('a');
+	link.download = name;
+	link.href = path;
+	
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+}
 
 seed.request = function(method, formdata, url, manual) {
 
@@ -244,7 +254,7 @@ func adopt(child seed.Seed) Script {
 
 	if _, ok := d.on["ready"]; ok {
 		s = s.Append(func(q Ctx) {
-			fmt.Fprintf(q, `%[1]v.onready();`, Scope(child, q).Element())
+			fmt.Fprintf(q, `await %[1]v.onready();`, Scope(child, q).Element())
 		})
 		delete(d.on, "ready")
 	}

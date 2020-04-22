@@ -75,7 +75,13 @@ func (s State) For(u user.Ctx) RemoteState {
 }
 
 func (s RemoteState) Set() {
-	s.s.setFor(s.u, "true")
+	var state = s.s
+	if state.not {
+		state.setFor(s.u, "false")
+	} else {
+		s.s.setFor(s.u, "true")
+	}
+
 }
 
 type data struct {
@@ -83,6 +89,9 @@ type data struct {
 
 	set, unset map[State]script.Script
 	change     map[Value]script.Script
+
+	onrefresh script.Script
+	refresh   bool
 }
 
 var seeds = make(map[seed.Seed]data)
@@ -103,24 +112,45 @@ func (state State) If(options ...seed.Option) seed.Option {
 			data.unset = make(map[State]script.Script)
 		}
 
-		data.set[state] = data.set[state].Append(func(q script.Ctx) {
-			for _, option := range options {
-				if other, ok := option.(seed.Seed); ok {
-					script.Scope(other, q).AddTo(script.Scope(c, q))
-				} else {
-					option.AddTo(script.Scope(c, q))
+		if state.not {
+			data.unset[state] = data.unset[state].Append(func(q script.Ctx) {
+				for _, option := range options {
+					if other, ok := option.(seed.Seed); ok {
+						script.Scope(other, q).AddTo(script.Scope(c, q))
+					} else {
+						option.AddTo(script.Scope(c, q))
+					}
 				}
-			}
-		})
-		data.unset[state] = data.unset[state].Append(func(q script.Ctx) {
-			for _, option := range options {
-				if other, ok := option.(seed.Seed); ok {
-					script.Scope(c, q).Undo(script.Scope(other, q))
-				} else {
-					script.Scope(c, q).Undo(option)
+			})
+			data.set[state] = data.set[state].Append(func(q script.Ctx) {
+				for _, option := range options {
+					if other, ok := option.(seed.Seed); ok {
+						script.Scope(c, q).Undo(script.Scope(other, q))
+					} else {
+						script.Scope(c, q).Undo(option)
+					}
 				}
-			}
-		})
+			})
+		} else {
+			data.set[state] = data.set[state].Append(func(q script.Ctx) {
+				for _, option := range options {
+					if other, ok := option.(seed.Seed); ok {
+						script.Scope(other, q).AddTo(script.Scope(c, q))
+					} else {
+						option.AddTo(script.Scope(c, q))
+					}
+				}
+			})
+			data.unset[state] = data.unset[state].Append(func(q script.Ctx) {
+				for _, option := range options {
+					if other, ok := option.(seed.Seed); ok {
+						script.Scope(c, q).Undo(script.Scope(other, q))
+					} else {
+						script.Scope(c, q).Undo(option)
+					}
+				}
+			})
+		}
 
 		c.Write(data)
 	})

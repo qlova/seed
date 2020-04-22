@@ -14,9 +14,9 @@ type AnyBool interface {
 //NewBool returns a new javascript boolean from a Go literal.
 func NewBool(literal bool) Bool {
 	if literal {
-		return Bool{Value{"true"}}
+		return Bool{NewValue("true")}
 	}
-	return Bool{Value{"false"}}
+	return Bool{NewValue("false")}
 }
 
 //Bool is shorthand for NewBool.

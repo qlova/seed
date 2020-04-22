@@ -1,8 +1,14 @@
-package script
+package js
 
 import (
 	"github.com/qlova/seed"
 )
+
+type data struct {
+	seed.Data
+
+	requires map[string]string
+}
 
 //Require js script.
 func Require(path string, contents string) seed.Option {

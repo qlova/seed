@@ -26,7 +26,9 @@ func NewValue(format string, args ...AnyValue) Value {
 	for i := range args {
 		values[i] = args[i].GetValue()
 	}
-	return Value{fmt.Sprintf(format, values...)}
+
+	var s = fmt.Sprintf(format, values...)
+	return Value{s}
 }
 
 func ValueOf(literal interface{}) Value {
@@ -34,7 +36,7 @@ func ValueOf(literal interface{}) Value {
 	if err != nil {
 		panic(fmt.Errorf("js.ValueOf invalid type: %v (%w)", reflect.TypeOf(literal), err))
 	}
-	return Value{string(b)}
+	return NewValue(string(b))
 }
 
 //String returns the raw value.
@@ -49,7 +51,8 @@ func (v Value) GetValue() Value {
 
 func (v Value) Var(q Ctx) Value {
 	var old = v.string
-	v.string = q.Unique()
+	var s = q.Unique()
+	v.string = s
 	q("let ")
 	q(v.string)
 	q('=')

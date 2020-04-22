@@ -12,19 +12,13 @@ seed.CurrentPage = null;
 seed.NextPage = null;
 seed.LastPage = null;
 
-seed.goto = async function(id) {
+seed.goto = async function(id, args, url) {
+	if(!url) url = "";
+
 	//Don't goto if we are already going to something.
 	if (seed.NextPage != null) {
 		seed.goto.queue.push(arguments);
 		return;
-	}
-
-	//Collect arguments.
-	let args = [];
-	if (arguments.length > 1) {
-		for (let i = 1; i < arguments.length; i++) {
-			args.push(arguments[i]);
-		}
 	}
 
 	seed.NextPage = seed.get(id);
@@ -50,7 +44,7 @@ seed.goto = async function(id) {
 	
 	seed.LastPage = seed.CurrentPage;
 	seed.CurrentPage = seed.NextPage;
-	seed.CurrentPage.args = args;
+	seed.CurrentPage.args = args || {};
 
 	if (seed.LastPage) {
 		if (seed.LastPage.onpageexit) await seed.LastPage.onpageexit();
@@ -94,19 +88,20 @@ seed.goto = async function(id) {
 		path = "/";
 	}
 
-	if (args.length > 0 && path != "/") {
+	/*if (args.length > 0 && path != "/") {
 		for (let arg of args) {
 			path += "/" + arg;
 		}
-	}
+	}*/
 
 	//Persistence.
 	localStorage.setItem('*CurrentPage', seed.NextPage.id);
 	localStorage.setItem('*LastGotoTime', Date.now());
-	localStorage.setItem('*CurrentPath', path);
+	localStorage.setItem('*CurrentArgs', JSON.stringify(args || {}));
+	localStorage.setItem('*CurrentPath', url);
 
-	if (!seed.goto.back && seed.production) history.pushState([seed.CurrentPage.id].concat(seed.CurrentPage.args), data.title, path);
-	if (!seed.goto.back && !seed.production) history.replaceState([seed.CurrentPage.id].concat(seed.CurrentPage.args), data.title, path);
+	if (!seed.goto.back && seed.production) history.pushState([seed.CurrentPage.id, args], data.title, path+url);
+	if (!seed.goto.back && !seed.production) history.replaceState([seed.CurrentPage.id, args], data.title, path+url);
 
 	seed.animating = false;
 	seed.NextPage = null;
@@ -139,41 +134,58 @@ seed.goto.back = false;
 
 seed.goto.ready = async function(id) {
 	seed.StartingPage = id;
-	if (window.localStorage) {
-		if (window.localStorage.getItem("updating")) {
-			window.localStorage.removeItem("updating");
-		}
 
-		if (!seed.goto) return;
-		let saved_page = window.localStorage.getItem('*CurrentPage');
-		let saved_path = window.localStorage.getItem('*CurrentPath');
-		if (saved_page && saved_path) {
-			let last_time = +window.localStorage.getItem('*LastGotoTime');
-			let hibiscus = Date.now()-last_time;
+	if (!seed.goto) return;
 
-			if (hibiscus > 1000*60*10) {
-				window.localStorage.removeItem('*CurrentPage');
-				seed.CurrentPage = seed.LoadingPage;
-				await seed.goto(seed.StartingPage);
+	let saved_page = window.localStorage.getItem('*CurrentPage');
+	let saved_path = window.localStorage.getItem('*CurrentPath');
+	let saved_args = {};
+	if (window.localStorage.getItem('*CurrentArgs') && 
+		window.localStorage.getItem('*CurrentArgs') != "undefined") {
+		saved_args = JSON.parse(window.localStorage.getItem('*CurrentArgs'));
+	}
+
+	if (window.localStorage.getItem("updating")) window.localStorage.removeItem("updating");
+
+	//Parse the URL.
+	let path = window.location.pathname;
+	let templates = document.querySelectorAll('template');
+	for (let template of templates) {
+		element = template.content.querySelector(".page");
+		if (element) {
+			if (element.dataset.path == path) {
+				await seed.goto(element.id, {});
 				return;
 			}
+			
+			if (path.startsWith(element.dataset.path)) {
+				let args = {};
+				let parts = path.split('/');
 
-			let splits = saved_path.split("/");
-			if (splits.length > 2) {
-				await seed.goto.apply(null, [window.localStorage.getItem('*CurrentPage')].concat(window.localStorage.getItem('*CurrentPath').split("/").slice(2)));
-			} else {
-				await seed.goto(saved_page);
+				for (let i in parts) {
+					if (i < 2) continue;
+					args[i-1] = parts[i]
+				}
+
+				await seed.goto(element.id, args, path.slice(element.dataset.path.length));
+				return;
 			}
-
-			//clear history
-			last_page = null;
-			goto_history = [];
-
-			if (seed.get(saved_page) && seed.get(saved_page).enterpage)
-				seed.get(saved_page).enterpage();
-		} else {
-			await seed.goto(seed.StartingPage);
 		}
+	}
+
+	if (saved_page && saved_path) {
+		let last_time = +window.localStorage.getItem('*LastGotoTime');
+		let hibiscus = Date.now()-last_time;
+
+		if (hibiscus > 1000*60*10) {
+			window.localStorage.removeItem('*CurrentPage');
+			window.localStorage.removeItem('*CurrentArgs');
+			seed.CurrentPage = seed.LoadingPage;
+			await seed.goto(seed.StartingPage);
+			return;
+		}
+
+		await seed.goto(saved_page, saved_args, saved_path);
 	} else {
 		await seed.goto(seed.StartingPage);
 	}

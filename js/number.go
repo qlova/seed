@@ -15,7 +15,7 @@ type AnyNumber interface {
 
 //NewNumber returns a new javascript number from a Go literal.
 func NewNumber(literal float64) Number {
-	return Number{Value{fmt.Sprintf("%#v", literal)}}
+	return Number{NewValue(fmt.Sprintf("%#v", literal))}
 }
 
 //Number is shorthand for NewNumber.
@@ -30,5 +30,5 @@ func (n Number) GetNumber() Number {
 
 //Plus returns the two numbers added together.
 func (n Number) Plus(b Number) Number {
-	return Number{Value{fmt.Sprintf(`(%v+%v)`, n, b)}}
+	return Number{NewValue(fmt.Sprintf(`(%v+%v)`, n, b))}
 }

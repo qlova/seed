@@ -5,11 +5,35 @@ import (
 	"encoding/binary"
 	"math/big"
 	"net/http"
+	"regexp"
+	"strings"
 	"time"
 
-	"github.com/qlova/seed"
 	"github.com/qlova/seed/user"
 )
+
+var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
+
+func isLocal(r *http.Request) (local bool) {
+	local = strings.Contains(r.RemoteAddr, "[::1]") || strings.Contains(r.RemoteAddr, "127.0.0.1")
+	if local {
+		return
+	}
+	if intranet.Match([]byte(r.RemoteAddr)) {
+		local = true
+	}
+
+	split := strings.Split(r.Host, ":")
+	if len(split) == 0 {
+		local = false
+	} else {
+		if split[0] != "localhost" {
+			local = false
+		}
+	}
+
+	return
+}
 
 //Value is a session value.
 type Value struct {
@@ -32,16 +56,16 @@ func newValue(name ...string) Value {
 	return Value{result}
 }
 
-//String is a string that is securely stored within a session cookie.
-type String Value
+//Secret is a server-side session string that is securely stored and encrypted within a session cookie.
+type Secret Value
 
-//NewString returns a new session string.
-func NewString(name ...string) String {
-	return String(newValue(name...))
+//NewSecret returns a new Secret.
+func NewSecret(name ...string) Secret {
+	return Secret(newValue(name...))
 }
 
 //For gets the session String value for the specified user.
-func (s String) For(u user.Ctx) string {
+func (s Secret) For(u user.Ctx) string {
 
 	for _, cookie := range u.Request().Cookies() {
 		if cookie.Name == s.string {
@@ -62,7 +86,7 @@ func (s String) For(u user.Ctx) string {
 }
 
 //SetFor sets the session String value for the specified user.
-func (s String) SetFor(u user.Ctx, value string) {
+func (s Secret) SetFor(u user.Ctx, value string) {
 	var buffer [8]byte
 	binary.PutVarint(buffer[:], time.Now().Unix())
 
@@ -71,7 +95,7 @@ func (s String) SetFor(u user.Ctx, value string) {
 	http.SetCookie(u.ResponseWriter(), &http.Cookie{
 		Name:     s.string,
 		Value:    cookie,
-		Secure:   seed.Production,
+		Secure:   !isLocal(u.Request()),
 		HttpOnly: true,
 		Expires:  time.Now().Add(time.Hour * 24 * 30),
 		SameSite: http.SameSiteStrictMode,

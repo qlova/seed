@@ -9,6 +9,9 @@ import (
 	"github.com/qlova/seed/user"
 )
 
+//AnyString flags that a function accepts a stringable argument.
+type AnyString interface{}
+
 //String is a global String.
 type String struct {
 	Value
@@ -65,7 +68,7 @@ func (s String) SetText() seed.Option {
 
 		if s.raw != "" {
 			c.Add(script.OnReady(func(q script.Ctx) {
-				fmt.Fprintf(q, `%v.innerText = %v;`, script.Scope(c, q).Element(), s.get())
+				fmt.Fprintf(q, `%[1]v.innerText = %[2]v;`, script.Scope(c, q).Element(), s.get())
 			}))
 		}
 

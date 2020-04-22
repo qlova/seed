@@ -24,7 +24,9 @@ func On(event string, do Script) seed.Option {
 		case Undo:
 			//s.Root().Use()
 			data.Q(fmt.Sprintf(`seed.on(%v, "%v", async function() {`, data.Element(), event))
-			d.on[event](js.NewCtx(data.Q))
+			if d.on[event] != nil {
+				d.on[event](js.NewCtx(data.Q))
+			}
 			data.Q(`});`)
 		default:
 			//s.Root().Use()

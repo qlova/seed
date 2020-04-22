@@ -14,6 +14,8 @@ import (
 
 type App struct {
 	seed.Seed
+
+	port string
 }
 
 //App is a webapp generator.
@@ -72,5 +74,5 @@ func New(name string, options ...seed.Option) App {
 
 	document.Write(app)
 
-	return App{document}
+	return App{document, ""}
 }

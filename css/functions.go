@@ -60,6 +60,7 @@ func (Unit) unitOrAutoValue()   {}
 func (Unit) unitOrNoneValue()   {}
 func (Unit) fontSizeValue()     {}
 func (Unit) borderRadiusValue() {}
+func (Unit) thicknessValue()    {}
 
 func (u Unit) Rule() Rule {
 	return Rule(u.string)

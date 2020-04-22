@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/qlova/seed/app"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/page"
 	"github.com/qlova/seed/page/transition"
 	"github.com/qlova/seed/script"
@@ -10,28 +11,35 @@ import (
 	"github.com/qlova/seed/s/text"
 )
 
-type Home struct{}
+type Home struct {
+	Content js.String `url:"content"`
+}
 
-func (Home) Page(p page.Seed) {
-	p.Add(
+func (h Home) Page(r page.Router) page.Seed {
+	return page.New(
+		page.SetTitle(""),
+		page.SetPath("/home"),
+
 		transition.Fade(),
 
-		text.New("This is the homepage"),
+		text.Var(h.Content),
 		button.New("Click to go to another page",
-			script.OnClick(p.Goto(Other{})),
+			script.OnClick(r.Goto(Other{})),
 		),
 	)
 }
 
 type Other struct{}
 
-func (Other) Page(p page.Seed) {
-	p.Add(
+func (Other) Page(r page.Router) page.Seed {
+	return page.New(
 		transition.Fade(),
 
 		text.New("This is the other page"),
 		button.New("Click to go to the homepage",
-			script.OnClick(p.Goto(Home{})),
+			script.OnClick(r.Goto(Home{
+				Content: js.NewString(`This is the homepage`),
+			})),
 		),
 	)
 }

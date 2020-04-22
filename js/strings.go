@@ -15,7 +15,7 @@ type AnyString interface {
 
 //NewString returns a new javascript string from a Go literal.
 func NewString(literal string) String {
-	return String{Value{strconv.Quote(literal)}}
+	return String{NewValue(strconv.Quote(literal))}
 }
 
 //String is shorthand for NewString.

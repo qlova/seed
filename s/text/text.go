@@ -11,10 +11,11 @@ import (
 )
 
 //New returns a new text widget.
-func New(text string, options ...seed.Option) seed.Seed {
+func New(text state.AnyString, options ...seed.Option) seed.Seed {
 	return seed.New(
 		html.SetTag("p"),
-		Set(text).And(options...),
+		state.SetText(text),
+		seed.Options(options),
 	)
 }
 

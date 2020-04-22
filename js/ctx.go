@@ -33,14 +33,22 @@ type Ctx func(interface{})
 func NewCtx(w io.Writer, seeds ...seed.Seed) Ctx {
 	var ctx func(in interface{})
 
+	w = newMacroWriter(w, seeds...)
+
 	ctx = func(in interface{}) {
 		switch arg := in.(type) {
 		case Script:
-			arg(ctx)
+			if arg != nil {
+				arg(ctx)
+			}
 		case func(Ctx):
-			arg(ctx)
+			if arg != nil {
+				arg(ctx)
+			}
 		case func(Ctx) Value:
-			arg(ctx)
+			if arg != nil {
+				arg(ctx)
+			}
 		case rune:
 			fmt.Fprint(w, string(arg))
 		case string:

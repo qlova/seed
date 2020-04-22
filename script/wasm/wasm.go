@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 )
 
@@ -23,7 +24,7 @@ func (Package) AddTo(c seed.Seed) {
 		log.Fatalln(err)
 	}
 
-	c.Add(script.Require("/wasm_exec.js", string(wasmexec)))
+	c.Add(js.Require("/wasm_exec.js", string(wasmexec)))
 }
 
 func (p Package) And(more ...seed.Option) seed.Option {

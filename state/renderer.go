@@ -9,6 +9,11 @@ import (
 	"github.com/qlova/seed/script"
 )
 
+type refresher struct {
+	seed    seed.Seed
+	refresh script.Script
+}
+
 type harvester struct {
 	states map[State]struct {
 		set, unset script.Script
@@ -16,20 +21,36 @@ type harvester struct {
 	variables map[Value]struct {
 		change script.Script
 	}
+
+	refreshers []refresher
 }
 
-func newHarvester() harvester {
-	return harvester{
+func newHarvester() *harvester {
+	return &harvester{
 		make(map[State]struct {
 			set, unset script.Script
 		}),
 		make(map[Value]struct {
 			change script.Script
 		}),
+		nil,
 	}
 }
 
-func (h harvester) harvest(c seed.Seed) harvester {
+func (h *harvester) buildRefresh(c seed.Seed) script.Script {
+	var data data
+	c.Read(&data)
+
+	refresh := data.onrefresh
+
+	for _, child := range c.Children() {
+		refresh = refresh.Append(h.buildRefresh(child))
+	}
+
+	return refresh
+}
+
+func (h *harvester) harvest(c seed.Seed) harvester {
 	var data data
 	c.Read(&data)
 
@@ -51,11 +72,18 @@ func (h harvester) harvest(c seed.Seed) harvester {
 		h.variables[variable] = harvest
 	}
 
+	if data.refresh {
+		h.refreshers = append(h.refreshers, refresher{
+			seed:    c,
+			refresh: h.buildRefresh(c),
+		})
+	}
+
 	for _, child := range c.Children() {
 		h.harvest(child)
 	}
 
-	return h
+	return *h
 }
 
 func init() {
@@ -77,9 +105,9 @@ func init() {
 			fmt.Fprint(&b, `}, changed: async function() {`)
 			js.NewCtx(&b)(func(q script.Ctx) {
 				q.If(state, func(q script.Ctx) {
-					fmt.Fprintf(q, `seed.state["%v"].set();`, state.key)
+					fmt.Fprintf(q, `await seed.state["%v"].set();`, state.key)
 				}).Else(func(q script.Ctx) {
-					fmt.Fprintf(q, `seed.state["%v"].unset();`, state.key)
+					fmt.Fprintf(q, `await seed.state["%v"].unset();`, state.key)
 				})
 			})
 			fmt.Fprint(&b, `}};`)
@@ -107,6 +135,14 @@ func init() {
 				continue
 			}
 			fmt.Fprintf(&b, `seed.state["%v"].changed();`, variable.key)
+		}
+
+		for _, refresher := range harvested.refreshers {
+			js.NewCtx(&b)(func(q script.Ctx) {
+				q(script.Scope(refresher.seed, q).Element() + ".rerender = function() {")
+				q(refresher.refresh)
+				q("};")
+			})
 		}
 
 		return b.Bytes()
