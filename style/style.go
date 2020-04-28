@@ -75,6 +75,11 @@ func SetColumn() css.Rule {
 	return css.SetFlexDirection(css.Column)
 }
 
+//SetRow sets the seed to behave as a column.
+func SetRow() css.Rule {
+	return css.SetFlexDirection(css.Row)
+}
+
 //SetHidden removes the seed.
 func SetHidden() css.Rule {
 	return css.SetDisplay(css.None)
@@ -139,4 +144,31 @@ func Expand() css.Rule {
 //Shrink sets the seed to shrink if needed to save space.
 func Shrink() css.Rule {
 	return css.SetFlexShrink(css.Number(1))
+}
+
+//Wrap sets the contents to wrap.
+func Wrap() css.Rule {
+	return css.SetFlexWrap(css.Wrap)
+}
+
+//SetScrollable sets that this can be scrolled vertically.
+func SetScrollable() css.Rules {
+	return css.Rules{
+		css.SetOverflowY(css.Auto),
+		css.SetOverflowX(css.Hidden),
+		Shrink(),
+		Expand(),
+		SetHeight(0),
+		css.SetFlexBasis(css.Auto),
+		css.Set("-webkit-overflow-scrolling", "touch"),
+		css.Set("-webkit-overscroll-behavior", "contain"),
+		css.Set("overscroll-behavior", "contain"),
+	}
+}
+
+//Clip sets that contents cannot overflow.
+func Clip() css.Rules {
+	return css.Rules{
+		css.SetOverflow(css.Hidden),
+	}
 }

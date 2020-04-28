@@ -20,3 +20,9 @@ func (q Ctx) If(condition AnyBool, do Script) ElseIfChain {
 
 	return ElseIfChain{q}
 }
+
+func If(condition AnyBool, do Script) Script {
+	return func(q Ctx) {
+		q.If(condition, do)
+	}
+}

@@ -12,7 +12,7 @@ func Key(name string, content string) seed.Seed {
 }
 
 func New(options ...seed.Option) seed.Seed {
-	return seed.New(html.SetTag("meta").And(options...))
+	return seed.New(html.SetTag("meta"), seed.Options(options))
 }
 
 //Charset returns an HTML meta element with charset set to the given string.

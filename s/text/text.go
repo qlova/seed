@@ -21,7 +21,7 @@ func New(text state.AnyString, options ...seed.Option) seed.Seed {
 
 //Var returns text with a variable text argument.
 func Var(text state.String, options ...seed.Option) seed.Seed {
-	return New("", text.SetText().And(options...))
+	return New("", text.SetText(), seed.Options(options))
 }
 
 //Set sets the text content of the text.

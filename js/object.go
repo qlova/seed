@@ -5,18 +5,9 @@ import (
 	"strings"
 )
 
-type Object struct {
-	Value
-}
+type NewObject map[string]AnyValue
 
-//AnyObject is anything that can retrieve a string.
-type AnyObject interface {
-	AnyValue
-	GetObject() Object
-}
-
-//NewObject returns a new javascript string from a Go literal.
-func NewObject(literal map[string]AnyValue) Object {
+func (literal NewObject) GetObject() Object {
 	var object strings.Builder
 	object.WriteByte('{')
 	var i = 0
@@ -34,9 +25,18 @@ func NewObject(literal map[string]AnyValue) Object {
 	return Object{NewValue(object.String())}
 }
 
-//Object is shorthand for NewObject.
-func (Ctx) Object(literal map[string]AnyValue) Object {
-	return NewObject(literal)
+func (literal NewObject) GetValue() Value {
+	return literal.GetObject().Value
+}
+
+type Object struct {
+	Value
+}
+
+//AnyObject is anything that can retrieve a string.
+type AnyObject interface {
+	AnyValue
+	GetObject() Object
 }
 
 //GetObject impliments AnyObject.

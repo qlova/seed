@@ -3,8 +3,8 @@ package service
 import "bytes"
 
 //NewWorker returns a new service worker.
-func NewWorker() Worker {
-	return Worker{
+func NewWorker() *Worker {
+	return &Worker{
 		Assets: make(map[string]bool),
 	}
 }

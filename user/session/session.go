@@ -91,7 +91,10 @@ func (s Secret) SetFor(u user.Ctx, value string) {
 	binary.PutVarint(buffer[:], time.Now().Unix())
 
 	var data = append(buffer[:], value...)
-	var cookie = Encrypt(data)
+	var cookie string
+	if value != "" {
+		cookie = Encrypt(data)
+	}
 	http.SetCookie(u.ResponseWriter(), &http.Cookie{
 		Name:     s.string,
 		Value:    cookie,

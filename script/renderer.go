@@ -88,8 +88,12 @@ seed.op = function(element, func, propagate) {
 	element.onclick = handler;
 }
 
+seed.active = null;
+
 //seed.report is the error handling function. Pass the current element for 'OnError' based error handling.
 seed.report = function(err, element) {
+	if (!element) element = seed.active;
+
 	if (element) {
 		while (true) {
 			if (element.onerror) {
@@ -100,6 +104,7 @@ seed.report = function(err, element) {
 			if (!element) break;
 		}
 	}
+	
 	console.error(err);
 };
 
@@ -124,6 +129,25 @@ seed.on = function(element, event, handler) {
 	}
 };
 
+seed.get_template = function(template, id) {
+	let element = template.content.getElementById(id);
+	if (element) return element;
+
+	let templates = template.content.querySelectorAll('template');
+	for (let template of templates) {
+		element = seed.get_template(template, id);
+		if (element) {
+			if (seed.get.cache) seed.get.cache[id] = element;
+			if (!element.parentElement) {
+				element.parent = template;
+			}
+			return element;
+		}
+	}
+
+	return null;
+}
+
 seed.get = function(id) {
 	if (seed.get.cache && id in seed.get.cache) {
 		return seed.get.cache[id];
@@ -139,7 +163,7 @@ seed.get = function(id) {
 	//Check the templates
 	let templates = document.querySelectorAll('template');
 	for (let template of templates) {
-		element = template.content.getElementById(id);
+		element = seed.get_template(template, id);
 		if (element) {
 			if (seed.get.cache) seed.get.cache[id] = element;
 			if (!element.parentElement) {

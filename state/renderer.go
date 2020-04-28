@@ -7,6 +7,7 @@ import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/signal"
 )
 
 type refresher struct {
@@ -15,7 +16,7 @@ type refresher struct {
 }
 
 type harvester struct {
-	states map[State]struct {
+	states map[Bool]struct {
 		set, unset script.Script
 	}
 	variables map[Value]struct {
@@ -27,7 +28,7 @@ type harvester struct {
 
 func newHarvester() *harvester {
 	return &harvester{
-		make(map[State]struct {
+		make(map[Bool]struct {
 			set, unset script.Script
 		}),
 		make(map[Value]struct {
@@ -99,9 +100,15 @@ func init() {
 			}
 			fmt.Fprintf(&b, `seed.state["%v"] = {`, state.key)
 			fmt.Fprint(&b, `set: async function() {`)
-			js.NewCtx(&b)(scripts.set)
+			js.NewCtx(&b)(func(q script.Ctx) {
+				q(scripts.set)
+				q(signal.Emit(signal.Raw("state.set." + state.key)))
+			})
 			fmt.Fprint(&b, `}, unset: async function() {`)
-			js.NewCtx(&b)(scripts.unset)
+			js.NewCtx(&b)(func(q script.Ctx) {
+				q(scripts.unset)
+				q(signal.Emit(signal.Raw("state.unset." + state.key)))
+			})
 			fmt.Fprint(&b, `}, changed: async function() {`)
 			js.NewCtx(&b)(func(q script.Ctx) {
 				q.If(state, func(q script.Ctx) {

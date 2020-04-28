@@ -7,5 +7,5 @@ import (
 
 //New returns a new HTML template element.
 func New(options ...seed.Option) seed.Seed {
-	return seed.New(html.SetTag("template").And(options...))
+	return seed.New(html.SetTag("template"), seed.Options(options))
 }

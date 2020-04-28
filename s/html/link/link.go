@@ -8,7 +8,7 @@ import (
 
 //New returns a new HTML link element.
 func New(options ...seed.Option) seed.Seed {
-	return seed.New(html.SetTag("link").And(options...))
+	return seed.New(html.SetTag("link"), seed.Options(options))
 }
 
 //Manifest returns a new HTML link element that links to a web manifest.

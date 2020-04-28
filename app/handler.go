@@ -18,6 +18,10 @@ import (
 var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
 
 func isLocal(r *http.Request) (local bool) {
+	if r.Header.Get("X-Real-IP") != "" || r.Header.Get("X-Forwarded-For") != "" {
+		return false
+	}
+
 	local = strings.Contains(r.RemoteAddr, "[::1]") || strings.Contains(r.RemoteAddr, "127.0.0.1")
 	if local {
 		return
@@ -83,9 +87,12 @@ func (a App) Handler() http.Handler {
 	}))
 
 	router.Handle("/seed.socket", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if isLocal(r) {
+		if isLocal(r) && a.port == ":0" {
 			localClients++
 			singleLocalConnection = localClients == 1
+			socket(w, r)
+		} else {
+			localClients = 99
 			socket(w, r)
 		}
 	}))

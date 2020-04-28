@@ -27,3 +27,8 @@ func (Ctx) String(literal string) String {
 func (s String) GetString() String {
 	return s
 }
+
+//Equals returns true if the two strings are equal.
+func (s String) Equals(b String) Bool {
+	return Bool{NewValue("(" + s.string + "==" + b.string + ")")}
+}

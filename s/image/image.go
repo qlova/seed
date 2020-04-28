@@ -14,7 +14,10 @@ func New(src string, options ...seed.Option) seed.Seed {
 	return seed.New(
 		html.SetTag("img"),
 		attr.Set("src", src),
+		attr.Set("alt", src),
 
-		asset.New(src).And(options...),
+		asset.New(src),
+
+		seed.Options(options),
 	)
 }

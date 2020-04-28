@@ -17,32 +17,32 @@ func ID(root seed.Seed) string {
 //Render renders the html of a seed.
 func Render(c seed.Seed) []byte {
 	var b bytes.Buffer
-	var data data
+	var data Data
 
 	c.Read(&data)
 
-	if data.tag != "" {
-		fmt.Fprintf(&b, `<%v`, data.tag)
+	if data.Tag != "" {
+		fmt.Fprintf(&b, `<%v`, data.Tag)
 
 		if c.Used() {
-			if data.id != nil {
-				if *data.id != "" {
-					fmt.Fprintf(&b, ` id=%v`, strconv.Quote(*data.id))
+			if data.ID != nil {
+				if *data.ID != "" {
+					fmt.Fprintf(&b, ` id=%v`, strconv.Quote(*data.ID))
 				}
 			} else {
 				fmt.Fprintf(&b, ` id=%v`, ID(c))
 			}
 		}
 
-		if data.attributes != nil {
-			for property, value := range data.attributes {
+		if data.Attributes != nil {
+			for property, value := range data.Attributes {
 				fmt.Fprintf(&b, " %v=%v ", property, strconv.Quote(value))
 			}
 		}
 
-		if data.classes != nil {
+		if data.Classes != nil {
 			fmt.Fprint(&b, ` class="`)
-			for _, class := range data.classes {
+			for _, class := range data.Classes {
 				fmt.Fprintf(&b, " %v ", class)
 			}
 			fmt.Fprint(&b, `" `)
@@ -50,9 +50,9 @@ func Render(c seed.Seed) []byte {
 
 		_, ok := c.(script.Seed)
 
-		if data.style != nil || ok {
+		if data.Style != nil || ok {
 			fmt.Fprint(&b, ` style="`)
-			for property, value := range data.style {
+			for property, value := range data.Style {
 				fmt.Fprintf(&b, "%v: %v;", property, value)
 			}
 			if ok {
@@ -63,15 +63,15 @@ func Render(c seed.Seed) []byte {
 
 		fmt.Fprint(&b, ">")
 
-		b.WriteString(data.innerHTML)
+		b.WriteString(data.InnerHTML)
 	}
 
 	for _, child := range c.Children() {
 		b.Write(Render(child))
 	}
 
-	if data.tag != "" {
-		fmt.Fprintf(&b, `</%v>`, data.tag)
+	if data.Tag != "" {
+		fmt.Fprintf(&b, `</%v>`, data.Tag)
 	}
 
 	return b.Bytes()

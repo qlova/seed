@@ -2,7 +2,10 @@ package signal
 
 import (
 	"encoding/base64"
+	"io/ioutil"
 	"math/big"
+
+	"github.com/qlova/seed/js"
 
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/script"
@@ -19,6 +22,10 @@ type Type struct {
 	string
 }
 
+func Raw(name string) Type {
+	return Type{name}
+}
+
 var id int64
 
 //New returns a new signal type.
@@ -30,6 +37,8 @@ func New() Type {
 //On runs the script when the signal is emitted.
 func On(signal Type, do script.Script) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
+		js.NewCtx(ioutil.Discard, c)(do)
+
 		var data data
 		c.Read(&data)
 
@@ -38,7 +47,10 @@ func On(signal Type, do script.Script) seed.Option {
 			c.Write(data)
 		}
 
-		data.handlers[signal] = data.handlers[signal].Append(do)
+		data.handlers[signal] = data.handlers[signal].Append(func(q script.Ctx) {
+			q(js.Global().Get("seed").Set("active", script.Element(c).Value))
+			q(do)
+		})
 	})
 }
 

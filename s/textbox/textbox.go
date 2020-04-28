@@ -20,8 +20,8 @@ func Var(text state.String, options ...seed.Option) seed.Seed {
 	return New(seed.Do(func(c seed.Seed) {
 		c.Add(script.On("input", func(q script.Ctx) {
 			text.Set(js.String{js.NewValue(script.Scope(c, q).Element() + `.value`)})(q)
-		}))
-	}).And(options...))
+		}), text.SetValue())
+	}), seed.Options(options))
 }
 
 //SetPlaceholder sets the placeholder of the textbox.
@@ -37,6 +37,6 @@ func SetReadOnly() seed.Option {
 //Focus focuses the textbox.
 func Focus(c seed.Seed) script.Script {
 	return func(q script.Ctx) {
-		q.Run(script.Scope(c, q).Element() + `.focus`)
+		q(script.Element(c).Run(`focus`))
 	}
 }

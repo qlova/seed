@@ -91,7 +91,7 @@ func New(food Food, options ...seed.Option) Seed {
 		css.Set("flex-direction", "column"),
 	), Data{}}
 
-	template.Add(css.SetSelector("#" + html.ID(feed.Seed)).And(options...))
+	template.Add(css.SetSelector("#"+html.ID(feed.Seed)), seed.Options(options))
 
 	convertToClasses(template)
 	var scripts script.Script = func(js.Ctx) {}
@@ -99,21 +99,32 @@ func New(food Food, options ...seed.Option) Seed {
 		scripts = scripts.Append(script.Adopt(child))
 	}
 
-	feed.Add(script.OnReady(func(q script.Ctx) {
-		fmt.Fprintf(q, `%v.refresh = async function() {let cache = seed.get.cache; seed.get.cache = null;`, js.NewValue(script.Scope(template, q).Element()))
+	feed.Add(
+		script.OnReady(func(q script.Ctx) {
+			fmt.Fprintf(q, `%v.refresh = async function() {
+				try {
+			if (%[1]v.refreshing) return;
+			%[1]v.refreshing = true; 
+			let cache = seed.get.cache; 
+			seed.get.cache = null;`, js.NewValue(script.Scope(template, q).Element()))
 
-		fmt.Fprintf(q, `while (%[1]v.childNodes.length > 1) %[1]v.removeChild(%[1]v.lastChild);`, script.Scope(feed, q).Element())
+			fmt.Fprintf(q, `while (%[1]v.childNodes.length > 1) %[1]v.removeChild(%[1]v.lastChild);`, script.Scope(feed, q).Element())
 
-		var data = food2Data(food, q)
+			var data = food2Data(food, q)
 
-		var scriptsString strings.Builder
-		scriptsString.WriteString(`async function(data) {`)
-		js.NewCtx(&scriptsString)(scripts)
-		scriptsString.WriteString(`}`)
+			var scriptsString strings.Builder
+			scriptsString.WriteString(`async function(data) {`)
+			js.NewCtx(&scriptsString)(scripts)
+			scriptsString.WriteString(`}`)
 
-		q.Run(`await seeds.feed.refresh`, js.NewValue(script.Scope(template, q).Element()), data, js.NewValue(scriptsString.String()))
-		fmt.Fprintf(q, `seed.get.cache = cache;};`)
-	}))
+			q.Run(`await seeds.feed.refresh`, js.NewValue(script.Scope(template, q).Element()), data, js.NewValue(scriptsString.String()))
+			fmt.Fprintf(q, `seed.get.cache = cache; %v.refreshing = false; }
+				catch(e) {
+					%[1]v.refreshing = false;
+					throw e;
+				}
+			};`, script.Scope(template, q).Element())
+		}))
 
 	return feed
 }

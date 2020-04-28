@@ -67,8 +67,6 @@ seed.goto = async function(id, args, url) {
 		seed.goto.out = null;
 	}
 
-	try { flipping.flip(); } catch(error) {}
-
 	for (let promise of promises) {
 		await promise;
 	}
@@ -80,6 +78,8 @@ seed.goto = async function(id, args, url) {
 			seed.LastPage.template.content.appendChild(seed.LastPage);
 		}
 	}
+
+	try { flipping.flip(); } catch(error) {}
 
 	//Set title and path.
 	let data = seed.NextPage.dataset;
@@ -164,7 +164,7 @@ seed.goto.ready = async function(id) {
 
 				for (let i in parts) {
 					if (i < 2) continue;
-					args[i-1] = parts[i]
+					args[i-1] = decodeURIComponent(parts[i]);
 				}
 
 				await seed.goto(element.id, args, path.slice(element.dataset.path.length));

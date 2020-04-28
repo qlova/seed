@@ -10,10 +10,10 @@ import (
 
 //New returns a new emailbox widget.
 func New(options ...seed.Option) seed.Seed {
-	return textbox.New(attr.Set("type", "email").And(options...))
+	return textbox.New(attr.Set("type", "email"), seed.Options(options))
 }
 
 //Var returns an emailbox with a variable state argument that will be synced with the value of this emailbox.
 func Var(text state.String, options ...seed.Option) seed.Seed {
-	return textbox.Var(text, attr.Set("type", "email").And(options...))
+	return textbox.Var(text, attr.Set("type", "email"), seed.Options(options))
 }

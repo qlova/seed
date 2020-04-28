@@ -9,40 +9,39 @@ import (
 	"github.com/qlova/seed/script"
 )
 
-type data struct {
+//Data stores html data with a seed.
+type Data struct {
 	seed.Data
 
-	id  *string
-	tag string
+	ID  *string
+	Tag string
 
-	classes []string
+	Classes []string
 
-	innerHTML string
+	InnerHTML string
 
-	style map[string]string
+	Style map[string]string
 
-	attributes map[string]string
+	Attributes map[string]string
 }
-
-var seeds = make(map[seed.Seed]data)
 
 //SetID returns an option that sets the HTML id associated with the seed.
 func SetID(id string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		var data data
+		var data Data
 		c.Read(&data)
 
 		switch q := c.(type) {
 		case script.Seed:
 			q.Javascript(`%v.id = %v;`, q.Element(), strconv.Quote(id))
 		case script.Undo:
-			if data.id != nil {
-				q.Javascript(`%v.id = %v;`, q.Element(), strconv.Quote(*data.id))
+			if data.ID != nil {
+				q.Javascript(`%v.id = %v;`, q.Element(), strconv.Quote(*data.ID))
 			} else {
 				q.Javascript(`%v.id = %v;`, q.Element(), c.ID())
 			}
 		default:
-			data.id = &id
+			data.ID = &id
 		}
 
 		c.Write(data)
@@ -52,7 +51,7 @@ func SetID(id string) seed.Option {
 //AddClass adds a class to the html element.
 func AddClass(class string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		var data data
+		var data Data
 		c.Read(&data)
 
 		switch q := c.(type) {
@@ -61,7 +60,7 @@ func AddClass(class string) seed.Option {
 		case script.Undo:
 			q.Javascript(`%v.classList.remove(%v);`, q.Element(), strconv.Quote(class))
 		default:
-			data.classes = append(data.classes, class)
+			data.Classes = append(data.Classes, class)
 		}
 
 		c.Write(data)
@@ -71,16 +70,16 @@ func AddClass(class string) seed.Option {
 //SetTag returns an option that sets the HTML tag associated with the seed.
 func SetTag(tag string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		var data data
+		var data Data
 		c.Read(&data)
 
 		switch q := c.(type) {
 		case script.Seed:
 			q.Javascript(`%v = document.createElement("%v"); %v.id = "temp%v";`, q.Element(), tag, q.Element(), c.ID())
 		case script.Undo:
-			q.Javascript(`%v = document.createElement("%v"); %v.id = "temp%v";`, q.Element(), data.tag, q.Element(), c.ID())
+			q.Javascript(`%v = document.createElement("%v"); %v.id = "temp%v";`, q.Element(), data.Tag, q.Element(), c.ID())
 		default:
-			data.tag = tag
+			data.Tag = tag
 		}
 
 		c.Write(data)
@@ -90,16 +89,16 @@ func SetTag(tag string) seed.Option {
 //Set returns an option that sets the HTML associated with the seed.
 func Set(html string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		var data data
+		var data Data
 		c.Read(&data)
 
 		switch q := c.(type) {
 		case script.Seed:
 			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(html))
 		case script.Undo:
-			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.innerHTML))
+			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.InnerHTML))
 		default:
-			data.innerHTML = html
+			data.InnerHTML = html
 		}
 
 		c.Write(data)
@@ -109,23 +108,23 @@ func Set(html string) seed.Option {
 //SetAttribute returns an option that sets an HTML attribute of this seed.
 func SetAttribute(name, value string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		var data data
+		var data Data
 		c.Read(&data)
 
 		switch q := c.(type) {
 		case script.Seed:
 			q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(value))
 		case script.Undo:
-			if attr, ok := data.attributes[name]; ok {
+			if attr, ok := data.Attributes[name]; ok {
 				q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(attr))
 			} else {
 				q.Javascript(`%v.removeAttribute(%v);`, q.Element(), strconv.Quote(name))
 			}
 		default:
-			if data.attributes == nil {
-				data.attributes = make(map[string]string)
+			if data.Attributes == nil {
+				data.Attributes = make(map[string]string)
 			}
-			data.attributes[name] = value
+			data.Attributes[name] = value
 		}
 
 		c.Write(data)
@@ -135,17 +134,17 @@ func SetAttribute(name, value string) seed.Option {
 //SetStyle returns an option that sets the inline HTML style of the seed.
 func SetStyle(property, value string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		var data data
+		var data Data
 		c.Read(&data)
 
 		switch c.(type) {
 		case script.Seed, script.Undo:
 			css.Set(property, value).AddTo(c)
 		default:
-			if data.style == nil {
-				data.style = make(map[string]string)
+			if data.Style == nil {
+				data.Style = make(map[string]string)
 			}
-			data.style[property] = value
+			data.Style[property] = value
 		}
 
 		c.Write(data)
@@ -156,16 +155,16 @@ func SetStyle(property, value string) seed.Option {
 func SetInnerText(text string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 
-		var data data
+		var data Data
 		c.Read(&data)
 
 		switch q := c.(type) {
 		case script.Seed:
 			q.Javascript(`%v.innerText = %v;`, q.Element(), strconv.Quote(text))
 		case script.Undo:
-			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.innerHTML))
+			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.InnerHTML))
 		default:
-			data.innerHTML = html.EscapeString(text)
+			data.InnerHTML = html.EscapeString(text)
 		}
 
 		c.Write(data)

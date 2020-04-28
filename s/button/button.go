@@ -10,10 +10,11 @@ import (
 func New(text string, options ...seed.Option) seed.Seed {
 	return seed.New(
 		html.SetTag("button"),
-		html.SetInnerText(text).And(options...),
+		html.SetInnerText(text),
+		seed.Options(options),
 	)
 }
 
 func Var(text state.String, options ...seed.Option) seed.Seed {
-	return New("", text.SetText().And(options...))
+	return New("", text.SetText(), seed.Options(options))
 }

@@ -43,10 +43,12 @@ func New(options ...Option) Transition {
 			page.OnEnter(func(q script.Ctx) {
 				t.In.AddTo(script.Scope(c, q))
 				fmt.Fprintf(q, `seed.in(%v, 0.4);`, script.Scope(c, q).Element())
-			}).And(page.OnExit(func(q script.Ctx) {
+			}),
+
+			page.OnExit(func(q script.Ctx) {
 				t.Out.AddTo(script.Scope(c, q))
 				fmt.Fprintf(q, `seed.out(%v, 0.4);`, script.Scope(c, q).Element())
-			})),
+			}),
 		)
 	})
 

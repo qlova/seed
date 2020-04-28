@@ -31,15 +31,18 @@ func RouterOf(c seed.Seed) Router {
 
 //Goto returns a script that goes to the given page.
 func (r Router) Goto(page Page) js.Script {
-	//Sort out script arguments of the page.
-	page, args, path := parseArgs(page)
+	return func(q script.Ctx) {
+		//Sort out script arguments of the page.
+		page, args, path := parseArgs(page)
 
-	var data data
-	r.c.Read(&data)
-	data.pages = append(data.pages, page)
-	r.c.Write(data)
+		var data data
+		r.c.Read(&data)
+		data.pages = append(data.pages, page)
+		r.c.Write(data)
 
-	return js.Run(`seed.goto`, js.NewString(ID(page)), args, path)
+		q.Run(`seed.goto`, js.NewString(ID(page)), args, path)
+	}
+
 }
 
 //Page is a global view.
@@ -58,8 +61,9 @@ func New(options ...seed.Option) Seed {
 
 		css.SetDisplay(css.Flex),
 		css.SetFlexDirection(css.Column),
+		style.Expand(),
 
-		style.SetSize(100, 100),
+		style.SetWidth(100),
 
 		seed.Do(func(c seed.Seed) {
 			c.Add(

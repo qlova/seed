@@ -29,5 +29,16 @@ func (b Bool) GetBool() Bool {
 	return b
 }
 
+//Not returns not bool.
+func (b Bool) Not() Bool {
+	b.Value.string = "!" + b.Value.string
+	return b
+}
+
 var False = NewBool(false)
 var True = NewBool(true)
+
+//Truthy returns a boolean from any value.
+func Truthy(v AnyValue) Bool {
+	return Bool{Value: v.GetValue()}
+}

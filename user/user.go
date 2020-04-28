@@ -4,6 +4,8 @@ package user
 import (
 	"bytes"
 	"net/http"
+	"regexp"
+	"strings"
 
 	"github.com/qlova/seed/js"
 )
@@ -44,4 +46,34 @@ func (u Ctx) Execute(script js.Script) {
 	if u.w != nil {
 		js.NewCtx(u.w)(script)
 	}
+}
+
+var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
+
+//Local returns true if the user is connecting from localhost.
+func (u Ctx) Local() (local bool) {
+	r := u.Request()
+
+	if r.Header.Get("X-Real-IP") != "" || r.Header.Get("X-Forwarded-For") != "" {
+		return false
+	}
+
+	local = strings.Contains(r.RemoteAddr, "[::1]") || strings.Contains(r.RemoteAddr, "127.0.0.1")
+	if local {
+		return
+	}
+	if intranet.Match([]byte(r.RemoteAddr)) {
+		local = true
+	}
+
+	split := strings.Split(r.Host, ":")
+	if len(split) == 0 {
+		local = false
+	} else {
+		if split[0] != "localhost" {
+			local = false
+		}
+	}
+
+	return
 }

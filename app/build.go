@@ -5,6 +5,7 @@ import (
 
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/app/manifest"
+	"github.com/qlova/seed/asset"
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/html/attr"
@@ -52,6 +53,9 @@ func (a App) build() {
 
 	var onready = string(script.Render(a))
 	var scripts = js.Scripts(a)
+
+	app.worker.Assets = asset.Of(a)
+	a.Seed.Write(app)
 
 	app.document.Head.Add(
 		meta.Charset("utf-8"),
@@ -128,6 +132,8 @@ func (a App) build() {
 									case 'installed':
 										if (navigator.serviceWorker.controller) {
 
+											console.log("found update");
+
 											if (!window.localStorage.getItem("updated")) {
 												window.localStorage.setItem("updated", "true");
 												return;
@@ -138,20 +144,13 @@ func (a App) build() {
 
 											console.log("updating");
 											
-											//Clear all unnamed variables because they could have changed!
-											//Unamed variables have a 'g_' prefix.
-											for (let i in localStorage) {
-												let item = window.localStorage[i];
-												if (item.substring && item.substring(0, 3) == "g_") {
-													window.localStorage.removeItem(i);
-												}
-											}
+											if (document.body.onupdatefound) document.body.onupdatefound();
 										}
 								}
 							};
 						}
 					}, function(err) {
-						
+						throw err;
 					});
 				}
 				

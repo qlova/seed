@@ -11,6 +11,10 @@ import (
 	"github.com/qlova/seed/script"
 )
 
+func OnUpdateFound(do script.Script) seed.Option {
+	return script.On("updatefound", do)
+}
+
 //SetPage sets the starting page of this app.
 func SetPage(p page.Page) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {

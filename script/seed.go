@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"math/big"
+	"strings"
 
 	"github.com/qlova/seed"
 )
@@ -31,7 +32,15 @@ func ID(c seed.Seed) string {
 		return data.id
 	}
 
-	return base64.RawURLEncoding.EncodeToString(big.NewInt(int64(c.ID())).Bytes())
+	id := base64.RawURLEncoding.EncodeToString(big.NewInt(int64(c.ID())).Bytes())
+
+	if id[0] >= '0' && id[0] <= '9' {
+		id = "_" + id
+	}
+
+	id = strings.Replace(id, "-", "__", -1)
+
+	return id
 }
 
 type Undo struct {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strconv"
 )
 
 //AnyValue is anything that can produce a js value.
@@ -62,13 +63,29 @@ func (v Value) Var(q Ctx) Value {
 }
 
 //Set sets the JavaScript property p of value v to ValueOf(x).
-func (v Value) Set(property AnyString, value Value) Script {
+func (v Value) Set(property string, value Value) Script {
 	return func(q Ctx) {
 		q(v)
 		q('[')
-		q(property)
+		q(strconv.Quote(property))
 		q("] = ")
 		q(value)
 		q(';')
 	}
+}
+
+//Get gets the JavaScript property p of value v.
+func (v Value) Get(property string) Value {
+	v.string = v.string + "[" + strconv.Quote(property) + "]"
+	return v
+}
+
+//Call calls the method on the given value.
+func (v Value) Call(method string, args ...AnyValue) Value {
+	return Call(v.string+"."+method, args...)
+}
+
+//Run runs the method on the given value.
+func (v Value) Run(method string, args ...AnyValue) Script {
+	return Run(v.string+"."+method, args...)
 }

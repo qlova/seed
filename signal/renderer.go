@@ -42,9 +42,11 @@ func init() {
 		b.WriteString(`seed.signal = {`)
 
 		for signal, script := range harvested.signals {
-			fmt.Fprintf(&b, `"%v": async function() {`, signal.string)
+			fmt.Fprintf(&b, `"%v": async function() { try{`, signal.string)
 			js.NewCtx(&b)(script)
-			fmt.Fprint(&b, `},`)
+			fmt.Fprint(&b, `} catch(e) {
+				seed.report(e, seed.active);
+			}},`)
 		}
 
 		b.WriteString(`};`)

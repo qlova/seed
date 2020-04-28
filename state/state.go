@@ -4,6 +4,7 @@ import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/signal"
 	"github.com/qlova/seed/user"
 )
 
@@ -14,6 +15,26 @@ type State struct {
 
 func New(options ...Option) State {
 	return State{NewBool(options...), false}
+}
+
+func (state State) Signal() signal.Type {
+	if state.not {
+		return signal.Raw("state.unset." + state.key)
+	}
+	return signal.Raw("state.set." + state.key)
+}
+
+//GetBool implements script.AnyBool
+func (state State) GetBool() script.Bool {
+	if state.not {
+		return state.Bool.GetBool().Not()
+	}
+	return state.Bool.GetBool()
+}
+
+//GetValue implements script.AnyValue
+func (state State) GetValue() script.Value {
+	return state.GetBool().Value
 }
 
 func (state State) Not() State {
@@ -79,7 +100,7 @@ func (s RemoteState) Set() {
 	if state.not {
 		state.setFor(s.u, "false")
 	} else {
-		s.s.setFor(s.u, "true")
+		state.setFor(s.u, "true")
 	}
 
 }
@@ -87,7 +108,7 @@ func (s RemoteState) Set() {
 type data struct {
 	seed.Data
 
-	set, unset map[State]script.Script
+	set, unset map[Bool]script.Script
 	change     map[Value]script.Script
 
 	onrefresh script.Script
@@ -108,12 +129,17 @@ func (state State) If(options ...seed.Option) seed.Option {
 		c.Read(&data)
 
 		if data.set == nil {
-			data.set = make(map[State]script.Script)
-			data.unset = make(map[State]script.Script)
+			data.set = make(map[Bool]script.Script)
+			c.Write(data)
+		}
+
+		if data.unset == nil {
+			data.unset = make(map[Bool]script.Script)
+			c.Write(data)
 		}
 
 		if state.not {
-			data.unset[state] = data.unset[state].Append(func(q script.Ctx) {
+			data.unset[state.Bool] = data.unset[state.Bool].Append(func(q script.Ctx) {
 				for _, option := range options {
 					if other, ok := option.(seed.Seed); ok {
 						script.Scope(other, q).AddTo(script.Scope(c, q))
@@ -122,7 +148,7 @@ func (state State) If(options ...seed.Option) seed.Option {
 					}
 				}
 			})
-			data.set[state] = data.set[state].Append(func(q script.Ctx) {
+			data.set[state.Bool] = data.set[state.Bool].Append(func(q script.Ctx) {
 				for _, option := range options {
 					if other, ok := option.(seed.Seed); ok {
 						script.Scope(c, q).Undo(script.Scope(other, q))
@@ -132,7 +158,7 @@ func (state State) If(options ...seed.Option) seed.Option {
 				}
 			})
 		} else {
-			data.set[state] = data.set[state].Append(func(q script.Ctx) {
+			data.set[state.Bool] = data.set[state.Bool].Append(func(q script.Ctx) {
 				for _, option := range options {
 					if other, ok := option.(seed.Seed); ok {
 						script.Scope(other, q).AddTo(script.Scope(c, q))
@@ -141,7 +167,7 @@ func (state State) If(options ...seed.Option) seed.Option {
 					}
 				}
 			})
-			data.unset[state] = data.unset[state].Append(func(q script.Ctx) {
+			data.unset[state.Bool] = data.unset[state.Bool].Append(func(q script.Ctx) {
 				for _, option := range options {
 					if other, ok := option.(seed.Seed); ok {
 						script.Scope(c, q).Undo(script.Scope(other, q))
@@ -151,7 +177,5 @@ func (state State) If(options ...seed.Option) seed.Option {
 				}
 			})
 		}
-
-		c.Write(data)
 	})
 }

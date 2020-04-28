@@ -9,6 +9,7 @@ import (
 type Spacer interface {
 	Outside() style.Style
 	Inside() style.Style
+	Before() style.Style
 }
 
 //Items returns an aligner that aligns children.
@@ -24,4 +25,8 @@ func (itemsSpacer) Outside() style.Style {
 
 func (itemsSpacer) Inside() style.Style {
 	return css.SetJustifyContent(css.SpaceBetween)
+}
+
+func (itemsSpacer) Before() style.Style {
+	return css.SetJustifyContent(css.FlexEnd)
 }

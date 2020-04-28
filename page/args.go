@@ -29,7 +29,7 @@ func valueAs(v js.AnyValue, T reflect.Type) reflect.Value {
 }
 
 //parseArgs returns the page arguments as a js.Object.
-func parseArgs(page Page) (Page, js.Object, js.String) {
+func parseArgs(page Page) (Page, js.AnyObject, js.String) {
 	var url = js.NewString("")
 
 	if page == nil {
@@ -48,31 +48,34 @@ func parseArgs(page Page) (Page, js.Object, js.String) {
 		var FieldValue = V.Field(i)
 
 		if Field.Type.Implements(reflect.TypeOf((*js.AnyValue)(nil)).Elem()) {
-			if intf := FieldValue.Interface(); intf != nil {
+			intf := FieldValue.Interface()
 
-				var key string
+			var key string
 
-				//Simple base lookup.
-				if tag, ok := Field.Tag.Lookup("url"); ok {
-					key = tag
+			//Simple base lookup.
+			if tag, ok := Field.Tag.Lookup("url"); ok {
+				key = tag
+				if intf != nil {
 					switch tag {
 					case `1`:
 						url = js.String{Value: js.Call(`"/"+encodeURIComponent`, intf.(js.AnyValue))}
 					default:
 						panic("not implimented")
 					}
-				} else {
-					key = Field.Name
 				}
-
-				object[key] = intf.(js.AnyValue)
-
-				var value = js.NewValue(
-					fmt.Sprintf("seed.CurrentPage.args[%v]",
-						strconv.Quote(key)))
-
-				NewPage.Field(i).Set(valueAs(value, Field.Type))
+			} else {
+				key = Field.Name
 			}
+
+			if intf != nil {
+				object[key] = intf.(js.AnyValue)
+			}
+
+			var value = js.NewValue(
+				fmt.Sprintf("seed.CurrentPage.args[%v]",
+					strconv.Quote(key)))
+
+			NewPage.Field(i).Set(valueAs(value, Field.Type))
 		}
 	}
 

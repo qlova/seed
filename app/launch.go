@@ -61,14 +61,25 @@ func launch(url string) {
 //Launch launches the app.
 func (app App) Launch() error {
 
+	var port = ":0"
+
+	//Allow port config from Env
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	}
+
+	app.port = port
+
 	handler := app.Handler()
 
-	listener, err := net.Listen("tcp", ":0")
+	listener, err := net.Listen("tcp", port)
 	if err != nil {
 		return err
 	}
 
-	go launch("http://" + listener.Addr().String())
+	if port == ":0" {
+		go launch("http://" + listener.Addr().String())
+	}
 
 	return http.Serve(listener, handler)
 }

@@ -28,29 +28,39 @@ func Scope(c seed.Seed) Seed {
 type data struct {
 	seed.Data
 
-	popups []Popup
+	popups map[reflect.Type]Popup
 }
 
 //Show shows the provided popup.
 func (c Seed) Show(p Popup) script.Script {
-	var data data
-	c.Read(&data)
-	data.popups = append(data.popups, p)
-	c.Write(data)
-
 	return func(q script.Ctx) {
+
+		var data data
+		c.Read(&data)
+		if data.popups == nil {
+			data.popups = make(map[reflect.Type]Popup)
+			c.Write(data)
+		}
+
+		data.popups[reflect.TypeOf(p)] = p
+
 		fmt.Fprintf(q, `seed.show("%v");`, ID(p))
 	}
 }
 
 //Wrap shows the provided popup while the provided script is running.
 func (c Seed) Wrap(p Popup, s script.Script) script.Script {
-	var data data
-	c.Read(&data)
-	data.popups = append(data.popups, p)
-	c.Write(data)
-
 	return func(q script.Ctx) {
+
+		var data data
+		c.Read(&data)
+		if data.popups == nil {
+			data.popups = make(map[reflect.Type]Popup)
+			c.Write(data)
+		}
+
+		data.popups[reflect.TypeOf(p)] = p
+
 		fmt.Fprintf(q, `seed.show("%v"); try {`, ID(p))
 		s(q)
 		fmt.Fprintf(q, `seed.hide("%[1]v"); } catch(e) { seed.hide("%[1]v"); throw e; }`, ID(p))

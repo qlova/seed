@@ -6,6 +6,24 @@ import (
 	"reflect"
 )
 
+type Link struct {
+	Seed
+}
+
+func (link *Link) Link() Option {
+	return NewOption(func(c Seed) {
+		link.Seed = c
+	})
+}
+
+func NewLink() *Link {
+	return new(Link)
+}
+
+type Creator interface {
+	New(...Option)
+}
+
 //Dir is the working directory of the seed.
 var Dir = filepath.Dir(os.Args[0])
 
@@ -34,7 +52,6 @@ type data struct {
 //Option can be used to modify a seed.
 type Option interface {
 	AddTo(Seed)
-	And(...Option) Option
 }
 
 type Options []Option
@@ -205,5 +222,12 @@ func If(condition bool, options ...Option) Option {
 func Do(f func(c Seed)) Option {
 	return NewOption(func(c Seed) {
 		f(c)
+	})
+}
+
+//Apply runs a function with the seed scoped as the first argument.
+func Scope(f func(c Seed) Option) Option {
+	return NewOption(func(c Seed) {
+		f(c).AddTo(c)
 	})
 }

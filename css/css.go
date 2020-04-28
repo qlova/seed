@@ -1,9 +1,7 @@
 package css
 
 import (
-	"encoding/base64"
 	"fmt"
-	"math/big"
 	"strings"
 
 	"github.com/qlova/seed"
@@ -95,7 +93,7 @@ func Selector(c seed.Seed) string {
 		return d.selector
 	}
 
-	return "#" + base64.RawURLEncoding.EncodeToString(big.NewInt(int64(c.ID())).Bytes())
+	return "#" + script.ID(c)
 }
 
 func dashes2camels(s string) string {

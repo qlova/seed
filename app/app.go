@@ -23,7 +23,7 @@ type app struct {
 	seed.Data
 
 	manifest manifest.Manifest
-	worker   service.Worker
+	worker   *service.Worker
 
 	document html.Document
 
@@ -36,7 +36,7 @@ type app struct {
 	color color.Color
 }
 
-//Installed is true when the app is installed.
+//Installed is true when the app is running from an installed instance.
 var Installed = state.State{
 	Bool: state.Bool{
 		Value: state.Raw("(window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone)"),

@@ -63,7 +63,10 @@ func (v Viewport) render() string {
 
 //AddTo implements seed.Option.AddTo
 func (v Viewport) AddTo(c seed.Seed) {
-	attr.Set("name", "viewport").And(attr.Set("content", v.render())).AddTo(c)
+	seed.Options{
+		attr.Set("name", "viewport"),
+		attr.Set("content", v.render()),
+	}.AddTo(c)
 }
 
 //And implements seed.Option.And

@@ -6,5 +6,5 @@ import (
 )
 
 func New(options ...seed.Option) seed.Seed {
-	return seed.New(html.SetTag("script").And(options...))
+	return seed.New(html.SetTag("script"), seed.Options(options))
 }

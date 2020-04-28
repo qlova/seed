@@ -2,7 +2,6 @@ package state
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/script"
@@ -19,7 +18,7 @@ type String struct {
 
 //NewString returns a reference to a new global string.
 func NewString(initial string, options ...Option) String {
-	return String{newValue(strconv.Quote(initial), options...)}
+	return String{newValue(initial, options...)}
 }
 
 //GetString implements script.AnyString
@@ -82,6 +81,44 @@ func (s String) SetText() seed.Option {
 
 			data.change[s.Value] = data.change[s.Value].Append(func(q script.Ctx) {
 				q(fmt.Sprintf(`%v.innerText = %v;`, script.Scope(c, q).Element(), s.get()))
+			})
+
+			if s.dependencies != nil {
+				for _, dep := range *s.dependencies {
+					data.change[dep] = data.change[dep].Append(func(q script.Ctx) {
+						q(fmt.Sprintf(`seed.state["%v"].changed();`, s.key))
+					})
+				}
+			}
+
+			c.Write(data)
+		}
+	})
+}
+
+func (s String) SetValue() seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("state.String.SetText must not be called on a script.Seed")
+		}
+
+		if s.raw != "" {
+			c.Add(script.OnReady(func(q script.Ctx) {
+				fmt.Fprintf(q, `%[1]v.value = %[2]v;`, script.Scope(c, q).Element(), s.get())
+			}))
+		}
+
+		if s.key != "" {
+			var data data
+			c.Read(&data)
+
+			if data.change == nil {
+				data.change = make(map[Value]script.Script)
+			}
+
+			data.change[s.Value] = data.change[s.Value].Append(func(q script.Ctx) {
+				q(fmt.Sprintf(`%v.value = %v;`, script.Scope(c, q).Element(), s.get()))
 			})
 
 			if s.dependencies != nil {

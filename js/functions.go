@@ -1,6 +1,32 @@
 package js
 
-import "strings"
+import (
+	"strings"
+)
+
+type Function struct {
+	Value
+}
+
+func NewFunction(do Script) Function {
+	var s strings.Builder
+
+	s.WriteString(`async function() {`)
+
+	NewCtx(&s)(do)
+
+	s.WriteString(`}`)
+
+	return Function{
+		Value: NewValue(s.String()),
+	}
+}
+
+func Await(v AnyValue) Value {
+	var val = v.GetValue()
+	val.string = "await " + val.string
+	return val
+}
 
 //Call calls the given function expressionw with the given arguments.
 func Call(fname string, args ...AnyValue) Value {
@@ -41,4 +67,22 @@ func (q Ctx) Run(fname string, args ...AnyValue) {
 		}
 	}
 	q(");")
+}
+
+//Return returns the value from the current function.
+func Return(v AnyValue) func(q Ctx) {
+	return func(q Ctx) {
+		q("return ")
+		if v != nil {
+			q(v.GetValue().String())
+		}
+		q(";")
+	}
+}
+
+//Return returns the value from the current function.
+func (q Ctx) Return(v AnyValue) {
+	q("return ")
+	q(v.GetValue().String())
+	q(";")
 }

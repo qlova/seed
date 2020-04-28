@@ -6,6 +6,8 @@ const CSS = `
     position: relative;
     max-width: 100%;
     max-height: 100%;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 html, body, div, span, applet, object, iframe,
@@ -45,7 +47,6 @@ body {
 	user-select: none;
 	overflow: hidden;
 	align-items: center;
-    justify-content: center;
 
 	line-height: 1;
 }
