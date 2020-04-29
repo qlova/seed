@@ -30,12 +30,16 @@ seed.goto = async function(id, args, url) {
 
 	seed.NextPage.parent.parentElement.appendChild(seed.NextPage);
 
+	var Refresh = false;
 	//If we are going to the same page then return.
 	if (seed.CurrentPage == seed.NextPage) {
+
 		if (JSON.stringify(seed.CurrentPage.args) == JSON.stringify(args)) {
 			seed.NextPage = null;
 			return;
 		}
+
+		Refresh = true;
 	}
 
 	if (window.flipping) flipping.read();
@@ -71,7 +75,7 @@ seed.goto = async function(id, args, url) {
 		await promise;
 	}
 
-	if (seed.LastPage) {
+	if (seed.LastPage && !Refresh) {
 		if (seed.LastPage == seed.LoadingPage) {
 			seed.LastPage.style.display = "none";
 		} else {
@@ -158,6 +162,7 @@ seed.goto.ready = async function(id) {
 				return;
 			}
 			
+			//Parse path values.
 			if (path.startsWith(element.dataset.path)) {
 				let args = {};
 				let parts = path.split('/');
@@ -167,9 +172,21 @@ seed.goto.ready = async function(id) {
 					args[i-1] = decodeURIComponent(parts[i]);
 				}
 
-				await seed.goto(element.id, args, path.slice(element.dataset.path.length));
+				//Parse query string
+
+				var query = new URLSearchParams((new URL(document.location)).searchParams);
+				query.forEach(function(value, key) {
+					args[key] = value;
+				});
+
+				var url = path.slice(element.dataset.path.length);
+				if (query.toString() != "") url += "?" + query.toString();
+
+				await seed.goto(element.id, args, url);
 				return;
 			}
+
+
 		}
 	}
 

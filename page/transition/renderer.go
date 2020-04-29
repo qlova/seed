@@ -10,7 +10,7 @@ func init() {
 		return []byte(`
 		seed.in = function(element, duration) {
 			if (element.classList.contains("page")) {
-				if (!seed.LastPage || seed.LastPage.id == loading_page) return;
+				if (!seed.LastPage) return;
 			}
 		
 			element.style.animationFillMode = "forwards";
@@ -28,7 +28,7 @@ func init() {
 		}
 		seed.out = function(element, duration) {
 			if (element.classList.contains("page")) {
-				if (!seed.LastPage || seed.LastPage.id == loading_page) return;
+				if (!seed.LastPage) return;
 			}
 		
 			element.style.animationFillMode = "forwards";

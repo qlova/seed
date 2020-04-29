@@ -9,6 +9,13 @@ func Session() Option {
 	}
 }
 
+//Global configures the state to be backed by a global variable.
+func Global() Option {
+	return func(v *Value) {
+		v.storage = "seed.storage"
+	}
+}
+
 //Local configures the state to be backed by a local variable.
 func Local() Option {
 	return func(v *Value) {

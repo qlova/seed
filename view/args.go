@@ -6,7 +6,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/qlova/seed"
 	"github.com/qlova/seed/js"
+	"github.com/qlova/seed/script"
 )
 
 func valueAs(v js.AnyValue, T reflect.Type) reflect.Value {
@@ -29,7 +31,7 @@ func valueAs(v js.AnyValue, T reflect.Type) reflect.Value {
 }
 
 //parseArgs returns the page arguments as a js.Object.
-func parseArgs(view View) (View, js.AnyObject) {
+func parseArgs(view View, parent seed.Seed) (View, js.AnyObject) {
 	if view == nil {
 		return view, js.NewObject(nil)
 	}
@@ -52,7 +54,7 @@ func parseArgs(view View) (View, js.AnyObject) {
 				object[key] = intf.(js.AnyValue)
 
 				var value = js.NewValue(
-					fmt.Sprintf("seed.CurrentPage.args[%v]",
+					fmt.Sprintf(script.Element(parent).String()+".CurrentView.args[%v]",
 						strconv.Quote(key)))
 
 				NewView.Field(i).Set(valueAs(value, Field.Type))

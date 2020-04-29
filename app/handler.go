@@ -118,7 +118,7 @@ func (a App) Handler() http.Handler {
 		router.Handle(route, handler)
 	}
 
-	router.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	router.Handle("/", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if content, ok := scripts[r.URL.Path]; ok {
 			w.Header().Set("Content-Type", "text/javascript")
@@ -133,7 +133,7 @@ func (a App) Handler() http.Handler {
 		}
 
 		w.Write(document)
-	}))
+	})))
 
 	return router
 }

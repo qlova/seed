@@ -22,6 +22,12 @@ func NewFunction(do Script) Function {
 	}
 }
 
+func (q Ctx) Await(v AnyValue) {
+	var val = v.GetValue()
+	q("await " + val.string + ";")
+
+}
+
 func Await(v AnyValue) Value {
 	var val = v.GetValue()
 	val.string = "await " + val.string

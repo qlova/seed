@@ -30,7 +30,7 @@ func ControllerOf(c seed.Seed) Controller {
 //Goto returns a script that goes to the given view.
 func (c Controller) Goto(view View) js.Script {
 	//Sort out script arguments of the page.
-	view, args := parseArgs(view)
+	view, args := parseArgs(view, c.of)
 
 	var data data
 	c.of.Read(&data)

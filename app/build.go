@@ -36,12 +36,14 @@ func (a App) build() {
 		}),
 
 		column.New(seed.Do(func(c seed.Seed) {
+			var loading_page seed.Seed
 			if app.loadingPage != nil {
-				app.loadingPage.Page(page.RouterOf(c))
+				loading_page = app.loadingPage.Page(page.RouterOf(c))
+				app.document.Body.Add(loading_page)
 			}
 
 			c.Add(script.OnReady(func(q script.Ctx) {
-				fmt.Fprintf(q, `seed.LoadingPage = seed.get("%v"); seed.CurrentPage = seed.LoadingPage;`, html.ID(c))
+				fmt.Fprintf(q, `seed.LoadingPage = seed.get("%v"); seed.CurrentPage = seed.LoadingPage;`, html.ID(loading_page))
 			}))
 		})),
 	)
@@ -176,12 +178,15 @@ func (a App) build() {
 					}
 
 					Socket.onopen = function(event) {
+						let old_log = console.log;
 						console.log = function() {
 							let args = [];
 							for (let arg of arguments) {
 								args.push(arg);
 							}
 							Socket.send(JSON.stringify(args));
+
+							if (seed.debug) old_log.apply(null, arguments);
 						};
 						let old = console.error;
 						console.error = function() {

@@ -119,10 +119,20 @@ var seeds = make(map[seed.Seed]data)
 
 //If only applies its options if the state is active.
 func (state State) If(options ...seed.Option) seed.Option {
+
 	return seed.NewOption(func(c seed.Seed) {
 		switch c.(type) {
 		case script.Seed, script.Undo:
 			panic("state.State.If must not be called on a script.Seed")
+		}
+
+		//Add any children seeds to the parent seed.
+		//Hacky fix.
+		for _, o := range options {
+			switch child := o.(type) {
+			case seed.Seed:
+				c.Add(child)
+			}
 		}
 
 		var data data

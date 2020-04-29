@@ -130,7 +130,14 @@ seed.on = function(element, event, handler) {
 };
 
 seed.get_template = function(template, id) {
-	let element = template.content.getElementById(id);
+
+	let element;
+	if (id[0] == ".") {
+		element = template.content.querySelector(id);
+	} else {
+		element = template.content.getElementById(id);
+	}
+
 	if (element) return element;
 
 	let templates = template.content.querySelectorAll('template');
@@ -148,12 +155,22 @@ seed.get_template = function(template, id) {
 	return null;
 }
 
+seed.debug = false;
+
+seed.globals = {};
+
 seed.get = function(id) {
 	if (seed.get.cache && id in seed.get.cache) {
 		return seed.get.cache[id];
 	}
 
-	let element = document.getElementById(id);
+	let element;
+	if (id[0] == ".") {
+		element = document.getElementsByClassName(id);
+		if (element) element = element[0];
+	} else {
+		element = document.getElementById(id);
+	}
 	
 	if (element) {
 		if (seed.get.cache) seed.get.cache[id] = element;

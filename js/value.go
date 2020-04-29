@@ -63,13 +63,13 @@ func (v Value) Var(q Ctx) Value {
 }
 
 //Set sets the JavaScript property p of value v to ValueOf(x).
-func (v Value) Set(property string, value Value) Script {
+func (v Value) Set(property string, value AnyValue) Script {
 	return func(q Ctx) {
 		q(v)
 		q('[')
 		q(strconv.Quote(property))
 		q("] = ")
-		q(value)
+		q(value.GetValue())
 		q(';')
 	}
 }
@@ -77,6 +77,12 @@ func (v Value) Set(property string, value Value) Script {
 //Get gets the JavaScript property p of value v.
 func (v Value) Get(property string) Value {
 	v.string = v.string + "[" + strconv.Quote(property) + "]"
+	return v
+}
+
+//Index gets the JavaScript index i of value v.
+func (v Value) Index(i int) Value {
+	v.string = v.string + "[" + strconv.Itoa(i) + "]"
 	return v
 }
 

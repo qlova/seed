@@ -16,7 +16,7 @@ import (
 
 //ID returns the DOM id of the provided page.
 func ID(p Page) string {
-	return strings.Replace(reflect.TypeOf(p).String(), ".", "_", -1)
+	return "." + strings.Replace(reflect.TypeOf(p).String(), ".", "_", -1)
 }
 
 //Router is responsible for showing the current page and routing urls to the approproate page.

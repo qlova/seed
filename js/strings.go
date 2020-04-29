@@ -29,6 +29,6 @@ func (s String) GetString() String {
 }
 
 //Equals returns true if the two strings are equal.
-func (s String) Equals(b String) Bool {
-	return Bool{NewValue("(" + s.string + "==" + b.string + ")")}
+func (s String) Equals(b AnyString) Bool {
+	return Bool{NewValue("(" + s.string + "==" + b.GetString().string + ")")}
 }

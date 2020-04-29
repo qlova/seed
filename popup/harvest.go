@@ -47,6 +47,7 @@ func (h harvester) harvest(c seed.Seed) {
 				css.SetFlexDirection(css.Column),
 
 				style.SetSize(100, 100),
+				style.SetLayer(1),
 				css.SetPosition(css.Absolute),
 			)
 			element.Use()

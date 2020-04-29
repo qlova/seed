@@ -92,6 +92,21 @@ func init() {
 		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
+		b.WriteString(`
+		seed.storage = {};
+		seed.storage.data = {};
+		seed.storage.getItem = function(key) {
+			return seed.storage.data[key];
+		};
+		seed.storage.setItem = function(key, value) {
+			seed.storage.data[key] = value;
+		}
+		seed.storage.clear = function() {
+			seed.storage.data = {};
+		}
+		
+		`)
+
 		b.WriteString(`seed.state = {};`)
 
 		for state, scripts := range harvested.states {

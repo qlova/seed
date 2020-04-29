@@ -13,6 +13,10 @@ seed.view = async function(of, name, args, fragment) {
 	if(!of.view) of.view = {};
 	if(!of.view.queue) of.view.queue = [];
 
+	if (seed.debug) {
+		console.log("seed.view: ", of, name, args, fragment)
+	}
+
 	//Don't goto if we are already going to something.
 	if (of.NextView != null) {
 		of.view.queue.push(arguments);
@@ -107,7 +111,7 @@ seed.view = async function(of, name, args, fragment) {
 	}
 }
 
-seed.view.ready = async function(of, id) {
+seed.view.ready = async function(of, id, args) {
 	of.StartingView = id;
 	if (!seed.view) return;
 
@@ -132,7 +136,7 @@ seed.view.ready = async function(of, id) {
 
 		await seed.view(of, saved_view, saved_args, saved_frag);
 	} else {
-		await seed.view(of, of.StartingView);
+		await seed.view(of, of.StartingView, args);
 	}
 }
 

@@ -174,6 +174,20 @@ func (c seed) Add(options ...Option) Option {
 func Add(a, b Seed) {
 	var d data
 	b.Read(&d)
+
+	//Don't re-add children.
+	if parent := a.Parent(); parent != nil {
+		if parent.ID() == b.ID() {
+			return
+		}
+	}
+
+	for _, child := range d.children {
+		if child.ID() == a.ID() {
+			return
+		}
+	}
+
 	d.children = append(d.children, a)
 	b.Write(d)
 

@@ -106,6 +106,12 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 				t, err = time.Parse(`"2006-01"`, arg.String())
 			}
 			elem = reflect.ValueOf(t)
+		case reflect.TypeOf(true):
+			if arg.String() == "true" {
+				elem = reflect.ValueOf(true)
+			} else {
+				elem = reflect.ValueOf(false)
+			}
 		default:
 			var shell = reflect.New(f.Type().In(i)).Interface()
 			if err := json.NewDecoder(strings.NewReader(arg.String())).Decode(shell); err != nil {

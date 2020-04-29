@@ -39,9 +39,10 @@ func (h harvester) harvest(c seed.Seed) {
 
 			var element = p.Page(RouterOf(template))
 			element.Add(
-				html.SetID(ID(p)),
+				html.AddClass(ID(p)[1:]),
+				css.SetSelector(ID(p)),
 				script.SetID(ID(p)),
-				css.SetSelector("#"+ID(p)),
+				html.SetID(html.ID(element)),
 			)
 			element.Use()
 			element.AddTo(template)

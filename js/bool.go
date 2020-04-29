@@ -35,6 +35,18 @@ func (b Bool) Not() Bool {
 	return b
 }
 
+type Else struct {
+	condition Bool
+	result    Value
+}
+
+func (b Bool) If(returns AnyValue) Else {
+	return Else{b, returns.GetValue()}
+}
+func (e Else) Else(returns AnyValue) Value {
+	return NewValue(`(%v ? %v : %v)`, e.condition, e.result, returns)
+}
+
 var False = NewBool(false)
 var True = NewBool(true)
 

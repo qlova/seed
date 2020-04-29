@@ -39,6 +39,12 @@ func (c Seed) Refresh() script.Script {
 	}
 }
 
+func Refresh(c seed.Seed) script.Script {
+	return func(q script.Ctx) {
+		fmt.Fprintf(q, `await %v.refresh();`, script.Scope(c, q).Element())
+	}
+}
+
 //Do runs f.
 func Do(f func(Seed)) seed.Option {
 	return seed.Do(func(s seed.Seed) {

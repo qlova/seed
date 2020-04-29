@@ -30,10 +30,11 @@ func valueAs(v js.AnyValue, T reflect.Type) reflect.Value {
 
 //parseArgs returns the page arguments as a js.Object.
 func parseArgs(page Page) (Page, js.AnyObject, js.String) {
-	var url = js.NewString("")
+	var url string = `""`
+	var queries []string
 
 	if page == nil {
-		return page, js.NewObject(nil), url
+		return page, js.NewObject(nil), js.NewString(url)
 	}
 
 	var T = reflect.TypeOf(page)
@@ -58,9 +59,12 @@ func parseArgs(page Page) (Page, js.AnyObject, js.String) {
 				if intf != nil {
 					switch tag {
 					case `1`:
-						url = js.String{Value: js.Call(`"/"+encodeURIComponent`, intf.(js.AnyValue))}
+						if url == `""` {
+							url = `"/"`
+						}
+						url += js.Call(`+encodeURIComponent`, intf.(js.AnyValue)).String()
 					default:
-						panic("not implimented")
+						queries = append(queries, js.Call(`"`+tag+`="+encodeURIComponent`, intf.(js.AnyValue)).String())
 					}
 				}
 			} else {
@@ -79,5 +83,16 @@ func parseArgs(page Page) (Page, js.AnyObject, js.String) {
 		}
 	}
 
-	return NewPage.Interface().(Page), js.NewObject(object), url
+	//Build query.
+	if len(queries) > 0 {
+		url += `+"?"`
+	}
+	for i, q := range queries {
+		url += `+` + q
+		if i < len(queries)-1 {
+			url += `+"&"`
+		}
+	}
+
+	return NewPage.Interface().(Page), js.NewObject(object), js.String{Value: js.NewValue(url)}
 }
