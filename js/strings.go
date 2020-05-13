@@ -32,3 +32,8 @@ func (s String) GetString() String {
 func (s String) Equals(b AnyString) Bool {
 	return Bool{NewValue("(" + s.string + "==" + b.GetString().string + ")")}
 }
+
+//Plus returns the two strings joined together.
+func (s String) Plus(b AnyString) String {
+	return String{NewValue("(" + s.string + "+" + b.GetString().string + ")")}
+}

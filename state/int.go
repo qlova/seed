@@ -73,7 +73,7 @@ func (i Int) SetText() seed.Option {
 
 			c.Write(d)
 		} else {
-			c.Add(script.OnReady(func(q script.Ctx) {
+			c.With(script.OnReady(func(q script.Ctx) {
 				fmt.Fprintf(q, `%v.innerText = (%v).toString();`, script.Scope(c, q).Element(), i.get().GetValue())
 			}))
 		}

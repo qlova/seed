@@ -40,7 +40,7 @@ func (r Router) Goto(page Page) js.Script {
 		data.pages = append(data.pages, page)
 		r.c.Write(data)
 
-		q.Run(`seed.goto`, js.NewString(ID(page)), args, path)
+		q.Run(js.Function{js.NewValue(`seed.goto`)}, js.NewString(ID(page)), args, path)
 	}
 
 }
@@ -55,24 +55,27 @@ type Seed struct {
 }
 
 func New(options ...seed.Option) Seed {
-	return Seed{seed.New(
+	var Page = Seed{seed.New(
 		html.SetTag("div"),
-		html.AddClass("page"),
 
 		css.SetDisplay(css.Flex),
 		css.SetFlexDirection(css.Column),
 		style.Expand(),
 
-		style.SetWidth(100),
+		style.SetSize(100, 100),
 
-		seed.Do(func(c seed.Seed) {
-			c.Add(
+		seed.NewOption(func(c seed.Seed) {
+			c.With(
 				OnEnter(state.Refresh(c)),
 			)
 		}),
-
-		seed.Options(options),
 	)}
+
+	for _, option := range options {
+		option.AddTo(Page)
+	}
+
+	return Page
 }
 
 type data struct {
@@ -92,5 +95,35 @@ func OnExit(f script.Script) seed.Option {
 }
 
 func State(p Page) state.State {
-	return state.New(state.SetKey("page."+ID(p)), state.ReadOnly())
+	return state.New(state.SetKey("page"+ID(p)), state.ReadOnly())
+}
+
+type EnterIfOption struct {
+	condition js.AnyBool
+	otherwise script.Script
+}
+
+func EnterIf(condition js.AnyBool) EnterIfOption {
+	return EnterIfOption{condition, nil}
+}
+
+func (e EnterIfOption) Else(do script.Script) seed.Option {
+	e.otherwise = do
+	return e
+}
+
+func (e EnterIfOption) AddTo(c seed.Seed) {
+	var conditions = js.NewObject{
+		"condition": js.NewFunction(js.Return(e.condition)),
+	}
+
+	if e.otherwise != nil {
+		conditions["otherwise"] = js.NewFunction(e.otherwise)
+	}
+
+	c.With(
+		script.OnReady(
+			script.Element(c).Set("conditions", conditions),
+		),
+	)
 }

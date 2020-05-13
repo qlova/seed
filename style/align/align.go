@@ -20,6 +20,11 @@ func Right() css.Rule {
 	return css.SetAlignSelf(css.FlexEnd)
 }
 
+//Bottom aligns the seed to the end or right of its container.
+func Bottom() css.Rule {
+	return css.SetAlignSelf(css.FlexEnd)
+}
+
 //Aligner can align things.
 type Aligner interface {
 	Left() style.Style

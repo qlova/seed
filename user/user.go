@@ -3,6 +3,7 @@ package user
 
 import (
 	"bytes"
+	"errors"
 	"net/http"
 	"regexp"
 	"strings"
@@ -42,10 +43,13 @@ func (u Ctx) Request() *http.Request {
 }
 
 //Execute sends and evaluates the provided javascript.
-func (u Ctx) Execute(script js.Script) {
+func (u Ctx) Execute(script js.Script) error {
 	if u.w != nil {
 		js.NewCtx(u.w)(script)
+		return nil
 	}
+
+	return errors.New("could not execute script")
 }
 
 var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)

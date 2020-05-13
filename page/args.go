@@ -33,12 +33,12 @@ func parseArgs(page Page) (Page, js.AnyObject, js.String) {
 	var url string = `""`
 	var queries []string
 
-	if page == nil {
-		return page, js.NewObject(nil), js.NewString(url)
-	}
-
 	var T = reflect.TypeOf(page)
 	var V = reflect.ValueOf(page)
+
+	if page == nil || T.Kind() != reflect.Struct {
+		return page, js.NewObject(nil), js.NewString(url)
+	}
 
 	var object = make(map[string]js.AnyValue, T.NumField())
 
@@ -62,9 +62,9 @@ func parseArgs(page Page) (Page, js.AnyObject, js.String) {
 						if url == `""` {
 							url = `"/"`
 						}
-						url += js.Call(`+encodeURIComponent`, intf.(js.AnyValue)).String()
+						url += js.Call(js.Function{js.NewValue(`+encodeURIComponent`)}, intf.(js.AnyValue)).String()
 					default:
-						queries = append(queries, js.Call(`"`+tag+`="+encodeURIComponent`, intf.(js.AnyValue)).String())
+						queries = append(queries, js.Call(js.Function{js.NewValue(`"` + tag + `="+encodeURIComponent`)}, intf.(js.AnyValue)).String())
 					}
 				}
 			} else {
@@ -76,7 +76,7 @@ func parseArgs(page Page) (Page, js.AnyObject, js.String) {
 			}
 
 			var value = js.NewValue(
-				fmt.Sprintf("seed.CurrentPage.args[%v]",
+				fmt.Sprintf("seed.get(%v).args[%v]", strconv.Quote(ID(page)),
 					strconv.Quote(key)))
 
 			NewPage.Field(i).Set(valueAs(value, Field.Type))

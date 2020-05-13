@@ -16,7 +16,7 @@ func SetID(id string) seed.Option {
 			panic("script.SetID must not be called on a script.Seed")
 		}
 
-		var data data
+		var data Data
 		c.Read(&data)
 		data.id = id
 		c.Write(data)
@@ -25,7 +25,7 @@ func SetID(id string) seed.Option {
 
 //ID returns the script ID of this seed.
 func ID(c seed.Seed) string {
-	var data data
+	var data Data
 	c.Read(&data)
 
 	if data.id != "" {
@@ -51,14 +51,14 @@ func (c Undo) AddTo(other seed.Seed) {
 	c.Q(fmt.Sprintf(`%v.style.display = "none";`, c.Element()))
 }
 
-func (c Undo) Add(options ...seed.Option) seed.Option {
+func (c Undo) With(options ...seed.Option) seed.Seed {
 	for _, o := range options {
 		if other, ok := o.(seed.Seed); ok {
 			o = Undo{Scope(other, c.Q)}
 		}
 		o.AddTo(c)
 	}
-	return seed.NewOption(func(seed.Seed) {})
+	return c
 }
 
 //Seed is the script Ctx of a seed.
@@ -77,18 +77,18 @@ func (c Seed) Element() string {
 }
 
 func (c Seed) Undo(options ...seed.Option) {
-	Undo{c}.Add(options...)
+	Undo{c}.With(options...)
 }
 
 func (c Seed) Javascript(format string, args ...interface{}) {
 	c.Q(fmt.Sprintf(format, args...))
 }
 
-func (c Seed) Add(options ...seed.Option) seed.Option {
+func (c Seed) With(options ...seed.Option) seed.Seed {
 	for _, o := range options {
 		o.AddTo(c)
 	}
-	return seed.NewOption(func(seed.Seed) {})
+	return c
 }
 
 var p = 0

@@ -15,21 +15,6 @@ func OnUpdateFound(do script.Script) seed.Option {
 	return script.On("updatefound", do)
 }
 
-//SetPage sets the starting page of this app.
-func SetPage(p page.Page) seed.Option {
-	return seed.NewOption(func(c seed.Seed) {
-		switch c.(type) {
-		case script.Seed, script.Undo:
-			panic("app.SetPage must not be called on a script.Seed")
-		}
-
-		var app app
-		c.Read(&app)
-		app.page = p
-		c.Write(app)
-	})
-}
-
 //SetLoadingPage sets the loading page of this app.
 func SetLoadingPage(p page.Page) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {

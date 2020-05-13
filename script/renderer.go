@@ -18,10 +18,10 @@ func RegisterRenderer(r Renderer) {
 
 func render(child seed.Seed) []byte {
 	var b bytes.Buffer
-	var d data
+	var d Data
 	child.Read(&d)
 
-	for event, handler := range d.on {
+	for event, handler := range d.On {
 		js.NewCtx(&b)(func(q Ctx) {
 			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Scope(child, q).Element(), event)
 			handler(q)
@@ -33,7 +33,7 @@ func render(child seed.Seed) []byte {
 		b.Write(render(child))
 	}
 
-	if _, ok := d.on["ready"]; ok {
+	if _, ok := d.On["ready"]; ok {
 		js.NewCtx(&b)(func(q Ctx) {
 			fmt.Fprintf(q, `await %[1]v.onready();`, Scope(child, q).Element())
 		})
@@ -100,7 +100,7 @@ seed.report = function(err, element) {
 				element.onerror(err);
 				break;
 			}
-			element = element.parentElement;
+			element = element.parentElement || element.parent;
 			if (!element) break;
 		}
 	}
@@ -108,8 +108,11 @@ seed.report = function(err, element) {
 	console.error(err);
 };
 
+seed.globals = {};
+
 seed.on = function(element, event, handler) {
 	let f = async function(ev) {
+		seed.active = element;
 		try {
 			await handler(ev);
 		} catch(e) {
@@ -204,7 +207,7 @@ seed.download = async function(name, path) {
 	document.body.removeChild(link);
 }
 
-seed.request = function(method, formdata, url, manual) {
+seed.request = function(method, formdata, url, manual, active) {
 
 	const slave = function(response) {
 		const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
@@ -226,7 +229,7 @@ seed.request = function(method, formdata, url, manual) {
 		return xhr;
 	}
 
-	return new Promise(function (resolve, reject) {
+	let promise = new Promise(function (resolve, reject) {
 		var xhr = new XMLHttpRequest();
 		xhr.open(method, url, true);
 		xhr.onload = function () {
@@ -234,23 +237,26 @@ seed.request = function(method, formdata, url, manual) {
 				resolve(slave(xhr.response));
 			} else {
 				if (this.status != 404) slave(xhr.response);
-				reject({
-					status: this.status,
-					statusText: xhr.statusText,
-					response: xhr.response
-				});
+				reject(seed.request.error);
 			}
 		};
 		xhr.onerror = function () {
-			reject({
-				status: this.status,
-				statusText: xhr.statusText,
-				response: xhr.response
-			});
+			reject(seed.request.error);
 		};
 		xhr.send(formdata);
 	});
+
+	if (active) {
+		promise.catch(function(e) {
+			seed.report(e, active);
+		});
+		return;
+	}
+
+	return promise;
 }
+
+seed.request.error = "connection failed";
 
 seed.dynamic = {};
 	`)
@@ -275,17 +281,17 @@ func Adopt(c seed.Seed) Script {
 
 func adopt(child seed.Seed) Script {
 	var s = Script(func(q Ctx) {})
-	var d data
+	var d Data
 	child.Read(&d)
 
-	for event, handler := range d.on {
+	for event, handler := range d.On {
 		s = s.Append(func(q Ctx) {
 			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Scope(child, q).Element(), event)
 			handler(q)
 			fmt.Fprint(q, `});`)
 		})
 		if event != "ready" {
-			delete(d.on, event)
+			delete(d.On, event)
 		}
 	}
 
@@ -293,11 +299,11 @@ func adopt(child seed.Seed) Script {
 		s = s.Append(adopt(child))
 	}
 
-	if _, ok := d.on["ready"]; ok {
+	if _, ok := d.On["ready"]; ok {
 		s = s.Append(func(q Ctx) {
 			fmt.Fprintf(q, `await %[1]v.onready();`, Scope(child, q).Element())
 		})
-		delete(d.on, "ready")
+		delete(d.On, "ready")
 	}
 
 	return s

@@ -15,7 +15,7 @@ func (q Ctx) If(condition AnyBool, do Script) ElseIfChain {
 	q("if(")
 	q(condition.GetBool())
 	q(") {")
-	do(q)
+	q(do)
 	q("}")
 
 	return ElseIfChain{q}

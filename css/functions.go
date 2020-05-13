@@ -63,12 +63,21 @@ func (Unit) borderRadiusValue() {}
 func (Unit) thicknessValue()    {}
 
 func (u Unit) Rule() Rule {
+	if u.string == "" {
+		return "0"
+	}
 	return Rule(u.string)
 }
 
 func Em(v float32) Unit {
 	return Unit{
 		fmt.Sprintf(`%fem`, v),
+	}
+}
+
+func Px(v float32) Unit {
+	return Unit{
+		fmt.Sprintf(`%fpx`, v),
 	}
 }
 

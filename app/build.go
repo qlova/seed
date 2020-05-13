@@ -30,25 +30,30 @@ func (a App) build() {
 	var app app
 	a.Seed.Read(&app)
 
-	app.document.Body.Add(
-		script.OnError(func(q script.Ctx, err script.Error) {
-			q(window.Alert(err.String))
-		}),
+	//We need to check if onerror is defined.
+	var Script script.Data
+	app.document.Body.Read(&Script)
 
-		column.New(seed.Do(func(c seed.Seed) {
-			var loading_page seed.Seed
+	app.document.Body.With(
+		seed.If(Script.On["error"] == nil,
+			script.OnError(func(q script.Ctx, err script.Error) {
+				q(window.Alert(err.String))
+			}),
+		),
+
+		column.New(seed.NewOption(func(c seed.Seed) {
 			if app.loadingPage != nil {
-				loading_page = app.loadingPage.Page(page.RouterOf(c))
-				app.document.Body.Add(loading_page)
-			}
+				loading_page := app.loadingPage.Page(page.RouterOf(c))
+				app.document.Body.With(loading_page)
 
-			c.Add(script.OnReady(func(q script.Ctx) {
-				fmt.Fprintf(q, `seed.LoadingPage = seed.get("%v"); seed.CurrentPage = seed.LoadingPage;`, html.ID(loading_page))
-			}))
+				c.With(script.OnReady(func(q script.Ctx) {
+					fmt.Fprintf(q, `seed.LoadingPage = seed.get("%v"); seed.CurrentPage = seed.LoadingPage;`, html.ID(loading_page))
+				}))
+			}
 		})),
 	)
 
-	app.document.Body.Add(
+	app.document.Body.With(
 		page.Harvest(app.page),
 		popup.Harvest(),
 	)
@@ -59,7 +64,7 @@ func (a App) build() {
 	app.worker.Assets = asset.Of(a)
 	a.Seed.Write(app)
 
-	app.document.Head.Add(
+	app.document.Head.With(
 		meta.Charset("utf-8"),
 
 		meta.New(meta.Viewport{
@@ -93,14 +98,14 @@ func (a App) build() {
 
 			//The first icon can be the Favicon. TODO better heuristic? allow other file types.
 			if c.Data.Index().Int() == 0 {
-				c.Add(link.New(
+				c.With(link.New(
 					attr.Set("rel", "shortcut icon"),
 					attr.Set("type", "image/png"),
 					attr.Set("href", icon.Source),
 				))
 			}
 
-			c.Add(link.New(
+			c.With(link.New(
 				attr.Set("rel", "apple-touch-icon"),
 				attr.Set("sizes", icon.Sizes),
 				attr.Set("href", icon.Source),
@@ -111,7 +116,7 @@ func (a App) build() {
 
 		//Add external scripts.
 		repeater.New(scripts, repeater.Do(func(c repeater.Seed) {
-			c.Add(script_html.New(
+			c.With(script_html.New(
 				attr.Set("src", c.Data.Index().String()),
 				attr.Set("defer", ""),
 			))

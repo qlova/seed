@@ -26,9 +26,6 @@ seed.goto = async function(id, args, url) {
 		console.error("seed.goto: invalid page ", id);
 		return;
 	}
-	seed.NextPage.template = seed.NextPage.parent;
-
-	seed.NextPage.parent.parentElement.appendChild(seed.NextPage);
 
 	var Refresh = false;
 	//If we are going to the same page then return.
@@ -42,22 +39,39 @@ seed.goto = async function(id, args, url) {
 		Refresh = true;
 	}
 
+	seed.NextPage.args = args || {};
+
+	//Check page conditions.
+	if (seed.NextPage.conditions) {
+		let conditions = seed.NextPage.conditions;
+		let condition = await conditions.condition();
+		if (!condition) {
+			seed.NextPage = null;
+
+			if (conditions.otherwise) await conditions.otherwise();
+			return;
+		}
+	}
+
+	seed.NextPage.template = seed.NextPage.parent;
+
+	seed.NextPage.parent.parentElement.appendChild(seed.NextPage);
+
 	if (window.flipping) flipping.read();
 
 	let promises = [];
 	
 	seed.LastPage = seed.CurrentPage;
 	seed.CurrentPage = seed.NextPage;
-	seed.CurrentPage.args = args || {};
 
 	if (seed.LastPage) {
 		if (seed.LastPage.onpageexit) await seed.LastPage.onpageexit();
-		let state = seed.state["page."+seed.LastPage.id];
+		let state = seed.state["page."+seed.LastPage.className];
 		if (state && state.unset) await state.unset();
 	}
 	{
 		if (seed.CurrentPage.onpageenter) await seed.CurrentPage.onpageenter();
-		let state = seed.state["page."+seed.CurrentPage.id];
+		let state = seed.state["page."+seed.CurrentPage.className];
 		if (state && state.set) await state.set();
 	}
 
@@ -99,13 +113,13 @@ seed.goto = async function(id, args, url) {
 	}*/
 
 	//Persistence.
-	localStorage.setItem('*CurrentPage', seed.NextPage.id);
+	localStorage.setItem('*CurrentPage', id);
 	localStorage.setItem('*LastGotoTime', Date.now());
 	localStorage.setItem('*CurrentArgs', JSON.stringify(args || {}));
 	localStorage.setItem('*CurrentPath', url);
 
-	if (!seed.goto.back && seed.production) history.pushState([seed.CurrentPage.id, args], data.title, path+url);
-	if (!seed.goto.back && !seed.production) history.replaceState([seed.CurrentPage.id, args], data.title, path+url);
+	if (!seed.goto.back && seed.production) history.pushState([id, args], data.title, path+url);
+	if (!seed.goto.back && !seed.production) history.replaceState([id, args], data.title, path+url);
 
 	seed.animating = false;
 	seed.NextPage = null;
@@ -117,8 +131,8 @@ seed.goto = async function(id, args, url) {
 
 if (seed.production) {
 window.addEventListener('popstate', async function (event) {
-	if (ActivePhotoSwipe) {
-		ActivePhotoSwipe.close();
+	if (window.ActivePhotoSwipe) {
+		window.ActivePhotoSwipe.close();
 		return;
 	}
 
@@ -176,7 +190,15 @@ seed.goto.ready = async function(id) {
 
 				var query = new URLSearchParams((new URL(document.location)).searchParams);
 				query.forEach(function(value, key) {
-					args[key] = value;
+					if (value == "true") {
+						args[key] = true;
+					} else if (value == "false") {
+						args[key] = false;
+					} else if (value == "undefined") {
+						args[key] = null;
+					} else {
+						args[key] = value;
+					}
 				});
 
 				var url = path.slice(element.dataset.path.length);

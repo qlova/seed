@@ -2,19 +2,21 @@ package script
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/js"
 )
 
-type data struct {
+type Data struct {
 	seed.Data
 
 	id string
 
-	on map[string]Script
+	On map[string]Script
 }
 
-var seeds = make(map[seed.Seed]data)
+var seeds = make(map[seed.Seed]Data)
 
 var unique int
 
@@ -27,6 +29,19 @@ func Unique() string {
 //Download downloads a requested resource with given name and path.
 func Download(name, path string) Script {
 	return func(q Ctx) {
-		q.Run("await seed.download", q.String(name), q.String(path))
+		q.Run(js.Function{js.NewValue("await download")}, q.String(name), q.String(path))
 	}
+}
+
+//New creates a new script out of multiple scripts.
+func New(scripts ...Script) Script {
+	return func(q Ctx) {
+		for _, s := range scripts {
+			q(s)
+		}
+	}
+}
+
+func After(duration time.Duration, do Script) Script {
+	return js.Global().Run("setTimeout", js.NewFunction(do), js.NewNumber(duration.Seconds()*1000))
 }

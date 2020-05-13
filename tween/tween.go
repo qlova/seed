@@ -10,8 +10,8 @@ import (
 
 //This adds tweening to this seed which can be enabled with the Tween() function.
 func This() seed.Option {
-	return seed.Do(func(c seed.Seed) {
-		c.Add(
+	return seed.NewOption(func(c seed.Seed) {
+		c.With(
 			js.Require("/flipping.js", flipping),
 
 			attr.Set("data-flip-key", html.ID(c)),
@@ -21,8 +21,8 @@ func This() seed.Option {
 
 //Track tracks this seed with a key, only one seed of any given key should be visible at a time.
 func Track(key string) seed.Option {
-	return seed.Do(func(c seed.Seed) {
-		c.Add(
+	return seed.NewOption(func(c seed.Seed) {
+		c.With(
 			js.Require("/flipping.js", flipping),
 
 			attr.Set("data-flip-key", key),

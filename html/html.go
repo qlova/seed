@@ -56,7 +56,7 @@ func AddClass(class string) seed.Option {
 
 		switch q := c.(type) {
 		case script.Seed:
-			q.Javascript(`%v.classList.add(%v);`, q.Element(), strconv.Quote(class))
+			q.Javascript(`%v.classList.With(%v);`, q.Element(), strconv.Quote(class))
 		case script.Undo:
 			q.Javascript(`%v.classList.remove(%v);`, q.Element(), strconv.Quote(class))
 		default:

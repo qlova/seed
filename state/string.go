@@ -31,6 +31,11 @@ func (s String) GetValue() script.Value {
 	return s.get().Value
 }
 
+//GetBool implements script.AnyBool
+func (s String) GetBool() script.Bool {
+	return s.GetValue().GetBool()
+}
+
 //Set allows setting the value of a String in the given script ctx.
 func (s String) Set(value script.String) script.Script {
 	return func(q script.Ctx) {
@@ -59,6 +64,14 @@ func (s RemoteString) Set(value string) {
 }
 
 func (s String) SetText() seed.Option {
+	return s.setProperty("innerText")
+}
+
+func (s String) SetSource() seed.Option {
+	return s.setProperty("src")
+}
+
+func (s String) setProperty(property string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		switch c.(type) {
 		case script.Seed, script.Undo:
@@ -66,8 +79,8 @@ func (s String) SetText() seed.Option {
 		}
 
 		if s.raw != "" {
-			c.Add(script.OnReady(func(q script.Ctx) {
-				fmt.Fprintf(q, `%[1]v.innerText = %[2]v;`, script.Scope(c, q).Element(), s.get())
+			c.With(script.OnReady(func(q script.Ctx) {
+				fmt.Fprintf(q, `%[1]v.`+property+` = %[2]v;`, script.Scope(c, q).Element(), s.get())
 			}))
 		}
 
@@ -80,7 +93,7 @@ func (s String) SetText() seed.Option {
 			}
 
 			data.change[s.Value] = data.change[s.Value].Append(func(q script.Ctx) {
-				q(fmt.Sprintf(`%v.innerText = %v;`, script.Scope(c, q).Element(), s.get()))
+				q(fmt.Sprintf(`%v.`+property+` = %v;`, script.Scope(c, q).Element(), s.get()))
 			})
 
 			if s.dependencies != nil {
@@ -104,7 +117,7 @@ func (s String) SetValue() seed.Option {
 		}
 
 		if s.raw != "" {
-			c.Add(script.OnReady(func(q script.Ctx) {
+			c.With(script.OnReady(func(q script.Ctx) {
 				fmt.Fprintf(q, `%[1]v.value = %[2]v;`, script.Scope(c, q).Element(), s.get())
 			}))
 		}
@@ -131,5 +144,38 @@ func (s String) SetValue() seed.Option {
 
 			c.Write(data)
 		}
+	})
+}
+
+//If only applies its options if the state is active.
+func (state String) If(options ...seed.Option) seed.Option {
+
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("state.State.If must not be called on a script.Seed")
+		}
+
+		If(state, options...).AddTo(c)
+
+		var data data
+		c.Read(&data)
+
+		data.refresh = true
+
+		if data.change == nil {
+			data.change = make(map[Value]script.Script)
+		}
+
+		c.Write(data)
+
+		if state.dependencies == nil {
+			data.change[state.Value] = data.change[state.Value].Append(Refresh(c))
+		} else {
+			for _, dep := range *state.dependencies {
+				data.change[dep] = data.change[dep].Append(Refresh(c))
+			}
+		}
+
 	})
 }

@@ -6,23 +6,56 @@ import (
 	"strings"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/css"
+	"github.com/qlova/seed/html"
+	"github.com/qlova/seed/s/html/div"
 	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/state"
+	"github.com/qlova/seed/style"
 )
 
 func ID(p Popup) string {
 	return strings.Replace(reflect.TypeOf(p).String(), ".", "_", -1)
 }
 
+type Manager struct {
+	seed.Seed
+}
+
 type Popup interface {
-	Popup(Seed)
+	Popup(Manager) Seed
 }
 
 type Seed struct {
 	seed.Seed
 }
 
-func Scope(c seed.Seed) Seed {
-	return Seed{c}
+func New(options ...seed.Option) Seed {
+	var Popup = Seed{div.New(html.SetTag("div"),
+
+		css.SetDisplay(css.Flex),
+		css.SetFlexDirection(css.Column),
+
+		style.SetSize(100, 100),
+		style.SetLayer(1),
+		css.SetPosition(css.Absolute),
+
+		seed.NewOption(func(c seed.Seed) {
+			c.With(
+				OnShow(state.Refresh(c)),
+			)
+		}),
+	)}
+
+	for _, option := range options {
+		option.AddTo(Popup)
+	}
+
+	return Popup
+}
+
+func ManagerOf(c seed.Seed) Manager {
+	return Manager{c}
 }
 
 type data struct {
@@ -32,8 +65,11 @@ type data struct {
 }
 
 //Show shows the provided popup.
-func (c Seed) Show(p Popup) script.Script {
+func (c Manager) Show(p Popup) script.Script {
 	return func(q script.Ctx) {
+
+		//Sort out script arguments of the page.
+		popup, args := parseArgs(p)
 
 		var data data
 		c.Read(&data)
@@ -42,15 +78,18 @@ func (c Seed) Show(p Popup) script.Script {
 			c.Write(data)
 		}
 
-		data.popups[reflect.TypeOf(p)] = p
+		data.popups[reflect.TypeOf(p)] = popup
 
-		fmt.Fprintf(q, `seed.show("%v");`, ID(p))
+		fmt.Fprintf(q, `seed.show("%v", %v);`, ID(p), args.GetObject().String())
 	}
 }
 
 //Wrap shows the provided popup while the provided script is running.
-func (c Seed) Wrap(p Popup, s script.Script) script.Script {
+func (c Manager) Wrap(p Popup, s script.Script) script.Script {
 	return func(q script.Ctx) {
+
+		//Sort out script arguments of the page.
+		popup, args := parseArgs(p)
 
 		var data data
 		c.Read(&data)
@@ -59,16 +98,16 @@ func (c Seed) Wrap(p Popup, s script.Script) script.Script {
 			c.Write(data)
 		}
 
-		data.popups[reflect.TypeOf(p)] = p
+		data.popups[reflect.TypeOf(p)] = popup
 
-		fmt.Fprintf(q, `seed.show("%v"); try {`, ID(p))
+		fmt.Fprintf(q, `seed.show("%v", %v); try {`, ID(p), args.GetObject().String())
 		s(q)
-		fmt.Fprintf(q, `seed.hide("%[1]v"); } catch(e) { seed.hide("%[1]v"); throw e; }`, ID(p))
+		fmt.Fprintf(q, `seed.hide("%[1]v"); } catch(e) { seed.hide("%[1]v"); throw e;  }`, ID(p))
 	}
 }
 
 //Hide hides the provided popup.
-func (c Seed) Hide(p Popup) script.Script {
+func (c Manager) Hide(p Popup) script.Script {
 	return func(q script.Ctx) {
 		fmt.Fprintf(q, `seed.hide("%v");`, ID(p))
 	}

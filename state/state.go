@@ -54,35 +54,26 @@ func (state State) Toggle() script.Script {
 
 //Set sets the state to be active.
 func (state State) Set(q script.Ctx) {
-	var reference = state.key
 	if state.not {
 		if !state.ro {
 			state.set(q, js.False)
 		}
-		q(`if (seed.state["` + reference + `"])`)
-		q(`await seed.state["` + reference + `"].unset();`)
+		q(signal.Emit(state.Signal()))
 
 	} else {
 		if !state.ro {
 			state.set(q, js.True)
 		}
-		q(`if (seed.state["` + reference + `"])`)
-		q(`await seed.state["` + reference + `"].set();`)
+		q(signal.Emit(state.Signal()))
 	}
 }
 
 //Unset sets the state to not be active.
 func (state State) Unset(q script.Ctx) {
-	var reference = state.key
 	if state.not {
 		state.set(q, js.True)
-		q(`if (seed.state["` + reference + `"])`)
-		q(`await seed.state["` + reference + `"].set();`)
 	} else {
 		state.set(q, js.False)
-		q(`if (seed.state["` + reference + `"])`)
-		q(`await seed.state["` + reference + `"].unset();`)
-
 	}
 }
 
@@ -126,66 +117,26 @@ func (state State) If(options ...seed.Option) seed.Option {
 			panic("state.State.If must not be called on a script.Seed")
 		}
 
-		//Add any children seeds to the parent seed.
-		//Hacky fix.
-		for _, o := range options {
-			switch child := o.(type) {
-			case seed.Seed:
-				c.Add(child)
-			}
-		}
+		If(state, options...).AddTo(c)
 
 		var data data
 		c.Read(&data)
 
-		if data.set == nil {
-			data.set = make(map[Bool]script.Script)
-			c.Write(data)
+		data.refresh = true
+
+		if data.change == nil {
+			data.change = make(map[Value]script.Script)
 		}
 
-		if data.unset == nil {
-			data.unset = make(map[Bool]script.Script)
-			c.Write(data)
-		}
+		c.Write(data)
 
-		if state.not {
-			data.unset[state.Bool] = data.unset[state.Bool].Append(func(q script.Ctx) {
-				for _, option := range options {
-					if other, ok := option.(seed.Seed); ok {
-						script.Scope(other, q).AddTo(script.Scope(c, q))
-					} else {
-						option.AddTo(script.Scope(c, q))
-					}
-				}
-			})
-			data.set[state.Bool] = data.set[state.Bool].Append(func(q script.Ctx) {
-				for _, option := range options {
-					if other, ok := option.(seed.Seed); ok {
-						script.Scope(c, q).Undo(script.Scope(other, q))
-					} else {
-						script.Scope(c, q).Undo(option)
-					}
-				}
-			})
+		if state.dependencies == nil {
+			data.change[state.Value] = data.change[state.Value].Append(Refresh(c))
 		} else {
-			data.set[state.Bool] = data.set[state.Bool].Append(func(q script.Ctx) {
-				for _, option := range options {
-					if other, ok := option.(seed.Seed); ok {
-						script.Scope(other, q).AddTo(script.Scope(c, q))
-					} else {
-						option.AddTo(script.Scope(c, q))
-					}
-				}
-			})
-			data.unset[state.Bool] = data.unset[state.Bool].Append(func(q script.Ctx) {
-				for _, option := range options {
-					if other, ok := option.(seed.Seed); ok {
-						script.Scope(c, q).Undo(script.Scope(other, q))
-					} else {
-						script.Scope(c, q).Undo(option)
-					}
-				}
-			})
+			for _, dep := range *state.dependencies {
+				data.change[dep] = data.change[dep].Append(Refresh(c))
+			}
 		}
+
 	})
 }

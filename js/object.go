@@ -29,6 +29,10 @@ func (literal NewObject) GetValue() Value {
 	return literal.GetObject().Value
 }
 
+func (literal NewObject) GetBool() Bool {
+	return literal.GetValue().GetBool()
+}
+
 type Object struct {
 	Value
 }

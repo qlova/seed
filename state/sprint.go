@@ -19,3 +19,13 @@ func Sprintf(format string, a ...AnyValue) String {
 	v.raw = fmt.Sprintf(strconv.Quote(format), converted...)
 	return String{v}
 }
+
+//Or returns a Bool that is true when either are true.
+func (s State) Or(or State) State {
+	return State{Bool: s.Bool.Or(or.Bool)}
+}
+
+//And returns a Bool that is true when both are true.
+func (s State) And(or State) State {
+	return State{Bool: s.Bool.And(or.Bool)}
+}

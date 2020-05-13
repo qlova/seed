@@ -7,6 +7,6 @@ import (
 //Log logs the string to the console.
 func Log(s js.AnyValue) js.Script {
 	return func(q js.Ctx) {
-		q.Run("console.log", s)
+		q.Run(js.Function{js.NewValue("console.log")}, s)
 	}
 }

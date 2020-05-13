@@ -44,6 +44,11 @@ func (s State) GetString() script.String {
 	})).hashHex`, s.String.GetValue(), js.NewString(s.salt))}
 }
 
+//GetBool implements script.AnyBool
+func (s State) GetBool() script.Bool {
+	return s.String.GetBool()
+}
+
 //GetValue implements script.AnyValue
 func (s State) GetValue() script.Value {
 	return s.GetString().Value

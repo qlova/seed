@@ -10,6 +10,7 @@ import (
 //AnyValue is anything that can produce a js value.
 type AnyValue interface {
 	GetValue() Value
+	GetBool() Bool
 }
 
 //Value is any js value.
@@ -50,6 +51,11 @@ func (v Value) GetValue() Value {
 	return v
 }
 
+//GetBool impliments AnyBool.
+func (v Value) GetBool() Bool {
+	return Bool{v}
+}
+
 func (v Value) Var(q Ctx) Value {
 	var old = v.string
 	var s = q.Unique()
@@ -88,10 +94,10 @@ func (v Value) Index(i int) Value {
 
 //Call calls the method on the given value.
 func (v Value) Call(method string, args ...AnyValue) Value {
-	return Call(v.string+"."+method, args...)
+	return Call(Function{NewValue(v.string + "." + method)}, args...)
 }
 
 //Run runs the method on the given value.
 func (v Value) Run(method string, args ...AnyValue) Script {
-	return Run(v.string+"."+method, args...)
+	return Run(Function{NewValue(v.string + "." + method)}, args...)
 }

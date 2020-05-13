@@ -107,7 +107,7 @@ type Seed interface {
 	Parent() Seed
 	Children() []Seed
 
-	Add(...Option) Option
+	With(...Option) Seed
 }
 
 type seed map[reflect.Type]reflect.Value
@@ -164,11 +164,11 @@ func (c seed) Children() []Seed {
 	return d.children
 }
 
-func (c seed) Add(options ...Option) Option {
+func (c seed) With(options ...Option) Seed {
 	for _, o := range options {
 		o.AddTo(c)
 	}
-	return NewOption(func(Seed) {})
+	return c
 }
 
 func Add(a, b Seed) {
@@ -229,19 +229,5 @@ func If(condition bool, options ...Option) Option {
 				o.AddTo(c)
 			}
 		}
-	})
-}
-
-//Do runs a function with the seed scoped as the first argument.
-func Do(f func(c Seed)) Option {
-	return NewOption(func(c Seed) {
-		f(c)
-	})
-}
-
-//Apply runs a function with the seed scoped as the first argument.
-func Scope(f func(c Seed) Option) Option {
-	return NewOption(func(c Seed) {
-		f(c).AddTo(c)
 	})
 }

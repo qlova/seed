@@ -23,11 +23,22 @@ var rpcID int64 = 1
 //Go calls the given go function and tries to convert arguments to Go types.
 func Go(f interface{}, args ...AnyValue) Script {
 	return func(q Ctx) {
-		RPC(f, args...)(q)
+		rpc(f, false, args...)(q)
+	}
+}
+
+//Wait calls the given go function and waits for it to complete.
+func Wait(f interface{}, args ...AnyValue) Script {
+	return func(q Ctx) {
+		rpc(f, true, args...)(q)
 	}
 }
 
 func RPC(f interface{}, args ...AnyValue) func(q Ctx) Value {
+	return rpc(f, true, args...)
+}
+
+func rpc(f interface{}, await bool, args ...AnyValue) func(q Ctx) Value {
 	return func(q Ctx) Value {
 		//Get a unique string reference for f.
 		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
@@ -49,18 +60,24 @@ func RPC(f interface{}, args ...AnyValue) func(q Ctx) Value {
 		q(`let ` + formdata + ` = new FormData();`)
 
 		//Get all positional arguments and add them to the formdata.
+		var f = js.Function{js.NewValue(formdata + `.set`)}
+
 		if len(args) > 0 {
 			for i, arg := range args {
 				switch arg.(type) {
 				case AnyFile:
-					q.Run(formdata+`.set`, q.String(strconv.Itoa(i)), arg)
+					q.Run(f, q.String(strconv.Itoa(i)), arg)
 				default:
-					q.Run(formdata+`.set`, q.String(strconv.Itoa(i)), js.NewValue(`JSON.stringify(%v)`, arg))
+					q.Run(f, q.String(strconv.Itoa(i)), js.NewValue(`JSON.stringify(%v)`, arg))
 				}
 			}
 		}
 
-		q([]byte(`let ` + variable + ` = await seed.request("POST", ` + formdata + `, "` + CallingString + `");`))
+		if await {
+			q([]byte(`let ` + variable + ` = await seed.request("POST", ` + formdata + `, "` + CallingString + `", false);`))
+		} else {
+			q([]byte(`let ` + variable + ` = seed.request("POST", ` + formdata + `, "` + CallingString + `", false, seed.active);`))
+		}
 
 		return js.NewValue(variable)
 	}

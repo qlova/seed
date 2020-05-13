@@ -9,5 +9,12 @@ import (
 
 //New returns a new row.
 func New(options ...seed.Option) seed.Seed {
-	return div.New(css.Set("display", "flex"), css.Set("flex-direction", "row").And(options...))
+	return div.New(
+		css.SetDisplay(css.Flex),
+		css.SetFlexDirection(css.Row),
+
+		css.SetFlexShrink(css.Number(1)),
+
+		seed.Options(options),
+	)
 }

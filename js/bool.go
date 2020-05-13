@@ -1,15 +1,14 @@
 package js
 
+import "fmt"
+
 //Bool is a javascript boolean.
 type Bool struct {
 	Value
 }
 
 //AnyBool is anything that can retrieve a bool.
-type AnyBool interface {
-	AnyValue
-	GetBool() Bool
-}
+type AnyBool AnyValue
 
 //NewBool returns a new javascript boolean from a Go literal.
 func NewBool(literal bool) Bool {
@@ -32,6 +31,18 @@ func (b Bool) GetBool() Bool {
 //Not returns not bool.
 func (b Bool) Not() Bool {
 	b.Value.string = "!" + b.Value.string
+	return b
+}
+
+//Or returns true if either bools are true.
+func (b Bool) Or(other Bool) Bool {
+	b.Value.string = fmt.Sprintf(`(%v || %v)`, b.string, other.string)
+	return b
+}
+
+//And returns true if both bools are true.
+func (b Bool) And(other Bool) Bool {
+	b.Value.string = fmt.Sprintf(`(%v && %v)`, b.string, other.string)
 	return b
 }
 

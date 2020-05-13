@@ -8,6 +8,11 @@ type Function struct {
 	Value
 }
 
+type AnyFunction interface {
+	AnyValue
+	GetFunction() Function
+}
+
 func NewFunction(do Script) Function {
 	var s strings.Builder
 
@@ -20,6 +25,15 @@ func NewFunction(do Script) Function {
 	return Function{
 		Value: NewValue(s.String()),
 	}
+}
+
+//GetFunction impliments AnyFunction.
+func (f Function) GetFunction() Function {
+	return f
+}
+
+func (f Function) Call() Value {
+	return NewValue("await " + f.string + "()")
 }
 
 func (q Ctx) Await(v AnyValue) {
@@ -35,10 +49,10 @@ func Await(v AnyValue) Value {
 }
 
 //Call calls the given function expressionw with the given arguments.
-func Call(fname string, args ...AnyValue) Value {
+func Call(fname AnyFunction, args ...AnyValue) Value {
 	var b strings.Builder
 
-	b.WriteString(fname)
+	b.WriteString(fname.GetFunction().String())
 	b.WriteRune('(')
 	for i, arg := range args {
 		b.WriteString(arg.GetValue().String())
@@ -52,15 +66,15 @@ func Call(fname string, args ...AnyValue) Value {
 }
 
 //Run runs the given function expression with the given arguments.
-func Run(fname string, args ...AnyValue) Script {
+func Run(fname AnyFunction, args ...AnyValue) Script {
 	return func(q Ctx) {
 		q.Run(fname, args...)
 	}
 }
 
 //Run runs the given function expression with the given arguments.
-func (q Ctx) Run(fname string, args ...AnyValue) {
-	q(fname)
+func (q Ctx) Run(fname AnyFunction, args ...AnyValue) {
+	q(fname.GetFunction().String())
 	q('(')
 	for i, arg := range args {
 		if arg == nil {

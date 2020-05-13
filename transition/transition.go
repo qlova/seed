@@ -2,12 +2,16 @@ package transition
 
 import (
 	"fmt"
+	"log"
+	"reflect"
 
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/page"
+	"github.com/qlova/seed/popup"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/style/anime"
+	"github.com/qlova/seed/view"
 )
 
 var fadeIn = anime.New(
@@ -38,18 +42,38 @@ func New(options ...Option) Transition {
 		o(&t)
 	}
 
-	t.Option = seed.Do(func(c seed.Seed) {
-		c.Add(
-			page.OnEnter(func(q script.Ctx) {
-				t.In.AddTo(script.Scope(c, q))
-				fmt.Fprintf(q, `seed.in(%v, 0.4);`, script.Scope(c, q).Element())
-			}),
+	t.Option = seed.NewOption(func(c seed.Seed) {
 
-			page.OnExit(func(q script.Ctx) {
-				t.Out.AddTo(script.Scope(c, q))
-				fmt.Fprintf(q, `seed.out(%v, 0.4);`, script.Scope(c, q).Element())
-			}),
-		)
+		enter := func(q script.Ctx) {
+			t.In.AddTo(script.Scope(c, q))
+			fmt.Fprintf(q, `seed.in(%v, 0.4);`, script.Scope(c, q).Element())
+		}
+
+		exit := func(q script.Ctx) {
+			t.Out.AddTo(script.Scope(c, q))
+			fmt.Fprintf(q, `seed.out(%v, 0.4);`, script.Scope(c, q).Element())
+		}
+
+		switch c.(type) {
+		case page.Seed:
+			c.With(
+				page.OnEnter(enter),
+				page.OnExit(exit),
+			)
+		case popup.Seed:
+			c.With(
+				popup.OnShow(enter),
+				popup.OnHide(exit),
+			)
+		case view.Seed:
+			c.With(
+				view.OnEnter(enter),
+				view.OnExit(exit),
+			)
+		default:
+			log.Println("invalid seed type: ", reflect.TypeOf(c))
+		}
+
 	})
 
 	return t
@@ -65,11 +89,4 @@ func Out(out anime.Animation) Option {
 	return func(t *Transition) {
 		t.Out = out
 	}
-}
-
-func Fade() Transition {
-	return New(
-		In(fadeIn),
-		Out(fadeOut),
-	)
 }

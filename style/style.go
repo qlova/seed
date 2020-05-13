@@ -20,6 +20,9 @@ func (u Unit) String() string {
 
 func (u Unit) Unit() css.Unit {
 	if imag(u) == 0 {
+		if real(u) == 0 {
+			return css.Unit{}
+		}
 		return css.Percent(real(u))
 	}
 
@@ -31,6 +34,8 @@ func (u Unit) Unit() css.Unit {
 		return css.Vmin(real(u))
 	case ratio > 2.9 && ratio < 3.1:
 		return css.Rem(real(u))
+	case ratio > 4.9 && ratio < 5.1:
+		return css.Px(real(u))
 	}
 
 	return css.Unit{}
@@ -118,6 +123,16 @@ func SetMaxWidth(width Unit) css.Rule {
 	return css.SetMaxWidth(width.Unit())
 }
 
+//SetMinHeight sets the minumum height of the seed.
+func SetMinHeight(height Unit) css.Rule {
+	return css.SetMinHeight(height.Unit())
+}
+
+//SetMinWidth sets the minumum width of the seed.
+func SetMinWidth(width Unit) css.Rule {
+	return css.SetMinWidth(width.Unit())
+}
+
 //SetLayer sets the layer of the seed.
 func SetLayer(layer int) css.Rule {
 	return css.SetZIndex(css.Int(layer))
@@ -156,10 +171,8 @@ func SetScrollable() css.Rules {
 	return css.Rules{
 		css.SetOverflowY(css.Auto),
 		css.SetOverflowX(css.Hidden),
-		Shrink(),
 		Expand(),
-		SetHeight(0),
-		css.SetFlexBasis(css.Auto),
+		css.SetFlexBasis(Unit(0).Unit()),
 		css.Set("-webkit-overflow-scrolling", "touch"),
 		css.Set("-webkit-overscroll-behavior", "contain"),
 		css.Set("overscroll-behavior", "contain"),

@@ -6,7 +6,9 @@ import (
 	"reflect"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/asset"
 	"github.com/qlova/seed/html"
+	"github.com/qlova/seed/html/attr"
 	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 )
@@ -17,21 +19,17 @@ func If(condition js.AnyBool, options ...seed.Option) seed.Option {
 	}
 
 	return seed.NewOption(func(c seed.Seed) {
-		switch c.(type) {
-		case script.Seed, script.Undo:
-			panic("state.State.If must not be called on a script.Seed")
-		}
 
 		//Add any children seeds to the parent seed.
 		//Hacky fix.
 		for _, o := range options {
 			switch child := o.(type) {
 			case seed.Seed:
-				c.Add(child)
+				c.With(child)
 			}
 		}
 
-		c.Add(OnRefresh(func(q script.Ctx) {
+		c.With(OnRefresh(func(q script.Ctx) {
 			q.If(condition, func(q script.Ctx) {
 				for _, option := range options {
 					if other, ok := option.(seed.Seed); ok {
@@ -61,8 +59,24 @@ func Refresh(c seed.Seed) script.Script {
 	c.Write(d)
 
 	return func(q script.Ctx) {
-		q.Run(script.Scope(c, q).Element() + ".rerender")
+		q(script.Scope(c, q).Element() + ".rerender();")
 	}
+}
+
+func AdoptRefresh(c seed.Seed) script.Script {
+	var d data
+	c.Read(&d)
+
+	var refresh = d.onrefresh
+	d.onrefresh = nil
+	d.refresh = false
+	c.Write(d)
+
+	for _, child := range c.Children() {
+		refresh = refresh.Append(AdoptRefresh(child))
+	}
+
+	return refresh
 }
 
 //OnRefresh is called whenever this seed has its state refreshed.
@@ -87,16 +101,54 @@ func SetText(text AnyString) seed.Option {
 		return t.SetText()
 
 	case js.AnyString:
-		return seed.Do(func(c seed.Seed) {
-			c.Add(OnRefresh(func(q script.Ctx) {
+		return seed.NewOption(func(c seed.Seed) {
+			c.With(OnRefresh(func(q script.Ctx) {
 				q(fmt.Sprintf(`%v.innerText = %v || "";`,
 					script.Scope(c, q).Element(), t.GetString().String()))
 			}))
 		})
 	case js.AnyValue:
-		return seed.Do(func(c seed.Seed) {
-			c.Add(OnRefresh(func(q script.Ctx) {
+		return seed.NewOption(func(c seed.Seed) {
+			c.With(OnRefresh(func(q script.Ctx) {
 				q(fmt.Sprintf(`%v.innerText = %v || "";`,
+					script.Scope(c, q).Element(), t.GetValue().String()))
+			}))
+		})
+	default:
+		panic("unsupported AnyString argument " + reflect.TypeOf(t).String())
+	}
+
+	return seed.NewOption(func(c seed.Seed) {})
+}
+
+//SetSource sets the source of the seed based on the argument provided.
+func SetSource(src AnyString) seed.Option {
+	switch t := src.(type) {
+	case string:
+
+		t = asset.Path(t)
+
+		return seed.Options{
+			attr.Set("src", t),
+			attr.Set("alt", t),
+
+			asset.New(t),
+		}
+
+	case String:
+		return t.SetSource()
+
+	case js.AnyString:
+		return seed.NewOption(func(c seed.Seed) {
+			c.With(OnRefresh(func(q script.Ctx) {
+				q(fmt.Sprintf(`%v.src = %v || "";`,
+					script.Scope(c, q).Element(), t.GetString().String()))
+			}))
+		})
+	case js.AnyValue:
+		return seed.NewOption(func(c seed.Seed) {
+			c.With(OnRefresh(func(q script.Ctx) {
+				q(fmt.Sprintf(`%v.src = %v || "";`,
 					script.Scope(c, q).Element(), t.GetValue().String()))
 			}))
 		})

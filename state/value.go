@@ -65,7 +65,8 @@ func (v Value) value() Value {
 
 func (v Value) setFor(u user.Ctx, value string) {
 	if !v.ro {
-		u.Execute(js.Run(v.storage+`.setItem`, js.NewString(v.key), js.NewString(value)))
+		var f = js.Function{js.NewValue(v.storage + `.setItem`)}
+		u.Execute(js.Run(f, js.NewString(v.key), js.NewString(value)))
 	}
 	u.Execute(func(q js.Ctx) {
 		q(fmt.Sprintf(`if (seed.state["%[1]v"]) seed.state["%[1]v"].changed();`, v.key))
@@ -82,13 +83,13 @@ func (v Value) set(q script.Ctx, value script.String) {
 
 //Get the value.
 func (v Value) get() script.String {
-	if v.raw != "" {
-		return js.String{js.NewValue(v.raw)}
-	}
 	return js.String{v.getter()}
 }
 
 //Get the value.
 func (v Value) getter() js.Value {
+	if v.raw != "" {
+		return js.NewValue(v.raw)
+	}
 	return js.NewValue(fmt.Sprintf(`(%v.getItem("%v") || %v)`, v.storage, v.key, strconv.Quote(v.fallback)))
 }

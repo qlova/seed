@@ -10,3 +10,6 @@ const Vmin style.Unit = 1 + 2i
 
 //Rem is the base rem unit.
 const Rem style.Unit = 1 + 3i
+
+//Px is the base px unit.
+const Px style.Unit = 1 + 5i

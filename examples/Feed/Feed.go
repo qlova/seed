@@ -21,7 +21,7 @@ func main() {
 	app.New("Feed",
 		b,
 		feed.New(GetFeed, feed.Do(func(f feed.Seed) {
-			f.Add(
+			f.With(
 				align.Center(),
 
 				text.Var(f.Data.String()),
@@ -32,7 +32,7 @@ func main() {
 					}),
 				),
 			)
-			b.Add(script.OnClick(f.Refresh()))
+			b.With(script.OnClick(f.Refresh()))
 		})),
 	).Launch()
 }

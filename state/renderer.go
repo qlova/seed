@@ -44,6 +44,23 @@ func (h *harvester) buildRefresh(c seed.Seed) script.Script {
 
 	refresh := data.onrefresh
 
+	if data.refresh {
+		refresh = script.Element(c).Run("rerender")
+	}
+
+	for _, child := range c.Children() {
+		refresh = refresh.Append(h.buildRefresh(child))
+	}
+
+	return refresh
+}
+
+func (h *harvester) buildRefreshRoot(c seed.Seed) script.Script {
+	var data data
+	c.Read(&data)
+
+	refresh := data.onrefresh
+
 	for _, child := range c.Children() {
 		refresh = refresh.Append(h.buildRefresh(child))
 	}
@@ -76,7 +93,7 @@ func (h *harvester) harvest(c seed.Seed) harvester {
 	if data.refresh {
 		h.refreshers = append(h.refreshers, refresher{
 			seed:    c,
-			refresh: h.buildRefresh(c),
+			refresh: h.buildRefreshRoot(c),
 		})
 	}
 
@@ -108,6 +125,14 @@ func init() {
 		`)
 
 		b.WriteString(`seed.state = {};`)
+
+		for _, refresher := range harvested.refreshers {
+			js.NewCtx(&b)(func(q script.Ctx) {
+				q(script.Scope(refresher.seed, q).Element() + ".rerender =async function() {")
+				q(refresher.refresh)
+				q("};")
+			})
+		}
 
 		for state, scripts := range harvested.states {
 			if state.storage == "" {
@@ -157,14 +182,6 @@ func init() {
 				continue
 			}
 			fmt.Fprintf(&b, `seed.state["%v"].changed();`, variable.key)
-		}
-
-		for _, refresher := range harvested.refreshers {
-			js.NewCtx(&b)(func(q script.Ctx) {
-				q(script.Scope(refresher.seed, q).Element() + ".rerender = function() {")
-				q(refresher.refresh)
-				q("};")
-			})
 		}
 
 		return b.Bytes()

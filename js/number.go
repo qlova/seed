@@ -32,3 +32,8 @@ func (n Number) GetNumber() Number {
 func (n Number) Plus(b Number) Number {
 	return Number{NewValue(fmt.Sprintf(`(%v+%v)`, n, b))}
 }
+
+//ToString returns the number as a string.
+func (n Number) ToString() String {
+	return String{n.Call("toString")}
+}

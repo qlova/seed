@@ -51,7 +51,7 @@ func (c Controller) Goto(view View) js.Script {
 		template.AddTo(c.of)
 
 		var element = view.View(c)
-		element.Add(
+		element.With(
 			html.AddClass(Name(view)),
 		)
 		element.Use()
@@ -60,8 +60,10 @@ func (c Controller) Goto(view View) js.Script {
 
 	c.of.Write(data)
 
+	var seed_view = js.Function{js.NewValue(`seed.view`)}
+
 	return func(q script.Ctx) {
-		q.Run(`seed.view`, js.NewValue(script.Scope(c.of, q).Element()), js.NewString(Name(view)), args)
+		q.Run(seed_view, js.NewValue(script.Scope(c.of, q).Element()), js.NewString(Name(view)), args)
 	}
 }
 
@@ -81,8 +83,8 @@ func New(options ...seed.Option) Seed {
 		css.SetDisplay(css.Flex),
 		css.SetFlexDirection(css.Column),
 
-		seed.Do(func(c seed.Seed) {
-			c.Add(
+		seed.NewOption(func(c seed.Seed) {
+			c.With(
 				OnEnter(state.Refresh(c)),
 			)
 		}),

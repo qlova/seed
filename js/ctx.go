@@ -11,6 +11,18 @@ import (
 //Script is any js script.
 type Script func(Ctx)
 
+func (s Script) GetBool() Bool {
+	return s.GetValue().GetBool()
+}
+
+func (s Script) GetValue() Value {
+	return s.GetFunction().Value
+}
+
+func (s Script) GetFunction() Function {
+	return NewFunction(s)
+}
+
 //Append appends two scripts to return a new script.
 func (s Script) Append(next Script) Script {
 	if s == nil {

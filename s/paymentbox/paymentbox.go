@@ -45,13 +45,15 @@ func (s StripeBox) New(options ...seed.Option) seed.Seed {
 
 	var PaymentBox = seed.NewLink()
 
+	var Stripe = js.Function{js.NewValue(`Stripe`)}
+
 	return div.New(
 		js.Require("https://js.stripe.com/v3/", ""),
 		PaymentBox.Link(),
 
 		script.OnReady(func(q script.Ctx) {
 			var element = script.Element(PaymentBox).Var(q)
-			q(element.Set(`stripe`, js.Call(`Stripe`, js.NewString(StripePublishableKey))))
+			q(element.Set(`stripe`, js.Call(Stripe, js.NewString(StripePublishableKey))))
 			var elements = element.Get("stripe").Call("elements").Var(q)
 			q(element.Set(`card`, elements.Call(`create`, js.NewString("card"), js.NewObject(make(map[string]js.AnyValue)))))
 			q(element.Get(`card`).Run(`mount`, element))

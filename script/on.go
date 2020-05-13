@@ -12,7 +12,7 @@ func On(event string, do Script) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		do(js.NewCtx(ioutil.Discard, c)) //Catch errors and harvest pages.
 
-		var d data
+		var d Data
 		c.Read(&d)
 
 		switch data := c.(type) {
@@ -24,16 +24,16 @@ func On(event string, do Script) seed.Option {
 		case Undo:
 			//s.Root().Use()
 			data.Q(fmt.Sprintf(`seed.on(%v, "%v", async function() {`, data.Element(), event))
-			if d.on[event] != nil {
-				d.on[event](js.NewCtx(data.Q))
+			if d.On[event] != nil {
+				d.On[event](js.NewCtx(data.Q))
 			}
 			data.Q(`});`)
 		default:
 			//s.Root().Use()
-			if d.on == nil {
-				d.on = make(map[string]Script)
+			if d.On == nil {
+				d.On = make(map[string]Script)
 			}
-			d.on[event] = d.on[event].Append(do)
+			d.On[event] = d.On[event].Append(do)
 		}
 
 		c.Write(d)
@@ -50,6 +50,10 @@ func OnClick(do Script) seed.Option {
 
 func OnReady(do Script) seed.Option {
 	return On("ready", do)
+}
+
+func OnChange(do Script) seed.Option {
+	return On("change", do)
 }
 
 func OnInput(do Script) seed.Option {

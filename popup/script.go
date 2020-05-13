@@ -8,15 +8,10 @@ import (
 func init() {
 	script.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
-seed.show = async function(id) {
-	//Collect arguments.
-	let args = [];
-	if (arguments.length > 1) {
-		for (let i = 1; i < arguments.length; i++) {
-			args.push(arguments[i]);
-		}
-	}
 
+seed.CurrentPopup = null;
+
+seed.show = async function(id, args) {
 	let popup = seed.get(id);
 	if (!popup) {
 		console.error("seed.show: invalid popup ", id);
@@ -26,7 +21,26 @@ seed.show = async function(id) {
 
 	popup.parent.parentElement.appendChild(popup);
 
+	seed.CurrentPopup = popup;
+	popup.args = args;
+
 	if (popup.onshow) await popup.onshow();
+
+	let promises = [];
+
+	if (seed.goto.in) {
+		promises.push(seed.goto.in);
+		seed.goto.in = null;
+	}
+
+	if (seed.goto.out) {
+		promises.push(seed.goto.out);
+		seed.goto.out = null;
+	}
+
+	for (let promise of promises) {
+		await promise;
+	}
 };
 
 seed.hide = async function(id) {
@@ -37,6 +51,24 @@ seed.hide = async function(id) {
 	}
 
 	if (popup.onhide) await popup.onhide();
+
+	let promises = [];
+
+	if (seed.goto.in) {
+		promises.push(seed.goto.in);
+		seed.goto.in = null;
+	}
+
+	if (seed.goto.out) {
+		promises.push(seed.goto.out);
+		seed.goto.out = null;
+	}
+
+	for (let promise of promises) {
+		await promise;
+	}
+
+	seed.CurrentPopup = null;
 
 	popup.template.content.appendChild(popup);
 };`)

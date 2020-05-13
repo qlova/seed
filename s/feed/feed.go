@@ -47,14 +47,14 @@ func Refresh(c seed.Seed) script.Script {
 
 //Do runs f.
 func Do(f func(Seed)) seed.Option {
-	return seed.Do(func(s seed.Seed) {
-		f(Seed{s, Data{"data"}})
+	return seed.NewOption(func(s seed.Seed) {
+		f(Seed{s, Data{`data`}})
 	})
 }
 
 func convertToClasses(c seed.Seed) {
 	for _, child := range c.Children() {
-		child.Add(
+		child.With(
 			css.SetSelector(`.`+html.ID(child)),
 			html.SetID(""),
 			html.AddClass(html.ID(child)),
@@ -97,15 +97,18 @@ func New(food Food, options ...seed.Option) Seed {
 		css.Set("flex-direction", "column"),
 	), Data{}}
 
-	template.Add(css.SetSelector("#"+html.ID(feed.Seed)), seed.Options(options))
+	template.With(css.SetSelector("#"+html.ID(feed.Seed)), seed.Options(options))
 
 	convertToClasses(template)
+
 	var scripts script.Script = func(js.Ctx) {}
 	for _, child := range template.Children() {
 		scripts = scripts.Append(script.Adopt(child))
 	}
 
-	feed.Add(
+	var rerender script.Script = state.AdoptRefresh(template)
+
+	feed.With(
 		script.OnReady(func(q script.Ctx) {
 			fmt.Fprintf(q, `%v.refresh = async function() {
 				try {
@@ -121,9 +124,11 @@ func New(food Food, options ...seed.Option) Seed {
 			var scriptsString strings.Builder
 			scriptsString.WriteString(`async function(data) {`)
 			js.NewCtx(&scriptsString)(scripts)
+			js.NewCtx(&scriptsString)(rerender)
 			scriptsString.WriteString(`}`)
 
-			q.Run(`await seeds.feed.refresh`, js.NewValue(script.Scope(template, q).Element()), data, js.NewValue(scriptsString.String()))
+			var f = js.Function{js.NewValue(`await seeds.feed.refresh`)}
+			q.Run(f, js.NewValue(script.Scope(template, q).Element()), data, js.NewValue(scriptsString.String()))
 			fmt.Fprintf(q, `seed.get.cache = cache; %v.refreshing = false; }
 				catch(e) {
 					%[1]v.refreshing = false;

@@ -57,6 +57,6 @@ func On(signal Type, do script.Script) seed.Option {
 //Emit returns a script that emits the given signal.
 func Emit(signal Type) script.Script {
 	return func(q script.Ctx) {
-		q.Run("if (seed.signal['" + signal.string + "']) await seed.signal['" + signal.string + "']")
+		q("if (seed.signal['" + signal.string + "']) await seed.signal['" + signal.string + "']();")
 	}
 }

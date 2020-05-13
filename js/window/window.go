@@ -7,28 +7,24 @@ import (
 
 //Alert creates a popup window with the provided text message.
 func Alert(msg js.AnyString) js.Script {
-	return func(q js.Ctx) {
-		q.Run(`window.alert`, msg)
-	}
+	return js.Global().Run(`alert`, msg)
 }
 
 //Confirm creates a popup window with the provided text message asking the user to confirm.
 func Confirm(msg js.AnyString) js.Bool {
-	return js.Bool{Value: js.Call(`window.confirm`, msg)}
+	return js.Bool{js.Global().Call(`confirm`, msg)}
 }
 
 //Close attempts to close the window.
 func Close() js.Script {
-	return func(q js.Ctx) {
-		q.Run(`window.close`)
-	}
+	return js.Global().Run(`close`)
 }
 
 //Prompt creates a popup window with the provided text message asking the user to input text.
 func Prompt(msg js.AnyString) js.String {
-	return js.String{Value: js.Call(`window.prompt`, msg)}
+	return js.String{js.Global().Call(`prompt`, msg)}
 }
 
 func SetTimeout(do js.Script, timeout js.Number) script.Script {
-	return js.Run("window.setTimeout", js.NewFunction(do), timeout)
+	return js.Global().Run("setTimeout", js.NewFunction(do), timeout)
 }

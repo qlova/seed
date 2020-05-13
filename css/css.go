@@ -13,11 +13,13 @@ type data struct {
 
 	selector string
 
-	rules
+	rules *OrderedMap
 
-	prefix, suffix rules
+	prefix, suffix *OrderedMap
 
 	queries map[string]*data
+
+	sheets map[string]struct{}
 }
 
 type ruleable interface {
@@ -62,10 +64,10 @@ func (r Rule) AddTo(c seed.Seed) {
 		fmt.Fprintf(c.Q, `%v.style.%v = "";`, c.Element(), dashes2camels(property))
 	default:
 		if d.rules == nil {
-			d.rules = make(rules)
+			d.rules = NewOrderedMap()
 		}
 		property, value := r.Split()
-		d.rules[property] = value
+		d.rules.Set(property, value)
 	}
 
 	c.Write(d)
@@ -79,8 +81,6 @@ func (r Rule) And(options ...seed.Option) seed.Option {
 func (r Rule) Important() Rule {
 	return r[:len(r)-1] + " !important;"
 }
-
-type rules map[string]string
 
 //Selector returns the css selector of this seed.
 func Selector(c seed.Seed) string {
@@ -127,4 +127,25 @@ func SetSelector(selector string) seed.Option {
 //Set sets the CSS property to be set to the given value.
 func Set(property, value string) Rule {
 	return Rule(property + ":" + value + ";")
+}
+
+//Add adds a stylesheet associated with this seed.
+func Add(stylesheet string) seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("css.Add must not be called on a script.Seed")
+		}
+
+		var d data
+		c.Read(&d)
+
+		if d.sheets == nil {
+			d.sheets = make(map[string]struct{})
+			c.Write(d)
+		}
+
+		d.sheets[stylesheet] = struct{}{}
+
+	})
 }

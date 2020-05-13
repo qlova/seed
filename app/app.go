@@ -54,8 +54,8 @@ func New(name string, options ...seed.Option) App {
 		worker:   service.NewWorker(),
 	}
 
-	document.Body.Add(css.Set("display", "flex"))
-	document.Body.Add(css.Set("flex-direction", "column"))
+	document.Body.With(css.Set("display", "flex"))
+	document.Body.With(css.Set("flex-direction", "column"))
 
 	app.manifest.SetName(name)
 

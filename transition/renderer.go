@@ -17,11 +17,13 @@ func init() {
 			element.style.animationDuration = duration+"s";
 			element.style.animationIterationCount = 1;
 			element.style.zIndex = 50;
+			element.style.position = "absolute";
 		
 			seed.goto.in = new Promise(resolve => {
 				setTimeout(function() {
 					element.style.animation = "";
 					element.style.zIndex = "";
+					element.style.position = "";
 					resolve()
 				}, duration*1000);
 			});
@@ -35,7 +37,6 @@ func init() {
 			element.style.animationDuration = duration+"s";
 			element.style.animationIterationCount = 1;
 			element.style.zIndex = 50;
-			element.style.position = "absolute";
 		
 			seed.goto.out = new Promise(resolve => {
 				setTimeout(function() {

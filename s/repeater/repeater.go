@@ -51,7 +51,7 @@ func New(data interface{}, options ...seed.Option) seed.Seed {
 			repeater.Write(d)
 
 			for _, o := range options {
-				repeater.Add(o)
+				repeater = repeater.With(o)
 			}
 		}
 	case reflect.Map:
@@ -63,7 +63,7 @@ func New(data interface{}, options ...seed.Option) seed.Seed {
 			repeater.Write(d)
 
 			for _, o := range options {
-				repeater.Add(o)
+				repeater.With(o)
 			}
 		}
 
@@ -75,7 +75,7 @@ func New(data interface{}, options ...seed.Option) seed.Seed {
 
 //Do runs f.
 func Do(f func(Seed)) seed.Option {
-	return seed.Do(func(c seed.Seed) {
+	return seed.NewOption(func(c seed.Seed) {
 		var d seedData
 		c.Read(&d)
 		f(Seed{c, d.data})

@@ -47,7 +47,7 @@ func (v Viewport) render() string {
 	}
 
 	if v.MaximumScale > 0 {
-		fmt.Fprintf(&builder, "minimum-scale=%v,", v.MaximumScale)
+		fmt.Fprintf(&builder, "maximum-scale=%v,", v.MaximumScale)
 	}
 
 	if v.UserScalable != nil {

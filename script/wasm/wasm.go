@@ -24,7 +24,7 @@ func (Package) AddTo(c seed.Seed) {
 		log.Fatalln(err)
 	}
 
-	c.Add(js.Require("/wasm_exec.js", string(wasmexec)))
+	c.With(js.Require("/wasm_exec.js", string(wasmexec)))
 }
 
 func (p Package) And(more ...seed.Option) seed.Option {

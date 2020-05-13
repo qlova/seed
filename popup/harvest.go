@@ -7,7 +7,6 @@ import (
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/style"
 )
 
 type harvester struct {
@@ -37,25 +36,16 @@ func (h harvester) harvest(c seed.Seed) {
 			template.Use()
 			template.AddTo(h.Parent)
 
-			var element = seed.New(
-				html.SetTag("div"),
+			var element = p.Popup(ManagerOf(template))
+			element.With(
 				html.SetID(ID(p)),
 				script.SetID(ID(p)),
 				css.SetSelector("#"+ID(p)),
-
-				css.SetDisplay(css.Flex),
-				css.SetFlexDirection(css.Column),
-
-				style.SetSize(100, 100),
-				style.SetLayer(1),
-				css.SetPosition(css.Absolute),
 			)
 			element.Use()
 			element.AddTo(template)
 
 			h.Map[key] = element
-
-			p.Popup(Seed{element})
 
 			h.harvest(element)
 		}
@@ -69,7 +59,7 @@ func (h harvester) harvest(c seed.Seed) {
 //Harvest returns an option that adds all pages to the acting seed.
 //This should normally only be called by app-level runtime packages such as seed/app.
 func Harvest() seed.Option {
-	return seed.Do(func(c seed.Seed) {
+	return seed.NewOption(func(c seed.Seed) {
 		newHarvester(c).harvest(c)
 	})
 }

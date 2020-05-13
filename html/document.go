@@ -16,7 +16,7 @@ func New() Document {
 	head := seed.New(SetTag("head"))
 	body := seed.New(SetTag("body"))
 
-	html.Add(
+	html = html.With(
 		head, body,
 	)
 

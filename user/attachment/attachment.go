@@ -28,6 +28,10 @@ func (a Attachment) GetValue() script.Value {
 	return a.GetFile().Value
 }
 
+func (a Attachment) GetBool() script.Bool {
+	return a.GetValue().GetBool()
+}
+
 var id int64
 
 func New() Attachment {

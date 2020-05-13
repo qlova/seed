@@ -17,8 +17,8 @@ func New(options ...seed.Option) seed.Seed {
 
 //Var returns text with a variable text argument.
 func Var(text state.String, options ...seed.Option) seed.Seed {
-	return New(seed.Do(func(c seed.Seed) {
-		c.Add(script.On("input", func(q script.Ctx) {
+	return New(seed.NewOption(func(c seed.Seed) {
+		c.With(script.On("input", func(q script.Ctx) {
 			text.Set(js.String{js.NewValue(script.Scope(c, q).Element() + `.value`)})(q)
 		}), text.SetValue())
 	}), seed.Options(options))

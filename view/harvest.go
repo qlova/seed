@@ -20,13 +20,14 @@ func Set(starting View) seed.Option {
 
 		ControllerOf(c).Goto(starting)
 
-		c.Add(script.OnReady(func(q script.Ctx) {
+		c.With(script.OnReady(func(q script.Ctx) {
 			fmt.Fprintf(q, `seed.view.ready(%v, "%v");`,
 				script.Scope(c, q).Element(), Name(starting))
 		}))
 
-		c.Add(state.OnRefresh(func(q script.Ctx) {
-			fmt.Fprintf(q, `if (%[1]v.CurrentView) { %[1]v.CurrentView.args = %[2]v; %[1]v.CurrentView.rerender(); }`,
+		c.With(state.OnRefresh(func(q script.Ctx) {
+
+			fmt.Fprintf(q, `if (%[1]v.CurrentView) { %[1]v.CurrentView.args = %[2]v; if (%[1]v.CurrentView.onviewenter) %[1]v.CurrentView.onviewenter(); %[1]v.CurrentView.rerender(); }`,
 				script.Scope(c, q).Element(), args.GetObject().String())
 		}))
 	})
