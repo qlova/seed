@@ -6,6 +6,7 @@ import (
 
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/js"
+	"github.com/qlova/seed/js/console"
 )
 
 type Data struct {
@@ -44,4 +45,11 @@ func New(scripts ...Script) Script {
 
 func After(duration time.Duration, do Script) Script {
 	return js.Global().Run("setTimeout", js.NewFunction(do), js.NewNumber(duration.Seconds()*1000))
+}
+
+func Trace(s Script) Script {
+	return New(
+		console.Error(js.NewString("trace")),
+		s,
+	)
 }

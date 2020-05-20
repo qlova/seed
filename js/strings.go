@@ -37,3 +37,8 @@ func (s String) Equals(b AnyString) Bool {
 func (s String) Plus(b AnyString) String {
 	return String{NewValue("(" + s.string + "+" + b.GetString().string + ")")}
 }
+
+//Includes determines whether one string may be found within another string, returning true or false as appropriate.
+func (s String) Includes(b AnyString) Bool {
+	return Bool{s.Call("includes", b)}
+}

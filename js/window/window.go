@@ -28,3 +28,8 @@ func Prompt(msg js.AnyString) js.String {
 func SetTimeout(do js.Script, timeout js.Number) script.Script {
 	return js.Global().Run("setTimeout", js.NewFunction(do), timeout)
 }
+
+//ResizeTo dynamically resizes the window.
+func ResizeTo(width, height js.Number) js.Script {
+	return js.Global().Run(`resizeTo`, width, height)
+}

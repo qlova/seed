@@ -23,6 +23,9 @@ func If(condition js.AnyBool, options ...seed.Option) seed.Option {
 		//Add any children seeds to the parent seed.
 		//Hacky fix.
 		for _, o := range options {
+			if o == nil {
+				continue
+			}
 			switch child := o.(type) {
 			case seed.Seed:
 				c.With(child)
@@ -32,6 +35,9 @@ func If(condition js.AnyBool, options ...seed.Option) seed.Option {
 		c.With(OnRefresh(func(q script.Ctx) {
 			q.If(condition, func(q script.Ctx) {
 				for _, option := range options {
+					if option == nil {
+						continue
+					}
 					if other, ok := option.(seed.Seed); ok {
 						script.Scope(other, q).AddTo(script.Scope(c, q))
 					} else {
@@ -40,6 +46,9 @@ func If(condition js.AnyBool, options ...seed.Option) seed.Option {
 				}
 			}).Else(func(q script.Ctx) {
 				for _, option := range options {
+					if option == nil {
+						continue
+					}
 					if other, ok := option.(seed.Seed); ok {
 						script.Scope(c, q).Undo(script.Scope(other, q))
 					} else {

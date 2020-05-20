@@ -9,6 +9,9 @@ import (
 )
 
 func On(event string, do Script) seed.Option {
+	if do == nil {
+		return seed.NewOption(func(c seed.Seed) {})
+	}
 	return seed.NewOption(func(c seed.Seed) {
 		do(js.NewCtx(ioutil.Discard, c)) //Catch errors and harvest pages.
 

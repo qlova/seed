@@ -26,3 +26,12 @@ func If(condition AnyBool, do Script) Script {
 		q.If(condition, do)
 	}
 }
+
+func (s Script) Else(do Script) Script {
+	return func(q Ctx) {
+		s(q)
+		q("else {")
+		do(q)
+		q("}")
+	}
+}

@@ -5,7 +5,6 @@ import (
 	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/signal"
-	"github.com/qlova/seed/user"
 )
 
 type State struct {
@@ -19,9 +18,9 @@ func New(options ...Option) State {
 
 func (state State) Signal() signal.Type {
 	if state.not {
-		return signal.Raw("state.unset." + state.key)
+		return signal.Raw(state.key + ".unset")
 	}
-	return signal.Raw("state.set." + state.key)
+	return signal.Raw(state.key + ".set")
 }
 
 //GetBool implements script.AnyBool
@@ -58,42 +57,24 @@ func (state State) Set(q script.Ctx) {
 		if !state.ro {
 			state.set(q, js.False)
 		}
-		q(signal.Emit(state.Signal()))
 
 	} else {
 		if !state.ro {
 			state.set(q, js.True)
 		}
-		q(signal.Emit(state.Signal()))
 	}
+	q(signal.Emit(state.Signal()))
 }
 
 //Unset sets the state to not be active.
 func (state State) Unset(q script.Ctx) {
 	if state.not {
 		state.set(q, js.True)
+
 	} else {
 		state.set(q, js.False)
 	}
-}
-
-type RemoteState struct {
-	u user.Ctx
-	s State
-}
-
-func (s State) For(u user.Ctx) RemoteState {
-	return RemoteState{u, s}
-}
-
-func (s RemoteState) Set() {
-	var state = s.s
-	if state.not {
-		state.setFor(s.u, "false")
-	} else {
-		state.setFor(s.u, "true")
-	}
-
+	q(signal.Emit(state.Signal()))
 }
 
 type data struct {

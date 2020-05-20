@@ -18,7 +18,7 @@ func init() {
 //State is a client-state secret. If the value is read, the hash is returned.
 //Use this for passwords.
 type State struct {
-	salt string
+	Salt string
 	state.String
 }
 
@@ -41,7 +41,7 @@ func (s State) GetString() script.String {
 		hashLen: 32,
 		parallelism: 1,
 		type: argon2.ArgonType.Argon2di
-	})).hashHex`, s.String.GetValue(), js.NewString(s.salt))}
+	})).hashHex`, s.String.GetValue(), js.NewString(s.Salt))}
 }
 
 //GetBool implements script.AnyBool

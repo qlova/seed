@@ -19,6 +19,11 @@ func This() seed.Option {
 	})
 }
 
+//DisableScaling stops scale being applied during the tween.
+func DisableScaling() seed.Option {
+	return attr.Set("data-flip-no-scale", "")
+}
+
 //Track tracks this seed with a key, only one seed of any given key should be visible at a time.
 func Track(key string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {

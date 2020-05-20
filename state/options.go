@@ -36,3 +36,10 @@ func SetKey(key string) Option {
 		v.key = key
 	}
 }
+
+//SetRaw sets the state's raw value.
+func SetRaw(raw string) Option {
+	return func(v *Value) {
+		v.raw = raw
+	}
+}

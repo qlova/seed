@@ -14,6 +14,7 @@ func New(options ...seed.Option) seed.Seed {
 		css.SetFlexDirection(css.Column),
 
 		css.SetFlexShrink(css.Number(1)),
+		//style.SetMinHeight(0),
 
 		seed.Options(options),
 	)

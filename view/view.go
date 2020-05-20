@@ -2,6 +2,7 @@
 package view
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -25,6 +26,13 @@ type Controller struct {
 //ControllerOf returns the Controller for the given seed.
 func ControllerOf(c seed.Seed) Controller {
 	return Controller{c}
+}
+
+func (c Controller) State(v View) state.State {
+	return state.New(state.SetKey(script.ID(c.of)+".view."+Name(v)),
+		state.SetRaw(fmt.Sprintf("(seed.get('%[1]v').CurrentView && seed.get('%[1]v').CurrentView.classList.contains('%[2]v'))", script.ID(c.of), Name(v))),
+		state.ReadOnly(),
+	)
 }
 
 //Goto returns a script that goes to the given view.
@@ -105,8 +113,4 @@ func OnEnter(f script.Script) seed.Option {
 
 func OnExit(f script.Script) seed.Option {
 	return script.On("viewexit", f)
-}
-
-func State(v View) state.State {
-	return state.New(state.SetKey("view."+Name(v)), state.ReadOnly())
 }

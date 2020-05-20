@@ -58,10 +58,19 @@ func (r Rule) AddTo(c seed.Seed) {
 	switch c := c.(type) {
 	case script.Seed:
 		property, value := r.Split()
-		fmt.Fprintf(c.Q, `%v.style.%v = "%v";`, c.Element(), dashes2camels(property), value)
+		if strings.HasPrefix(property, "-") {
+			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "%v");`, c.Element(), dashes2camels(property), value)
+		} else {
+			fmt.Fprintf(c.Q, `%v.style.%v = "%v";`, c.Element(), dashes2camels(property), value)
+		}
+
 	case script.Undo:
 		property := r.Property()
-		fmt.Fprintf(c.Q, `%v.style.%v = "";`, c.Element(), dashes2camels(property))
+		if strings.HasPrefix(property, "-") {
+			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "");`, c.Element(), dashes2camels(property))
+		} else {
+			fmt.Fprintf(c.Q, `%v.style.%v = "";`, c.Element(), dashes2camels(property))
+		}
 	default:
 		if d.rules == nil {
 			d.rules = NewOrderedMap()

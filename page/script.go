@@ -33,6 +33,7 @@ seed.goto = async function(id, args, url) {
 
 		if (JSON.stringify(seed.CurrentPage.args) == JSON.stringify(args)) {
 			seed.NextPage = null;
+			seed.CurrentPage.rerender();
 			return;
 		}
 
@@ -44,12 +45,14 @@ seed.goto = async function(id, args, url) {
 	//Check page conditions.
 	if (seed.NextPage.conditions) {
 		let conditions = seed.NextPage.conditions;
-		let condition = await conditions.condition();
-		if (!condition) {
-			seed.NextPage = null;
+		for (let condition of conditions) {
+			let result = await condition.test();
+			if (!result) {
+				seed.NextPage = null;
 
-			if (conditions.otherwise) await conditions.otherwise();
-			return;
+				if (condition.otherwise) await condition.otherwise();
+				return;
+			}
 		}
 	}
 

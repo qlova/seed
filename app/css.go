@@ -4,10 +4,9 @@ const CSS = `
 *, *:before, *:after {
     box-sizing: border-box;
     position: relative;
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
     object-fit: contain;
-    flex-shrink: 0;
 }
 
 html, body, div, span, applet, object, iframe,

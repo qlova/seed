@@ -23,12 +23,12 @@ seed.view = async function(of, name, args, fragment) {
 		return;
 	}
 
-	//If we are going to the same View then return.
+	//If we are going to the same View then just refresh.
 	if (of.CurrentView && of.CurrentView.classList.contains(name)) {
-		if (JSON.stringify(of.CurrentView.args) == JSON.stringify(args)) {
-			of.NextView = null;
-			return;
-		}
+		of.NextView = null;
+		of.CurrentView.args = args;
+		of.CurrentView.onviewenter();
+		return;
 	}
 
 	//Find the view.
@@ -53,24 +53,32 @@ seed.view = async function(of, name, args, fragment) {
 
 	of.appendChild(of.NextView);
 
-	if (window.flipping) flipping.read();
+	//if (window.flipping) flipping.read();
 
 	let promises = [];
-	
+
 	of.LastView = of.CurrentView;
+	of.LastName = of.CurrentName;
 	of.CurrentView = of.NextView;
+	of.CurrentName = name;
 	of.CurrentView.args = args || {};
+	
 
 	if (of.LastView) {
 		if (of.LastView.onviewexit) await of.LastView.onviewexit(of);
-		let state = seed.state["view."+of.LastView.id];
-		if (state && state.unset) await state.unset(of);
+		
+		let state = seed.state[of.id+".view."+of.LastName];
+		if (state && state.changed) await state.changed();
 	}
+
+
+
 	{
 		if (of.CurrentView.onviewenter) await of.CurrentView.onviewenter(of);
-		let state = seed.state["View."+of.CurrentView.id];
-		if (state && state.set) await state.set(of);
+		let state = seed.state[of.id+".view."+name];
+		if (state && state.changed) await state.changed();
 	}
+	
 
 	if (of.view.in) {
 		promises.push(of.view.in);
@@ -82,7 +90,7 @@ seed.view = async function(of, name, args, fragment) {
 		of.view.out = null;
 	}
 
-	try { flipping.flip(); } catch(error) {}
+	//try { flipping.flip(); } catch(error) {}
 
 	for (let promise of promises) {
 		await promise;
@@ -136,7 +144,7 @@ seed.view.ready = async function(of, id, args) {
 
 		await seed.view(of, saved_view, saved_args, saved_frag);
 	} else {
-		await seed.view(of, of.StartingView, args);
+		await seed.view(of, of.StartingView, args, null);
 	}
 }
 

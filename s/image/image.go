@@ -1,6 +1,8 @@
 package image
 
 import (
+	"fmt"
+
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/asset"
 	"github.com/qlova/seed/css"
@@ -16,6 +18,16 @@ func New(src state.AnyString, options ...seed.Option) seed.Seed {
 		state.SetSource(src),
 		seed.Options(options),
 	)
+}
+
+func SetSize(size float32) seed.Option {
+	return seed.Options{
+		//style.SetWidth(style.Unit(complex(size, 0)) * unit.Px),
+		//style.SetHeight(style.Unit(complex(size, 0)) * unit.Px),
+
+		attr.Set("width", fmt.Sprint(size)),
+		attr.Set("height", fmt.Sprint(size)),
+	}
 }
 
 //SetFallback sets a fallback image to be used, this must be a local, cacheable image.

@@ -17,9 +17,12 @@ func New(options ...seed.Option) seed.Seed {
 
 //Var returns an passwordbox with a variable state argument that will be synced with the value of this passwordbox.
 func Var(text secret.State, options ...seed.Option) seed.Seed {
+	if text.Null() {
+		return New(options...)
+	}
 	return New(seed.NewOption(func(c seed.Seed) {
-		c.With(script.On("input", func(q script.Ctx) {
+		c.With(script.On("change", func(q script.Ctx) {
 			text.Set(js.String{Value: js.NewValue(script.Scope(c, q).Element() + `.value`)})(q)
-		}), text.SetValue())
+		}))
 	}), seed.Options(options))
 }

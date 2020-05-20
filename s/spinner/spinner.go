@@ -1,17 +1,23 @@
 package spinner
 
 import (
+	"fmt"
+	"image/color"
+
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/s/html/div"
 )
 
-func Ellipsis(options ...seed.Option) seed.Seed {
-	return div.New(
+func Ellipsis(c color.Color, options ...seed.Option) seed.Seed {
+	r, g, b, _ := c.RGBA()
+	rgb := fmt.Sprint("rgb(", r, ",", g, ",", b, ")")
+
+	return div.New(seed.Options(options),
 
 		html.AddClass(`lds-ellipsis`),
-		html.Set(`<div></div><div></div><div></div>`),
+		html.Set(`<div style="background-color: `+rgb+`"></div><div style="background-color: `+rgb+`"></div><div style="background-color: `+rgb+`"></div>`),
 
 		css.Add(`
 			.lds-ellipsis {
@@ -26,7 +32,7 @@ func Ellipsis(options ...seed.Option) seed.Seed {
 				width: 13px;
 				height: 13px;
 				border-radius: 50%;
-				background: #fff;
+				background-color: inherit;
 				animation-timing-function: cubic-bezier(0, 1, 1, 0);
 			  }
 			  .lds-ellipsis div:nth-child(1) {

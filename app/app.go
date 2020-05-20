@@ -39,7 +39,7 @@ type app struct {
 //Installed is true when the app is running from an installed instance.
 var Installed = state.State{
 	Bool: state.Bool{
-		Value: state.Raw("(window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone)"),
+		Value: state.Raw("((window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || window.name == 'installed')"),
 	},
 }
 

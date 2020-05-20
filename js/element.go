@@ -4,3 +4,8 @@ package js
 type Element struct {
 	Value
 }
+
+//RequestFullscreen requests that the user agent switch from full-screen mode back to windowed mode.
+func (element Element) RequestFullscreen() Script {
+	return element.Run("requestFullscreen")
+}

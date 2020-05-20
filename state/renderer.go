@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/qlova/seed"
+	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/signal"
@@ -49,7 +50,12 @@ func (h *harvester) buildRefresh(c seed.Seed) script.Script {
 	}
 
 	for _, child := range c.Children() {
-		refresh = refresh.Append(h.buildRefresh(child))
+		var html html.Data
+		c.Read(&html)
+
+		if html.Tag != "template" {
+			refresh = refresh.Append(h.buildRefresh(child))
+		}
 	}
 
 	return refresh

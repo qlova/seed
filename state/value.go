@@ -29,6 +29,14 @@ type Value struct {
 	dependencies *[]Value
 }
 
+//Get the value.
+func (v Value) Null() bool {
+	if v.raw == "" && v.key == "" && v.storage == "" {
+		return true
+	}
+	return false
+}
+
 //Raw returns a raw value from a JS expression.
 func Raw(expr string, options ...Option) Value {
 	id++

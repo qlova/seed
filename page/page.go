@@ -3,6 +3,7 @@ package page
 
 import (
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/qlova/seed"
@@ -95,7 +96,7 @@ func OnExit(f script.Script) seed.Option {
 }
 
 func State(p Page) state.State {
-	return state.New(state.SetKey("page"+ID(p)), state.ReadOnly())
+	return state.New(state.SetKey("page"+ID(p)), state.SetRaw("(seed.CurrentPage && seed.CurrentPage.classList.contains("+strconv.Quote(ID(p)[1:])+"))"), state.ReadOnly())
 }
 
 type EnterIfOption struct {
@@ -113,17 +114,18 @@ func (e EnterIfOption) Else(do script.Script) seed.Option {
 }
 
 func (e EnterIfOption) AddTo(c seed.Seed) {
-	var conditions = js.NewObject{
-		"condition": js.NewFunction(js.Return(e.condition)),
+	var condition = js.NewObject{
+		"test": js.NewFunction(js.Return(e.condition)),
 	}
 
 	if e.otherwise != nil {
-		conditions["otherwise"] = js.NewFunction(e.otherwise)
+		condition["otherwise"] = js.NewFunction(e.otherwise)
 	}
 
 	c.With(
-		script.OnReady(
-			script.Element(c).Set("conditions", conditions),
-		),
+		script.OnReady(script.New(
+			script.Element(c).Set("conditions", script.Element(c).Get("conditions").GetBool().Or(js.NewValue("[]").GetBool())),
+			script.Element(c).Get("conditions").Run("push", condition),
+		)),
 	)
 }

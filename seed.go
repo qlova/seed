@@ -62,7 +62,7 @@ func (options Options) AddTo(c Seed) {
 	}
 }
 
-func (options Options) And(more ...Option) Option {
+func (options Options) And(more ...Option) Options {
 	return append(options, more...)
 }
 

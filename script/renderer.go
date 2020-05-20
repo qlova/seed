@@ -92,6 +92,8 @@ seed.active = null;
 
 //seed.report is the error handling function. Pass the current element for 'OnError' based error handling.
 seed.report = function(err, element) {
+	if (err == "") return; //ignore empty errors.
+
 	if (!element) element = seed.active;
 
 	if (element) {

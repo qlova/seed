@@ -65,6 +65,15 @@ func Rotate(angle float32) css.Rules {
 	}
 }
 
+//Scale the element by the given scale value.
+//This overrrides any previous calls to Scale.
+func Scale(scale float32) css.Rules {
+	return css.Rules{
+		css.Set("--scale", fmt.Sprintf(`%v`, scale)),
+		css.Set("transform", "translate(var(--x, 0), var(--y, 0)) rotate(var(--angle, 0)) scale(var(--scale, 1), var(--scale, 1))"),
+	}
+}
+
 //SetTextColor sets the color of the seed.
 func SetTextColor(c color.Color) css.Rule {
 	return css.SetColor(css.RGB{Color: c})
@@ -96,21 +105,25 @@ func SetVisible() css.Rule {
 }
 
 //SetHeight sets the height of the seed.
-func SetHeight(height Unit) css.Rule {
-	return css.SetHeight(height.Unit())
+func SetHeight(height Unit) css.Rules {
+	return css.Rules{
+		css.SetHeight(height.Unit()),
+	}
 }
 
 //SetWidth sets the width of the seed.
-func SetWidth(width Unit) css.Rule {
-	return css.SetWidth(width.Unit())
+func SetWidth(width Unit) css.Rules {
+	return css.Rules{
+		css.SetWidth(width.Unit()),
+	}
 }
 
 //SetSize sets the width and height of the seed.
 func SetSize(width, height Unit) css.Rules {
-	return css.Rules{
-		css.SetWidth(width.Unit()),
-		css.SetHeight(height.Unit()),
-	}
+	return append(
+		SetWidth(width),
+		SetHeight(height)...,
+	)
 }
 
 //SetMaxHeight sets the height of the seed.
@@ -171,8 +184,6 @@ func SetScrollable() css.Rules {
 	return css.Rules{
 		css.SetOverflowY(css.Auto),
 		css.SetOverflowX(css.Hidden),
-		Expand(),
-		css.SetFlexBasis(Unit(0).Unit()),
 		css.Set("-webkit-overflow-scrolling", "touch"),
 		css.Set("-webkit-overscroll-behavior", "contain"),
 		css.Set("overscroll-behavior", "contain"),

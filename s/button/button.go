@@ -3,6 +3,7 @@ package button
 import (
 	"github.com/qlova/seed"
 	"github.com/qlova/seed/html"
+	"github.com/qlova/seed/html/attr"
 	"github.com/qlova/seed/state"
 )
 
@@ -11,6 +12,7 @@ func New(text string, options ...seed.Option) seed.Seed {
 	return seed.New(
 		html.SetTag("button"),
 		html.SetInnerText(text),
+		attr.Set("type", "button"),
 		seed.Options(options),
 	)
 }

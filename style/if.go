@@ -2,15 +2,6 @@ package style
 
 import "github.com/qlova/seed"
 
-const TinyMin = `10rem`
-const TinyMax = `20rem`
-const SmallMin = `40rem`
-const SmallMax = `60rem`
-const MediumMin = `60rem`
-const MediumMax = `80rem`
-const LargeMin = `80rem`
-const LargeMax = `100rem`
-
 type data struct {
 	seed.Data
 
@@ -75,16 +66,16 @@ func (con Condition) Tiny(styles ...Style) Condition {
 
 func (con Condition) Small(styles ...Style) Condition {
 	return Condition{
-		portrait:  `(min-width: 10rem) and (max-width: 24.999rem)`,
-		landscape: `(min-height: 10rem) and (max-height: 24.999rem)`,
+		portrait:  `(min-width: 10rem) and (max-width: 29.999rem)`,
+		landscape: `(min-height: 10rem) and (max-height: 29.999rem)`,
 		styles:    styles,
 	}
 }
 
 func (con Condition) Medium(styles ...Style) Condition {
 	return Condition{
-		portrait:  `(min-width: 25rem) and (max-width: 49.999rem)`,
-		landscape: `(min-height: 25rem) and (max-height: 49.999rem)`,
+		portrait:  `(min-width: 30rem) and (max-width: 49.999rem)`,
+		landscape: `(min-height: 30rem) and (max-height: 49.999rem)`,
 		styles:    styles,
 	}
 }
