@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -47,9 +48,13 @@ func rpc(f interface{}, await bool, args ...AnyValue) func(q Ctx) Value {
 
 		var value = reflect.ValueOf(f)
 
-		if value.Kind() != reflect.Func || value.Type().NumOut() > 1 {
-			panic("Script.Call: Must pass a Go function without zero or one return values, not a " + reflect.TypeOf(f).String())
+		if value.Kind() != reflect.Func || value.Type().NumOut() > 2 {
+			panic("script.Go: Must pass a Go function without zero or one return values, not a " + reflect.TypeOf(f).String())
 		}
+		if value.Type().NumOut() > 2 && value.Type().Out(1) != reflect.TypeOf(error(nil)) {
+			panic("script.Go: Must pass a Go function with an error value as the second parameter " + reflect.TypeOf(f).String())
+		}
+
 		Exports[name] = value
 
 		var CallingString = `/call/` + name
@@ -133,6 +138,7 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 			var shell = reflect.New(f.Type().In(i)).Interface()
 			if err := json.NewDecoder(strings.NewReader(arg.String())).Decode(shell); err != nil {
 				log.Println("could not decode argument: ", err)
+				u.Report(errors.New("invalid request"))
 				return
 			}
 
@@ -143,6 +149,7 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 		if ElemType != ArgType {
 			if !(ArgType.Kind() == reflect.Interface && ElemType.Implements(ArgType)) {
 				log.Println("type mismatch")
+				u.Report(errors.New("invalid request"))
 				return
 			}
 		}
@@ -156,21 +163,42 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 		return
 	}
 
-	if len(results) == 1 {
-		if err, ok := results[0].Interface().(error); ok {
-			u.Report(err)
-			return
-		}
-		var buffer bytes.Buffer
-		err := json.NewEncoder(&buffer).Encode(results[0].Interface())
-		if err != nil {
-			fmt.Println("rpc function could not send return value: ", err)
-		}
-		u.Execute(func(q Ctx) {
-			q(fmt.Sprintf(`return %v;`, buffer.String()))
-		})
+	if err, ok := results[len(results)-1].Interface().(error); ok {
+		u.Report(err)
 		return
 	}
 
-	panic("rpc function with more than one return value")
+	var result = results[0].Interface()
+
+	var buffer bytes.Buffer
+
+	var encoder = json.NewEncoder(&buffer)
+
+	type JSONEncodable interface {
+		JSONEncoder() func(interface{}) ([]byte, error)
+	}
+
+	switch v := result.(type) {
+	case JSONEncodable:
+		var encoder = v.JSONEncoder()
+
+		b, err := encoder(result)
+		if err != nil {
+			fmt.Println("rpc function could not send return value: ", err)
+			return
+		}
+		buffer.Write(b)
+
+	default:
+		err := encoder.Encode(results[0].Interface())
+		if err != nil {
+			fmt.Println("rpc function could not send return value: ", err)
+		}
+	}
+
+	//This is slow for arrays.
+	u.Execute(func(q Ctx) {
+		q(fmt.Sprintf(`return %v;`, buffer.String()))
+	})
+	return
 }

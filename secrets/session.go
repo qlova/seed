@@ -1,4 +1,4 @@
-package session
+package secrets
 
 import (
 	"encoding/base64"
@@ -60,7 +60,7 @@ func newValue(name ...string) Value {
 type Secret Value
 
 //NewSecret returns a new Secret.
-func NewSecret(name ...string) Secret {
+func New(name ...string) Secret {
 	return Secret(newValue(name...))
 }
 

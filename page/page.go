@@ -56,7 +56,9 @@ type Seed struct {
 }
 
 func New(options ...seed.Option) Seed {
-	var Page = Seed{seed.New(
+	var Page = Seed{seed.New()}
+
+	Page.With(
 		html.SetTag("div"),
 
 		css.SetDisplay(css.Flex),
@@ -64,13 +66,7 @@ func New(options ...seed.Option) Seed {
 		style.Expand(),
 
 		style.SetSize(100, 100),
-
-		seed.NewOption(func(c seed.Seed) {
-			c.With(
-				OnEnter(state.Refresh(c)),
-			)
-		}),
-	)}
+	)
 
 	for _, option := range options {
 		option.AddTo(Page)
@@ -124,7 +120,7 @@ func (e EnterIfOption) AddTo(c seed.Seed) {
 
 	c.With(
 		script.OnReady(script.New(
-			script.Element(c).Set("conditions", script.Element(c).Get("conditions").GetBool().Or(js.NewValue("[]").GetBool())),
+			script.Element(c).Set("conditions", js.NewValue(`(%v || [])`, script.Element(c).Get("conditions"))),
 			script.Element(c).Get("conditions").Run("push", condition),
 		)),
 	)

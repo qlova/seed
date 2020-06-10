@@ -1,6 +1,7 @@
 package js
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -8,15 +9,28 @@ type Function struct {
 	Value
 }
 
+func Func(name string) Function {
+	return Function{Value: NewValue(name)}
+}
+
 type AnyFunction interface {
 	AnyValue
 	GetFunction() Function
 }
 
-func NewFunction(do Script) Function {
+func NewFunction(do Script, args ...string) Function {
 	var s strings.Builder
 
-	s.WriteString(`async function() {`)
+	var fargs strings.Builder
+	if len(args) > 0 {
+		fargs.WriteString(args[0])
+		for _, arg := range args[1:] {
+			fargs.WriteByte(',')
+			fargs.WriteString(arg)
+		}
+	}
+
+	fmt.Fprintf(&s, `async (%v) => {`, fargs.String())
 
 	NewCtx(&s)(do)
 
@@ -34,6 +48,10 @@ func (f Function) GetFunction() Function {
 
 func (f Function) Call() Value {
 	return NewValue("await " + f.string + "()")
+}
+
+func (f Function) Run(args ...AnyValue) Script {
+	return Run(f, args...)
 }
 
 func (q Ctx) Await(v AnyValue) {

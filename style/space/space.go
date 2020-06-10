@@ -10,6 +10,7 @@ type Spacer interface {
 	Outside() style.Style
 	Inside() style.Style
 	Before() style.Style
+	Divide() style.Style
 }
 
 //Items returns an aligner that aligns children.
@@ -29,4 +30,8 @@ func (itemsSpacer) Inside() style.Style {
 
 func (itemsSpacer) Before() style.Style {
 	return css.SetJustifyContent(css.FlexEnd)
+}
+
+func (itemsSpacer) Divide() style.Style {
+	return css.SetJustifyContent(css.SpaceEvenly)
 }

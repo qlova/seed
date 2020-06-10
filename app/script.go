@@ -16,6 +16,5 @@ func Reset() script.Script {
 
 //Launch launches the current app as new window in an installed state.
 func Launch() script.Script {
-	var window = js.Global().Get("window")
-	return window.Run("open", location.Origin, js.NewString("installed"), js.NewString("height=800,width=600"))
+	return js.Func("launch").Run(location.Origin, js.NewString("installed"), js.NewNumber(800), js.NewNumber(600))
 }

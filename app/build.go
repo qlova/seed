@@ -47,7 +47,7 @@ func (a App) build() {
 				app.document.Body.With(loading_page)
 
 				c.With(script.OnReady(func(q script.Ctx) {
-					fmt.Fprintf(q, `seed.LoadingPage = seed.get("%v"); seed.CurrentPage = seed.LoadingPage;`, html.ID(loading_page))
+					fmt.Fprintf(q, `seed.LoadingPage = q.get("%v"); seed.CurrentPage = seed.LoadingPage;`, html.ID(loading_page))
 				}))
 			}
 		})),
@@ -160,8 +160,12 @@ func (a App) build() {
 						throw err;
 					});
 				}
-				
-				
+
+				function launch(url, title, w, h) {
+					const y = window.top.outerHeight / 2 + window.top.screenY - ( h / 2);
+					const x = window.top.outerWidth / 2 + window.top.screenX - ( w / 2);
+					return window.open(url, title, `+"`"+`toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${w}, height=${h}, top=${y}, left=${x}`+"`"+`);
+				}
 
 				document.addEventListener("contextmenu", function (e) {
 					e.preventDefault();

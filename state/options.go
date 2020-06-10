@@ -43,3 +43,10 @@ func SetRaw(raw string) Option {
 		v.raw = raw
 	}
 }
+
+//Scope configures the state to be backed by the current scoped seed.Scope object.
+func Scope() Option {
+	return func(v *Value) {
+		v.storage = "q"
+	}
+}

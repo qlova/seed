@@ -5,6 +5,12 @@ import (
 	"github.com/qlova/seed/script"
 )
 
+func Refresh() script.Script {
+	return func(q script.Ctx) {
+		q("c.r(q, seed.CurrentPage);")
+	}
+}
+
 func init() {
 	script.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
@@ -21,7 +27,7 @@ seed.goto = async function(id, args, url) {
 		return;
 	}
 
-	seed.NextPage = seed.get(id);
+	seed.NextPage = q.get(id);
 	if (!seed.NextPage) {
 		console.error("seed.goto: invalid page ", id);
 		return;
@@ -33,7 +39,6 @@ seed.goto = async function(id, args, url) {
 
 		if (JSON.stringify(seed.CurrentPage.args) == JSON.stringify(args)) {
 			seed.NextPage = null;
-			seed.CurrentPage.rerender();
 			return;
 		}
 
@@ -60,7 +65,7 @@ seed.goto = async function(id, args, url) {
 
 	seed.NextPage.parent.parentElement.appendChild(seed.NextPage);
 
-	if (window.flipping) flipping.read();
+	//if (window.flipping) flipping.read();
 
 	let promises = [];
 	
@@ -100,7 +105,7 @@ seed.goto = async function(id, args, url) {
 		}
 	}
 
-	try { flipping.flip(); } catch(error) {}
+	//try { flipping.flip(); } catch(error) {}
 
 	//Set title and path.
 	let data = seed.NextPage.dataset;

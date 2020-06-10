@@ -8,6 +8,9 @@ import (
 	"github.com/qlova/seed/script"
 )
 
+//AnyBool flags that a function accepts a boolean argument.
+type AnyBool interface{}
+
 //Bool is a global Boolean.
 type Bool struct {
 	Value
@@ -15,7 +18,7 @@ type Bool struct {
 
 //NewBool returns a reference to a new global boolean.
 func NewBool(options ...Option) Bool {
-	return Bool{newValue("false", options...)}
+	return Bool{newValue("", options...)}
 }
 
 //GetBool implements script.AnyBool
@@ -33,7 +36,7 @@ func (b Bool) get() script.Bool {
 	if b.raw != "" {
 		return js.Bool{b.Value.getter()}
 	}
-	return js.Bool{js.NewValue(`(%v == "true")`, b.Value.get())}
+	return js.Bool{js.NewValue(`!!%v`, b.Value.get())}
 }
 
 //Set the global.Bool to be script.Bool
@@ -54,7 +57,7 @@ func (b Bool) If(options ...seed.Option) seed.Option {
 
 //Or returns a Bool that is true when either are true.
 func (b Bool) Or(or js.AnyBool) Bool {
-	var v = newValue("false")
+	var v = newValue("")
 	v.dependencies = &[]Value{b.Value}
 	if other, ok := or.(AnyValue); ok {
 		v.dependencies = &[]Value{b.Value, other.value()}
@@ -65,7 +68,7 @@ func (b Bool) Or(or js.AnyBool) Bool {
 
 //And returns a Bool that is true when both are true.
 func (b Bool) And(or js.AnyBool) Bool {
-	var v = newValue("false")
+	var v = newValue("")
 	v.dependencies = &[]Value{b.Value}
 	if other, ok := or.(AnyValue); ok {
 		v.dependencies = &[]Value{b.Value, other.value()}

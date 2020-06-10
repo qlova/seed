@@ -76,7 +76,7 @@ func parseArgs(page Page) (Page, js.AnyObject, js.String) {
 			}
 
 			var value = js.NewValue(
-				fmt.Sprintf("seed.get(%v).args[%v]", strconv.Quote(ID(page)),
+				fmt.Sprintf("seed.arg(%v, %v)", strconv.Quote(ID(page)),
 					strconv.Quote(key)))
 
 			NewPage.Field(i).Set(valueAs(value, Field.Type))

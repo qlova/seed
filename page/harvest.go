@@ -9,6 +9,7 @@ import (
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/s/column"
 	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/state"
 	"github.com/qlova/seed/style"
 )
 
@@ -36,6 +37,7 @@ func AddPages(pages ...Page) seed.Option {
 		var container = column.New(
 			style.SetWidth(100),
 			style.Expand(),
+			style.SetMinHeight(0),
 		)
 		for _, page := range pages {
 			add(page).AddTo(container)
@@ -64,6 +66,12 @@ func add(page Page) seed.Option {
 			css.SetSelector(ID(page)),
 			script.SetID(ID(page)),
 			html.SetID(html.ID(element)),
+
+			seed.NewOption(func(c seed.Seed) {
+				c.With(
+					OnEnter(state.Refresh(c)),
+				)
+			}),
 		)
 		element.Use()
 

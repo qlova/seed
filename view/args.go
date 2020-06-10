@@ -54,7 +54,7 @@ func parseArgs(view View, parent seed.Seed) (View, js.AnyObject) {
 				object[key] = intf.(js.AnyValue)
 
 				var value = js.NewValue(
-					fmt.Sprintf(script.Element(parent).String()+".CurrentView.args[%v]",
+					fmt.Sprintf(`seed.arg(`+script.Element(parent).String()+", %v)",
 						strconv.Quote(key)))
 
 				NewView.Field(i).Set(valueAs(value, Field.Type))

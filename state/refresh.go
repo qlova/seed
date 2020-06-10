@@ -67,19 +67,32 @@ func Refresh(c seed.Seed) script.Script {
 	d.refresh = true
 	c.Write(d)
 
-	return func(q script.Ctx) {
-		q(script.Scope(c, q).Element() + ".rerender();")
-	}
+	return js.Func("await c.r").Run(script.Q, js.NewString(script.ID(c)))
 }
 
 func AdoptRefresh(c seed.Seed) script.Script {
 	var d data
 	c.Read(&d)
 
-	var refresh = d.onrefresh
+	var refresh script.Script
+
+	if d.onrefresh != nil {
+		refresh = refresh.Append(js.Run(js.Func("c.or"), js.NewValue("q"), js.NewString(script.ID(c)), js.NewFunction(d.onrefresh)))
+	}
+
 	d.onrefresh = nil
 	d.refresh = false
 	c.Write(d)
+
+	for _, child := range c.Children() {
+		refresh = refresh.Append(AdoptRefresh(child))
+	}
+
+	return refresh
+}
+
+func AdoptRefreshOfChildren(c seed.Seed) script.Script {
+	var refresh script.Script
 
 	for _, child := range c.Children() {
 		refresh = refresh.Append(AdoptRefresh(child))
@@ -95,6 +108,7 @@ func OnRefresh(do script.Script) seed.Option {
 
 		var d data
 		c.Read(&d)
+		d.refresh = true
 		d.onrefresh = d.onrefresh.Append(do)
 		c.Write(d)
 	})

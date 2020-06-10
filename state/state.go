@@ -89,8 +89,22 @@ type data struct {
 
 var seeds = make(map[seed.Seed]data)
 
+func (state State) Protect(s ...script.Script) script.Script {
+	return js.If(state.Not(),
+		js.Try(
+			script.New(state.Set, script.New(s...), state.Unset),
+		).Catch(
+			script.New(state.Unset, js.Throw(js.NewValue("e"))),
+			"e"),
+	)
+}
+
 //If only applies its options if the state is active.
 func (state State) If(options ...seed.Option) seed.Option {
+
+	if state.Null() {
+		return seed.NewOption(func(c seed.Seed) {})
+	}
 
 	return seed.NewOption(func(c seed.Seed) {
 		switch c.(type) {
@@ -102,8 +116,6 @@ func (state State) If(options ...seed.Option) seed.Option {
 
 		var data data
 		c.Read(&data)
-
-		data.refresh = true
 
 		if data.change == nil {
 			data.change = make(map[Value]script.Script)

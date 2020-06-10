@@ -29,11 +29,21 @@ func (n Number) GetNumber() Number {
 }
 
 //Plus returns the two numbers added together.
-func (n Number) Plus(b Number) Number {
-	return Number{NewValue(fmt.Sprintf(`(%v+%v)`, n, b))}
+func (n Number) Plus(b AnyNumber) Number {
+	return Number{NewValue(fmt.Sprintf(`(%v+%v)`, n, b.GetNumber()))}
+}
+
+//Minus returns the two numbers subtracted together.
+func (n Number) Minus(b AnyNumber) Number {
+	return Number{NewValue(fmt.Sprintf(`(%v-%v)`, n, b.GetNumber()))}
 }
 
 //ToString returns the number as a string.
 func (n Number) ToString() String {
 	return String{n.Call("toString")}
+}
+
+//DivideBy returns n/b
+func (n Number) DivideBy(b AnyNumber) Number {
+	return Number{NewValue(fmt.Sprintf(`(%v/%v)`, n, b.GetNumber()))}
 }

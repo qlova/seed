@@ -46,7 +46,7 @@ func render(child seed.Seed) []byte {
 func Render(root seed.Seed) []byte {
 	var b bytes.Buffer
 
-	b.WriteString(`seed = {}; seeds = {};
+	b.WriteString(`seed = {}; seeds = {}; c = seed; s = seeds;
 seed.production = (location.hostname != "localhost" && location.hostname != "127.0.0.1" && location.hostname != "[::]");
 
 seed.op = function(element, func, propagate) {
@@ -112,6 +112,27 @@ seed.report = function(err, element) {
 
 seed.globals = {};
 
+seed.Scope = function(parent) {
+	this.parent = parent;
+	this.storage = {};
+	this.setItem = function(key, value) {
+		this.storage[key] = value;
+	};
+	this.getItem = function(key) {
+		return this.storage[key];
+	};
+	this.get = function(id) {
+		return seed.get(id);
+	};
+	this.refresh = function() {};
+	this.data = {};
+}; 
+
+seed.Ctx = seed.Scope;
+
+window.scope = new seed.Scope();
+q = window.scope;
+
 seed.on = function(element, event, handler) {
 	let f = async function(ev) {
 		seed.active = element;
@@ -164,14 +185,24 @@ seed.debug = false;
 
 seed.globals = {};
 
-seed.get = function(id) {
+seed.arg = function(id, arg) {
+	let c = q.get(id)
+	if (c && c.args) {
+		return c.args[arg];
+	}
+	return null;
+};
+
+seed.get = (id) => {
+	if (id instanceof HTMLElement) return id;
+
 	if (seed.get.cache && id in seed.get.cache) {
 		return seed.get.cache[id];
 	}
 
 	let element;
 	if (id[0] == ".") {
-		element = document.getElementsByClassName(id);
+		element = document.getElementsByClassName(id.slice(1));
 		if (element) element = element[0];
 	} else {
 		element = document.getElementById(id);
@@ -287,9 +318,11 @@ func adopt(child seed.Seed) Script {
 	child.Read(&d)
 
 	for event, handler := range d.On {
+		var e = event
+		var h = handler
 		s = s.Append(func(q Ctx) {
-			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Scope(child, q).Element(), event)
-			handler(q)
+			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Scope(child, q).Element(), e)
+			h(q)
 			fmt.Fprint(q, `});`)
 		})
 		if event != "ready" {

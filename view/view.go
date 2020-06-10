@@ -30,7 +30,7 @@ func ControllerOf(c seed.Seed) Controller {
 
 func (c Controller) State(v View) state.State {
 	return state.New(state.SetKey(script.ID(c.of)+".view."+Name(v)),
-		state.SetRaw(fmt.Sprintf("(seed.get('%[1]v').CurrentView && seed.get('%[1]v').CurrentView.classList.contains('%[2]v'))", script.ID(c.of), Name(v))),
+		state.SetRaw(fmt.Sprintf("(q.get('%[1]v').CurrentView && q.get('%[1]v').CurrentView.classList.contains('%[2]v'))", script.ID(c.of), Name(v))),
 		state.ReadOnly(),
 	)
 }

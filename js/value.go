@@ -53,6 +53,7 @@ func (v Value) GetValue() Value {
 
 //GetBool impliments AnyBool.
 func (v Value) GetBool() Bool {
+	v.string = `(!!` + v.string + ")"
 	return Bool{v}
 }
 
@@ -70,6 +71,9 @@ func (v Value) Var(q Ctx) Value {
 
 //Set sets the JavaScript property p of value v to ValueOf(x).
 func (v Value) Set(property string, value AnyValue) Script {
+	if value == nil {
+		value = NewValue("null")
+	}
 	return func(q Ctx) {
 		q(v)
 		q('[')
@@ -100,4 +104,9 @@ func (v Value) Call(method string, args ...AnyValue) Value {
 //Run runs the method on the given value.
 func (v Value) Run(method string, args ...AnyValue) Script {
 	return Run(Function{NewValue(v.string + "." + method)}, args...)
+}
+
+//Equals returns true if the two value are equal.
+func (v Value) Equals(other Value) Bool {
+	return NewValue(`(%v == %v)`, v, other).GetBool()
 }

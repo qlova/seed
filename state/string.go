@@ -64,49 +64,11 @@ func (s RemoteString) Set(value string) {
 }
 
 func (s String) SetText() seed.Option {
-	return s.setProperty("innerText")
+	return SetProperty("innerText", s)
 }
 
 func (s String) SetSource() seed.Option {
-	return s.setProperty("src")
-}
-
-func (s String) setProperty(property string) seed.Option {
-	return seed.NewOption(func(c seed.Seed) {
-		switch c.(type) {
-		case script.Seed, script.Undo:
-			panic("state.String.SetText must not be called on a script.Seed")
-		}
-
-		if s.raw != "" {
-			c.With(script.OnReady(func(q script.Ctx) {
-				fmt.Fprintf(q, `%[1]v.`+property+` = %[2]v;`, script.Scope(c, q).Element(), s.get())
-			}))
-		}
-
-		if s.key != "" {
-			var data data
-			c.Read(&data)
-
-			if data.change == nil {
-				data.change = make(map[Value]script.Script)
-			}
-
-			data.change[s.Value] = data.change[s.Value].Append(func(q script.Ctx) {
-				q(fmt.Sprintf(`%v.`+property+` = %v;`, script.Scope(c, q).Element(), s.get()))
-			})
-
-			if s.dependencies != nil {
-				for _, dep := range *s.dependencies {
-					data.change[dep] = data.change[dep].Append(func(q script.Ctx) {
-						q(fmt.Sprintf(`seed.state["%v"].changed();`, s.key))
-					})
-				}
-			}
-
-			c.Write(data)
-		}
-	})
+	return SetProperty("src", s)
 }
 
 func (s String) SetValue() seed.Option {
@@ -137,7 +99,7 @@ func (s String) SetValue() seed.Option {
 			if s.dependencies != nil {
 				for _, dep := range *s.dependencies {
 					data.change[dep] = data.change[dep].Append(func(q script.Ctx) {
-						q(fmt.Sprintf(`seed.state["%v"].changed();`, s.key))
+						q(fmt.Sprintf(`seed.state["%v"].changed(scope);`, s.key))
 					})
 				}
 			}

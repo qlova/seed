@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"strconv"
 
+	"github.com/qlova/seed"
 	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/user"
@@ -77,7 +78,7 @@ func (v Value) setFor(u user.Ctx, value string) {
 		u.Execute(js.Run(f, js.NewString(v.key), js.NewString(value)))
 	}
 	u.Execute(func(q js.Ctx) {
-		q(fmt.Sprintf(`if (seed.state["%[1]v"]) seed.state["%[1]v"].changed();`, v.key))
+		q(fmt.Sprintf(`if (seed.state["%[1]v"]) await seed.state["%[1]v"].changed(q);`, v.key))
 	})
 }
 
@@ -86,7 +87,7 @@ func (v Value) set(q script.Ctx, value script.String) {
 	if !v.ro {
 		q(fmt.Sprintf(`%v.setItem("%v", %v);`, v.storage, v.key, value))
 	}
-	q(fmt.Sprintf(`if (seed.state["%[1]v"]) seed.state["%[1]v"].changed();`, v.key))
+	q(fmt.Sprintf(`if (seed.state["%[1]v"]) await seed.state["%[1]v"].changed(q);`, v.key))
 }
 
 //Get the value.
@@ -100,4 +101,37 @@ func (v Value) getter() js.Value {
 		return js.NewValue(v.raw)
 	}
 	return js.NewValue(fmt.Sprintf(`(%v.getItem("%v") || %v)`, v.storage, v.key, strconv.Quote(v.fallback)))
+}
+
+func SetProperty(property string, value AnyValue) seed.Option {
+	var s = value.value()
+	return seed.NewOption(func(c seed.Seed) {
+		switch c.(type) {
+		case script.Seed, script.Undo:
+			panic("state.String.SetText must not be called on a script.Seed")
+		}
+
+		OnRefresh(func(q script.Ctx) {
+			fmt.Fprintf(q, `%[1]v.`+property+` = %[2]v;`, script.Scope(c, q).Element(), s.get())
+		}).AddTo(c)
+
+		if s.key != "" {
+			var data data
+			c.Read(&data)
+
+			if data.change == nil {
+				data.change = make(map[Value]script.Script)
+			}
+
+			data.change[s] = data.change[s].Append(Refresh(c))
+
+			if s.dependencies != nil {
+				for _, dep := range *s.dependencies {
+					data.change[dep] = data.change[dep].Append(Refresh(c))
+				}
+			}
+
+			c.Write(data)
+		}
+	})
 }

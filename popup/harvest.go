@@ -7,6 +7,7 @@ import (
 	"github.com/qlova/seed/css"
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/script"
+	"github.com/qlova/seed/state"
 )
 
 type harvester struct {
@@ -41,6 +42,12 @@ func (h harvester) harvest(c seed.Seed) {
 				html.SetID(ID(p)),
 				script.SetID(ID(p)),
 				css.SetSelector("#"+ID(p)),
+
+				seed.NewOption(func(c seed.Seed) {
+					c.With(
+						OnShow(state.Refresh(c)),
+					)
+				}),
 			)
 			element.Use()
 			element.AddTo(template)

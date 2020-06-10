@@ -12,7 +12,7 @@ func init() {
 seed.CurrentPopup = null;
 
 seed.show = async function(id, args) {
-	let popup = seed.get(id);
+	let popup = q.get(id);
 	if (!popup) {
 		console.error("seed.show: invalid popup ", id);
 		return;
@@ -44,7 +44,7 @@ seed.show = async function(id, args) {
 };
 
 seed.hide = async function(id) {
-	let popup = seed.get(id);
+	let popup = q.get(id);
 	if (!popup) {
 		console.error("seed.show: invalid popup ", id);
 		return;

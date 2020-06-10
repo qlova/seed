@@ -23,3 +23,7 @@ func SetWidth(width style.Unit) css.Rule {
 func SetSolid() css.Rule {
 	return css.SetBorderStyle(css.Solid)
 }
+
+func SetDashed() css.Rule {
+	return css.SetBorderStyle(css.Dashed)
+}

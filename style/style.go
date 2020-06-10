@@ -161,6 +161,9 @@ func SetRoundedCorners(first Unit, size ...Unit) css.Rule {
 	if len(size) == 0 {
 		return css.SetBorderRadius(first.Unit())
 	}
+	if len(size) == 3 {
+		return css.Set("border-radius", fmt.Sprintf("%v %v %v %v", first.Unit().Rule(), size[0].Unit().Rule(), size[1].Unit().Rule(), size[2].Unit().Rule()))
+	}
 	panic("invalid arguments")
 }
 

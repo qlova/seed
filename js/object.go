@@ -47,3 +47,23 @@ type AnyObject interface {
 func (o Object) GetObject() Object {
 	return o
 }
+
+//Set a property of this object.
+func (o Object) Set(property AnyString, value AnyValue) Script {
+	if value == nil {
+		value = NewValue("null")
+	}
+	return func(q Ctx) {
+		q(o)
+		q('[')
+		q(property)
+		q("] = ")
+		q(value.GetValue())
+		q(';')
+	}
+}
+
+//Get gets the JavaScript property p of value v.
+func (o Object) Get(property AnyString) Value {
+	return NewValue(`%v[%v]`, o, property)
+}

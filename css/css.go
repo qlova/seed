@@ -59,7 +59,7 @@ func (r Rule) AddTo(c seed.Seed) {
 	case script.Seed:
 		property, value := r.Split()
 		if strings.HasPrefix(property, "-") {
-			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "%v");`, c.Element(), dashes2camels(property), value)
+			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "%v");`, c.Element(), property, value)
 		} else {
 			fmt.Fprintf(c.Q, `%v.style.%v = "%v";`, c.Element(), dashes2camels(property), value)
 		}
@@ -67,7 +67,7 @@ func (r Rule) AddTo(c seed.Seed) {
 	case script.Undo:
 		property := r.Property()
 		if strings.HasPrefix(property, "-") {
-			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "");`, c.Element(), dashes2camels(property))
+			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "");`, c.Element(), property)
 		} else {
 			fmt.Fprintf(c.Q, `%v.style.%v = "";`, c.Element(), dashes2camels(property))
 		}

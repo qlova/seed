@@ -10,7 +10,6 @@ import (
 	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/s/html/div"
 	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
 	"github.com/qlova/seed/style"
 )
 
@@ -39,12 +38,6 @@ func New(options ...seed.Option) Seed {
 		style.SetSize(100, 100),
 		style.SetLayer(1),
 		css.SetPosition(css.Absolute),
-
-		seed.NewOption(func(c seed.Seed) {
-			c.With(
-				OnShow(state.Refresh(c)),
-			)
-		}),
 	)}
 
 	for _, option := range options {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/qlova/seed"
-	"github.com/qlova/seed/html"
 	"github.com/qlova/seed/js"
 	"github.com/qlova/seed/script"
 	"github.com/qlova/seed/signal"
@@ -45,19 +44,6 @@ func (h *harvester) buildRefresh(c seed.Seed) script.Script {
 
 	refresh := data.onrefresh
 
-	if data.refresh {
-		refresh = script.Element(c).Run("rerender")
-	}
-
-	for _, child := range c.Children() {
-		var html html.Data
-		c.Read(&html)
-
-		if html.Tag != "template" {
-			refresh = refresh.Append(h.buildRefresh(child))
-		}
-	}
-
 	return refresh
 }
 
@@ -66,10 +52,6 @@ func (h *harvester) buildRefreshRoot(c seed.Seed) script.Script {
 	c.Read(&data)
 
 	refresh := data.onrefresh
-
-	for _, child := range c.Children() {
-		refresh = refresh.Append(h.buildRefresh(child))
-	}
 
 	return refresh
 }
@@ -123,21 +105,39 @@ func init() {
 		};
 		seed.storage.setItem = function(key, value) {
 			seed.storage.data[key] = value;
-		}
+		};
 		seed.storage.clear = function() {
 			seed.storage.data = {};
-		}
-		
+		};
+
+		c.render = async (q, id) => {
+			let l = q.get(id);
+			if (!l) {
+				if (id instanceof HTMLElement) return;
+
+				let all = document.querySelectorAll("."+id);
+
+				for (let child of all) await c.render(q, child);
+				return;
+			}
+			if (l.onrender) await l.onrender();
+
+			for (let child of l.children) await c.render(q, child);
+		}; c.r = c.render;
+
+		c.onrender = (q, id, exe) => {
+			let l = q.get(id);
+			if (!l) return;
+
+			l.onrender = exe;
+		}; c.or = c.onrender;
 		`)
 
 		b.WriteString(`seed.state = {};`)
 
+		//Init the onrender function for every seed.
 		for _, refresher := range harvested.refreshers {
-			js.NewCtx(&b)(func(q script.Ctx) {
-				q(script.Scope(refresher.seed, q).Element() + ".rerender =async function() {")
-				q(refresher.refresh)
-				q("};")
-			})
+			js.NewCtx(&b)(js.Run(js.Func("c.or"), js.NewValue("q"), js.NewString(script.ID(refresher.seed)), js.NewFunction(refresher.refresh)))
 		}
 
 		for state, scripts := range harvested.states {
@@ -155,7 +155,7 @@ func init() {
 				q(scripts.unset)
 				q(signal.Emit(signal.Raw("state.unset." + state.key)))
 			})
-			fmt.Fprint(&b, `}, changed: async function() {`)
+			fmt.Fprint(&b, `}, changed: async function(q) {`)
 			js.NewCtx(&b)(func(q script.Ctx) {
 				q.If(state, func(q script.Ctx) {
 					fmt.Fprintf(q, `await seed.state["%v"].set();`, state.key)
@@ -167,10 +167,10 @@ func init() {
 		}
 
 		for state := range harvested.states {
-			if state.storage == "" {
+			if state.storage == "" || state.storage == "scope" {
 				continue
 			}
-			fmt.Fprintf(&b, `seed.state["%v"].changed();`, state.key)
+			fmt.Fprintf(&b, `seed.state["%v"].changed(scope);`, state.key)
 		}
 
 		for variable, scripts := range harvested.variables {
@@ -178,16 +178,16 @@ func init() {
 				continue
 			}
 			fmt.Fprintf(&b, `seed.state["%v"] = {`, variable.key)
-			fmt.Fprint(&b, `changed: async function() {`)
+			fmt.Fprint(&b, `changed: async function(q) {`)
 			js.NewCtx(&b)(scripts.change)
 			fmt.Fprint(&b, `}};`)
 		}
 
-		for variable, _ := range harvested.variables {
-			if variable.storage == "" {
+		for variable := range harvested.variables {
+			if variable.storage == "" || variable.storage == "scope" {
 				continue
 			}
-			fmt.Fprintf(&b, `seed.state["%v"].changed();`, variable.key)
+			fmt.Fprintf(&b, `seed.state["%v"].changed(q);`, variable.key)
 		}
 
 		return b.Bytes()

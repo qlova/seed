@@ -9,9 +9,11 @@ func init() {
 	script.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
 seed.view = async function(of, name, args, fragment) {
+	let first = false;
 	if(!fragment) fragment = "";
 	if(!of.view) of.view = {};
 	if(!of.view.queue) of.view.queue = [];
+	if(!of.LastView) first = true;
 
 	if (seed.debug) {
 		console.log("seed.view: ", of, name, args, fragment)
@@ -51,9 +53,10 @@ seed.view = async function(of, name, args, fragment) {
 	}
 	of.NextView.template = template;
 
+	if (window.flipping) flipping.read();
+
 	of.appendChild(of.NextView);
 
-	//if (window.flipping) flipping.read();
 
 	let promises = [];
 
@@ -68,7 +71,7 @@ seed.view = async function(of, name, args, fragment) {
 		if (of.LastView.onviewexit) await of.LastView.onviewexit(of);
 		
 		let state = seed.state[of.id+".view."+of.LastName];
-		if (state && state.changed) await state.changed();
+		if (state && state.changed) await state.changed(scope);
 	}
 
 
@@ -76,7 +79,7 @@ seed.view = async function(of, name, args, fragment) {
 	{
 		if (of.CurrentView.onviewenter) await of.CurrentView.onviewenter(of);
 		let state = seed.state[of.id+".view."+name];
-		if (state && state.changed) await state.changed();
+		if (state && state.changed) await state.changed(scope);
 	}
 	
 
@@ -90,12 +93,11 @@ seed.view = async function(of, name, args, fragment) {
 		of.view.out = null;
 	}
 
-	//try { flipping.flip(); } catch(error) {}
-
 	for (let promise of promises) {
 		await promise;
 	}
 
+	
 	if (of.LastView) {
 		if (of.LastView == of.LoadingView) {
 			of.LastView.style.display = "none";
@@ -103,6 +105,9 @@ seed.view = async function(of, name, args, fragment) {
 			of.LastView.template.content.appendChild(of.LastView);
 		}
 	}
+
+	if (window.flipping) flipping.flip();
+
 
 
 	//Persistence.

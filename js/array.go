@@ -14,8 +14,9 @@ type AnyArray interface {
 	GetArray() Array
 }
 
-//NewArray returns a new javascript string from a Go literal.
-func NewArray(literal []AnyValue) Array {
+type NewArray []AnyValue
+
+func (literal NewArray) GetArray() Array {
 	var object strings.Builder
 
 	object.WriteByte('[')
@@ -32,9 +33,12 @@ func NewArray(literal []AnyValue) Array {
 	return Array{NewValue(object.String())}
 }
 
-//Array is shorthand for NewArray.
-func (Ctx) Array(literal []AnyValue) Array {
-	return NewArray(literal)
+func (literal NewArray) GetValue() Value {
+	return literal.GetArray().Value
+}
+
+func (literal NewArray) GetBool() Bool {
+	return literal.GetValue().GetBool()
 }
 
 //GetArray impliments AnyArray.

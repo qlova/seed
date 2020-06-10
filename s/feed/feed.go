@@ -21,7 +21,11 @@ type Data struct {
 }
 
 func (d Data) String() state.String {
-	return state.String{Value: state.Raw(d.string, state.Local())}
+	return state.String{Value: state.Raw("("+d.string+` || "")`, state.Local())}
+}
+
+func (d Data) Number() js.Number {
+	return js.Number{js.NewValue(d.string)}
 }
 
 func (d Data) Get(name string) Data {
@@ -34,21 +38,17 @@ type Seed struct {
 }
 
 func (c Seed) Refresh() script.Script {
-	return func(q script.Ctx) {
-		fmt.Fprintf(q, `await %v.refresh();`, script.Scope(c, q).Element())
-	}
+	return script.Element(c).Run("onrefresh")
 }
 
 func Refresh(c seed.Seed) script.Script {
-	return func(q script.Ctx) {
-		fmt.Fprintf(q, `await %v.refresh();`, script.Scope(c, q).Element())
-	}
+	return script.Element(c).Run("onrefresh")
 }
 
 //Do runs f.
 func Do(f func(Seed)) seed.Option {
 	return seed.NewOption(func(s seed.Seed) {
-		f(Seed{s, Data{`data`}})
+		f(Seed{s, Data{`q.data`}})
 	})
 }
 
@@ -84,8 +84,12 @@ func food2Data(food Food, q script.Ctx) script.Value {
 		switch f := food.(type) {
 		case rpc:
 			return script.RPC(f.f, f.args...)(q)
+		case script.Value:
+			return f
+		case script.AnyValue:
+			return f.GetValue()
 		}
-		panic("unsupported data type")
+		panic("unsupported feed.Food: " + reflect.TypeOf(food).String())
 	}
 }
 
@@ -106,36 +110,20 @@ func New(food Food, options ...seed.Option) Seed {
 		scripts = scripts.Append(script.Adopt(child))
 	}
 
-	var rerender script.Script = state.AdoptRefresh(template)
+	var rerender script.Script = state.AdoptRefreshOfChildren(template)
+
+	var scriptsString strings.Builder
+	js.NewCtx(&scriptsString)(scripts)
+	js.NewCtx(&scriptsString)(rerender)
 
 	feed.With(
-		script.OnReady(func(q script.Ctx) {
-			fmt.Fprintf(q, `%v.refresh = async function() {
-				try {
-			if (%[1]v.refreshing) return;
-			%[1]v.refreshing = true; 
-			let cache = seed.get.cache; 
-			seed.get.cache = null;`, js.NewValue(script.Scope(template, q).Element()))
-
-			fmt.Fprintf(q, `while (%[1]v.childNodes.length > 1) %[1]v.removeChild(%[1]v.lastChild);`, script.Scope(feed, q).Element())
-
-			var data = food2Data(food, q)
-
-			var scriptsString strings.Builder
-			scriptsString.WriteString(`async function(data) {`)
-			js.NewCtx(&scriptsString)(scripts)
-			js.NewCtx(&scriptsString)(rerender)
-			scriptsString.WriteString(`}`)
-
-			var f = js.Function{js.NewValue(`await seeds.feed.refresh`)}
-			q.Run(f, js.NewValue(script.Scope(template, q).Element()), data, js.NewValue(scriptsString.String()))
-			fmt.Fprintf(q, `seed.get.cache = cache; %v.refreshing = false; }
-				catch(e) {
-					%[1]v.refreshing = false;
-					throw e;
-				}
-			};`, script.Scope(template, q).Element())
-		}))
+		script.OnReady(js.Func("s.feed.orf").Run(js.NewValue("q"), js.NewString(script.ID(feed)), js.NewFunction(func(q script.Ctx) {
+			q.Return(food2Data(food, q))
+		}), js.NewFunction(func(q script.Ctx) {
+			q(scripts)
+			q(rerender)
+		}, "q"))),
+	)
 
 	return feed
 }

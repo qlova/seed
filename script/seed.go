@@ -25,6 +25,7 @@ func SetID(id string) seed.Option {
 
 //ID returns the script ID of this seed.
 func ID(c seed.Seed) string {
+	c.Use()
 	var data Data
 	c.Read(&data)
 
@@ -73,7 +74,7 @@ func Scope(c seed.Seed, q Ctx) Seed {
 
 func (c Seed) Element() string {
 	c.Use()
-	return fmt.Sprintf(`seed.get("%v")`, ID(c))
+	return fmt.Sprintf(`q.get("%v")`, ID(c))
 }
 
 func (c Seed) Undo(options ...seed.Option) {

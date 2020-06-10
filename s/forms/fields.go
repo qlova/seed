@@ -11,6 +11,7 @@ import (
 
 	"github.com/qlova/seed/s/button"
 	"github.com/qlova/seed/s/emailbox"
+	"github.com/qlova/seed/s/numberbox"
 	"github.com/qlova/seed/s/passwordbox"
 	"github.com/qlova/seed/s/text"
 	"github.com/qlova/seed/s/textbox"
@@ -61,12 +62,54 @@ type TextField struct {
 }
 
 func (field TextField) AddTo(c seed.Seed) {
-	var Error = state.NewString("", state.Session())
+	var Error = state.NewString("", state.Global())
 
 	c.With(
 
 		text.New(field.Title, field.Theme.Title),
 		textbox.Var(field.Update, field.Theme.Box,
+			textbox.SetPlaceholder(field.Placeholder),
+
+			seed.If(field.Required, SetRequired()),
+
+			Error.If(field.Theme.ErrorBox),
+
+			script.OnInput(Error.Set(js.NewString(""))),
+
+			state.Error(Error),
+
+			script.OnChange(field.Checker),
+
+			focusNextField(),
+
+			//How to focus the next field?
+			//script.OnEnter(textbox.Focus(EmailBox)),
+		),
+
+		Error.If(
+			text.New(Error, field.Theme.ErrorText),
+		),
+	)
+}
+
+type FloatField struct {
+	Title, Placeholder string
+	Update             state.Float
+
+	Checker script.Script
+
+	Required bool
+
+	Theme FieldTheme
+}
+
+func (field FloatField) AddTo(c seed.Seed) {
+	var Error = state.NewString("", state.Global())
+
+	c.With(
+
+		text.New(field.Title, field.Theme.Title),
+		numberbox.Var(field.Update, field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
@@ -101,7 +144,7 @@ type EmailField struct {
 }
 
 func (field EmailField) AddTo(c seed.Seed) {
-	var Error = state.NewBool(state.Session())
+	var Error = state.NewBool(state.Global())
 
 	var Email = field.Update
 
@@ -142,7 +185,7 @@ type PasswordField struct {
 }
 
 func (field PasswordField) AddTo(c seed.Seed) {
-	var Error = state.NewString("", state.Session())
+	var Error = state.NewString("", state.Global())
 
 	var Password = field.Update
 	var PasswordMismatched = state.NewBool(state.Session())
@@ -208,8 +251,8 @@ type SubmitButton struct {
 }
 
 func (submit SubmitButton) AddTo(c seed.Seed) {
-	var Error = state.NewString("", state.Session())
-	var Processing = state.New(state.Session())
+	var Error = state.NewString("", state.Global())
+	var Processing = state.New(state.Global())
 
 	c.With(
 		Error.If(text.New(Error, submit.ThemeError)),
