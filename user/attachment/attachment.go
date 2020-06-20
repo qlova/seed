@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
 )
 
 type Attachment struct {

@@ -1,8 +1,8 @@
 package page
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html/attr"
+	"qlova.org/seed"
+	"qlova.org/seed/html/attr"
 )
 
 //SetTitle sets the title of this page.

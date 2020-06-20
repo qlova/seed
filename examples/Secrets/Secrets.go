@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/qlova/seed/app"
-	"github.com/qlova/seed/js/console"
-	"github.com/qlova/seed/s/passwordbox"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state/secret"
+	"qlova.org/seed/app"
+	"qlova.org/seed/js/console"
+	"qlova.org/seed/s/passwordbox"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state/secret"
 )
 
 func main() {

@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/qlova/seed/client"
-	"github.com/qlova/seed/js"
+	"qlova.org/seed/client"
+	"qlova.org/seed/js"
 )
 
 //PassGoValues can be embedded inside of a clientside-arguments struct to enable the passthrough of Go arguments.

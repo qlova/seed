@@ -1,12 +1,18 @@
 package tween
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/html/attr"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/html"
+	"qlova.org/seed/html/attr"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
 )
+
+//Auto tween.
+func Auto() seed.Option {
+	return css.Set("transition", "all 0.4s linear")
+}
 
 //This adds tweening to this seed which can be enabled with the Tween() function.
 func This() seed.Option {

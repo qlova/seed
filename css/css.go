@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/script"
 )
 
 type data struct {

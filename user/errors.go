@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/qlova/seed/js"
+	"qlova.org/seed/js"
 )
 
 //Report reports the provided error to the user, it should not be used for errors containing sensitive information.

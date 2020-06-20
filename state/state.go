@@ -1,10 +1,12 @@
 package state
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/signal"
+	"fmt"
+
+	"qlova.org/seed"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
+	"qlova.org/seed/signal"
 )
 
 type State struct {
@@ -74,7 +76,7 @@ func (state State) Unset(q script.Ctx) {
 	} else {
 		state.set(q, js.False)
 	}
-	q(signal.Emit(state.Signal()))
+	q(signal.Emit(state.Not().Signal()))
 }
 
 type data struct {
@@ -109,7 +111,7 @@ func (state State) If(options ...seed.Option) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		switch c.(type) {
 		case script.Seed, script.Undo:
-			panic("state.State.If must not be called on a script.Seed")
+			//panic("state.State.If must not be called on a script.Seed")
 		}
 
 		If(state, options...).AddTo(c)
@@ -132,4 +134,27 @@ func (state State) If(options ...seed.Option) seed.Option {
 		}
 
 	})
+}
+
+//Or returns a Bool that is true when either are true.
+func (s State) Or(or js.AnyBool) Bool {
+	var v = newValue("")
+	v.dependencies = &[]Value{s.Value}
+	if other, ok := or.(AnyValue); ok {
+		v.dependencies = &[]Value{s.Value, other.value()}
+	}
+	v.raw = fmt.Sprintf("(%v || %v)", s.GetBool().String(), or.GetBool().String())
+	return Bool{v}
+}
+
+//And returns a Bool that is true when both are true.
+func (s State) And(or js.AnyBool) Bool {
+	var v = newValue("")
+	v.dependencies = &[]Value{s.Value}
+	if other, ok := or.(AnyValue); ok {
+		v.dependencies = &[]Value{s.Value, other.value()}
+	}
+	v.raw = fmt.Sprintf("(%v && %v)", s.GetBool().String(), or.GetBool().String())
+	return Bool{v}
+
 }

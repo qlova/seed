@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/user"
+	"qlova.org/seed/js"
+	"qlova.org/seed/user"
 )
 
 var rpcID int64 = 1
@@ -71,9 +71,9 @@ func rpc(f interface{}, await bool, args ...AnyValue) func(q Ctx) Value {
 			for i, arg := range args {
 				switch arg.(type) {
 				case AnyFile:
-					q.Run(f, q.String(strconv.Itoa(i)), arg)
+					q.Run(f, q.String(string('a'+rune(i))), arg)
 				default:
-					q.Run(f, q.String(strconv.Itoa(i)), js.NewValue(`JSON.stringify(%v)`, arg))
+					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(%v)`, arg))
 				}
 			}
 		}
@@ -94,6 +94,7 @@ var Exports = make(map[string]reflect.Value)
 func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	f, ok := Exports[call]
 	if !ok {
+		log.Println("invalid handler ", call)
 		return
 	}
 
@@ -160,6 +161,7 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	var results = f.Call(in)
 
 	if len(results) == 0 {
+		fmt.Fprintf(u.ResponseWriter(), "//ok")
 		return
 	}
 

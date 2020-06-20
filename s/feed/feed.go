@@ -5,15 +5,16 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/html"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
+	"qlova.org/seed/style"
 
-	"github.com/qlova/seed/s/html/div"
-	"github.com/qlova/seed/s/html/template"
+	"qlova.org/seed/s/html/div"
+	"qlova.org/seed/s/html/template"
 )
 
 type Data struct {
@@ -25,7 +26,7 @@ func (d Data) String() state.String {
 }
 
 func (d Data) Number() js.Number {
-	return js.Number{js.NewValue(d.string)}
+	return js.Number{js.NewValue("(" + d.string + ` || 0)`)}
 }
 
 func (d Data) Get(name string) Data {
@@ -53,6 +54,10 @@ func Do(f func(Seed)) seed.Option {
 }
 
 func convertToClasses(c seed.Seed) {
+	if _, ok := c.(Seed); ok {
+		return
+	}
+
 	for _, child := range c.Children() {
 		child.With(
 			css.SetSelector(`.`+html.ID(child)),
@@ -95,13 +100,25 @@ func food2Data(food Food, q script.Ctx) script.Value {
 
 //New returns a repeater capable of repeating itself based on the given Go data.
 func New(food Food, options ...seed.Option) Seed {
+	var styles seed.Options
+	var others seed.Options
+
+	for _, o := range options {
+		if _, ok := o.(style.Style); ok {
+			styles = append(styles, o)
+		} else {
+			others = append(others, o)
+		}
+	}
+
 	var template = template.New()
 	var feed = Seed{div.New(template,
 		css.Set("display", "flex"),
 		css.Set("flex-direction", "column"),
+		styles,
 	), Data{}}
 
-	template.With(css.SetSelector("#"+html.ID(feed.Seed)), seed.Options(options))
+	template.With(css.SetSelector("#"+html.ID(feed.Seed)), others)
 
 	convertToClasses(template)
 
@@ -120,9 +137,11 @@ func New(food Food, options ...seed.Option) Seed {
 		script.OnReady(js.Func("s.feed.orf").Run(js.NewValue("q"), js.NewString(script.ID(feed)), js.NewFunction(func(q script.Ctx) {
 			q.Return(food2Data(food, q))
 		}), js.NewFunction(func(q script.Ctx) {
+			q("return async function(q) {")
 			q(scripts)
 			q(rerender)
-		}, "q"))),
+			q("};")
+		}))),
 	)
 
 	return feed

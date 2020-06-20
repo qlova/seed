@@ -1,25 +1,18 @@
 package main
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/app"
-	"github.com/qlova/seed/s/button"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed/app"
+	"qlova.org/seed/client"
+	"qlova.org/seed/s/button"
+	//"qlova.org/seed/s/button"
 )
 
 func main() {
-	Message := state.NewString("Click me!")
+	Message := client.NewStringVar("Click me!")
 
 	app.New("Local Code",
-		button.Var(Message,
-
-			style.SetTextColor(seed.Red),
-
-			script.OnClick(func(q script.Ctx) {
-				Message.SetL("You clicked me!")(q)
-			}),
+		button.New(Message,
+			client.OnClick(Message.Set("You Clicked me!")),
 		),
 	).Launch()
 }

@@ -1,10 +1,10 @@
 package attach
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/s/column"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/s/column"
+	"qlova.org/seed/style"
 )
 
 type Attacher interface {

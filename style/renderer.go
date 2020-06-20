@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
 )
 
 type harvester struct {

@@ -1,6 +1,9 @@
 package service
 
-import "bytes"
+import (
+	"bytes"
+	"sort"
+)
 
 //NewWorker returns a new service worker.
 func NewWorker() *Worker {
@@ -16,9 +19,17 @@ type Worker struct {
 }
 
 func (worker Worker) renderMap(b *bytes.Buffer, mapping map[string]bool) {
-	//Maps are randomised in Go, so there is a good change that there has been an update to the service worker.
+	//Deterministic render
+	keys := make([]string, len(mapping))
+	for i := range mapping {
+		keys = append(keys, i)
+	}
+	sort.Strings(keys)
+
 	var i = 0
-	for asset := range mapping {
+	for key := range keys {
+		asset := keys[key]
+
 		b.WriteByte('"')
 		b.WriteString(asset)
 		b.WriteByte('"')

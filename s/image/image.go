@@ -3,12 +3,12 @@ package image
 import (
 	"fmt"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/asset"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/html/attr"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/asset"
+	"qlova.org/seed/css"
+	"qlova.org/seed/html"
+	"qlova.org/seed/html/attr"
+	"qlova.org/seed/state"
 )
 
 //New returns a new image widget.

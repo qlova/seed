@@ -3,7 +3,7 @@ package repeater
 import (
 	"reflect"
 
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 type Data struct {

@@ -5,10 +5,10 @@ import (
 	"io/ioutil"
 	"math/big"
 
-	"github.com/qlova/seed/js"
+	"qlova.org/seed/js"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/script"
 )
 
 type data struct {

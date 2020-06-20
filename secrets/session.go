@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qlova/seed/user"
+	"qlova.org/seed/user"
 )
 
 var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)

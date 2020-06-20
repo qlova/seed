@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/script"
 )
 
 //ID returns the html ID of this seed.

@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"text/scanner"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/asset"
+	"qlova.org/seed"
+	"qlova.org/seed/asset"
 )
 
 type macroWriter struct {

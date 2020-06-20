@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/js"
+	"qlova.org/seed"
+	"qlova.org/seed/js"
 )
 
 func On(event string, do Script) seed.Option {

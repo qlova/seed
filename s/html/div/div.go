@@ -1,8 +1,8 @@
 package div
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html"
+	"qlova.org/seed"
+	"qlova.org/seed/html"
 )
 
 //New returns a new HTML div element.

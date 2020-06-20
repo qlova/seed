@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/s/html/div"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/html"
+	"qlova.org/seed/s/html/div"
+	"qlova.org/seed/script"
+	"qlova.org/seed/style"
 )
 
 func ID(p Popup) string {

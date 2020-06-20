@@ -1,8 +1,8 @@
 package transition
 
 import (
-	"github.com/qlova/seed/style"
-	"github.com/qlova/seed/style/anime"
+	"qlova.org/seed/style"
+	"qlova.org/seed/style/anime"
 )
 
 func Fade() Transition {
@@ -18,6 +18,22 @@ func SlideRight() Transition {
 	slide := anime.New(
 		anime.Keyframes{
 			0:   style.Translate(100, 0),
+			100: style.Translate(0, 0),
+		},
+	)
+
+	return New(
+		In(slide),
+		Out(slide.Reverse()),
+	)
+}
+
+//SlideLeft slides in from the left and then out to the right.
+func SlideLeft() Transition {
+
+	slide := anime.New(
+		anime.Keyframes{
+			0:   style.Translate(-100, 0),
 			100: style.Translate(0, 0),
 		},
 	)

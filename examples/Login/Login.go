@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/app"
-	"github.com/qlova/seed/s/button"
-	"github.com/qlova/seed/s/text"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
-	"github.com/qlova/seed/style/font"
+	"qlova.org/seed"
+	"qlova.org/seed/app"
+	"qlova.org/seed/s/button"
+	"qlova.org/seed/s/text"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
+	"qlova.org/seed/style/font"
 )
 
 var LoggedIn = state.New()

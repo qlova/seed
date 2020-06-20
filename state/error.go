@@ -1,8 +1,8 @@
 package state
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/script"
 )
 
 func Error(into String) seed.Option {

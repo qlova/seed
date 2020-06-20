@@ -5,9 +5,9 @@ import (
 
 	html_go "html"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/html"
+	"qlova.org/seed/state"
 )
 
 //New returns a new text widget.

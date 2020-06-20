@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/qlova/seed/app"
-	"github.com/qlova/seed/s/repeater"
-	"github.com/qlova/seed/s/text"
+	"qlova.org/seed/app"
+	"qlova.org/seed/s/repeater"
+	"qlova.org/seed/s/text"
 )
 
 var strings = []string{"a", "b", "c"}

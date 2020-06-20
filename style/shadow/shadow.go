@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"image/color"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/style"
 )
 
 //Shadow Defines a shadow that should be applied to the Element, with offset X and Y, Blur and of the specified color.

@@ -1,6 +1,6 @@
 package unit
 
-import "github.com/qlova/seed/style"
+import "qlova.org/seed/style"
 
 //Em is the base em unit.
 const Em style.Unit = 1 + 1i

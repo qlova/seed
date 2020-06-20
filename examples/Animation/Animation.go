@@ -3,11 +3,11 @@ package main
 import (
 	"time"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/app"
-	"github.com/qlova/seed/s/text"
-	"github.com/qlova/seed/style"
-	"github.com/qlova/seed/style/anime"
+	"qlova.org/seed"
+	"qlova.org/seed/app"
+	"qlova.org/seed/s/text"
+	"qlova.org/seed/style"
+	"qlova.org/seed/style/anime"
 )
 
 func main() {

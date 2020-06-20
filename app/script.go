@@ -1,10 +1,10 @@
 package app
 
 import (
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/js/location"
+	"qlova.org/seed/js"
+	"qlova.org/seed/js/location"
 
-	"github.com/qlova/seed/script"
+	"qlova.org/seed/script"
 )
 
 //Reset resets the app and clears any local storage.

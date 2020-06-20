@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/user"
+	"qlova.org/seed"
+	"qlova.org/seed/user"
 )
 
 type Option func(*Design)

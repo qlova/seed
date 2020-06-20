@@ -1,11 +1,11 @@
 package spacer
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/style"
 
-	"github.com/qlova/seed/s/html/div"
+	"qlova.org/seed/s/html/div"
 )
 
 //New returns a new row.

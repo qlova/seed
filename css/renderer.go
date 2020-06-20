@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 type Renderer func(root seed.Seed) []byte

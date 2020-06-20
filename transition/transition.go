@@ -5,13 +5,13 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/page"
-	"github.com/qlova/seed/popup"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/style/anime"
-	"github.com/qlova/seed/view"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/page"
+	"qlova.org/seed/popup"
+	"qlova.org/seed/script"
+	"qlova.org/seed/style/anime"
+	"qlova.org/seed/view"
 )
 
 var fadeIn = anime.New(

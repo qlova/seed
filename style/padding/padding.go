@@ -3,8 +3,8 @@ package padding
 import (
 	"fmt"
 
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed/css"
+	"qlova.org/seed/style"
 )
 
 //Set sets the padding values.

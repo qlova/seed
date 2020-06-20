@@ -3,13 +3,14 @@ package app
 import (
 	"image/color"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/app/manifest"
-	"github.com/qlova/seed/app/service"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/page"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/app/manifest"
+	"qlova.org/seed/app/service"
+	"qlova.org/seed/css"
+	"qlova.org/seed/html"
+	"qlova.org/seed/page"
+	"qlova.org/seed/state"
+	"qlova.org/seed/style/space"
 )
 
 type App struct {
@@ -46,6 +47,17 @@ var Installed = state.State{
 //New returns a new App.
 func New(name string, options ...seed.Option) App {
 	var document = html.New()
+
+	var SeedCount = 0
+	for i := range options {
+		if _, ok := options[i].(seed.Seed); ok {
+			SeedCount++
+		}
+	}
+
+	if SeedCount == 1 {
+		options = append(options, space.Items().Outside())
+	}
 
 	var app = app{
 		document: document,

@@ -1,8 +1,8 @@
 package page
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/script"
 )
 
 func Refresh() script.Script {
@@ -124,7 +124,7 @@ seed.goto = async function(id, args, url) {
 	localStorage.setItem('*CurrentPage', id);
 	localStorage.setItem('*LastGotoTime', Date.now());
 	localStorage.setItem('*CurrentArgs', JSON.stringify(args || {}));
-	localStorage.setItem('*CurrentPath', url);
+	localStorage.setItem('*CurrentPath', path);
 
 	if (!seed.goto.back && seed.production) history.pushState([id, args], data.title, path+url);
 	if (!seed.goto.back && !seed.production) history.replaceState([id, args], data.title, path+url);
@@ -175,52 +175,84 @@ seed.goto.ready = async function(id) {
 
 	//Parse the URL.
 	let path = window.location.pathname;
-	let templates = document.querySelectorAll('template');
-	for (let template of templates) {
-		element = template.content.querySelector(".page");
-		if (element) {
-			if (element.dataset.path == path) {
-				await seed.goto(element.id, {});
-				return;
-			}
-			
-			//Parse path values.
-			if (path.startsWith(element.dataset.path)) {
-				let args = {};
-				let parts = path.split('/');
 
-				for (let i in parts) {
-					if (i < 2) continue;
-					args[i-1] = decodeURIComponent(parts[i]);
+	if (path != saved_path) {
+		let templates = document.querySelectorAll('template');
+
+		templates = Array.prototype.slice.call(templates, 0);
+
+		templates.sort(function(x, y) {
+			element1 = x.content.querySelector(".page");
+			element2 = y.content.querySelector(".page");
+			if (!element1) {
+				if (!element2) {
+					return 0;
+				} else {
+					return 1;
+				}
+			} else {
+				if (!element2) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
+
+			if (element1.dataset.path.length<element2.dataset.path.length) {
+			return -1;
+			}
+			if (element1.dataset.path.length>element2.dataset.path.length) {
+			return 1;
+			}
+			return 0;
+		});
+
+		for (let template of templates) {
+			element = template.content.querySelector(".page");
+			if (element) {
+				if (element.dataset.path == path) {
+					await seed.goto(element.id, {});
+					return;
+				}
+				
+				//Parse path values.
+				if (path.startsWith(element.dataset.path)) {
+					let args = {};
+					let parts = path.split('/');
+
+					for (let i in parts) {
+						if (i < 2) continue;
+						args[i-1] = decodeURIComponent(parts[i]);
+					}
+
+					//Parse query string
+
+					var query = new URLSearchParams((new URL(document.location)).searchParams);
+					query.forEach(function(value, key) {
+						if (value == "true") {
+							args[key] = true;
+						} else if (value == "false") {
+							args[key] = false;
+						} else if (value == "undefined") {
+							args[key] = null;
+						} else {
+							args[key] = value;
+						}
+					});
+
+					var url = path.slice(element.dataset.path.length);
+					if (query.toString() != "") url += "?" + query.toString();
+
+					await seed.goto(element.id, args, url);
+					return;
 				}
 
-				//Parse query string
 
-				var query = new URLSearchParams((new URL(document.location)).searchParams);
-				query.forEach(function(value, key) {
-					if (value == "true") {
-						args[key] = true;
-					} else if (value == "false") {
-						args[key] = false;
-					} else if (value == "undefined") {
-						args[key] = null;
-					} else {
-						args[key] = value;
-					}
-				});
-
-				var url = path.slice(element.dataset.path.length);
-				if (query.toString() != "") url += "?" + query.toString();
-
-				await seed.goto(element.id, args, url);
-				return;
 			}
-
-
 		}
 	}
 
-	if (saved_page && saved_path) {
+	if (saved_page) {
 		let last_time = +window.localStorage.getItem('*LastGotoTime');
 		let hibiscus = Date.now()-last_time;
 
@@ -232,7 +264,7 @@ seed.goto.ready = async function(id) {
 			return;
 		}
 
-		await seed.goto(saved_page, saved_args, saved_path);
+		await seed.goto(saved_page, saved_args);
 	} else {
 		await seed.goto(seed.StartingPage);
 	}

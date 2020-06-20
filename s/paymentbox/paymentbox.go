@@ -2,13 +2,13 @@
 package paymentbox
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/s/html/div"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/signal"
-	"github.com/qlova/seed/state"
-	"github.com/qlova/seed/user"
+	"qlova.org/seed"
+	"qlova.org/seed/js"
+	"qlova.org/seed/s/html/div"
+	"qlova.org/seed/script"
+	"qlova.org/seed/signal"
+	"qlova.org/seed/state"
+	"qlova.org/seed/user"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/setupintent"
 )

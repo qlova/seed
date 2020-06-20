@@ -6,12 +6,13 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/html"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
+	"qlova.org/seed/style"
 )
 
 func Name(view View) string {
@@ -26,6 +27,10 @@ type Controller struct {
 //ControllerOf returns the Controller for the given seed.
 func ControllerOf(c seed.Seed) Controller {
 	return Controller{c}
+}
+
+func (c Controller) Seed() seed.Seed {
+	return c.of
 }
 
 func (c Controller) State(v View) state.State {
@@ -87,6 +92,8 @@ type Seed struct {
 func New(options ...seed.Option) Seed {
 	return Seed{seed.New(
 		html.SetTag("div"),
+
+		style.SetSize(100, 100),
 
 		css.SetDisplay(css.Flex),
 		css.SetFlexDirection(css.Column),

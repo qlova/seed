@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html/attr"
+	"qlova.org/seed"
+	"qlova.org/seed/html/attr"
 )
 
 //DeviceWidth can be used inside Viewport.Width.

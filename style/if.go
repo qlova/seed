@@ -1,6 +1,6 @@
 package style
 
-import "github.com/qlova/seed"
+import "qlova.org/seed"
 
 type data struct {
 	seed.Data

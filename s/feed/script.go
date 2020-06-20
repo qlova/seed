@@ -1,8 +1,8 @@
 package feed
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/script"
 )
 
 func init() {
@@ -27,7 +27,12 @@ func init() {
 
 					l.refreshing = false;
 				}).then(async(food) => {
+					if (!food) return;
 					if (!Array.isArray(food)) food = [food];
+
+					if (food.length == 1) {
+						if (!food[0]) return;
+					}
 
 					let i = 1;
 					for (let piece of food) {
@@ -52,6 +57,7 @@ func init() {
 	
 						let ctx = new c.Ctx(q);
 						ctx.data = piece;
+						ctx.i = offset;
 						ctx.get = function(id) {
 							if (id instanceof HTMLElement) return id;
 							
@@ -74,14 +80,15 @@ func init() {
 						};
 	
 						try {
-							await exe(ctx);
+							let f = await exe();
+							await f(ctx);
 						} catch(e) {
 							seed.report(e, l);
 						}
 	
 						for (let i = 0; i < nodes; i++) {
 							let child = l.children[offset+i];
-							seed.render(ctx, child);
+							await seed.render(ctx, child);
 						}
 						
 						i++;

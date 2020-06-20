@@ -3,10 +3,11 @@ package html
 import (
 	"html"
 	"strconv"
+	"strings"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/script"
 )
 
 //Data stores html data with a seed.
@@ -60,6 +61,14 @@ func AddClass(class string) seed.Option {
 		case script.Undo:
 			q.Javascript(`%v.classList.remove(%v);`, q.Element(), strconv.Quote(class))
 		default:
+
+			for _, existing := range data.Classes {
+				if class == existing {
+					c.Write(data)
+					return
+				}
+			}
+
 			data.Classes = append(data.Classes, class)
 		}
 
@@ -165,6 +174,9 @@ func SetInnerText(text string) seed.Option {
 			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.InnerHTML))
 		default:
 			data.InnerHTML = html.EscapeString(text)
+			data.InnerHTML = strings.Replace(data.InnerHTML, "\n", "<br>", -1)
+			data.InnerHTML = strings.Replace(data.InnerHTML, "  ", "&nbsp;&nbsp;", -1)
+			data.InnerHTML = strings.Replace(data.InnerHTML, "\t", "&emsp;", -1)
 		}
 
 		c.Write(data)

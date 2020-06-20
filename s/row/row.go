@@ -1,10 +1,10 @@
 package row
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
 
-	"github.com/qlova/seed/s/html/div"
+	"qlova.org/seed/s/html/div"
 )
 
 //New returns a new row.

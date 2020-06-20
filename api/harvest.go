@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 type harvester struct {

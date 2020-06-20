@@ -3,18 +3,19 @@ package forms
 import (
 	"fmt"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
-	"github.com/qlova/seed/state/secret"
+	"qlova.org/seed"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
+	"qlova.org/seed/s/ecrets"
+	"qlova.org/seed/state"
 
-	"github.com/qlova/seed/s/button"
-	"github.com/qlova/seed/s/emailbox"
-	"github.com/qlova/seed/s/numberbox"
-	"github.com/qlova/seed/s/passwordbox"
-	"github.com/qlova/seed/s/text"
-	"github.com/qlova/seed/s/textbox"
+	"qlova.org/seed/s/button"
+	"qlova.org/seed/s/column"
+	"qlova.org/seed/s/emailbox"
+	"qlova.org/seed/s/numberbox"
+	"qlova.org/seed/s/passwordbox"
+	"qlova.org/seed/s/text"
+	"qlova.org/seed/s/textbox"
 )
 
 func focusNextField() seed.Option {
@@ -47,7 +48,7 @@ func focusNextField() seed.Option {
 }
 
 type FieldTheme struct {
-	Title, Box, ErrorText, ErrorBox seed.Options
+	Title, Box, Column, ErrorText, ErrorBox seed.Options
 }
 
 type TextField struct {
@@ -64,7 +65,8 @@ type TextField struct {
 func (field TextField) AddTo(c seed.Seed) {
 	var Error = state.NewString("", state.Global())
 
-	c.With(
+	c.With(column.New(
+		field.Theme.Column,
 
 		text.New(field.Title, field.Theme.Title),
 		textbox.Var(field.Update, field.Theme.Box,
@@ -89,7 +91,7 @@ func (field TextField) AddTo(c seed.Seed) {
 		Error.If(
 			text.New(Error, field.Theme.ErrorText),
 		),
-	)
+	))
 }
 
 type FloatField struct {
@@ -106,7 +108,8 @@ type FloatField struct {
 func (field FloatField) AddTo(c seed.Seed) {
 	var Error = state.NewString("", state.Global())
 
-	c.With(
+	c.With(column.New(
+		field.Theme.Column,
 
 		text.New(field.Title, field.Theme.Title),
 		numberbox.Var(field.Update, field.Theme.Box,
@@ -131,7 +134,7 @@ func (field FloatField) AddTo(c seed.Seed) {
 		Error.If(
 			text.New(Error, field.Theme.ErrorText),
 		),
-	)
+	))
 }
 
 type EmailField struct {
@@ -150,7 +153,9 @@ func (field EmailField) AddTo(c seed.Seed) {
 
 	checkEmail := Error.Set(Email.GetString().Includes(js.NewString("@")).Not())
 
-	c.With(
+	c.With(column.New(
+		field.Theme.Column,
+
 		text.New(field.Title, field.Theme.Title),
 		emailbox.Var(field.Update, field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
@@ -172,15 +177,16 @@ func (field EmailField) AddTo(c seed.Seed) {
 		Error.And(Email).If(
 			text.New("please input a valid email address", field.Theme.ErrorText),
 		),
-	)
+	))
 }
 
 type PasswordField struct {
+	Title    string
 	Required bool
 
 	Theme FieldTheme
 
-	Update  secret.State
+	Update  secrets.State
 	Confirm bool
 }
 
@@ -189,13 +195,18 @@ func (field PasswordField) AddTo(c seed.Seed) {
 
 	var Password = field.Update
 	var PasswordMismatched = state.NewBool(state.Session())
-	var PasswordToConfirm = secret.New(Password.Salt, state.Session())
+	var PasswordToConfirm = secrets.NewState(Password.Salt, state.Session())
 
 	checkPassword := PasswordMismatched.Set(Password.GetString().Equals(PasswordToConfirm).Not())
 
-	c.With(
+	if field.Title == "" {
+		field.Title = "Password"
+	}
 
-		text.New("Password", field.Theme.Title),
+	c.With(column.New(
+		field.Theme.Column,
+
+		text.New(field.Title, field.Theme.Title),
 		passwordbox.Var(Password, field.Theme.Box,
 
 			seed.If(field.Required, SetRequired()),
@@ -219,7 +230,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 		),
 
 		seed.If(field.Confirm,
-			text.New("Confirm Password", field.Theme.Title),
+			text.New("Confirm "+field.Title, field.Theme.Title),
 			passwordbox.Var(PasswordToConfirm, field.Theme.Box,
 
 				seed.If(field.Required, SetRequired()),
@@ -238,7 +249,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 				text.New("this password is different from the one above", field.Theme.ErrorText),
 			),
 		),
-	)
+	))
 }
 
 type SubmitButton struct {

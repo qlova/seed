@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
 )
 
 //Ctx allows script Values to be assigned to fields inside of t ChangesTo function.

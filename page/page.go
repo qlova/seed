@@ -6,13 +6,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/html"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
+	"qlova.org/seed/style"
 )
 
 //ID returns the DOM id of the provided page.

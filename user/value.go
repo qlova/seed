@@ -1,6 +1,6 @@
 package user
 
-import "github.com/qlova/seed/js"
+import "qlova.org/seed/js"
 
 type String js.AnyString
 type Bool js.AnyBool

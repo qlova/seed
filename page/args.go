@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/qlova/seed/js"
+	"qlova.org/seed/js"
 )
 
 func valueAs(v js.AnyValue, T reflect.Type) reflect.Value {

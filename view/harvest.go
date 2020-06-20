@@ -3,9 +3,9 @@ package view
 import (
 	"fmt"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
 )
 
 //Set adds and sets an initial view to the seed.

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/qlova/seed/app"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
-	"github.com/qlova/seed/style"
-	"github.com/qlova/seed/tween"
+	"qlova.org/seed/app"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
+	"qlova.org/seed/style"
+	"qlova.org/seed/tween"
 
-	"github.com/qlova/seed/s/row"
-	"github.com/qlova/seed/s/text"
+	"qlova.org/seed/s/row"
+	"qlova.org/seed/s/text"
 )
 
 func main() {

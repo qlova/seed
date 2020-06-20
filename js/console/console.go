@@ -1,7 +1,7 @@
 package console
 
 import (
-	"github.com/qlova/seed/js"
+	"qlova.org/seed/js"
 )
 
 //Log logs the string to the console.

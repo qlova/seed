@@ -1,8 +1,8 @@
 package attr
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html"
+	"qlova.org/seed"
+	"qlova.org/seed/html"
 )
 
 //Set returns an option setting the HTML element attribute of name to value.

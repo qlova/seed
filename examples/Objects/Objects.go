@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/qlova/seed/app"
+	"qlova.org/seed/app"
 
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/js/console"
-	"github.com/qlova/seed/js/window"
+	"qlova.org/seed/js"
+	"qlova.org/seed/js/console"
+	"qlova.org/seed/js/window"
 
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/script/echo"
+	"qlova.org/seed/script"
+	"qlova.org/seed/script/echo"
 
-	"github.com/qlova/seed/s/button"
+	"qlova.org/seed/s/button"
 )
 
 type Test struct {

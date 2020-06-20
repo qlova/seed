@@ -1,8 +1,8 @@
 package popup
 
 import (
-	"github.com/qlova/seed/client/clientargs"
-	"github.com/qlova/seed/js"
+	"qlova.org/seed/client/clientargs"
+	"qlova.org/seed/js"
 )
 
 //PassGoValuesToClient can be embedded inside of a popup to enable the passthrough of Go arguments.

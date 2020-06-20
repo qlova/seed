@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/js/console"
+	"qlova.org/seed"
+	"qlova.org/seed/js"
+	"qlova.org/seed/js/console"
 )
 
 type Data struct {

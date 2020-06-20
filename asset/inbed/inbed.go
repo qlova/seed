@@ -23,6 +23,35 @@ type FileSystem struct {
 	Prefix string
 }
 
+//ServeFile mimics http.ServeFile
+func ServeFile(w http.ResponseWriter, r *http.Request, name string) {
+	f, err := Open(name)
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	info, err := f.Stat()
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	if production {
+		w.Header().Set("Content-Encoding", "gzip")
+	}
+
+	if path.Ext(info.Name()) == ".wasm" {
+		w.Header().Set("Content-Type", "application/wasm")
+	}
+
+	if b, ok := info.Sys().([]byte); ok {
+		http.ServeContent(w, r, info.Name(), info.ModTime(), bytes.NewReader(b))
+	} else {
+		http.ServeContent(w, r, info.Name(), info.ModTime(), f)
+	}
+}
+
 //Open implements http.FileSystem with inbed.Open
 func (fs FileSystem) Open(name string) (http.File, error) {
 	return Open(fs.Prefix + name)

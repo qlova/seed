@@ -1,12 +1,12 @@
 package radiobutton
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html/attr"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/html/attr"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
 
-	"github.com/qlova/seed/s/html/input"
+	"qlova.org/seed/s/html/input"
 )
 
 //New returns a new textbox widget.

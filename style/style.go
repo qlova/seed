@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"image/color"
 
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 
-	"github.com/qlova/seed/css"
+	"qlova.org/seed/css"
 )
 
 type Unit complex64
@@ -136,6 +136,14 @@ func SetMaxWidth(width Unit) css.Rule {
 	return css.SetMaxWidth(width.Unit())
 }
 
+//SetMaxSize sets the max width and height of the seed.
+func SetMaxSize(width, height Unit) css.Rules {
+	return css.Rules{
+		SetMaxWidth(width),
+		SetMaxHeight(height),
+	}
+}
+
 //SetMinHeight sets the minumum height of the seed.
 func SetMinHeight(height Unit) css.Rule {
 	return css.SetMinHeight(height.Unit())
@@ -160,6 +168,9 @@ func SetOpacity(opacity float32) css.Rule {
 func SetRoundedCorners(first Unit, size ...Unit) css.Rule {
 	if len(size) == 0 {
 		return css.SetBorderRadius(first.Unit())
+	}
+	if len(size) == 1 {
+		return css.Set("border-radius", fmt.Sprintf("%v %v", first.Unit().Rule(), size[0].Unit().Rule()))
 	}
 	if len(size) == 3 {
 		return css.Set("border-radius", fmt.Sprintf("%v %v %v %v", first.Unit().Rule(), size[0].Unit().Rule(), size[1].Unit().Rule(), size[2].Unit().Rule()))

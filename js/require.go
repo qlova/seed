@@ -1,7 +1,7 @@
 package js
 
 import (
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 type data struct {

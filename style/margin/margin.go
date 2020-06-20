@@ -3,17 +3,30 @@ package margin
 import (
 	"fmt"
 
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed/css"
+	"qlova.org/seed/style"
 )
 
-//Set sets the margin values.
+//Set sets the margin values, Set(all), Set(x, y), Set(left, right, top, bottom)
 func Set(margin ...style.Unit) css.Rule {
+	const (
+		left = iota
+		right
+		top
+		bottom
+	)
+
 	if len(margin) == 1 {
 		return css.Set("margin", fmt.Sprint(margin[0].Unit().Rule()))
 	}
 	if len(margin) == 2 {
 		return css.Set("margin", fmt.Sprint(margin[1].Unit().Rule(), " ", margin[0].Unit().Rule()))
+	}
+	if len(margin) == 4 {
+		return css.Set("margin", fmt.Sprint(margin[top].Unit().Rule(),
+			" ", margin[right].Unit().Rule(),
+			" ", margin[bottom].Unit().Rule(),
+			" ", margin[left].Unit().Rule()))
 	}
 	panic("invalid arguments")
 }

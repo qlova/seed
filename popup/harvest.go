@@ -3,11 +3,11 @@ package popup
 import (
 	"reflect"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/html"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
 )
 
 type harvester struct {

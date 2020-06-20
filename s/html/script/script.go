@@ -1,8 +1,8 @@
 package script
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html"
+	"qlova.org/seed"
+	"qlova.org/seed/html"
 )
 
 func New(options ...seed.Option) seed.Seed {

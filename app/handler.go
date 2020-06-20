@@ -1,6 +1,8 @@
 package app
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,10 +11,10 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 
-	"github.com/qlova/seed/api"
-	"github.com/qlova/seed/asset/inbed"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed/api"
+	"qlova.org/seed/asset/inbed"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
 )
 
 var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
@@ -69,6 +71,14 @@ func (a App) Handler() http.Handler {
 	var scripts = js.Scripts(app.document)
 	var imports = js.Imports()
 
+	//Checksum is used for versioning. TODO ensure deterministic renderers are used to prevent distributed versions from mismatching.
+	//This means use deterministic ordered-maps instead of default maps or sort the keys before iteration.
+	var checksum = md5.Sum(document)
+
+	var version = hex.EncodeToString(checksum[:])
+
+	app.worker.Version = version
+
 	var worker = app.worker.Render()
 
 	router.Handle("/Qlovaseed.png", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -103,7 +113,12 @@ func (a App) Handler() http.Handler {
 		w.Write(manifest)
 	})))
 
+	router.Handle("/robots.txt", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("\n"))
+	})))
+
 	router.Handle("/index.js", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `const version = "%v";`+"\n", version)
 		if isLocal(r) {
 			//Don't use a web worker if we are running locally.
 			w.Header().Set("content-type", "text/javascript")

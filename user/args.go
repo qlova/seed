@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 )
 
@@ -18,6 +19,10 @@ func (u Ctx) Arg(name string) Arg {
 
 //String returns the argument as a string.
 func (arg Arg) String() string {
+	n, err := strconv.Atoi(arg.i)
+	if err == nil {
+		return arg.u.r.FormValue(string('a' + rune(n)))
+	}
 	return arg.u.r.FormValue(arg.i)
 }
 

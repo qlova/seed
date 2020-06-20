@@ -1,8 +1,8 @@
 package view
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/script"
 )
 
 func init() {
@@ -119,6 +119,7 @@ seed.view = async function(of, name, args, fragment) {
 	of.animating = false;
 	of.NextView = null;
 
+	if(!of.view.queue) of.view.queue = [];
 	if (of.view.queue.length > 0) {
 		of.view.apply(null, of.view.queue.shift());
 	}

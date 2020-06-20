@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/qlova/seed/app"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed/app"
+	"qlova.org/seed/style"
 
-	"github.com/qlova/seed/s/text"
+	"qlova.org/seed/s/text"
 )
 
 func main() {

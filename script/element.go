@@ -1,8 +1,8 @@
 package script
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/js"
+	"qlova.org/seed"
+	"qlova.org/seed/js"
 )
 
 //Element returns the js Element of a seed.

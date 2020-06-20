@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/qlova/seed/js"
+	"qlova.org/seed/js"
 )
 
 //Handler is a user handler.
@@ -40,6 +40,11 @@ func (u Ctx) ResponseWriter() http.ResponseWriter {
 //Request returns the Request passed to the Ctx when it was created.
 func (u Ctx) Request() *http.Request {
 	return u.r
+}
+
+//Serve serves the client with a http.Handler
+func (u Ctx) Serve(handler http.Handler) {
+	handler.ServeHTTP(u.w, u.r)
 }
 
 //Execute sends and evaluates the provided javascript.

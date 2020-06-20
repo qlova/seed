@@ -1,8 +1,8 @@
 package align
 
 import (
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed/css"
+	"qlova.org/seed/style"
 )
 
 //Left aligns the seed to the start or left of its container.

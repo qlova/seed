@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/signal"
+	"qlova.org/seed"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
+	"qlova.org/seed/signal"
 )
 
 type refresher struct {

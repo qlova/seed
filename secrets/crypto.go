@@ -12,7 +12,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 var cachedKey []byte

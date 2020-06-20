@@ -1,14 +1,14 @@
 package textarea
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/html/attr"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
+	"qlova.org/seed/html/attr"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
 
-	"github.com/qlova/seed/s/html/textarea"
+	"qlova.org/seed/s/html/textarea"
 )
 
 //New returns a new textbox widget.

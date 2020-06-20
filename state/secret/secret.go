@@ -1,9 +1,9 @@
 package secret
 
 import (
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
+	"qlova.org/seed/state"
 )
 
 func init() {

@@ -1,7 +1,7 @@
 package handle
 
 import (
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 //Data stores associations between seeds and event handlers.

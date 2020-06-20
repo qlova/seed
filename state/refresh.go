@@ -5,12 +5,12 @@ import (
 	"io/ioutil"
 	"reflect"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/asset"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/html/attr"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/asset"
+	"qlova.org/seed/html"
+	"qlova.org/seed/html/attr"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
 )
 
 func If(condition js.AnyBool, options ...seed.Option) seed.Option {
@@ -126,14 +126,14 @@ func SetText(text AnyString) seed.Option {
 	case js.AnyString:
 		return seed.NewOption(func(c seed.Seed) {
 			c.With(OnRefresh(func(q script.Ctx) {
-				q(fmt.Sprintf(`%v.innerText = %v || "";`,
+				q(fmt.Sprintf(`%v.textContent = %v || "";`,
 					script.Scope(c, q).Element(), t.GetString().String()))
 			}))
 		})
 	case js.AnyValue:
 		return seed.NewOption(func(c seed.Seed) {
 			c.With(OnRefresh(func(q script.Ctx) {
-				q(fmt.Sprintf(`%v.innerText = %v || "";`,
+				q(fmt.Sprintf(`%v.textContent = %v || "";`,
 					script.Scope(c, q).Element(), t.GetValue().String()))
 			}))
 		})

@@ -1,8 +1,8 @@
 package space
 
 import (
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed/css"
+	"qlova.org/seed/style"
 )
 
 //Spacer can align things.

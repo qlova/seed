@@ -3,8 +3,8 @@ package border
 import (
 	"image/color"
 
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed/css"
+	"qlova.org/seed/style"
 )
 
 //Remove removes the borders of this seed.

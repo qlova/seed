@@ -6,8 +6,8 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/css"
+	"qlova.org/seed"
+	"qlova.org/seed/css"
 )
 
 //New creates a new gradient.

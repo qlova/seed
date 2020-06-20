@@ -3,7 +3,7 @@ package script
 import (
 	"strconv"
 
-	"github.com/qlova/seed/js"
+	"qlova.org/seed/js"
 )
 
 type Global struct {

@@ -1,7 +1,7 @@
 package css
 
 import (
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 type Rules []Rule

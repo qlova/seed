@@ -3,9 +3,9 @@ package state
 import (
 	"fmt"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
 )
 
 //AnyBool flags that a function accepts a boolean argument.
@@ -75,4 +75,5 @@ func (b Bool) And(or js.AnyBool) Bool {
 	}
 	v.raw = fmt.Sprintf("(%v && %v)", b.GetBool().String(), or.GetBool().String())
 	return Bool{v}
+
 }

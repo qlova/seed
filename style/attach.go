@@ -1,7 +1,7 @@
 package style
 
 import (
-	"github.com/qlova/seed/css"
+	"qlova.org/seed/css"
 )
 
 type Attacher interface {

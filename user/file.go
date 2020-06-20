@@ -3,6 +3,7 @@ package user
 import (
 	"io"
 	"mime/multipart"
+	"strconv"
 )
 
 //File is an attached file.
@@ -42,6 +43,11 @@ func (f File) Size() int64 {
 
 //File decodes the file of the given argument.
 func (arg Arg) File() File {
+	n, err := strconv.Atoi(arg.i)
+	if err == nil {
+		arg.i = string('a' + rune(n))
+	}
+
 	file, header, err := arg.u.r.FormFile(arg.i)
 	if err != nil {
 		return File{}

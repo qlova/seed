@@ -1,9 +1,9 @@
 package link
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html"
-	"github.com/qlova/seed/html/attr"
+	"qlova.org/seed"
+	"qlova.org/seed/html"
+	"qlova.org/seed/html/attr"
 )
 
 //New returns a new HTML link element.

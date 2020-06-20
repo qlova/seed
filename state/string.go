@@ -3,9 +3,9 @@ package state
 import (
 	"fmt"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/user"
+	"qlova.org/seed"
+	"qlova.org/seed/script"
+	"qlova.org/seed/user"
 )
 
 //AnyString flags that a function accepts a stringable argument.
@@ -64,7 +64,7 @@ func (s RemoteString) Set(value string) {
 }
 
 func (s String) SetText() seed.Option {
-	return SetProperty("innerText", s)
+	return SetProperty("textContent", s)
 }
 
 func (s String) SetSource() seed.Option {

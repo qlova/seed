@@ -217,7 +217,7 @@ func buildEmbeddings() error {
 
 package ` + PackageName + `
 
-import "github.com/qlova/seed/asset/inbed"
+import "qlova.org/seed/asset/inbed"
 
 func init() {
 `); err != nil {

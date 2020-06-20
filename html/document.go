@@ -3,7 +3,7 @@ package html
 import (
 	"bytes"
 
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 type Document struct {

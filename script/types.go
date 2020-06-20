@@ -1,7 +1,7 @@
 package script
 
 import (
-	"github.com/qlova/seed/js"
+	"qlova.org/seed/js"
 )
 
 type Native = js.Value

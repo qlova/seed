@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 func SetID(id string) seed.Option {

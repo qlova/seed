@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/app"
-	"github.com/qlova/seed/js/console"
-	"github.com/qlova/seed/s/button"
-	"github.com/qlova/seed/s/feed"
-	"github.com/qlova/seed/s/text"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/style/align"
-	"github.com/qlova/seed/style/font"
+	"qlova.org/seed"
+	"qlova.org/seed/app"
+	"qlova.org/seed/js/console"
+	"qlova.org/seed/s/button"
+	"qlova.org/seed/s/feed"
+	"qlova.org/seed/s/text"
+	"qlova.org/seed/script"
+	"qlova.org/seed/style/align"
+	"qlova.org/seed/style/font"
 )
 
 func GetFeed() []string {

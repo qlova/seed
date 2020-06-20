@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/qlova/seed/app"
-	"github.com/qlova/seed/page"
-	"github.com/qlova/seed/s/button"
-	"github.com/qlova/seed/s/text"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed/app"
+	"qlova.org/seed/page"
+	"qlova.org/seed/s/button"
+	"qlova.org/seed/s/text"
+	"qlova.org/seed/script"
 )
 
 type Home struct{}

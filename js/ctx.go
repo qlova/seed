@@ -5,7 +5,7 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/qlova/seed"
+	"qlova.org/seed"
 )
 
 //Script is any js script.

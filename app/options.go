@@ -4,11 +4,11 @@ import (
 	"image/color"
 	"strconv"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/asset"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/page"
-	"github.com/qlova/seed/script"
+	"qlova.org/seed"
+	"qlova.org/seed/asset"
+	"qlova.org/seed/css"
+	"qlova.org/seed/page"
+	"qlova.org/seed/script"
 )
 
 func OnUpdateFound(do script.Script) seed.Option {

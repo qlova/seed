@@ -1,11 +1,11 @@
 package emailbox
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html/attr"
-	"github.com/qlova/seed/state"
+	"qlova.org/seed"
+	"qlova.org/seed/html/attr"
+	"qlova.org/seed/state"
 
-	"github.com/qlova/seed/s/textbox"
+	"qlova.org/seed/s/textbox"
 )
 
 //New returns a new emailbox widget.

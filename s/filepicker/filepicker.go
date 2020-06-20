@@ -1,13 +1,13 @@
 package filepicker
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/html/attr"
-	"github.com/qlova/seed/js"
-	"github.com/qlova/seed/script"
-	"github.com/qlova/seed/user/attachment"
+	"qlova.org/seed"
+	"qlova.org/seed/html/attr"
+	"qlova.org/seed/js"
+	"qlova.org/seed/script"
+	"qlova.org/seed/user/attachment"
 
-	"github.com/qlova/seed/s/html/input"
+	"qlova.org/seed/s/html/input"
 )
 
 //File is a type of attachment.
@@ -43,10 +43,10 @@ func SelectFile(handler func(File) script.Script) script.Script {
 			q(js.Global().Get("seed").Set("active", js.NewValue(`active`)))
 
 			q("try {")
-			q(a.Set(js.NewValue(`arguments[0].target.files[0]`)))
+			q(a.Set(js.NewValue(`event.target.files[0]`)))
 			q(handler(a))
 			q("} catch(e) { seed.report(e) }")
-		})))
+		}, "event")))
 
 		q(input.Run("click"))
 	}

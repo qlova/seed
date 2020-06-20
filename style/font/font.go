@@ -6,10 +6,10 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/qlova/seed"
-	"github.com/qlova/seed/asset"
-	"github.com/qlova/seed/css"
-	"github.com/qlova/seed/style"
+	"qlova.org/seed"
+	"qlova.org/seed/asset"
+	"qlova.org/seed/css"
+	"qlova.org/seed/style"
 )
 
 //Font is a type of font.
