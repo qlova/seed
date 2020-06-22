@@ -5,7 +5,8 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/app/manifest"
-	"qlova.org/seed/asset"
+	"qlova.org/seed/asset/assets"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
@@ -51,6 +52,8 @@ func (a App) build() {
 				}))
 			}
 		})),
+
+		script.OnReady(clientside.Render(app.document.Body)),
 	)
 
 	app.document.Body.With(
@@ -61,7 +64,7 @@ func (a App) build() {
 	var onready = string(script.Render(a))
 	var scripts = js.Scripts(a)
 
-	app.worker.Assets = asset.Of(a)
+	app.worker.Assets = assets.Of(a)
 	a.Seed.Write(app)
 
 	app.document.Head.With(

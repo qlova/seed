@@ -9,7 +9,6 @@ import (
 	"qlova.org/seed/html"
 	"qlova.org/seed/s/column"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 	"qlova.org/seed/style"
 )
 
@@ -66,12 +65,6 @@ func add(page Page) seed.Option {
 			css.SetSelector(ID(page)),
 			script.SetID(ID(page)),
 			html.SetID(html.ID(element)),
-
-			seed.NewOption(func(c seed.Seed) {
-				c.With(
-					OnEnter(state.Refresh(c)),
-				)
-			}),
 		)
 		element.Use()
 

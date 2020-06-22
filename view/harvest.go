@@ -27,7 +27,7 @@ func Set(starting View) seed.Option {
 
 		c.With(state.OnRefresh(func(q script.Ctx) {
 
-			fmt.Fprintf(q, `if (%[1]v.CurrentView) { %[1]v.CurrentView.args = %[2]v; if (%[1]v.CurrentView.onviewenter) %[1]v.CurrentView.onviewenter();  }`,
+			fmt.Fprintf(q, `if (%[1]v.CurrentView) { %[1]v.CurrentView.vargs = %[2]v; if (%[1]v.CurrentView.onviewenter) %[1]v.CurrentView.onviewenter();  }`,
 				script.Scope(c, q).Element(), args.GetObject().String())
 		}))
 	})

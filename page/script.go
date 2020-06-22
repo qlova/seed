@@ -1,6 +1,8 @@
 package page
 
 import (
+	"qlova.org/seed/js"
+
 	"qlova.org/seed"
 	"qlova.org/seed/script"
 )
@@ -9,6 +11,10 @@ func Refresh() script.Script {
 	return func(q script.Ctx) {
 		q("c.r(q, seed.CurrentPage);")
 	}
+}
+
+func GoBack() script.Script {
+	return js.Func("await seed.back").Run()
 }
 
 func init() {
@@ -39,7 +45,7 @@ seed.goto = async function(id, args, url) {
 
 		if (JSON.stringify(seed.CurrentPage.args) == JSON.stringify(args)) {
 			seed.NextPage = null;
-			return;
+			return true;
 		}
 
 		Refresh = true;
@@ -105,6 +111,8 @@ seed.goto = async function(id, args, url) {
 		}
 	}
 
+	if (c.r) c.r(q, document.body);
+
 	//try { flipping.flip(); } catch(error) {}
 
 	//Set title and path.
@@ -127,13 +135,31 @@ seed.goto = async function(id, args, url) {
 	localStorage.setItem('*CurrentPath', path);
 
 	if (!seed.goto.back && seed.production) history.pushState([id, args], data.title, path+url);
-	if (!seed.goto.back && !seed.production) history.replaceState([id, args], data.title, path+url);
+	if (!seed.production) {
+		history.replaceState([id, args, url], data.title, path+url);
+		seed.goto.history.push([id, args, url]);
+	}
 
 	seed.animating = false;
 	seed.NextPage = null;
 
 	if (seed.goto.queue.length > 0) {
 		seed.goto.apply(null, seed.goto.queue.shift());
+	}
+
+	return true;
+}
+
+seed.back = async function() {
+	if (!seed.production) {
+		seed.goto.history.pop();
+		let state = seed.goto.history.pop();
+
+		seed.goto.back = true;
+		await seed.goto.apply(null, state);
+		seed.goto.back = false;
+	} else {
+		history.back();
 	}
 }
 
@@ -157,6 +183,7 @@ window.addEventListener('popstate', async function (event) {
 
 seed.goto.queue = [];
 seed.goto.back = false;
+seed.goto.history = [];
 
 seed.goto.ready = async function(id) {
 	seed.StartingPage = id;
@@ -211,8 +238,11 @@ seed.goto.ready = async function(id) {
 			element = template.content.querySelector(".page");
 			if (element) {
 				if (element.dataset.path == path) {
-					await seed.goto(element.id, {});
-					return;
+					if (await seed.goto(element.id, {})) {
+						return;
+					} else {
+						break;
+					}
 				}
 				
 				//Parse path values.
@@ -243,8 +273,12 @@ seed.goto.ready = async function(id) {
 					var url = path.slice(element.dataset.path.length);
 					if (query.toString() != "") url += "?" + query.toString();
 
-					await seed.goto(element.id, args, url);
-					return;
+					if (await seed.goto(element.id, args, url)) {
+						return;
+					} else {
+						break;
+					}
+					
 				}
 
 
@@ -264,7 +298,9 @@ seed.goto.ready = async function(id) {
 			return;
 		}
 
-		await seed.goto(saved_page, saved_args);
+		if (! (await seed.goto(saved_page, saved_args))) {
+			await seed.goto(seed.StartingPage);
+		}
 	} else {
 		await seed.goto(seed.StartingPage);
 	}

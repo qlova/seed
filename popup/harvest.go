@@ -4,10 +4,10 @@ import (
 	"reflect"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 )
 
 type harvester struct {
@@ -45,7 +45,7 @@ func (h harvester) harvest(c seed.Seed) {
 
 				seed.NewOption(func(c seed.Seed) {
 					c.With(
-						OnShow(state.Refresh(c)),
+						OnShow(clientside.Render(c)),
 					)
 				}),
 			)

@@ -52,7 +52,7 @@ func SetColor(col color.Color) seed.Option {
 
 //SetIcon sets the icon of the app.
 func SetIcon(icon string) seed.Option {
-	icon = asset.Path(icon)
+	icon = asset.Path(icon).(string)
 
 	return seed.NewOption(func(c seed.Seed) {
 		var app app

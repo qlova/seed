@@ -9,7 +9,7 @@ import (
 	"qlova.org/seed/css"
 )
 
-type Unit complex64
+type Unit complex128
 
 func (u Unit) String() string {
 	if u == 0 {

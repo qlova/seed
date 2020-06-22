@@ -5,7 +5,7 @@ import (
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/s/ecrets"
+	"qlova.org/seed/secrets"
 
 	"qlova.org/seed/s/textbox"
 )

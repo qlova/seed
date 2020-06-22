@@ -48,10 +48,10 @@ func newValue(name ...string) Value {
 		return Value{"session_" + name[0]}
 	}
 
+	id++
+
 	//session identification is compressed to base64 and prefixed with s_.
 	var result = "s_" + base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
-
-	id++
 
 	return Value{result}
 }

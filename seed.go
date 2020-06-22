@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 )
 
 type Link struct {
@@ -58,7 +59,9 @@ type Options []Option
 
 func (options Options) AddTo(c Seed) {
 	for _, o := range options {
-		o.AddTo(c)
+		if o != nil {
+			o.AddTo(c)
+		}
 	}
 }
 
@@ -215,7 +218,9 @@ func New(options ...Option) Seed {
 	c.Write(d)
 
 	for _, o := range options {
-		o.AddTo(c)
+		if o != nil {
+			o.AddTo(c)
+		}
 	}
 
 	return c
@@ -230,4 +235,53 @@ func If(condition bool, options ...Option) Option {
 			}
 		}
 	})
+}
+
+type Set struct {
+	mapping map[int]Seed
+}
+
+func NewSet(seeds ...Seed) Set {
+	var set Set
+	set.mapping = make(map[int]Seed, len(seeds))
+	for _, seed := range seeds {
+		set.Add(seed)
+	}
+	return set
+}
+
+func (s *Set) Add(seeds ...Seed) {
+	if seeds == nil {
+		return
+	}
+	if s.mapping == nil {
+		s.mapping = make(map[int]Seed)
+	}
+	for _, seed := range seeds {
+		if seed == nil {
+			continue
+		}
+		s.mapping[seed.ID()] = seed
+	}
+}
+
+func (s *Set) Remove(c Seed) {
+	if c == nil {
+		return
+	}
+	delete(s.mapping, c.ID())
+}
+
+//Slice returns an ordered list of seeds by id.
+func (s *Set) Slice() []Seed {
+	var slice = make([]Seed, 0, len(s.mapping))
+	for _, seed := range s.mapping {
+		slice = append(slice, seed)
+	}
+
+	sort.Slice(slice, func(i, j int) bool {
+		return slice[i].ID() < slice[j].ID()
+	})
+
+	return slice
 }

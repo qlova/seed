@@ -6,9 +6,6 @@ import (
 	"reflect"
 
 	"qlova.org/seed"
-	"qlova.org/seed/asset"
-	"qlova.org/seed/html"
-	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
 )
@@ -117,8 +114,8 @@ func OnRefresh(do script.Script) seed.Option {
 //SetText sets the text of the seed based on the argument provided.
 func SetText(text AnyString) seed.Option {
 	switch t := text.(type) {
-	case string:
-		return html.SetInnerText(t)
+	//case string:
+	//return html.SetInnerText(t)
 
 	case String:
 		return t.SetText()
@@ -149,13 +146,13 @@ func SetSource(src AnyString) seed.Option {
 	switch t := src.(type) {
 	case string:
 
-		t = asset.Path(t)
+		//t = asset.Path(t)
 
 		return seed.Options{
-			attr.Set("src", t),
-			attr.Set("alt", t),
+			//attr.Set("src", t),
+			//attr.Set("alt", t),
 
-			asset.New(t),
+			//assets.New(t),
 		}
 
 	case String:

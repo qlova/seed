@@ -30,11 +30,11 @@ func NewFunction(do Script, args ...string) Function {
 		}
 	}
 
-	fmt.Fprintf(&s, `async (%v) => {`, fargs.String())
+	fmt.Fprintf(&s, `(async (%v) => {`, fargs.String())
 
 	NewCtx(&s)(do)
 
-	s.WriteString(`}`)
+	s.WriteString(`})`)
 
 	return Function{
 		Value: NewValue(s.String()),
@@ -46,8 +46,8 @@ func (f Function) GetFunction() Function {
 	return f
 }
 
-func (f Function) Call() Value {
-	return NewValue("await " + f.string + "()")
+func (f Function) Call(args ...AnyValue) Value {
+	return Call(f, args...)
 }
 
 func (f Function) Run(args ...AnyValue) Script {
@@ -85,6 +85,9 @@ func Call(fname AnyFunction, args ...AnyValue) Value {
 
 //Run runs the given function expression with the given arguments.
 func Run(fname AnyFunction, args ...AnyValue) Script {
+	if fname == nil {
+		return nil
+	}
 	return func(q Ctx) {
 		q.Run(fname, args...)
 	}
@@ -92,6 +95,7 @@ func Run(fname AnyFunction, args ...AnyValue) Script {
 
 //Run runs the given function expression with the given arguments.
 func (q Ctx) Run(fname AnyFunction, args ...AnyValue) {
+	q("await ")
 	q(fname.GetFunction().String())
 	q('(')
 	for i, arg := range args {

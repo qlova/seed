@@ -4,6 +4,8 @@ import (
 	"fmt"
 	color_go "image/color"
 	"time"
+
+	"qlova.org/seed/unit"
 )
 
 type Duration time.Duration
@@ -55,6 +57,37 @@ type Unit struct {
 	string
 }
 
+func Measure(u unit.Unit) Unit {
+	if u == nil {
+		return Unit{"0"}
+	}
+
+	q, r := u.Measure()
+
+	if q == 0 {
+		return Unit{"0"}
+	}
+
+	switch r {
+	case "px":
+		return Px(q)
+	case "em":
+		return Em(q)
+	case "rem":
+		return Rem(q)
+	case "vmin":
+		return Vmin(q)
+	case "%":
+		return Percent(q)
+	default:
+		return Unit{"0"}
+	}
+}
+
+func (u Unit) String() string {
+	return u.string
+}
+
 func (Unit) unitValue()         {}
 func (Unit) unitOrAutoValue()   {}
 func (Unit) unitOrNoneValue()   {}
@@ -69,31 +102,31 @@ func (u Unit) Rule() Rule {
 	return Rule(u.string)
 }
 
-func Em(v float32) Unit {
+func Em(v float64) Unit {
 	return Unit{
 		fmt.Sprintf(`%fem`, v),
 	}
 }
 
-func Px(v float32) Unit {
+func Px(v float64) Unit {
 	return Unit{
 		fmt.Sprintf(`%fpx`, v),
 	}
 }
 
-func Rem(v float32) Unit {
+func Rem(v float64) Unit {
 	return Unit{
 		fmt.Sprintf(`%frem`, v),
 	}
 }
 
-func Vmin(v float32) Unit {
+func Vmin(v float64) Unit {
 	return Unit{
 		fmt.Sprintf(`%fvmin`, v),
 	}
 }
 
-func Percent(v float32) Unit {
+func Percent(v float64) Unit {
 	return Unit{
 		fmt.Sprintf(`%f%%`, v),
 	}

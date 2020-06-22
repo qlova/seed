@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
@@ -100,7 +101,7 @@ func New(options ...seed.Option) Seed {
 
 		seed.NewOption(func(c seed.Seed) {
 			c.With(
-				OnEnter(state.Refresh(c)),
+				OnEnter(clientside.Render(c)),
 			)
 		}),
 

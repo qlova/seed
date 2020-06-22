@@ -38,7 +38,7 @@ func (p Package) Exec() script.Script {
 	var ctx = build.Default
 	ctx.GOARCH = "wasm"
 	ctx.GOOS = "js"
-	ctx.Dir = seed.Dir
+	//ctx.Dir = seed.Dir
 
 	var filename = strings.Replace(path, "/", "_", -1) + ".wasm"
 
@@ -62,7 +62,7 @@ func (p Package) Exec() script.Script {
 		`, strconv.Quote("/assets/"+filename)))
 	}
 
-	abs, err := filepath.Abs(ctx.Dir)
+	abs, err := filepath.Abs(seed.Dir)
 	if err != nil {
 		return f
 	}

@@ -8,6 +8,7 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"io"
 	"net/http"
@@ -380,5 +381,13 @@ func Open(name string) (http.File, error) {
 		}
 	}
 
-	return os.Open(filepath.Join(Root, name))
+	file, err := os.Open(filepath.Join(Root, name))
+	if err != nil {
+		if strings.Contains(name, "..") {
+			return nil, os.ErrNotExist
+		}
+		file, err = os.Open(filepath.Join(".", name))
+	}
+
+	return file, err
 }

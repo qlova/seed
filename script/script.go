@@ -38,7 +38,9 @@ func Download(name, path string) Script {
 func New(scripts ...Script) Script {
 	return func(q Ctx) {
 		for _, s := range scripts {
-			q(s)
+			if s != nil {
+				q(s)
+			}
 		}
 	}
 }

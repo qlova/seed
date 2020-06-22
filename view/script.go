@@ -8,6 +8,7 @@ import (
 func init() {
 	script.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
+
 seed.view = async function(of, name, args, fragment) {
 	let first = false;
 	if(!fragment) fragment = "";

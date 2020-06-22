@@ -27,7 +27,7 @@ func (shadow Shadow) AddTo(c seed.Seed) {
 	}
 
 	if shadow.Color == nil {
-		shadow.Color = seed.Black
+		shadow.Color = color.NRGBA{0, 0, 0, 255}
 	}
 
 	css.Set("box-shadow",

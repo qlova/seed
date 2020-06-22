@@ -112,27 +112,6 @@ seed.report = function(err, element) {
 
 seed.globals = {};
 
-seed.Scope = function(parent) {
-	this.parent = parent;
-	this.storage = {};
-	this.setItem = function(key, value) {
-		this.storage[key] = value;
-	};
-	this.getItem = function(key) {
-		return this.storage[key];
-	};
-	this.get = function(id) {
-		return seed.get(id);
-	};
-	this.refresh = function() {};
-	this.data = {};
-}; 
-
-seed.Ctx = seed.Scope;
-
-window.scope = new seed.Scope();
-q = window.scope;
-
 seed.on = function(element, event, handler) {
 	let f = async function(ev) {
 		seed.active = element;
@@ -292,10 +271,11 @@ seed.request = function(method, formdata, url, manual, active) {
 seed.request.error = "connection failed";
 
 seed.dynamic = {};
+
 	`)
 
-	for _, renderer := range renderers {
-		b.Write(renderer(root))
+	for i := len(renderers) - 1; i >= 0; i-- {
+		b.Write(renderers[i](root))
 	}
 
 	b.Write(render(root))

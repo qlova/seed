@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"strconv"
 
-	"qlova.org/seed/js"
 	"qlova.org/seed/script"
 )
 
@@ -59,7 +58,7 @@ func ChangesTo(v script.Value, f interface{}) script.Script {
 					}
 
 					if index > -1 {
-						q(v.Set(js.NewString(T.Field(i).Name), Values[index-1]))
+						q(v.Set(T.Field(i).Name, Values[index-1]))
 					}
 				}
 			default:

@@ -23,6 +23,10 @@ func NewBool(from bool) Bool {
 	return js.NewBool(from)
 }
 
+func NewFloat64(from float64) Float {
+	return js.NewNumber(from)
+}
+
 func NewFunction(from script.Script) Function {
 	return js.NewFunction(from)
 }

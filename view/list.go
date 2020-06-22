@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client/render"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
 )
@@ -34,6 +35,8 @@ func List(views ...View) seed.Option {
 				})))
 				q(script.Element(c).Get("view").Set("index", js.NewNumber(0)))
 			}).AddTo(c)
+
+			render.On(script.Element(c).Run("view", script.Element(c).Get("view").Get("index"))).AddTo(c)
 		}),
 	}
 }

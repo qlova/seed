@@ -34,7 +34,7 @@ func init() {
 						if (!food[0]) return;
 					}
 
-					let i = 1;
+					let i = 0;
 					for (let piece of food) {
 						let clone = template.content.cloneNode(true);
 						let nodes = clone.children.length;
@@ -53,7 +53,7 @@ func init() {
 	
 						l.appendChild(clone);
 	
-						let offset = i;
+						let offset = i*nodes+1;
 	
 						let ctx = new c.Ctx(q);
 						ctx.data = piece;

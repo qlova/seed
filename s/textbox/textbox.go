@@ -2,23 +2,45 @@ package textbox
 
 import (
 	"qlova.org/seed"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
 	"qlova.org/seed/state"
+	"qlova.org/seed/sum"
 
 	"qlova.org/seed/s/html/input"
 )
 
 //New returns a new textbox widget.
-func New(options ...seed.Option) seed.Seed {
-	return input.New(options...)
+func New(text sum.String, options ...seed.Option) seed.Seed {
+	_, variable := sum.ToString(text)
+
+	var updater seed.Option
+
+	switch v := variable.(type) {
+	case *clientside.String:
+		updater = seed.NewOption(func(c seed.Seed) {
+			clientside.Hook(v, c)
+			c.With(
+				script.On("render", script.Element(c).Set("value", v)),
+				script.On("input", v.SetTo(js.String{Value: script.Element(c).Get("value")})),
+			)
+		})
+	case seed.Option:
+		updater = v
+	}
+
+	return input.New(
+		updater,
+		seed.Options(options),
+	)
 }
 
 //Var returns text with a variable text argument.
 func Var(text state.String, options ...seed.Option) seed.Seed {
 	if text.Null() {
-		return New(options...)
+		return New(nil, options...)
 	}
 	return New(seed.NewOption(func(c seed.Seed) {
 		c.With(script.On("input", func(q script.Ctx) {

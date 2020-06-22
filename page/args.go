@@ -6,10 +6,15 @@ import (
 	"strconv"
 	"strings"
 
+	"qlova.org/seed/client"
 	"qlova.org/seed/js"
 )
 
 func valueAs(v js.AnyValue, T reflect.Type) reflect.Value {
+	if T == reflect.TypeOf([0]client.Value{}).Elem() {
+		return reflect.ValueOf(v)
+	}
+
 	var TypeName = strings.Replace(T.Name(), "Any", "", 1)
 	if strings.Contains(TypeName, ".") {
 		TypeName = strings.Split(TypeName, ".")[1]

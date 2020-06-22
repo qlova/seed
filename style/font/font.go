@@ -8,6 +8,7 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/asset"
+	"qlova.org/seed/asset/assets"
 	"qlova.org/seed/css"
 	"qlova.org/seed/style"
 )
@@ -27,7 +28,7 @@ func (f Font) AddTo(c seed.Seed) {
 
 	c.Write(data)
 
-	css.SetFontFamily(f).And(asset.New(f.path)).AddTo(c)
+	css.SetFontFamily(f).And(assets.New(f.path)).AddTo(c)
 }
 
 //And impliments seed.Option
@@ -47,7 +48,7 @@ var id int64
 
 //New returns a new font.
 func New(path string) Font {
-	path = asset.Path(path)
+	path = asset.Path(path).(string)
 
 	id++
 
@@ -67,7 +68,7 @@ func New(path string) Font {
 }
 
 //SetColor sets the color of the text.
-func SetColor(c color.Color) seed.Option {
+func SetColor(c color.Color) css.Rule {
 	return style.SetTextColor(c)
 }
 

@@ -7,11 +7,16 @@ import (
 	"strings"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
 )
 
 func valueAs(v js.AnyValue, T reflect.Type) reflect.Value {
+	if T == reflect.TypeOf([0]client.Value{}).Elem() {
+		return reflect.ValueOf(v)
+	}
+
 	var TypeName = strings.Replace(T.Name(), "Any", "", 1)
 	if strings.Contains(TypeName, ".") {
 		TypeName = strings.Split(TypeName, ".")[1]
@@ -54,7 +59,7 @@ func parseArgs(view View, parent seed.Seed) (View, js.AnyObject) {
 				object[key] = intf.(js.AnyValue)
 
 				var value = js.NewValue(
-					fmt.Sprintf(`seed.arg(`+script.Element(parent).String()+", %v)",
+					fmt.Sprintf(`seed.arg(`+script.Element(parent).String()+".CurrentView, %v)",
 						strconv.Quote(key)))
 
 				NewView.Field(i).Set(valueAs(value, Field.Type))

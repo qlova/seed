@@ -101,6 +101,31 @@ func (state State) Protect(s ...script.Script) script.Script {
 	)
 }
 
+func Hook(value js.AnyValue, c seed.Seed) {
+	v, ok := value.(AnyValue)
+	if !ok {
+		return
+	}
+	state := v.value()
+
+	var data data
+	c.Read(&data)
+
+	if data.change == nil {
+		data.change = make(map[Value]script.Script)
+	}
+
+	c.Write(data)
+
+	if state.dependencies == nil {
+		data.change[state] = data.change[state].Append(Refresh(c))
+	} else {
+		for _, dep := range *state.dependencies {
+			data.change[dep] = data.change[dep].Append(Refresh(c))
+		}
+	}
+}
+
 //If only applies its options if the state is active.
 func (state State) If(options ...seed.Option) seed.Option {
 
@@ -116,23 +141,7 @@ func (state State) If(options ...seed.Option) seed.Option {
 
 		If(state, options...).AddTo(c)
 
-		var data data
-		c.Read(&data)
-
-		if data.change == nil {
-			data.change = make(map[Value]script.Script)
-		}
-
-		c.Write(data)
-
-		if state.dependencies == nil {
-			data.change[state.Value] = data.change[state.Value].Append(Refresh(c))
-		} else {
-			for _, dep := range *state.dependencies {
-				data.change[dep] = data.change[dep].Append(Refresh(c))
-			}
-		}
-
+		Hook(state, c)
 	})
 }
 

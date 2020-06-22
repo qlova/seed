@@ -5,14 +5,19 @@ import (
 	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/state"
+	"qlova.org/seed/sum"
 )
 
-//New returns a new text widget.
-func New(text string, options ...seed.Option) seed.Seed {
+//New returns a button with the given label.
+//label can be nil, a string, Stringable or client.String
+//anything else is passed to fmt.Sprint and then treated as a string.
+func New(label sum.String, options ...seed.Option) seed.Seed {
 	return seed.New(
 		html.SetTag("button"),
-		html.SetInnerText(text),
 		attr.Set("type", "button"),
+
+		html.SetInnerText(label),
+
 		seed.Options(options),
 	)
 }

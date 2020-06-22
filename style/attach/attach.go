@@ -3,7 +3,6 @@ package attach
 import (
 	"qlova.org/seed"
 	"qlova.org/seed/css"
-	"qlova.org/seed/s/column"
 	"qlova.org/seed/style"
 )
 
@@ -21,6 +20,6 @@ type parentAttacher struct {
 }
 
 func (parentAttacher) AddTo(c seed.Seed) {
-	var col = column.New()
-	d
+	//var col = column.New()
+	//d
 }

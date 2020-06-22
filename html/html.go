@@ -6,8 +6,11 @@ import (
 	"strings"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/script"
+	"qlova.org/seed/sum"
 )
 
 //Data stores html data with a seed.
@@ -115,14 +118,24 @@ func Set(html string) seed.Option {
 }
 
 //SetAttribute returns an option that sets an HTML attribute of this seed.
-func SetAttribute(name, value string) seed.Option {
+func SetAttribute(name string, value sum.String) seed.Option {
+
+	var constant, variable = sum.ToString(value)
+
 	return seed.NewOption(func(c seed.Seed) {
 		var data Data
 		c.Read(&data)
 
+		if variable != nil {
+			clientside.Hook(variable, c)
+			client.OnRender(
+				script.Element(c).Run("setAttribute", client.NewString(name), variable.GetString()),
+			).AddTo(c)
+		}
+
 		switch q := c.(type) {
 		case script.Seed:
-			q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(value))
+			q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(constant))
 		case script.Undo:
 			if attr, ok := data.Attributes[name]; ok {
 				q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(attr))
@@ -133,7 +146,7 @@ func SetAttribute(name, value string) seed.Option {
 			if data.Attributes == nil {
 				data.Attributes = make(map[string]string)
 			}
-			data.Attributes[name] = value
+			data.Attributes[name] = constant
 		}
 
 		c.Write(data)
@@ -161,19 +174,29 @@ func SetStyle(property, value string) seed.Option {
 }
 
 //SetInnerText returns an option that sets the HTML innerText associated with the seed.
-func SetInnerText(text string) seed.Option {
+func SetInnerText(text sum.String) seed.Option {
+
+	var constant, variable = sum.ToString(text)
+
 	return seed.NewOption(func(c seed.Seed) {
+
+		if variable != nil {
+			clientside.Hook(variable, c)
+			client.OnRender(
+				script.Element(c).Set("innerText", variable.GetString()),
+			).AddTo(c)
+		}
 
 		var data Data
 		c.Read(&data)
 
 		switch q := c.(type) {
 		case script.Seed:
-			q.Javascript(`%v.innerText = %v;`, q.Element(), strconv.Quote(text))
+			q.Javascript(`%v.innerText = %v;`, q.Element(), strconv.Quote(constant))
 		case script.Undo:
 			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.InnerHTML))
 		default:
-			data.InnerHTML = html.EscapeString(text)
+			data.InnerHTML = html.EscapeString(constant)
 			data.InnerHTML = strings.Replace(data.InnerHTML, "\n", "<br>", -1)
 			data.InnerHTML = strings.Replace(data.InnerHTML, "  ", "&nbsp;&nbsp;", -1)
 			data.InnerHTML = strings.Replace(data.InnerHTML, "\t", "&emsp;", -1)

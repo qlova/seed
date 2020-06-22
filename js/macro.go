@@ -8,7 +8,7 @@ import (
 	"text/scanner"
 
 	"qlova.org/seed"
-	"qlova.org/seed/asset"
+	"qlova.org/seed/asset/assets"
 )
 
 type macroWriter struct {
@@ -54,7 +54,7 @@ func (m macroWriter) Write(data []byte) (int, error) {
 
 				for _, c := range m.seeds {
 					Require(path, imports[path]).AddTo(c)
-					asset.New(path).AddTo(c)
+					assets.New(path).AddTo(c)
 				}
 			default:
 				panic("unknown macro command: " + scan.TokenText())
