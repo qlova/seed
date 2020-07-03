@@ -2,29 +2,29 @@
 package paymentbox
 
 import (
+	"github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/setupintent"
 	"qlova.org/seed"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/html/div"
 	"qlova.org/seed/script"
 	"qlova.org/seed/signal"
-	"qlova.org/seed/state"
 	"qlova.org/seed/user"
-	"github.com/stripe/stripe-go"
-	"github.com/stripe/stripe-go/setupintent"
 )
 
 var StripePublishableKey string
 
 type StripeBox struct {
-	BillingName, Value state.String
+	BillingName, Value *clientside.String
 	confirmCardSetup   signal.Type
 	confirmedCardSetup signal.Type
 }
 
 func NewStripe() StripeBox {
 	return StripeBox{
-		BillingName:        state.NewString("", state.Session()),
-		Value:              state.NewString("", state.Session()),
+		BillingName:        new(clientside.String),
+		Value:              new(clientside.String),
 		confirmCardSetup:   signal.New(),
 		confirmedCardSetup: signal.New(),
 	}
@@ -90,7 +90,7 @@ func (s StripeBox) New(options ...seed.Option) seed.Seed {
 				js.Throw(result.Get("error").Get("message")),
 			)
 
-			q(s.Value.Set(js.String{
+			q(s.Value.SetTo(js.String{
 				Value: result.Get("setupIntent").Get("payment_method"),
 			}))
 			q(signal.Emit(s.confirmedCardSetup))

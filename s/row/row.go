@@ -18,3 +18,13 @@ func New(options ...seed.Option) seed.Seed {
 		seed.Options(options),
 	)
 }
+
+//Set returns an option that sets the seed to layout children in a row.
+func Set() css.Rule {
+	return css.SetFlexDirection(css.Row)
+}
+
+//Wrap returns an option that sets the seed to wrap it's children into multiple rows.
+func Wrap() css.Rule {
+	return css.SetFlexWrap(css.Wrap)
+}

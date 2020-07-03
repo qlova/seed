@@ -5,7 +5,7 @@ import (
 	color_go "image/color"
 	"time"
 
-	"qlova.org/seed/unit"
+	"qlova.org/seed/units"
 )
 
 type Duration time.Duration
@@ -44,10 +44,10 @@ type RGB struct {
 
 func (RGB) colorValue() {}
 func (c RGB) Rule() Rule {
-	var r, g, b, a = c.RGBA()
+	var col = color_go.NRGBAModel.Convert(c).(color_go.NRGBA)
+	var r, g, b, a = col.R, col.G, col.B, col.A
 	if a != 255 {
-		c := fmt.Sprint("rgba(", (float64(r)/65535)*255, ",", (float64(g)/65535)*255, ",", (float64(b)/65535)*255, ",", float64(a)/65535, ")")
-		return Rule(c)
+		return Rule(fmt.Sprint("rgba(", r, ",", g, ",", b, ",", float64(a)/255, ")"))
 	} else {
 		return Rule(fmt.Sprint("rgb(", r, ",", g, ",", b, ")"))
 	}
@@ -57,7 +57,7 @@ type Unit struct {
 	string
 }
 
-func Measure(u unit.Unit) Unit {
+func Measure(u units.Unit) Unit {
 	if u == nil {
 		return Unit{"0"}
 	}

@@ -2,11 +2,11 @@ package set
 
 import (
 	"qlova.org/seed/css"
-	"qlova.org/seed/unit"
+	"qlova.org/seed/units"
 )
 
 //Translation sets the translation of this seed.
-func Translation(x, y unit.Unit) css.Rules {
+func Translation(x, y units.Unit) css.Rules {
 	return css.Rules{
 		css.Set("--x", css.Measure(x).String()),
 		css.Set("--y", css.Measure(y).String()),

@@ -2,36 +2,37 @@ package transition
 
 import (
 	"fmt"
-	"log"
-	"reflect"
+	"time"
 
 	"qlova.org/seed"
 	"qlova.org/seed/css"
 	"qlova.org/seed/page"
 	"qlova.org/seed/popup"
 	"qlova.org/seed/script"
-	"qlova.org/seed/style/anime"
+	"qlova.org/seed/vfx/animation"
 	"qlova.org/seed/view"
 )
 
-var fadeIn = anime.New(
-	anime.Keyframes{
+var fadeIn = animation.New(
+	animation.Frames{
 		0:   css.SetOpacity(css.Zero),
 		100: css.SetOpacity(css.Number(1)),
 	},
+	animation.Duration(400*time.Millisecond),
 )
 
-var fadeOut = anime.New(
-	anime.Keyframes{
+var fadeOut = animation.New(
+	animation.Frames{
 		0:   css.SetOpacity(css.Number(1)),
 		100: css.SetOpacity(css.Zero),
 	},
+	animation.Duration(400*time.Millisecond),
 )
 
 type Transition struct {
 	seed.Option
 
-	In, Out anime.Animation
+	In, Out animation.Animation
 }
 
 type Option func(*Transition)
@@ -71,7 +72,15 @@ func New(options ...Option) Transition {
 				view.OnExit(exit),
 			)
 		default:
-			log.Println("invalid seed type: ", reflect.TypeOf(c))
+			c.With(
+				script.On("visible", func(q script.Ctx) {
+					t.In.AddTo(script.Scope(c, q))
+
+				}),
+				script.On("hidden", func(q script.Ctx) {
+					t.Out.AddTo(script.Scope(c, q))
+				}),
+			)
 		}
 
 	})
@@ -79,13 +88,13 @@ func New(options ...Option) Transition {
 	return t
 }
 
-func In(in anime.Animation) Option {
+func In(in animation.Animation) Option {
 	return func(t *Transition) {
 		t.In = in
 	}
 }
 
-func Out(out anime.Animation) Option {
+func Out(out animation.Animation) Option {
 	return func(t *Transition) {
 		t.Out = out
 	}

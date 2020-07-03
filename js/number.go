@@ -47,3 +47,8 @@ func (n Number) ToString() String {
 func (n Number) DivideBy(b AnyNumber) Number {
 	return Number{NewValue(fmt.Sprintf(`(%v/%v)`, n, b.GetNumber()))}
 }
+
+//ModBy returns n%b
+func (n Number) ModBy(b AnyNumber) Number {
+	return Number{NewValue(fmt.Sprintf(`(%v%%%v)`, n, b.GetNumber()))}
+}

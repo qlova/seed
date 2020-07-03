@@ -30,7 +30,7 @@ func (h *harvester) harvest(c seed.Seed) harvester {
 		update.do = update.do.Append(hook.do)
 		update.variable = hook.variable
 		update.render.Add(hook.render.Slice()...)
-		h.hooks[address] = hook
+		h.hooks[address] = update
 	}
 
 	for _, child := range c.Children() {
@@ -41,7 +41,7 @@ func (h *harvester) harvest(c seed.Seed) harvester {
 }
 
 func init() {
-	script.RegisterRenderer(func(c seed.Seed) []byte {
+	script.RegisterRootRenderer(func(c seed.Seed) []byte {
 		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
@@ -62,7 +62,33 @@ func init() {
 			seed.memory.data = {};
 		};
 
+		c.renderALL = async (q, id) => {
+		
+			let l = window.q.get(id);
+			if (!l) {
+				if (id instanceof HTMLElement) return;
+
+				let all = document.querySelectorAll("."+id);
+
+				for (let child of all) await c.render(q, child);
+				return;
+			}
+
+			if (l.tagName == "TEMPLATE") {
+				return;
+			}
+			if (!document.contains(l)) {
+				return;
+			}
+		
+			if (l.onrender) await l.onrender();
+
+			for (let child of l.children) await c.render(q, child);
+		}; c.r = c.render;
+
 		c.render = async (q, id) => {
+			
+
 			let l = q.get(id);
 			if (!l) {
 				if (id instanceof HTMLElement) return;
@@ -72,6 +98,14 @@ func init() {
 				for (let child of all) await c.render(q, child);
 				return;
 			}
+
+			if (l.tagName == "TEMPLATE") {
+				return;
+			}
+			if (!document.contains(l)) {
+				return;
+			}
+		
 			if (l.onrender) await l.onrender();
 
 			for (let child of l.children) await c.render(q, child);
@@ -83,8 +117,6 @@ func init() {
 
 			l.onrender = exe;
 		}; c.or = c.onrender;
-
-
 
 		seed.Scope = function(parent) {
 			this.parent = parent;
@@ -107,12 +139,16 @@ func init() {
 					return seed.memory.getItem(key);
 				case "storage":
 					return JSON.parse(localStorage.getItem(key));
+				case "local":
+					return this.getItem(key);
 				default:
 					console.error("invalid memory: ", memory)
 				}
 			};
 			
 			this.setvar = function(key, memory, value) {
+				let old = this.getvar(key, memory);
+
 				switch (memory) {
 				case "":
 					seed.memory.setItem(key, value);
@@ -120,15 +156,21 @@ func init() {
 				case "storage":
 					localStorage.setItem(key, JSON.stringify(value));
 					break;
+				case "local":
+					this.setItem(key, value);
+					break;
 				default:
 					console.error("invalid memory: ", memory)
 				}
 
 				if (seed.variable.hook[key])
 					for (let id of seed.variable.hook[key]) {
-						c.render(this, this.get(id));
+						c.renderALL(this, id);
 					};
-				if (seed.variable.onchange[key]) seed.variable.onchange[key]();
+
+				if (JSON.stringify(old) != JSON.stringify(value)) {
+					if (seed.variable.onchange[key]) seed.variable.onchange[key]();
+				}
 			};
 		}; 
 

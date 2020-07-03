@@ -25,11 +25,15 @@ func Prompt(msg js.AnyString) js.String {
 	return js.String{js.Global().Call(`prompt`, msg)}
 }
 
-func SetTimeout(do js.Script, timeout js.Number) script.Script {
+func SetTimeout(do js.Script, timeout js.AnyNumber) script.Script {
 	return js.Global().Run("setTimeout", js.NewFunction(do), timeout)
 }
 
+func SetInterval(do js.Script, timeout js.AnyNumber) script.Script {
+	return js.Global().Run("setInterval", js.NewFunction(do), timeout)
+}
+
 //ResizeTo dynamically resizes the window.
-func ResizeTo(width, height js.Number) js.Script {
+func ResizeTo(width, height js.AnyNumber) js.Script {
 	return js.Global().Run(`resizeTo`, width, height)
 }

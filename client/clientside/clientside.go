@@ -24,17 +24,12 @@ func Render(c seed.Seed) client.Script {
 	return js.Func("await c.r").Run(script.Q, js.NewString(script.ID(c)))
 }
 
-//Compound values are scanned by Hook
-type Compound interface {
-	Components() []client.Value
-}
-
 //Hook renders the given seed whenever the value changes.
 //if v is not a Variable or Compound, this is a noop
 func Hook(v client.Value, c seed.Seed) {
 	variable, ok := v.(Variable)
 	if !ok {
-		compound, ok := v.(Compound)
+		compound, ok := v.(client.Compound)
 		if !ok {
 			return
 		}

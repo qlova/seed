@@ -26,8 +26,6 @@ func New(s sum.Float64, options ...seed.Option) seed.Seed {
 				script.On("input", v.SetTo(js.Number{Value: js.Func("Number").Call(script.Element(c).Get("value"))})),
 			)
 		})
-	case seed.Option:
-		updater = v
 	}
 
 	return input.New(

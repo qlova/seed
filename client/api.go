@@ -25,7 +25,7 @@ func If(condition Bool, do ...Script) Script {
 //Go requests the client to call the given Go function with the given client Values automatically converted to equivalent Go values and are passed to the given function.
 //The function can optionally take a Ctx as the first argument, if so, then it is passed to the function and arguments are assigned to the following arguments.
 func Go(fn interface{}, args ...Value) Script {
-	var values []js.AnyValue
+	var values = make([]js.AnyValue, len(args))
 	for i, arg := range args {
 		values[i] = arg
 	}

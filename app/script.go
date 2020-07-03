@@ -10,11 +10,26 @@ import (
 //Reset resets the app and clears any local storage.
 func Reset() script.Script {
 	return func(q script.Ctx) {
-		q(`window.sessionStorage.clear(); window.localStorage.clear(); window.location = "/";`)
+		q(`window.sessionStorage.clear(); window.localStorage.clear();  window.location = "/";`)
+	}
+}
+
+//Restart restarts the app.
+func Restart() script.Script {
+	return func(q script.Ctx) {
+		q(`window.location = "/";`)
 	}
 }
 
 //Launch launches the current app as new window in an installed state.
 func Launch() script.Script {
 	return js.Func("launch").Run(location.Origin, js.NewString("installed"), js.NewNumber(800), js.NewNumber(600))
+}
+
+//Install installs the app as a PWA installed application on supported browsers.
+func Install() script.Script {
+	return script.New(
+		Installable.Set(false),
+		js.Func("install").Run(),
+	)
 }

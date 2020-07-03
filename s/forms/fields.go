@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client/clientop"
+	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/client/render"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/secrets"
 	"qlova.org/seed/state"
 
 	"qlova.org/seed/s/button"
@@ -53,7 +55,8 @@ type FieldTheme struct {
 
 type TextField struct {
 	Title, Placeholder string
-	Update             state.String
+
+	Update *clientside.String
 
 	Checker script.Script
 
@@ -69,7 +72,7 @@ func (field TextField) AddTo(c seed.Seed) {
 		field.Theme.Column,
 
 		text.New(field.Title, field.Theme.Title),
-		textbox.Var(field.Update, field.Theme.Box,
+		textbox.New(field.Update, field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
@@ -96,7 +99,8 @@ func (field TextField) AddTo(c seed.Seed) {
 
 type FloatField struct {
 	Title, Placeholder string
-	Update             state.Float
+
+	Update *clientside.Float64
 
 	Checker script.Script
 
@@ -112,7 +116,7 @@ func (field FloatField) AddTo(c seed.Seed) {
 		field.Theme.Column,
 
 		text.New(field.Title, field.Theme.Title),
-		numberbox.Var(field.Update, field.Theme.Box,
+		numberbox.New(field.Update, field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
@@ -139,7 +143,8 @@ func (field FloatField) AddTo(c seed.Seed) {
 
 type EmailField struct {
 	Title, Placeholder string
-	Update             state.String
+
+	Update *clientside.String
 
 	Required bool
 
@@ -157,7 +162,7 @@ func (field EmailField) AddTo(c seed.Seed) {
 		field.Theme.Column,
 
 		text.New(field.Title, field.Theme.Title),
-		emailbox.Var(field.Update, field.Theme.Box,
+		emailbox.New(field.Update, field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
@@ -186,7 +191,7 @@ type PasswordField struct {
 
 	Theme FieldTheme
 
-	Update  secrets.State
+	Update  *clientside.Secret
 	Confirm bool
 }
 
@@ -194,10 +199,13 @@ func (field PasswordField) AddTo(c seed.Seed) {
 	var Error = state.NewString("", state.Global())
 
 	var Password = field.Update
-	var PasswordMismatched = state.NewBool(state.Session())
-	var PasswordToConfirm = secrets.NewState(Password.Salt, state.Session())
+	var PasswordToConfirm = &clientside.Secret{
+		Pepper: Password.Pepper,
 
-	checkPassword := PasswordMismatched.Set(Password.GetString().Equals(PasswordToConfirm).Not())
+		CPU: Password.CPU,
+		RAM: Password.RAM,
+	}
+	var PasswordMismatched = clientop.NotEq(Password, PasswordToConfirm)
 
 	if field.Title == "" {
 		field.Title = "Password"
@@ -207,7 +215,9 @@ func (field PasswordField) AddTo(c seed.Seed) {
 		field.Theme.Column,
 
 		text.New(field.Title, field.Theme.Title),
-		passwordbox.Var(Password, field.Theme.Box,
+		passwordbox.New(field.Theme.Box,
+
+			passwordbox.Update(field.Update),
 
 			seed.If(field.Required, SetRequired()),
 
@@ -216,8 +226,6 @@ func (field PasswordField) AddTo(c seed.Seed) {
 			script.OnInput(Error.Set(js.NewString(""))),
 
 			state.Error(Error),
-
-			script.OnChange(checkPassword),
 
 			focusNextField(),
 
@@ -231,13 +239,13 @@ func (field PasswordField) AddTo(c seed.Seed) {
 
 		seed.If(field.Confirm,
 			text.New("Confirm "+field.Title, field.Theme.Title),
-			passwordbox.Var(PasswordToConfirm, field.Theme.Box,
+			passwordbox.New(field.Theme.Box,
+
+				passwordbox.Update(PasswordToConfirm),
 
 				seed.If(field.Required, SetRequired()),
 
-				PasswordMismatched.If(field.Theme.ErrorBox),
-
-				script.OnChange(checkPassword),
+				render.If(PasswordMismatched, field.Theme.ErrorBox),
 
 				focusNextField(),
 
@@ -245,7 +253,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 				//script.OnEnter(textbox.Focus(EmailBox)),
 			),
 
-			PasswordMismatched.And(Password).If(
+			render.If(clientop.And(PasswordMismatched, Password.GetBool()),
 				text.New("this password is different from the one above", field.Theme.ErrorText),
 			),
 		),
@@ -262,27 +270,26 @@ type SubmitButton struct {
 }
 
 func (submit SubmitButton) AddTo(c seed.Seed) {
-	var Error = state.NewString("", state.Global())
-	var Processing = state.New(state.Global())
+	var Error = new(clientside.String)
+	var Processing = new(clientside.Bool)
 
 	c.With(
-		Error.If(text.New(Error, submit.ThemeError)),
+		render.If(Error, text.New(Error, submit.ThemeError)),
 
 		Processing.Not().If(
 			button.New(submit.Title, submit.Theme,
 
-				state.Error(Error),
-
 				script.OnError(func(q script.Ctx, err script.Error) {
-					Processing.Unset(q)
+					q(Error.SetTo(err.String))
+					q(Processing.Set(false))
 				}),
 
 				script.OnPress(func(q script.Ctx) {
 					q.If(script.Element(c).Call("reportValidity"),
 						script.New(
-							Processing.Set,
+							Processing.Set(true),
 							submit.OnSubmit,
-							Processing.Unset,
+							Processing.Set(false),
 						),
 					)
 				}),

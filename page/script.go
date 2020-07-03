@@ -9,7 +9,7 @@ import (
 
 func Refresh() script.Script {
 	return func(q script.Ctx) {
-		q("c.r(q, seed.CurrentPage);")
+		q("await c.r(q, seed.CurrentPage);")
 	}
 }
 
@@ -61,17 +61,19 @@ seed.goto = async function(id, args, url) {
 			if (!result) {
 				seed.NextPage = null;
 
+				let old = seed.CurrentPage;
+
 				if (condition.otherwise) await condition.otherwise();
-				return;
+				return (seed.CurrentPage != old);
 			}
 		}
 	}
 
+	if (window.flipping) flipping.read();
+
 	seed.NextPage.template = seed.NextPage.parent;
 
 	seed.NextPage.parent.parentElement.appendChild(seed.NextPage);
-
-	//if (window.flipping) flipping.read();
 
 	let promises = [];
 	
@@ -89,6 +91,8 @@ seed.goto = async function(id, args, url) {
 		if (state && state.set) await state.set();
 	}
 
+	if (!Refresh && c.r) await c.r(q, seed.CurrentPage);
+
 	if (seed.goto.in) {
 		promises.push(seed.goto.in);
 		seed.goto.in = null;
@@ -97,6 +101,32 @@ seed.goto = async function(id, args, url) {
 	if (seed.goto.out) {
 		promises.push(seed.goto.out);
 		seed.goto.out = null;
+	}
+
+	try { flipping.flip(); } catch(error) {}
+
+	//Set title and path.
+	let data = seed.NextPage.dataset;
+	let path = data.path;
+	if (!data.path) {
+		path = "/";
+	}
+
+	//Persistence.
+	localStorage.setItem('*CurrentPage', id);
+	localStorage.setItem('*LastGotoTime', Date.now());
+	localStorage.setItem('*CurrentArgs', JSON.stringify(args || {}));
+	localStorage.setItem('*CurrentPath', path);
+
+	if (!seed.goto.back && seed.production) history.pushState([id, args], data.title, path+url);
+	if (!seed.production) {
+		history.replaceState([id, args, url], data.title, path+url);
+		seed.goto.history.push([id, args, url]);
+	}
+	if (data.title) {
+		document.title = data.title;
+	} else {
+		document.title = seed.title;
 	}
 
 	for (let promise of promises) {
@@ -111,34 +141,7 @@ seed.goto = async function(id, args, url) {
 		}
 	}
 
-	if (c.r) c.r(q, document.body);
-
-	//try { flipping.flip(); } catch(error) {}
-
-	//Set title and path.
-	let data = seed.NextPage.dataset;
-	let path = data.path;
-	if (!data.path) {
-		path = "/";
-	}
-
-	/*if (args.length > 0 && path != "/") {
-		for (let arg of args) {
-			path += "/" + arg;
-		}
-	}*/
-
-	//Persistence.
-	localStorage.setItem('*CurrentPage', id);
-	localStorage.setItem('*LastGotoTime', Date.now());
-	localStorage.setItem('*CurrentArgs', JSON.stringify(args || {}));
-	localStorage.setItem('*CurrentPath', path);
-
-	if (!seed.goto.back && seed.production) history.pushState([id, args], data.title, path+url);
-	if (!seed.production) {
-		history.replaceState([id, args, url], data.title, path+url);
-		seed.goto.history.push([id, args, url]);
-	}
+	if (Refresh && c.r) await c.r(q, seed.CurrentPage);
 
 	seed.animating = false;
 	seed.NextPage = null;

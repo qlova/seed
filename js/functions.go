@@ -41,6 +41,29 @@ func NewFunction(do Script, args ...string) Function {
 	}
 }
 
+func NewNormalFunction(do Script, args ...string) Function {
+	var s strings.Builder
+
+	var fargs strings.Builder
+	if len(args) > 0 {
+		fargs.WriteString(args[0])
+		for _, arg := range args[1:] {
+			fargs.WriteByte(',')
+			fargs.WriteString(arg)
+		}
+	}
+
+	fmt.Fprintf(&s, `((%v) => {`, fargs.String())
+
+	NewCtx(&s)(do)
+
+	s.WriteString(`})`)
+
+	return Function{
+		Value: NewValue(s.String()),
+	}
+}
+
 //GetFunction impliments AnyFunction.
 func (f Function) GetFunction() Function {
 	return f

@@ -2,13 +2,13 @@ package swiper
 
 import (
 	"qlova.org/seed"
+	"qlova.org/seed/client/render"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/column"
 	"qlova.org/seed/s/html/div"
 	"qlova.org/seed/s/row"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 )
 
 type Slide struct {
@@ -54,7 +54,7 @@ func New(options ...seed.Option) seed.Seed {
 			js.Require("/swiper.js", javascript),
 			html.AddClass("swiper-wrapper"),
 
-			state.OnRefresh(func(q script.Ctx) {
+			render.On(func(q script.Ctx) {
 				q(`if (!` + script.Element(Container).String() + `.swiper)`)
 				q(script.Element(Container).Set("swiper",
 					js.NewValue("new Swiper(%v, %v)",

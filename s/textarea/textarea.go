@@ -2,30 +2,40 @@ package textarea
 
 import (
 	"qlova.org/seed"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
+	"qlova.org/seed/sum"
 
 	"qlova.org/seed/s/html/textarea"
 )
 
 //New returns a new textbox widget.
-func New(options ...seed.Option) seed.Seed {
-	return textarea.New(css.SetResize(css.None), seed.Options(options))
-}
+func New(text sum.String, options ...seed.Option) seed.Seed {
+	_, variable := sum.ToString(text)
 
-//Var returns text with a variable text argument.
-func Var(text state.String, options ...seed.Option) seed.Seed {
-	if text.Null() {
-		return New(options...)
+	var updater seed.Option
+
+	switch v := variable.(type) {
+	case *clientside.String:
+		updater = seed.NewOption(func(c seed.Seed) {
+			clientside.Hook(v, c)
+			c.With(
+				script.On("render", script.Element(c).Set("value", v)),
+				script.On("input", v.SetTo(js.String{Value: script.Element(c).Get("value")})),
+			)
+		})
+	case seed.Option:
+		updater = v
 	}
-	return New(seed.NewOption(func(c seed.Seed) {
-		c.With(script.On("input", func(q script.Ctx) {
-			text.Set(js.String{js.NewValue(script.Scope(c, q).Element() + `.value`)})(q)
-		}), text.SetValue())
-	}), seed.Options(options))
+
+	return textarea.New(
+		updater,
+		css.SetResize(css.None),
+		seed.Options(options),
+	)
 }
 
 //SetPlaceholder sets the placeholder of the textbox.

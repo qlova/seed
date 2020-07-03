@@ -18,8 +18,8 @@ type Animation struct {
 	options []seed.Option
 }
 
-//Reversed returns a new animation which is the reverse of anim.
-func (anim Animation) Reversed() Animation {
+//InReverse returns a new animation which is the reverse of anim.
+func (anim Animation) InReverse() Animation {
 	Reverse().addto(&anim)
 	return anim
 }
@@ -116,4 +116,18 @@ func Duration(d time.Duration) Option {
 			css.SetAnimationDuration(css.Duration(d)),
 		})
 	})
+}
+
+func (anim Animation) AddTo(c seed.Seed) {
+	var data data
+	c.Read(&data)
+
+	data.animations = append(data.animations, anim)
+
+	c.Write(data)
+
+	css.SetAnimationName(css.AnimationName("a" + strconv.Itoa(anim.id))).AddTo(c)
+	for _, o := range anim.options {
+		o.AddTo(c)
+	}
 }

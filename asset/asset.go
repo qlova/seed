@@ -37,6 +37,9 @@ func Path(src sum.String) sum.String {
 		}
 		return p
 
+	case clientfmt.String:
+		return clientfmt.NewString(js.String{Value: js.Func("seed.asset").Call(p)}, p)
+
 	case *clientside.String:
 		return clientfmt.NewString(js.String{Value: js.Func("seed.asset").Call(p)}, p)
 

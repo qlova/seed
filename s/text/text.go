@@ -7,10 +7,11 @@ import (
 	html_go "html"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/sum"
-	"qlova.org/seed/unit"
+	"qlova.org/seed/units"
 )
 
 //New returns a new text widget.
@@ -32,13 +33,18 @@ func Set(value string) seed.Option {
 	return html.Set(value)
 }
 
-//Color sets the color of the text.
-func Color(c color.Color) css.Rule {
+//SetTo sets the text content of the text.
+func SetTo(value client.String) seed.Option {
+	return html.SetInnerText(value)
+}
+
+//SetColor sets the color of the text.
+func SetColor(c color.Color) css.Rule {
 	return css.SetColor(css.RGB{Color: c})
 }
 
-//Size sets the font-size of the text.
-func Size(s unit.Unit) css.Rule {
+//SetSize sets the font-size of the text.
+func SetSize(s units.Unit) css.Rule {
 	return css.SetFontSize(css.Measure(s))
 }
 

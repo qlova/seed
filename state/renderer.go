@@ -109,28 +109,6 @@ func init() {
 		seed.storage.clear = function() {
 			seed.storage.data = {};
 		};
-
-		c.render = async (q, id) => {
-			let l = q.get(id);
-			if (!l) {
-				if (id instanceof HTMLElement) return;
-
-				let all = document.querySelectorAll("."+id);
-
-				for (let child of all) await c.render(q, child);
-				return;
-			}
-			if (l.onrender) await l.onrender();
-
-			for (let child of l.children) await c.render(q, child);
-		}; c.r = c.render;
-
-		c.onrender = (q, id, exe) => {
-			let l = q.get(id);
-			if (!l) return;
-
-			l.onrender = exe;
-		}; c.or = c.onrender;
 		`)
 
 		b.WriteString(`seed.state = {};`)

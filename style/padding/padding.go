@@ -9,11 +9,24 @@ import (
 
 //Set sets the padding values.
 func Set(padding ...style.Unit) css.Rule {
+	const (
+		left = iota
+		right
+		top
+		bottom
+	)
+
 	if len(padding) == 1 {
 		return css.Set("padding", fmt.Sprint(padding[0].Unit().Rule()))
 	}
 	if len(padding) == 2 {
 		return css.Set("padding", fmt.Sprint(padding[1].Unit().Rule(), " ", padding[0].Unit().Rule()))
+	}
+	if len(padding) == 4 {
+		return css.Set("padding", fmt.Sprint(padding[top].Unit().Rule(),
+			" ", padding[right].Unit().Rule(),
+			" ", padding[bottom].Unit().Rule(),
+			" ", padding[left].Unit().Rule()))
 	}
 	panic("invalid arguments")
 }

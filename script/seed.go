@@ -49,7 +49,7 @@ type Undo struct {
 }
 
 func (c Undo) AddTo(other seed.Seed) {
-	c.Q(fmt.Sprintf(`%v.style.display = "none";`, c.Element()))
+	c.Q(fmt.Sprintf(`%v.style.display = "none";  if (%[1]v.onhidden) %[1]v.onhidden();`, c.Element()))
 }
 
 func (c Undo) With(options ...seed.Option) seed.Seed {
@@ -95,6 +95,6 @@ func (c Seed) With(options ...seed.Option) seed.Seed {
 var p = 0
 
 func (c Seed) AddTo(other seed.Seed) {
-	c.Q(fmt.Sprintf(`%v.style.display = "";`, c.Element()))
+	c.Q(fmt.Sprintf(`%v.style.display = ""; if (%[1]v.onvisible) %[1]v.onvisible();`, c.Element()))
 	seed.Add(c, other)
 }

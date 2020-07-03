@@ -20,13 +20,7 @@ func New(text sum.String, options ...seed.Option) seed.Seed {
 
 	switch v := variable.(type) {
 	case *clientside.String:
-		updater = seed.NewOption(func(c seed.Seed) {
-			clientside.Hook(v, c)
-			c.With(
-				script.On("render", script.Element(c).Set("value", v)),
-				script.On("input", v.SetTo(js.String{Value: script.Element(c).Get("value")})),
-			)
-		})
+		updater = Update(v)
 	case seed.Option:
 		updater = v
 	}
@@ -35,6 +29,17 @@ func New(text sum.String, options ...seed.Option) seed.Seed {
 		updater,
 		seed.Options(options),
 	)
+}
+
+//Update updates the given variable whenever the textbox text is modified.
+func Update(variable *clientside.String) seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		clientside.Hook(variable, c)
+		c.With(
+			script.On("render", script.Element(c).Set("value", variable)),
+			script.On("input", variable.SetTo(js.String{Value: script.Element(c).Get("value")})),
+		)
+	})
 }
 
 //Var returns text with a variable text argument.

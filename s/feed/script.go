@@ -27,11 +27,17 @@ func init() {
 
 					l.refreshing = false;
 				}).then(async(food) => {
-					if (!food) return;
+					if (!food) {
+						l.refreshing = false;
+						return;
+					}
 					if (!Array.isArray(food)) food = [food];
 
 					if (food.length == 1) {
-						if (!food[0]) return;
+						if (!food[0]) {
+							l.refreshing = false;
+							return;
+						}
 					}
 
 					let i = 0;
@@ -58,6 +64,7 @@ func init() {
 						let ctx = new c.Ctx(q);
 						ctx.data = piece;
 						ctx.i = offset;
+						ctx.feed = food;
 						ctx.get = function(id) {
 							if (id instanceof HTMLElement) return id;
 							
@@ -83,6 +90,7 @@ func init() {
 							let f = await exe();
 							await f(ctx);
 						} catch(e) {
+							l.refreshing = false;
 							seed.report(e, l);
 						}
 	

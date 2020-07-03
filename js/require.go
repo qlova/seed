@@ -13,8 +13,6 @@ type data struct {
 //Require js script.
 func Require(path string, contents string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		c.Use()
-
 		var d data
 		c.Read(&d)
 

@@ -6,10 +6,11 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/app/manifest"
 	"qlova.org/seed/app/service"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
+	"qlova.org/seed/js"
 	"qlova.org/seed/page"
-	"qlova.org/seed/state"
 	"qlova.org/seed/style/space"
 )
 
@@ -37,11 +38,15 @@ type app struct {
 	color color.Color
 }
 
-//Installed is true when the app is running from an installed instance.
-var Installed = state.State{
-	Bool: state.Bool{
-		Value: state.Raw("((window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || window.name == 'installed')"),
-	},
+//Installable is true when the app can be installed (that is when the OS has granted the app a beforeinstallprompt event).
+var Installable = &clientside.Bool{
+	Name: "app.installable",
+}
+
+//Standalone is true when the app is running from an installed instance.
+var Standalone = &clientside.Bool{
+	Name:  "app.standalone",
+	Value: js.NewValue(`((window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || window.name == 'installed')`),
 }
 
 //New returns a new App.

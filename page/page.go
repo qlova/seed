@@ -43,7 +43,6 @@ func (r Router) Goto(page Page) js.Script {
 
 		q.Run(js.Function{js.NewValue(`seed.goto`)}, js.NewString(ID(page)), args, path)
 	}
-
 }
 
 //Page is a global view.

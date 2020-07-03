@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client/render"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 )
 
 //Set adds and sets an initial view to the seed.
@@ -25,9 +25,9 @@ func Set(starting View) seed.Option {
 				script.Scope(c, q).Element(), Name(starting))
 		}))
 
-		c.With(state.OnRefresh(func(q script.Ctx) {
+		c.With(render.On(func(q script.Ctx) {
 
-			fmt.Fprintf(q, `if (%[1]v.CurrentView) { %[1]v.CurrentView.vargs = %[2]v; if (%[1]v.CurrentView.onviewenter) %[1]v.CurrentView.onviewenter();  }`,
+			fmt.Fprintf(q, `if (%[1]v.CurrentView) { %[1]v.CurrentView.args = %[2]v; if (%[1]v.CurrentView.onviewenter) %[1]v.CurrentView.onviewenter();  }`,
 				script.Scope(c, q).Element(), args.GetObject().String())
 		}))
 	})

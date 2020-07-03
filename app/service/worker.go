@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"sort"
+	"strconv"
 )
 
 //NewWorker returns a new service worker.
@@ -30,10 +31,12 @@ func (worker Worker) renderMap(b *bytes.Buffer, mapping map[string]bool) {
 	for key := range keys {
 		asset := keys[key]
 
-		b.WriteByte('"')
-		b.WriteString(asset)
-		b.WriteByte('"')
-		if i < len(mapping)-1 {
+		if asset == "" {
+			continue
+		}
+
+		b.WriteString(strconv.Quote(asset))
+		if i < len(keys)-1 {
 			b.WriteString(", ")
 		}
 		i++

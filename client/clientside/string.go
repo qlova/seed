@@ -2,8 +2,10 @@ package clientside
 
 import (
 	"github.com/google/uuid"
+	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
+	"qlova.org/seed/script"
 )
 
 //String is a string variable in client memory.
@@ -61,4 +63,18 @@ func (s *String) SetTo(value client.String) client.Script {
 	address, memory := s.Variable()
 	return js.Run(js.Func("q.setvar"), client.NewString(string(address)),
 		client.NewString(string(memory)), value)
+}
+
+//OnChange runs the given script when the value of this string is changed.
+func (s *String) OnChange(do ...client.Script) seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		var data data
+		c.Read(&data)
+		data.hooks = append(data.hooks, hook{
+			variable: s,
+			do:       script.New(do...),
+		})
+		c.Write(data)
+	})
+
 }

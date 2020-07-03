@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../store"
+		},
+		{
+			"path": "../theme"
 		}
 	],
 	"settings": {}

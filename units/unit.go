@@ -1,4 +1,4 @@
-package unit
+package units
 
 //Unit is a type of unit.
 type Unit interface {

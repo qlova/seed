@@ -1,7 +1,6 @@
 package spinner
 
 import (
-	"fmt"
 	"image/color"
 
 	"qlova.org/seed"
@@ -11,8 +10,7 @@ import (
 )
 
 func Ellipsis(c color.Color, options ...seed.Option) seed.Seed {
-	r, g, b, _ := c.RGBA()
-	rgb := fmt.Sprint("rgb(", r, ",", g, ",", b, ")")
+	rgb := string(css.RGB{Color: c}.Rule())
 
 	return div.New(seed.Options(options),
 

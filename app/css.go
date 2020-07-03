@@ -5,7 +5,6 @@ const CSS = `
     box-sizing: border-box;
     position: relative;
     max-width: 100vw;
-    max-height: 100vh;
     object-fit: contain;
 }
 

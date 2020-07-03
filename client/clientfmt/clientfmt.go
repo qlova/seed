@@ -15,7 +15,7 @@ type String struct {
 }
 
 func NewString(s client.String, components ...client.Value) String {
-	return String{s, components}
+	return String{s, client.FlattenComponents(components)}
 }
 
 //Components implements clientside.Compound
@@ -45,7 +45,7 @@ func Sprintf(format string, args ...interface{}) String {
 	}
 
 	return String{
-		String:     js.String{Value: js.NewValue(fmt.Sprintf(strconv.Quote(format), converted...))},
+		String:     js.String{Value: js.NewValue(fmt.Sprintf("("+strconv.Quote(format)+")", converted...))},
 		components: components,
 	}
 }

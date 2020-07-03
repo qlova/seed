@@ -20,6 +20,8 @@ type data struct {
 	queries map[string]*data
 
 	sheets map[string]struct{}
+
+	requires map[string]string
 }
 
 type ruleable interface {
@@ -121,11 +123,6 @@ func dashes2camels(s string) string {
 //SetSelector sets the CSS selector of this seed.
 func SetSelector(selector string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		switch c.(type) {
-		case script.Seed, script.Undo:
-			panic("css.SetSelector must not be called on a script.Seed")
-		}
-
 		var d data
 		c.Read(&d)
 		d.selector = selector

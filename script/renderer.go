@@ -10,10 +10,14 @@ import (
 
 type Renderer func(root seed.Seed) []byte
 
-var renderers []Renderer
+var renderers, rootRenderers []Renderer
 
 func RegisterRenderer(r Renderer) {
 	renderers = append(renderers, r)
+}
+
+func RegisterRootRenderer(r Renderer) {
+	rootRenderers = append([]Renderer{r}, rootRenderers...)
 }
 
 func render(child seed.Seed) []byte {
@@ -87,6 +91,8 @@ seed.op = function(element, func, propagate) {
 
 	element.onclick = handler;
 }
+
+seed.title = document.title;
 
 seed.active = null;
 
@@ -222,8 +228,13 @@ seed.download = async function(name, path) {
 seed.request = function(method, formdata, url, manual, active) {
 
 	const slave = function(response) {
-		const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-		return (new AsyncFunction(response))();
+		if (response == "") return null;
+		try {
+			const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+			return (new AsyncFunction(response))();
+		} catch(e) {
+			return null;
+		}
 	}
 
 	if (window.rpc && rpc[url]) {
@@ -273,6 +284,10 @@ seed.request.error = "connection failed";
 seed.dynamic = {};
 
 	`)
+
+	for i := len(rootRenderers) - 1; i >= 0; i-- {
+		b.Write(rootRenderers[i](root))
+	}
 
 	for i := len(renderers) - 1; i >= 0; i-- {
 		b.Write(renderers[i](root))

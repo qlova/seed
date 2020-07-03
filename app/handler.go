@@ -13,6 +13,7 @@ import (
 
 	"qlova.org/seed/api"
 	"qlova.org/seed/asset/inbed"
+	"qlova.org/seed/css"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
 )
@@ -69,6 +70,7 @@ func (a App) Handler() http.Handler {
 	}
 
 	var scripts = js.Scripts(app.document)
+	var stylesheets = css.Stylesheets(app.document)
 	var imports = js.Imports()
 
 	//Checksum is used for versioning. TODO ensure deterministic renderers are used to prevent distributed versions from mismatching.
@@ -118,7 +120,6 @@ func (a App) Handler() http.Handler {
 	})))
 
 	router.Handle("/index.js", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `const version = "%v";`+"\n", version)
 		if isLocal(r) {
 			//Don't use a web worker if we are running locally.
 			w.Header().Set("content-type", "text/javascript")
@@ -137,6 +138,12 @@ func (a App) Handler() http.Handler {
 
 		if content, ok := scripts[r.URL.Path]; ok {
 			w.Header().Set("Content-Type", "text/javascript")
+			fmt.Fprint(w, content)
+			return
+		}
+
+		if content, ok := stylesheets[r.URL.Path]; ok {
+			w.Header().Set("Content-Type", "text/css")
 			fmt.Fprint(w, content)
 			return
 		}

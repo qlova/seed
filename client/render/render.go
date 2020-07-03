@@ -3,6 +3,7 @@ package render
 import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/script"
 )
 
@@ -13,7 +14,10 @@ func On(do client.Script) seed.Option {
 
 //If renders the provided options if the condition is true.
 func If(condition client.Bool, options ...seed.Option) seed.Option {
+
 	return seed.NewOption(func(c seed.Seed) {
+		clientside.Hook(condition, c)
+
 		c.With(On(client.If(condition, func(q script.Ctx) {
 			for _, option := range options {
 				if option == nil {

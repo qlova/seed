@@ -16,6 +16,10 @@ type AnyArray interface {
 
 type NewArray []AnyValue
 
+func (array NewArray) String() string {
+	return array.GetValue().String()
+}
+
 func (literal NewArray) GetArray() Array {
 	var object strings.Builder
 

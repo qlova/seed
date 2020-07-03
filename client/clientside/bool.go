@@ -15,7 +15,7 @@ type Bool struct {
 	address Address
 	Memory  Memory
 
-	Value bool
+	Value client.Bool
 
 	not bool
 }
@@ -53,7 +53,10 @@ func (b *Bool) GetValue() js.Value {
 
 //GetDefaultValue implements Variable
 func (b *Bool) GetDefaultValue() client.Value {
-	return client.NewBool(b.Value)
+	if b.Value == nil {
+		return client.NewBool(false)
+	}
+	return b.Value
 }
 
 //Set returns a script that sets the bool to the given literal.
@@ -70,6 +73,32 @@ func (b *Bool) Set(literal bool) client.Script {
 		client.NewString(string(memory)), bool)
 }
 
+//SetTo returns a script that sets the bool to the given client.Bool.
+func (b *Bool) SetTo(value client.Bool) client.Script {
+	address, memory := b.Variable()
+	return js.Run(js.Func("q.setvar"), client.NewString(string(address)),
+		client.NewString(string(memory)), value)
+}
+
+//Toggle returns a script that toggles the boolean between true and false.
+func (b *Bool) Toggle() client.Script {
+	return b.SetTo(b.Not())
+}
+
+//OnChange runs the given script when the value of this string is changed.
+func (b *Bool) OnChange(do ...client.Script) seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		var data data
+		c.Read(&data)
+		data.hooks = append(data.hooks, hook{
+			variable: b,
+			do:       script.New(do...),
+		})
+		c.Write(data)
+	})
+
+}
+
 //Not returns a clientside bool that is the inverse of b.
 //Setting the returned bool has the inverse effect.
 func (b *Bool) Not() *Bool {
@@ -82,6 +111,8 @@ func (b *Bool) Not() *Bool {
 
 func (b *Bool) If(options ...seed.Option) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
+		Hook(b, c)
+
 		c.With(script.On("render", func(q script.Ctx) {
 			q.If(b, func(q script.Ctx) {
 				for _, option := range options {

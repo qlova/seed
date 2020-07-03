@@ -14,14 +14,26 @@ import (
 	"qlova.org/seed/state"
 )
 
+//Field can be used to select feed data.
+type Field interface {
+	FieldName() string
+}
+
 //Feed has food ready to populate.
 type Feed struct {
 	feed, template seed.Seed
 
 	food Food
 
-	Data  js.Value
-	Index client.Int
+	Data Item
+}
+
+func (f Feed) String(field Field) client.String {
+	return js.String{Value: f.Data.Get(field.FieldName())}
+}
+
+func (f Feed) Int(field Field) client.Int {
+	return js.Number{Value: f.Data.Get(field.FieldName())}
 }
 
 //Refresh refreshes the feed.
@@ -45,8 +57,11 @@ func With(food Food, options ...seed.Option) Feed {
 
 		template: template,
 
-		Data:  js.NewValue(`q.data`),
-		Index: js.Number{js.NewValue(`q.i`)},
+		Data: Item{
+			array: js.Array{js.NewValue("q.feed")},
+			Value: js.NewValue("q.data"),
+			Index: js.Number{js.NewValue("q.i")},
+		},
 	}
 }
 

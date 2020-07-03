@@ -59,6 +59,11 @@ func convertToClasses(c seed.Seed) {
 	}
 
 	for _, child := range c.Children() {
+
+		if sc, ok := child.(script.Seed); ok {
+			child = sc.Seed
+		}
+
 		child.With(
 			css.SetSelector(`.`+html.ID(child)),
 			html.SetID(""),
@@ -82,8 +87,15 @@ func Go(f interface{}, args ...script.AnyValue) Food {
 }
 
 func food2Data(food Food, q script.Ctx) script.Value {
+	if food == nil {
+		return js.Null()
+	}
 	switch reflect.TypeOf(food).Kind() {
 	case reflect.Func:
+		switch f := food.(type) {
+		case func(q script.Ctx) js.Value:
+			return f(q)
+		}
 		return script.RPC(food)(q)
 	default:
 		switch f := food.(type) {

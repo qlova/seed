@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/big"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
@@ -135,6 +136,20 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 			} else {
 				elem = reflect.ValueOf(false)
 			}
+		case reflect.TypeOf(url.URL{}):
+			s, err := strconv.Unquote(arg.String())
+			if err != nil {
+				log.Println(err)
+				u.Report(errors.New("invalid url"))
+				return
+			}
+			location, err := url.Parse(s)
+			if err != nil {
+				log.Println(err)
+				u.Report(errors.New("invalid url"))
+				return
+			}
+			elem = reflect.ValueOf(*location)
 		default:
 			var shell = reflect.New(f.Type().In(i)).Interface()
 			if err := json.NewDecoder(strings.NewReader(arg.String())).Decode(shell); err != nil {
@@ -190,6 +205,14 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 			return
 		}
 		buffer.Write(b)
+
+	case json.Marshaler:
+		encoded, err := v.MarshalJSON()
+		if err != nil {
+			fmt.Println("rpc function could not send return value: ", err)
+			return
+		}
+		buffer.Write(encoded)
 
 	default:
 		err := encoder.Encode(results[0].Interface())
