@@ -2,6 +2,7 @@ package repeater
 
 import (
 	"reflect"
+	"sort"
 
 	"qlova.org/seed"
 )
@@ -55,11 +56,24 @@ func New(data interface{}, options ...seed.Option) seed.Seed {
 			}
 		}
 	case reflect.Map:
-		for _, i := range value.MapKeys() {
+
+		//Deterministic render.
+		keys := make([]string, 0, value.Len())
+
+		for _, key := range value.MapKeys() {
+			var keystring, ok = key.Interface().(string)
+			if !ok {
+				panic("nondeterministic data type passed to repeater")
+			}
+			keys = append(keys, keystring)
+		}
+		sort.Strings(keys)
+
+		for _, key := range keys {
 			var d seedData
 			repeater.Read(&d)
 
-			d.data = Data{i.Interface(), value.MapIndex(i).Interface()}
+			d.data = Data{key, value.MapIndex(reflect.ValueOf(key)).Interface()}
 			repeater.Write(d)
 
 			for _, o := range options {

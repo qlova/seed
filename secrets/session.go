@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"qlova.org/seed/user"
+	"qlova.org/seed/client"
 )
 
 var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
@@ -65,9 +65,9 @@ func New(name ...string) Secret {
 }
 
 //For gets the session String value for the specified user.
-func (s Secret) For(u user.Ctx) string {
+func (s Secret) For(q client.Ctx) string {
 
-	for _, cookie := range u.Request().Cookies() {
+	for _, cookie := range q.Request().Cookies() {
 		if cookie.Name == s.string {
 
 			var data = Decrypt(cookie.Value)
@@ -86,7 +86,7 @@ func (s Secret) For(u user.Ctx) string {
 }
 
 //SetFor sets the session String value for the specified user.
-func (s Secret) SetFor(u user.Ctx, value string) {
+func (s Secret) SetFor(q client.Ctx, value string) {
 	var buffer [8]byte
 	binary.PutVarint(buffer[:], time.Now().Unix())
 
@@ -95,10 +95,10 @@ func (s Secret) SetFor(u user.Ctx, value string) {
 	if value != "" {
 		cookie = Encrypt(data)
 	}
-	http.SetCookie(u.ResponseWriter(), &http.Cookie{
+	http.SetCookie(q.ResponseWriter(), &http.Cookie{
 		Name:     s.string,
 		Value:    cookie,
-		Secure:   !isLocal(u.Request()),
+		Secure:   !isLocal(q.Request()),
 		HttpOnly: true,
 		Expires:  time.Now().Add(time.Hour * 24 * 30),
 		SameSite: http.SameSiteStrictMode,

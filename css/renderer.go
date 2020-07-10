@@ -3,6 +3,7 @@ package css
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"qlova.org/seed"
 )
@@ -31,7 +32,15 @@ func render(c seed.Seed, tracker map[string]struct{}) []byte {
 
 	//harvest sheets.
 	if len(data.sheets) > 0 {
-		for sheet := range data.sheets {
+
+		//Deterministic render.
+		keys := make([]string, 0, len(data.sheets))
+		for i := range data.sheets {
+			keys = append(keys, string(i))
+		}
+		sort.Strings(keys)
+
+		for _, sheet := range keys {
 			if _, ok := tracker[sheet]; !ok {
 				tracker[sheet] = struct{}{}
 

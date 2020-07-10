@@ -91,20 +91,20 @@ func Margin(first units.Unit, more ...units.Unit) css.Rule {
 
 //MarginTop sets the top outer-spacing of this seed.
 func MarginTop(u units.Unit) Style {
-	return css.SetPaddingTop(css.Measure(u))
+	return css.SetMarginTop(css.Measure(u))
 }
 
 //MarginBottom sets the bottom outer-spacing of this seed.
 func MarginBottom(u units.Unit) Style {
-	return css.SetPaddingBottom(css.Measure(u))
+	return css.SetMarginBottom(css.Measure(u))
 }
 
 //MarginLeft sets the outer-spacing to the left of this seed.
 func MarginLeft(u units.Unit) Style {
-	return css.SetPaddingLeft(css.Measure(u))
+	return css.SetMarginLeft(css.Measure(u))
 }
 
 //MarginRight sets the outer-spacing to the right of this seed.
 func MarginRight(u units.Unit) Style {
-	return css.SetPaddingRight(css.Measure(u))
+	return css.SetMarginRight(css.Measure(u))
 }

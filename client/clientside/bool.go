@@ -1,7 +1,6 @@
 package clientside
 
 import (
-	"github.com/google/uuid"
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
@@ -26,8 +25,7 @@ func (b *Bool) Variable() (Address, Memory) {
 		if b.Name != "" {
 			b.address = Address(b.Name)
 		} else {
-			id, _ := uuid.NewRandom()
-			b.address = Address(id.String())
+			b.address = NewAddress()
 		}
 	}
 	return b.address, b.Memory
@@ -139,4 +137,15 @@ func (b *Bool) If(options ...seed.Option) seed.Option {
 			})
 		}))
 	})
+}
+
+//Protect ensures that the given script will only have one running instance.
+func (b *Bool) Protect(do ...script.Script) script.Script {
+	return js.If(b.Not(),
+		js.Try(
+			script.New(b.Set(true), script.New(do...), b.Set(false)),
+		).Catch(
+			script.New(b.Set(false), js.Throw(js.NewValue("e"))),
+			"e"),
+	)
 }

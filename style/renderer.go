@@ -3,6 +3,7 @@ package style
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"qlova.org/seed"
 	"qlova.org/seed/css"
@@ -22,7 +23,16 @@ func (h harvester) harvest(c seed.Seed) map[string]*bytes.Buffer {
 	var data data
 	c.Read(&data)
 
-	for query, rules := range data.queries {
+	//Deterministic render.
+	keys := make([]string, 0, len(data.queries))
+	for i := range data.queries {
+		keys = append(keys, string(i))
+	}
+	sort.Strings(keys)
+
+	for _, query := range keys {
+		rules := data.queries[query]
+
 		if b, ok := h.queries[query]; !ok {
 			b = new(bytes.Buffer)
 			h.queries[query] = b
@@ -46,7 +56,16 @@ func init() {
 		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
-		for query, rules := range harvested {
+		//Deterministic render.
+		keys := make([]string, 0, len(harvested))
+		for i := range harvested {
+			keys = append(keys, string(i))
+		}
+		sort.Strings(keys)
+
+		for _, query := range keys {
+			rules := harvested[query]
+
 			fmt.Fprintf(&b, `%v {`, query)
 			b.Write(rules.Bytes())
 			fmt.Fprint(&b, `}`)

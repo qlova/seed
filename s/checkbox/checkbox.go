@@ -4,7 +4,6 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 
 	"qlova.org/seed/s/html/input"
 )
@@ -15,15 +14,6 @@ func New(options ...seed.Option) seed.Seed {
 		attr.Set("type", "checkbox"),
 		seed.Options(options),
 	)
-}
-
-func Var(sync state.Bool, options ...seed.Option) seed.Seed {
-	return New(seed.NewOption(func(c seed.Seed) {
-		c.With(
-			script.On("input", sync.Set(script.Element(c).Get("checked"))),
-			state.SetProperty("checked", sync),
-		)
-	}), seed.Options(options))
 }
 
 //SetReadOnly sets the textbox to be readonly.

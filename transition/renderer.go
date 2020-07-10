@@ -8,11 +8,7 @@ import (
 func init() {
 	script.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
-		seed.in = function(element, duration) {
-			if (element.classList.contains("page")) {
-				if (!seed.LastPage) return;
-			}
-		
+		seed.in = function(element, duration) {		
 			element.style.animationFillMode = "forwards";
 			element.style.animationDuration = duration+"s";
 			element.style.animationIterationCount = 1;
@@ -29,10 +25,7 @@ func init() {
 			});
 		}
 		seed.out = function(element, duration) {
-			if (element.classList.contains("page")) {
-				if (!seed.LastPage) return;
-			}
-		
+	
 			element.style.animationFillMode = "forwards";
 			element.style.animationDuration = duration+"s";
 			element.style.animationIterationCount = 1;

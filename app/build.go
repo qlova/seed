@@ -144,9 +144,8 @@ func (a App) build() {
 				`+onready+`
 
 				
-
 				window.addEventListener('resize', function() {
-					q.setvar("app.standalone", "", ((window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || window.name == 'installed'));
+					q.setvar("app.standalone", "", (document.fullscreen || (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || window.name == 'installed'));
 				});
 
 				let AddToHomeScreenEvent = null;
@@ -281,6 +280,9 @@ func (a App) build() {
 						}
 					}
 				}
+
+				if (seed.goto) seed.goto.ready();
+
 				});`),
 		),
 	)

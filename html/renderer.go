@@ -3,6 +3,7 @@ package html
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 
 	"qlova.org/seed"
@@ -35,7 +36,16 @@ func Render(c seed.Seed) []byte {
 		}
 
 		if data.Attributes != nil {
-			for property, value := range data.Attributes {
+
+			//Deterministic render.
+			keys := make([]string, 0, len(data.Attributes))
+			for i := range data.Attributes {
+				keys = append(keys, string(i))
+			}
+			sort.Strings(keys)
+
+			for _, property := range keys {
+				value := data.Attributes[property]
 				fmt.Fprintf(&b, " %v=%v ", property, strconv.Quote(value))
 			}
 		}
@@ -52,7 +62,16 @@ func Render(c seed.Seed) []byte {
 
 		if data.Style != nil || ok {
 			fmt.Fprint(&b, ` style="`)
-			for property, value := range data.Style {
+
+			//Deterministic render.
+			keys := make([]string, 0, len(data.Style))
+			for i := range data.Style {
+				keys = append(keys, string(i))
+			}
+			sort.Strings(keys)
+
+			for _, property := range keys {
+				value := data.Style[property]
 				fmt.Fprintf(&b, "%v: %v;", property, value)
 			}
 			if ok {

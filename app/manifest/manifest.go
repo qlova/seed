@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"path/filepath"
+	"strings"
 
 	//Need image support for working with mainfest icons.
 	_ "image/jpeg"
 	_ "image/png"
 
 	"os"
+
+	"qlova.org/seed/asset/inbed"
 )
 
 //Icon is an app-manifest icon.
@@ -70,7 +72,11 @@ func (manifest *Manifest) SetDescription(description string) {
 }
 
 func getImageDimension(imagePath string) string {
-	file, err := os.Open(imagePath)
+	if strings.Contains(imagePath, "?") {
+		imagePath = strings.Split(imagePath, "?")[0]
+	}
+
+	file, err := inbed.Open(imagePath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return "512x512"
@@ -93,7 +99,7 @@ func (manifest *Manifest) SetIcon(path string) {
 
 	var icon Icon
 	icon.Source = path
-	icon.Sizes = getImageDimension(filepath.Dir(os.Args[0]) + path)
+	icon.Sizes = getImageDimension(path)
 
 	manifest.Icons = append(manifest.Icons, icon)
 }

@@ -9,7 +9,6 @@ import (
 	"qlova.org/seed/client/render"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 
 	"qlova.org/seed/s/button"
 	"qlova.org/seed/s/column"
@@ -66,7 +65,7 @@ type TextField struct {
 }
 
 func (field TextField) AddTo(c seed.Seed) {
-	var Error = state.NewString("", state.Global())
+	var Error = new(clientside.String)
 
 	c.With(column.New(
 		field.Theme.Column,
@@ -77,11 +76,11 @@ func (field TextField) AddTo(c seed.Seed) {
 
 			seed.If(field.Required, SetRequired()),
 
-			Error.If(field.Theme.ErrorBox),
+			render.If(Error, field.Theme.ErrorBox),
 
-			script.OnInput(Error.Set(js.NewString(""))),
+			script.OnInput(Error.SetTo(js.NewString(""))),
 
-			state.Error(Error),
+			clientside.Catch(Error),
 
 			script.OnChange(field.Checker),
 
@@ -91,7 +90,7 @@ func (field TextField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		Error.If(
+		render.If(Error,
 			text.New(Error, field.Theme.ErrorText),
 		),
 	))
@@ -110,7 +109,7 @@ type FloatField struct {
 }
 
 func (field FloatField) AddTo(c seed.Seed) {
-	var Error = state.NewString("", state.Global())
+	var Error = new(clientside.String)
 
 	c.With(column.New(
 		field.Theme.Column,
@@ -121,11 +120,11 @@ func (field FloatField) AddTo(c seed.Seed) {
 
 			seed.If(field.Required, SetRequired()),
 
-			Error.If(field.Theme.ErrorBox),
+			render.If(Error, field.Theme.ErrorBox),
 
-			script.OnInput(Error.Set(js.NewString(""))),
+			script.OnInput(Error.SetTo(js.NewString(""))),
 
-			state.Error(Error),
+			clientside.Catch(Error),
 
 			script.OnChange(field.Checker),
 
@@ -135,7 +134,7 @@ func (field FloatField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		Error.If(
+		render.If(Error,
 			text.New(Error, field.Theme.ErrorText),
 		),
 	))
@@ -152,11 +151,11 @@ type EmailField struct {
 }
 
 func (field EmailField) AddTo(c seed.Seed) {
-	var Error = state.NewBool(state.Global())
+	var Error = new(clientside.Bool)
 
 	var Email = field.Update
 
-	checkEmail := Error.Set(Email.GetString().Includes(js.NewString("@")).Not())
+	checkEmail := Error.SetTo(Email.GetString().Includes(js.NewString("@")).Not())
 
 	c.With(column.New(
 		field.Theme.Column,
@@ -167,9 +166,9 @@ func (field EmailField) AddTo(c seed.Seed) {
 
 			seed.If(field.Required, SetRequired()),
 
-			Error.And(Email).If(field.Theme.ErrorBox),
+			render.If(clientop.And(Error, Email), field.Theme.ErrorBox),
 
-			script.OnInput(Error.Set(js.NewString(""))),
+			script.OnInput(Error.SetTo(js.NewString(""))),
 
 			script.OnChange(checkEmail),
 
@@ -179,7 +178,7 @@ func (field EmailField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		Error.And(Email).If(
+		render.If(clientop.And(Error, Email),
 			text.New("please input a valid email address", field.Theme.ErrorText),
 		),
 	))
@@ -196,7 +195,7 @@ type PasswordField struct {
 }
 
 func (field PasswordField) AddTo(c seed.Seed) {
-	var Error = state.NewString("", state.Global())
+	var Error = new(clientside.String)
 
 	var Password = field.Update
 	var PasswordToConfirm = &clientside.Secret{
@@ -221,11 +220,11 @@ func (field PasswordField) AddTo(c seed.Seed) {
 
 			seed.If(field.Required, SetRequired()),
 
-			Error.If(field.Theme.ErrorBox),
+			render.If(Error, field.Theme.ErrorBox),
 
-			script.OnInput(Error.Set(js.NewString(""))),
+			script.OnInput(Error.SetTo(js.NewString(""))),
 
-			state.Error(Error),
+			clientside.Catch(Error),
 
 			focusNextField(),
 
@@ -233,7 +232,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		Error.If(
+		render.If(Error,
 			text.New(Error, field.Theme.ErrorText),
 		),
 
@@ -285,7 +284,7 @@ func (submit SubmitButton) AddTo(c seed.Seed) {
 				}),
 
 				script.OnPress(func(q script.Ctx) {
-					q.If(script.Element(c).Call("reportValidity"),
+					q.If(js.Func("s.form.reportValidity").Call(script.Element(c)),
 						script.New(
 							Processing.Set(true),
 							submit.OnSubmit,

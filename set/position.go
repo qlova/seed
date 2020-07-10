@@ -2,6 +2,7 @@ package set
 
 import (
 	"qlova.org/seed/css"
+	"qlova.org/seed/units"
 )
 
 //Layer sets the z-index of this seed.
@@ -65,4 +66,24 @@ func Overlay(attachto ...side) Style {
 	}
 
 	return append(rules, css.SetPosition(css.Absolute))
+}
+
+//OffsetTop sets the top offset of this seed.
+func OffsetTop(u units.Unit) Style {
+	return css.SetTop(css.Measure(u))
+}
+
+//OffsetBottom sets the bottom offset of this seed.
+func OffsetBottom(u units.Unit) Style {
+	return css.SetBottom(css.Measure(u))
+}
+
+//OffsetLeft sets the offset to the left of this seed.
+func OffsetLeft(u units.Unit) Style {
+	return css.SetLeft(css.Measure(u))
+}
+
+//OffsetRight sets the offset to the right of this seed.
+func OffsetRight(u units.Unit) Style {
+	return css.SetRight(css.Measure(u))
 }

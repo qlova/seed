@@ -11,7 +11,6 @@ import (
 	"qlova.org/seed/s/html/div"
 	"qlova.org/seed/s/html/template"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 )
 
 //Field can be used to select feed data.
@@ -79,11 +78,8 @@ func (f Feed) New(options ...seed.Option) seed.Seed {
 		scripts = scripts.Append(script.Adopt(child))
 	}
 
-	var rerender script.Script = state.AdoptRefreshOfChildren(template)
-
 	var scriptsString strings.Builder
 	js.NewCtx(&scriptsString)(scripts)
-	js.NewCtx(&scriptsString)(rerender)
 
 	feed.With(
 		script.OnReady(js.Func("s.feed.orf").Run(js.NewValue("q"), js.NewString(script.ID(feed)), js.NewFunction(func(q script.Ctx) {
@@ -91,7 +87,6 @@ func (f Feed) New(options ...seed.Option) seed.Seed {
 		}), js.NewFunction(func(q script.Ctx) {
 			q("return async function(q) {")
 			q(scripts)
-			q(rerender)
 			q("};")
 		}))),
 	)

@@ -3,6 +3,7 @@ package clientside
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
@@ -70,7 +71,11 @@ func init() {
 
 				let all = document.querySelectorAll("."+id);
 
-				for (let child of all) await c.render(q, child);
+				for (let child of all) {
+					if (!child.classList.contains("page")) {
+						await c.render(q, child);
+					}
+				}
 				return;
 			}
 
@@ -83,7 +88,11 @@ func init() {
 		
 			if (l.onrender) await l.onrender();
 
-			for (let child of l.children) await c.render(q, child);
+			for (let child of l.children) {
+				if (!child.classList.contains("page")) {
+					await c.render(q, child);
+				}
+			}
 		}; c.r = c.render;
 
 		c.render = async (q, id) => {
@@ -95,7 +104,11 @@ func init() {
 
 				let all = document.querySelectorAll("."+id);
 
-				for (let child of all) await c.render(q, child);
+				for (let child of all) {
+					if (!child.classList.contains("page")) {
+						await c.render(q, child);
+					}
+				}
 				return;
 			}
 
@@ -108,7 +121,11 @@ func init() {
 		
 			if (l.onrender) await l.onrender();
 
-			for (let child of l.children) await c.render(q, child);
+			for (let child of l.children) {
+				if (!child.classList.contains("page")) {
+					await c.render(q, child);
+				}
+			}
 		}; c.r = c.render;
 
 		c.onrender = (q, id, exe) => {
@@ -181,7 +198,16 @@ func init() {
 
 		`)
 
-		for _, hook := range harvested.hooks {
+		//Deterministic render.
+		keys := make([]string, 0, len(harvested.hooks))
+		for i := range harvested.hooks {
+			keys = append(keys, string(i))
+		}
+		sort.Strings(keys)
+
+		for _, key := range keys {
+			hook := harvested.hooks[Address(key)]
+
 			address, memory := hook.variable.Variable()
 
 			var stringAddress = client.NewString(string(address))

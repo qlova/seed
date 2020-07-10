@@ -8,11 +8,13 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/NYTimes/gziphandler"
 
 	"qlova.org/seed/api"
 	"qlova.org/seed/asset/inbed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
@@ -73,8 +75,8 @@ func (a App) Handler() http.Handler {
 	var stylesheets = css.Stylesheets(app.document)
 	var imports = js.Imports()
 
-	//Checksum is used for versioning. TODO ensure deterministic renderers are used to prevent distributed versions from mismatching.
-	//This means use deterministic ordered-maps instead of default maps or sort the keys before iteration.
+	//Checksum is used for versioning, ensure deterministic renderers are used to prevent distributed versions from mismatching.
+	//use deterministic ordered-maps instead of default maps or sort the keys before iteration.
 	var checksum = md5.Sum(document)
 
 	var version = hex.EncodeToString(checksum[:])
@@ -95,7 +97,39 @@ func (a App) Handler() http.Handler {
 	}))
 
 	router.Handle("/call/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		if version, err := r.Cookie("version"); err == nil && version.Value != app.worker.Version {
+
+			http.SetCookie(w, &http.Cookie{
+				Name:   "version",
+				Value:  "",
+				Path:   "/",
+				MaxAge: -1,
+			})
+
+			w.Write([]byte(`document.body.onupdatefound();`))
+			return
+		}
+
 		script.Handler(w, r, r.URL.Path[6:])
+	}))
+
+	router.Handle("/go/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		if version, err := r.Cookie("version"); err == nil && version.Value != app.worker.Version {
+
+			http.SetCookie(w, &http.Cookie{
+				Name:   "version",
+				Value:  "",
+				Path:   "/",
+				MaxAge: -1,
+			})
+
+			w.Write([]byte(`document.body.onupdatefound();`))
+			return
+		}
+
+		client.Handler(w, r, r.URL.Path[4:])
 	}))
 
 	router.Handle("/seed.socket", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -152,6 +186,15 @@ func (a App) Handler() http.Handler {
 			w.Header().Set("Content-Type", "text/javascript")
 			fmt.Fprint(w, content)
 			return
+		}
+
+		if version, err := r.Cookie("version"); err != nil || version.Value == app.worker.Version {
+			http.SetCookie(w, &http.Cookie{
+				Name:    "version",
+				Value:   app.worker.Version,
+				Path:    "/",
+				Expires: time.Now().Add(24 * time.Hour),
+			})
 		}
 
 		w.Write(document)

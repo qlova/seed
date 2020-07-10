@@ -4,13 +4,12 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 
 	"qlova.org/seed/s/html/input"
 )
 
 //New returns a new textbox widget.
-func New(check state.AnyBool, options ...seed.Option) seed.Seed {
+func New(options ...seed.Option) seed.Seed {
 	return input.New(attr.Set("type", "radiobox"), seed.Options(options))
 }
 

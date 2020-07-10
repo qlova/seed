@@ -27,7 +27,7 @@ func newHarvester(parent seed.Seed) harvester {
 
 func Set(page Page) seed.Option {
 	return script.OnReady(func(q script.Ctx) {
-		fmt.Fprintf(q, `seed.goto.ready("%v");`, ID(page))
+		fmt.Fprintf(q, `seed.StartingPage = "%v";`, ID(page))
 	})
 }
 

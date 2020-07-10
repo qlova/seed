@@ -4,7 +4,6 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
-	"qlova.org/seed/state"
 	"qlova.org/seed/sum"
 )
 
@@ -20,8 +19,4 @@ func New(label sum.String, options ...seed.Option) seed.Seed {
 
 		seed.Options(options),
 	)
-}
-
-func Var(text state.String, options ...seed.Option) seed.Seed {
-	return New("", text.SetText(), seed.Options(options))
 }

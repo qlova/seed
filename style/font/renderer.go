@@ -3,6 +3,7 @@ package font
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"qlova.org/seed"
 	"qlova.org/seed/css"
@@ -38,7 +39,16 @@ func init() {
 		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
-		for _, font := range harvested {
+		//Deterministic render.
+		keys := make([]string, 0, len(harvested))
+		for i := range harvested {
+			keys = append(keys, i)
+		}
+		sort.Strings(keys)
+
+		for _, key := range keys {
+			font := harvested[key]
+
 			fmt.Fprint(&b, `@font-face {`)
 			b.Write(font.Bytes())
 			fmt.Fprint(&b, `}`)

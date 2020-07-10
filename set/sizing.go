@@ -15,6 +15,11 @@ func MaxWidth(w units.Unit) Style {
 	return css.SetMaxWidth(css.Measure(w))
 }
 
+//MinWidth sets the minumum width of this seed.
+func MinWidth(w units.Unit) Style {
+	return css.SetMinWidth(css.Measure(w))
+}
+
 //Height sets the target height of this seed.
 func Height(w units.Unit) Style {
 	return css.SetHeight(css.Measure(w))
@@ -23,6 +28,11 @@ func Height(w units.Unit) Style {
 //MaxHeight sets the maximum height of this seed.
 func MaxHeight(w units.Unit) Style {
 	return css.SetMaxHeight(css.Measure(w))
+}
+
+//MinHeight sets the minumum height of this seed.
+func MinHeight(w units.Unit) Style {
+	return css.SetMinWidth(css.Measure(w))
 }
 
 //Size sets the target size of this seed.

@@ -1,7 +1,9 @@
 package app
 
 import (
+	"qlova.org/seed/client"
 	"qlova.org/seed/js"
+	"qlova.org/seed/js/console"
 	"qlova.org/seed/js/location"
 
 	"qlova.org/seed/script"
@@ -12,6 +14,17 @@ func Reset() script.Script {
 	return func(q script.Ctx) {
 		q(`window.sessionStorage.clear(); window.localStorage.clear();  window.location = "/";`)
 	}
+}
+
+//Update updates the app.
+func Update() script.Script {
+	return script.New(console.Log(client.NewString("update")),
+		func(q script.Ctx) {
+			q(`document.cookie = "version=; max-age=-1;";`)
+			q(`if (window.ServiceWorker_Registration) await ServiceWorker_Registration.update();`)
+		},
+		Restart(),
+	)
 }
 
 //Restart restarts the app.

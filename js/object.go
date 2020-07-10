@@ -1,6 +1,7 @@
 package js
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -10,8 +11,19 @@ type NewObject map[string]AnyValue
 func (literal NewObject) GetObject() Object {
 	var object strings.Builder
 	object.WriteByte('{')
+
+	//Deterministic render.
+	keys := make([]string, 0, len(literal))
+	for i := range literal {
+		keys = append(keys, string(i))
+	}
+	sort.Strings(keys)
+
 	var i = 0
-	for key, value := range literal {
+
+	for _, key := range keys {
+		value := literal[key]
+
 		object.WriteString(strconv.Quote(key))
 		object.WriteByte(':')
 		object.WriteString(value.GetValue().String())

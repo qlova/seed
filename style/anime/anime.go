@@ -63,7 +63,7 @@ func (k KeyFrame) Rules() css.Rules {
 	return result
 }
 
-type Keyframes map[float32]css.Style
+type Keyframes map[float64]css.Style
 
 //New returns a new animation from the given keyframes.
 //It also takes a variable amount of options that will be applied to any seed with this animation set.

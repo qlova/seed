@@ -3,6 +3,7 @@ package signal
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"qlova.org/seed"
 	"qlova.org/seed/js"
@@ -23,7 +24,16 @@ func (h harvester) harvest(c seed.Seed) harvester {
 	var data data
 	c.Read(&data)
 
-	for signal, script := range data.handlers {
+	//Deterministic render.
+	keys := make([]string, 0, len(data.handlers))
+	for i := range data.handlers {
+		keys = append(keys, string(i.string))
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		signal := Type{key}
+		script := data.handlers[signal]
 		h.signals[signal] = h.signals[signal].Append(script)
 	}
 
@@ -41,7 +51,17 @@ func init() {
 
 		b.WriteString(`seed.signal = {`)
 
-		for signal, script := range harvested.signals {
+		//Deterministic render.
+		keys := make([]string, 0, len(harvested.signals))
+		for i := range harvested.signals {
+			keys = append(keys, string(i.string))
+		}
+		sort.Strings(keys)
+
+		for _, key := range keys {
+			signal := Type{key}
+			script := harvested.signals[signal]
+
 			fmt.Fprintf(&b, `"%v": async function() { try{`, signal.string)
 			js.NewCtx(&b)(script)
 			fmt.Fprint(&b, `} catch(e) {

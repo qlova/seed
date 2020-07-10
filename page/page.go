@@ -3,15 +3,14 @@ package page
 
 import (
 	"reflect"
-	"strconv"
 	"strings"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 	"qlova.org/seed/style"
 )
 
@@ -90,8 +89,11 @@ func OnExit(f script.Script) seed.Option {
 	return script.On("pageexit", f)
 }
 
-func State(p Page) state.State {
-	return state.New(state.SetKey("page"+ID(p)), state.SetRaw("(seed.CurrentPage && seed.CurrentPage.classList.contains("+strconv.Quote(ID(p)[1:])+"))"), state.ReadOnly())
+//Is returns true if the given page is the current page.
+func Is(p Page) *clientside.Bool {
+	return &clientside.Bool{
+		Name: "page " + ID(p)[1:],
+	}
 }
 
 type EnterIfOption struct {

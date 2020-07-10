@@ -6,7 +6,6 @@ import (
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 	"qlova.org/seed/sum"
 
 	"qlova.org/seed/s/html/input"
@@ -40,18 +39,6 @@ func Update(variable *clientside.String) seed.Option {
 			script.On("input", variable.SetTo(js.String{Value: script.Element(c).Get("value")})),
 		)
 	})
-}
-
-//Var returns text with a variable text argument.
-func Var(text state.String, options ...seed.Option) seed.Seed {
-	if text.Null() {
-		return New(nil, options...)
-	}
-	return New(seed.NewOption(func(c seed.Seed) {
-		c.With(script.On("input", func(q script.Ctx) {
-			text.Set(js.String{js.NewValue(script.Scope(c, q).Element() + `.value`)})(q)
-		}), text.SetValue())
-	}), seed.Options(options))
 }
 
 //SetPlaceholder sets the placeholder of the textbox.

@@ -2,15 +2,14 @@
 package paymentbox
 
 import (
-	"github.com/stripe/stripe-go"
-	"github.com/stripe/stripe-go/setupintent"
+	"github.com/stripe/stripe-go/v71"
+	"github.com/stripe/stripe-go/v71/setupintent"
 	"qlova.org/seed"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/html/div"
 	"qlova.org/seed/script"
 	"qlova.org/seed/signal"
-	"qlova.org/seed/user"
 )
 
 var StripePublishableKey string
@@ -62,7 +61,7 @@ func (s StripeBox) New(options ...seed.Option) seed.Seed {
 		signal.On(s.confirmCardSetup, func(q script.Ctx) {
 			var element = script.Element(PaymentBox).Var(q)
 
-			var secret = script.RPC(func(u user.Ctx) string {
+			var secret = script.RPC(func() (string, error) {
 				intent, err := setupintent.New(&stripe.SetupIntentParams{
 					PaymentMethodTypes: []*string{
 						stripe.String("card"),
@@ -70,11 +69,10 @@ func (s StripeBox) New(options ...seed.Option) seed.Seed {
 				})
 
 				if err != nil {
-					u.Report(err)
-					return ""
+					return "", err
 				}
 
-				return intent.ClientSecret
+				return intent.ClientSecret, nil
 			})(q).Var(q)
 
 			var result = js.Await(element.Get(`stripe`).Call(`confirmCardSetup`, secret, js.NewObject{

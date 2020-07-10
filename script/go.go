@@ -153,7 +153,7 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 		default:
 			var shell = reflect.New(f.Type().In(i)).Interface()
 			if err := json.NewDecoder(strings.NewReader(arg.String())).Decode(shell); err != nil {
-				log.Println("could not decode argument: ", err)
+				log.Println("could not decode argument: ", f.Type().In(i), arg.String(), err)
 				u.Report(errors.New("invalid request"))
 				return
 			}

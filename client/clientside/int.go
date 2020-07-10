@@ -1,7 +1,6 @@
 package clientside
 
 import (
-	"github.com/google/uuid"
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
 )
@@ -22,8 +21,7 @@ func (i *Int) Variable() (Address, Memory) {
 		if i.Name != "" {
 			i.address = Address(i.Name)
 		} else {
-			id, _ := uuid.NewRandom()
-			i.address = Address(id.String())
+			i.address = NewAddress()
 		}
 	}
 	return i.address, i.Memory
@@ -56,6 +54,13 @@ func (i *Int) Set(literal int) client.Script {
 	address, memory := i.Variable()
 	return js.Run(js.Func("q.setvar"), client.NewString(string(address)),
 		client.NewString(string(memory)), client.NewInt(literal))
+}
+
+//SetTo returns a script that sets the int to the given client.Int.
+func (i *Int) SetTo(v client.Int) client.Script {
+	address, memory := i.Variable()
+	return js.Run(js.Func("q.setvar"), client.NewString(string(address)),
+		client.NewString(string(memory)), v)
 }
 
 //Add adds the given literal value to the Int.

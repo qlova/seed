@@ -23,6 +23,11 @@ func (s String) Components() []client.Value {
 	return s.components
 }
 
+//Concat returns a+b
+func Concat(a, b js.AnyString) String {
+	return NewString(js.String{js.NewValue("(%v + %v)", a, b)}, a, b)
+}
+
 //Sprintf replaces the "%v" values in the fmt string with the given client values.
 func Sprintf(format string, args ...interface{}) String {
 

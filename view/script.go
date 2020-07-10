@@ -67,22 +67,14 @@ seed.view = async function(of, name, args, fragment) {
 	of.CurrentName = name;
 	of.CurrentView.args = args || {};
 	
-
 	if (of.LastView) {
 		if (of.LastView.onviewexit) await of.LastView.onviewexit(of);
-		
-		let state = seed.state[of.id+".view."+of.LastName];
-		if (state && state.changed) await state.changed(scope);
+		if (q.setvar) q.setvar(of.id+".view."+of.LastName, "", false);
 	}
-
-
-
 	{
 		if (of.CurrentView.onviewenter) await of.CurrentView.onviewenter(of);
-		let state = seed.state[of.id+".view."+name];
-		if (state && state.changed) await state.changed(scope);
+		if (q.setvar) q.setvar(of.id+".view."+name, "", true);
 	}
-	
 
 	if (of.view.in) {
 		promises.push(of.view.in);
@@ -97,7 +89,6 @@ seed.view = async function(of, name, args, fragment) {
 	for (let promise of promises) {
 		await promise;
 	}
-
 	
 	if (of.LastView) {
 		if (of.LastView == of.LoadingView) {
@@ -108,8 +99,6 @@ seed.view = async function(of, name, args, fragment) {
 	}
 
 	if (window.flipping) flipping.flip();
-
-
 
 	//Persistence.
 	localStorage.setItem(of.id+'.CurrentView', of.CurrentView.id);

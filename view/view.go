@@ -2,7 +2,6 @@
 package view
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -12,7 +11,6 @@ import (
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 	"qlova.org/seed/style"
 )
 
@@ -34,11 +32,11 @@ func (c Controller) Seed() seed.Seed {
 	return c.of
 }
 
-func (c Controller) State(v View) state.State {
-	return state.New(state.SetKey(script.ID(c.of)+".view."+Name(v)),
-		state.SetRaw(fmt.Sprintf("(q.get('%[1]v').CurrentView && q.get('%[1]v').CurrentView.classList.contains('%[2]v'))", script.ID(c.of), Name(v))),
-		state.ReadOnly(),
-	)
+//Is returns true if the given view is the current view of the given controller..
+func (c Controller) Is(v View) *clientside.Bool {
+	return &clientside.Bool{
+		Name: script.ID(c.of) + ".view." + Name(v),
+	}
 }
 
 //Goto returns a script that goes to the given view.

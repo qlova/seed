@@ -1,6 +1,7 @@
 package text
 
 import (
+	"fmt"
 	"image/color"
 	"strings"
 
@@ -46,6 +47,11 @@ func SetColor(c color.Color) css.Rule {
 //SetSize sets the font-size of the text.
 func SetSize(s units.Unit) css.Rule {
 	return css.SetFontSize(css.Measure(s))
+}
+
+//SetLineHeight sets the line-height of the text.
+func SetLineHeight(height float64) css.Rule {
+	return css.Set("line-height", fmt.Sprint(height))
 }
 
 //Center aligns the text to to the center.

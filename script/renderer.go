@@ -3,6 +3,7 @@ package script
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"qlova.org/seed"
 	"qlova.org/seed/js"
@@ -25,7 +26,15 @@ func render(child seed.Seed) []byte {
 	var d Data
 	child.Read(&d)
 
-	for event, handler := range d.On {
+	//Deterministic render.
+	keys := make([]string, 0, len(d.On))
+	for i := range d.On {
+		keys = append(keys, string(i))
+	}
+	sort.Strings(keys)
+
+	for _, event := range keys {
+		handler := d.On[event]
 		js.NewCtx(&b)(func(q Ctx) {
 			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Scope(child, q).Element(), event)
 			handler(q)
@@ -312,7 +321,15 @@ func adopt(child seed.Seed) Script {
 	var d Data
 	child.Read(&d)
 
-	for event, handler := range d.On {
+	//Deterministic render.
+	keys := make([]string, 0, len(d.On))
+	for i := range d.On {
+		keys = append(keys, string(i))
+	}
+	sort.Strings(keys)
+
+	for _, event := range keys {
+		handler := d.On[event]
 		var e = event
 		var h = handler
 		s = s.Append(func(q Ctx) {

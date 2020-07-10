@@ -1,7 +1,6 @@
 package clientside
 
 import (
-	"github.com/google/uuid"
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
 )
@@ -22,8 +21,7 @@ func (v *Float64) Variable() (Address, Memory) {
 		if v.Name != "" {
 			v.address = Address(v.Name)
 		} else {
-			id, _ := uuid.NewRandom()
-			v.address = Address(id.String())
+			v.address = NewAddress()
 		}
 	}
 	return v.address, v.Memory

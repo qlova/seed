@@ -3,6 +3,7 @@ package anime
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"qlova.org/seed"
 	"qlova.org/seed/css"
@@ -38,9 +39,27 @@ func init() {
 		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
-		for _, anim := range harvested {
+		//Deterministic render.
+		keys := make([]int, len(harvested))
+		for i := range harvested {
+			keys = append(keys, i)
+		}
+		sort.Ints(keys)
+
+		for _, key := range keys {
+			anim := harvested[key]
+
 			fmt.Fprintf(&b, `@keyframes a%v {`, anim.id)
-			for key, frame := range anim.keyframes {
+
+			//Deterministic render.
+			keys := make([]float64, len(anim.keyframes))
+			for i := range anim.keyframes {
+				keys = append(keys, i)
+			}
+			sort.Float64s(keys)
+
+			for _, key := range keys {
+				frame := anim.keyframes[key]
 
 				var x string = "var(--x, 0)"
 				var y string = "var(--y, 0)"

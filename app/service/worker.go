@@ -21,7 +21,7 @@ type Worker struct {
 
 func (worker Worker) renderMap(b *bytes.Buffer, mapping map[string]bool) {
 	//Deterministic render
-	keys := make([]string, len(mapping))
+	keys := make([]string, 0, len(mapping))
 	for i := range mapping {
 		keys = append(keys, i)
 	}

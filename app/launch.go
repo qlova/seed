@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -59,7 +60,7 @@ func launch(url string) {
 }
 
 //Launch launches the app.
-func (app App) Launch() error {
+func (a App) Launch() error {
 
 	var port = ":0"
 
@@ -68,9 +69,9 @@ func (app App) Launch() error {
 		port = os.Getenv("PORT")
 	}
 
-	app.port = port
+	a.port = port
 
-	handler := app.Handler()
+	handler := a.Handler()
 
 	listener, err := net.Listen("tcp", port)
 	if err != nil {
@@ -80,6 +81,11 @@ func (app App) Launch() error {
 	if port == ":0" {
 		go launch("http://" + listener.Addr().String())
 	}
+
+	var data app
+	a.Read(&data)
+
+	fmt.Printf("\nlaunching %v version %v on http://localhost%v\n", data.name, data.worker.Version, port)
 
 	return http.Serve(listener, handler)
 }

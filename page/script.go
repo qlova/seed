@@ -82,13 +82,11 @@ seed.goto = async function(id, args, url) {
 
 	if (seed.LastPage) {
 		if (seed.LastPage.onpageexit) await seed.LastPage.onpageexit();
-		let state = seed.state["page."+seed.LastPage.className];
-		if (state && state.unset) await state.unset();
+		if (q.setvar) await q.setvar(seed.LastPage.className, "", false);
 	}
 	{
 		if (seed.CurrentPage.onpageenter) await seed.CurrentPage.onpageenter();
-		let state = seed.state["page."+seed.CurrentPage.className];
-		if (state && state.set) await state.set();
+		if (q.setvar) await q.setvar(seed.CurrentPage.className, "", true);
 	}
 
 	if (!Refresh && c.r) await c.r(q, seed.CurrentPage);
@@ -117,6 +115,7 @@ seed.goto = async function(id, args, url) {
 	localStorage.setItem('*LastGotoTime', Date.now());
 	localStorage.setItem('*CurrentArgs', JSON.stringify(args || {}));
 	localStorage.setItem('*CurrentPath', path);
+	localStorage.setItem('*CurrentSearch', url);
 
 	if (!seed.goto.back && seed.production) history.pushState([id, args], data.title, path+url);
 	if (!seed.production) {
@@ -188,12 +187,11 @@ seed.goto.queue = [];
 seed.goto.back = false;
 seed.goto.history = [];
 
-seed.goto.ready = async function(id) {
-	seed.StartingPage = id;
-
+seed.goto.ready = async function() {
 	if (!seed.goto) return;
 
 	let saved_page = window.localStorage.getItem('*CurrentPage');
+	let saved_query = window.localStorage.getItem('*CurrentQuery');
 	let saved_path = window.localStorage.getItem('*CurrentPath');
 	let saved_args = {};
 	if (window.localStorage.getItem('*CurrentArgs') && 
@@ -206,33 +204,25 @@ seed.goto.ready = async function(id) {
 	//Parse the URL.
 	let path = window.location.pathname;
 
-	if (path != saved_path) {
+	if (!(path == saved_path && window.location.search == saved_query)) {
 		let templates = document.querySelectorAll('template');
 
 		templates = Array.prototype.slice.call(templates, 0);
 
+		templates = templates.filter(function(template) {
+			element = template.content.querySelector(".page");
+			return element;
+		})
+
 		templates.sort(function(x, y) {
 			element1 = x.content.querySelector(".page");
 			element2 = y.content.querySelector(".page");
-			if (!element1) {
-				if (!element2) {
-					return 0;
-				} else {
-					return 1;
-				}
-			} else {
-				if (!element2) {
-					return 0;
-				} else {
-					return -1;
-				}
-			}
 
-			if (element1.dataset.path.length<element2.dataset.path.length) {
-			return -1;
+			if (element1.dataset.path<element2.dataset.path) {
+				return 1;
 			}
-			if (element1.dataset.path.length>element2.dataset.path.length) {
-			return 1;
+			if (element1.dataset.path>element2.dataset.path) {
+				return -1;
 			}
 			return 0;
 		});
@@ -240,7 +230,7 @@ seed.goto.ready = async function(id) {
 		for (let template of templates) {
 			element = template.content.querySelector(".page");
 			if (element) {
-				if (element.dataset.path == path) {
+				if (element.dataset.path == path && window.location.search == "") {
 					if (await seed.goto(element.id, {})) {
 						return;
 					} else {
@@ -293,7 +283,7 @@ seed.goto.ready = async function(id) {
 		let last_time = +window.localStorage.getItem('*LastGotoTime');
 		let hibiscus = Date.now()-last_time;
 
-		if (hibiscus > 1000*60*10) {
+		if (hibiscus > 1000*60*10 && !saved_path) {
 			window.localStorage.removeItem('*CurrentPage');
 			window.localStorage.removeItem('*CurrentArgs');
 			seed.CurrentPage = seed.LoadingPage;

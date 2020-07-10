@@ -46,7 +46,7 @@ var Installable = &clientside.Bool{
 //Standalone is true when the app is running from an installed instance.
 var Standalone = &clientside.Bool{
 	Name:  "app.standalone",
-	Value: js.NewValue(`((window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || window.name == 'installed')`),
+	Value: js.NewValue(`(document.fullscreen || (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || window.name == 'installed')`),
 }
 
 //New returns a new App.

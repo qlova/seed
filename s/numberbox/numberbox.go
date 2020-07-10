@@ -7,7 +7,6 @@ import (
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/html/input"
 	"qlova.org/seed/script"
-	"qlova.org/seed/state"
 	"qlova.org/seed/sum"
 )
 
@@ -33,18 +32,6 @@ func New(s sum.Float64, options ...seed.Option) seed.Seed {
 		updater,
 		seed.Options(options),
 	)
-}
-
-//Var returns text with a variable text argument.
-func Var(f state.Float, options ...seed.Option) seed.Seed {
-	if f.Null() {
-		return New(nil, options...)
-	}
-	return New(seed.NewOption(func(c seed.Seed) {
-		c.With(script.On("input", func(q script.Ctx) {
-			f.Set(js.Number{js.NewValue(script.Scope(c, q).Element() + `.value`)})(q)
-		}), state.SetProperty("value", f))
-	}), seed.Options(options))
 }
 
 //SetPlaceholder sets the placeholder of the textbox.

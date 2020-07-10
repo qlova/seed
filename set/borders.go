@@ -25,16 +25,16 @@ func Rounded(first units.Unit, more ...units.Unit) css.Rule {
 		y := string(css.Measure(more[0]).Rule())
 		return css.Set("border-radius", fmt.Sprintf(`%v %v`, y, x))
 	case 2:
-		x := string(css.Measure(first).Rule())
-		top := string(css.Measure(more[0]).Rule())
-		bottom := string(css.Measure(more[1]).Rule())
-		return css.Set("border-radius", fmt.Sprintf(`%v %v %v`, top, x, bottom))
+		top := string(css.Measure(first).Rule())
+		bottomleft := string(css.Measure(more[0]).Rule())
+		bottomright := string(css.Measure(more[1]).Rule())
+		return css.Set("border-radius", fmt.Sprintf(`%v %v %v %v`, top, top, bottomright, bottomleft))
 	default:
-		left := string(css.Measure(first).Rule())
-		right := string(css.Measure(more[0]).Rule())
-		top := string(css.Measure(more[1]).Rule())
-		bottom := string(css.Measure(more[2]).Rule())
-		return css.Set("border-radius", fmt.Sprintf(`%v %v %v %v`, top, right, bottom, left))
+		topleft := string(css.Measure(first).Rule())
+		topright := string(css.Measure(more[0]).Rule())
+		bottomleft := string(css.Measure(more[1]).Rule())
+		bottomright := string(css.Measure(more[2]).Rule())
+		return css.Set("border-radius", fmt.Sprintf(`%v %v %v %v`, topleft, topright, bottomright, bottomleft))
 	}
 }
 

@@ -59,7 +59,7 @@ func (f Frame) Rules() css.Rules {
 }
 
 //Frames is a mapping between time and a keyframe.
-type Frames map[float32]css.Style
+type Frames map[float64]css.Style
 
 func (f Frames) addto(a *Animation) {
 	a.frames = f

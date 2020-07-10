@@ -2,6 +2,7 @@ package popup
 
 import (
 	"reflect"
+	"sort"
 
 	"qlova.org/seed"
 	"qlova.org/seed/client/clientside"
@@ -27,7 +28,16 @@ func (h harvester) harvest(c seed.Seed) {
 	var data data
 	c.Read(&data)
 
-	for _, p := range data.popups {
+	keys := make([]reflect.Type, 0, len(data.popups))
+	for i := range data.popups {
+		keys = append(keys, i)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i].String() < keys[j].String()
+	})
+
+	for _, t := range keys {
+		var p = data.popups[t]
 		var key = reflect.TypeOf(p)
 		if _, ok := h.Map[key]; !ok {
 
