@@ -281,7 +281,7 @@ func (a App) build() {
 					}
 				}
 
-				if (seed.goto) seed.goto.ready();
+				if (seed.goto) await seed.goto.ready();
 
 				});`),
 		),

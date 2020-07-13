@@ -11,15 +11,13 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
-	"qlova.org/seed/sum"
 	"qlova.org/seed/units"
 )
 
 //New returns a new text widget.
-func New(text sum.String, options ...seed.Option) seed.Seed {
+func New(options ...seed.Option) seed.Seed {
 	return seed.New(
 		html.SetTag("p"),
-		html.SetInnerText(text),
 		seed.Options(options),
 	)
 }
@@ -36,7 +34,7 @@ func Set(value string) seed.Option {
 
 //SetTo sets the text content of the text.
 func SetTo(value client.String) seed.Option {
-	return html.SetInnerText(value)
+	return html.SetInnerTextTo(value)
 }
 
 //SetColor sets the color of the text.

@@ -48,7 +48,7 @@ var id int64
 
 //New returns a new font.
 func New(path string) Font {
-	path = asset.Path(path).(string)
+	path = asset.Path(path)
 
 	id++
 

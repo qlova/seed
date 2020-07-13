@@ -5,37 +5,23 @@ import (
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html/attr"
-	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/sum"
 
 	"qlova.org/seed/s/html/textarea"
+	"qlova.org/seed/s/textbox"
 )
 
 //New returns a new textbox widget.
-func New(text sum.String, options ...seed.Option) seed.Seed {
-	_, variable := sum.ToString(text)
-
-	var updater seed.Option
-
-	switch v := variable.(type) {
-	case *clientside.String:
-		updater = seed.NewOption(func(c seed.Seed) {
-			clientside.Hook(v, c)
-			c.With(
-				script.On("render", script.Element(c).Set("value", v)),
-				script.On("input", v.SetTo(js.String{Value: script.Element(c).Get("value")})),
-			)
-		})
-	case seed.Option:
-		updater = v
-	}
-
+func New(options ...seed.Option) seed.Seed {
 	return textarea.New(
-		updater,
 		css.SetResize(css.None),
 		seed.Options(options),
 	)
+}
+
+//Update updates the given variable whenever the textbox text is modified.
+func Update(variable *clientside.String) seed.Option {
+	return textbox.Update(variable)
 }
 
 //SetPlaceholder sets the placeholder of the textbox.

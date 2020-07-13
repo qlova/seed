@@ -70,8 +70,8 @@ func (field TextField) AddTo(c seed.Seed) {
 	c.With(column.New(
 		field.Theme.Column,
 
-		text.New(field.Title, field.Theme.Title),
-		textbox.New(field.Update, field.Theme.Box,
+		text.New(text.Set(field.Title), field.Theme.Title),
+		textbox.New(textbox.Update(field.Update), field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
@@ -91,7 +91,7 @@ func (field TextField) AddTo(c seed.Seed) {
 		),
 
 		render.If(Error,
-			text.New(Error, field.Theme.ErrorText),
+			text.New(text.SetTo(Error), field.Theme.ErrorText),
 		),
 	))
 }
@@ -114,8 +114,8 @@ func (field FloatField) AddTo(c seed.Seed) {
 	c.With(column.New(
 		field.Theme.Column,
 
-		text.New(field.Title, field.Theme.Title),
-		numberbox.New(field.Update, field.Theme.Box,
+		text.New(text.Set(field.Title), field.Theme.Title),
+		numberbox.New(numberbox.Update(field.Update), field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
@@ -135,7 +135,7 @@ func (field FloatField) AddTo(c seed.Seed) {
 		),
 
 		render.If(Error,
-			text.New(Error, field.Theme.ErrorText),
+			text.New(text.SetTo(Error), field.Theme.ErrorText),
 		),
 	))
 }
@@ -160,8 +160,8 @@ func (field EmailField) AddTo(c seed.Seed) {
 	c.With(column.New(
 		field.Theme.Column,
 
-		text.New(field.Title, field.Theme.Title),
-		emailbox.New(field.Update, field.Theme.Box,
+		text.New(text.Set(field.Title), field.Theme.Title),
+		emailbox.New(textbox.Update(field.Update), field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
@@ -179,7 +179,7 @@ func (field EmailField) AddTo(c seed.Seed) {
 		),
 
 		render.If(clientop.And(Error, Email),
-			text.New("please input a valid email address", field.Theme.ErrorText),
+			text.New(text.Set("please input a valid email address"), field.Theme.ErrorText),
 		),
 	))
 }
@@ -213,7 +213,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 	c.With(column.New(
 		field.Theme.Column,
 
-		text.New(field.Title, field.Theme.Title),
+		text.New(text.Set(field.Title), field.Theme.Title),
 		passwordbox.New(field.Theme.Box,
 
 			passwordbox.Update(field.Update),
@@ -233,11 +233,11 @@ func (field PasswordField) AddTo(c seed.Seed) {
 		),
 
 		render.If(Error,
-			text.New(Error, field.Theme.ErrorText),
+			text.New(text.SetTo(Error), field.Theme.ErrorText),
 		),
 
 		seed.If(field.Confirm,
-			text.New("Confirm "+field.Title, field.Theme.Title),
+			text.New(text.Set("Confirm "+field.Title), field.Theme.Title),
 			passwordbox.New(field.Theme.Box,
 
 				passwordbox.Update(PasswordToConfirm),
@@ -253,7 +253,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 			),
 
 			render.If(clientop.And(PasswordMismatched, Password.GetBool()),
-				text.New("this password is different from the one above", field.Theme.ErrorText),
+				text.New(text.Set("this password is different from the one above"), field.Theme.ErrorText),
 			),
 		),
 	))
@@ -273,10 +273,10 @@ func (submit SubmitButton) AddTo(c seed.Seed) {
 	var Processing = new(clientside.Bool)
 
 	c.With(
-		render.If(Error, text.New(Error, submit.ThemeError)),
+		render.If(Error, text.New(text.SetTo(Error), submit.ThemeError)),
 
 		Processing.Not().If(
-			button.New(submit.Title, submit.Theme,
+			button.New(text.Set(submit.Title), submit.Theme,
 
 				script.OnError(func(q script.Ctx, err script.Error) {
 					q(Error.SetTo(err.String))

@@ -6,26 +6,13 @@ import (
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/sum"
 
 	"qlova.org/seed/s/html/input"
 )
 
 //New returns a new textbox widget.
-func New(text sum.String, options ...seed.Option) seed.Seed {
-	_, variable := sum.ToString(text)
-
-	var updater seed.Option
-
-	switch v := variable.(type) {
-	case *clientside.String:
-		updater = Update(v)
-	case seed.Option:
-		updater = v
-	}
-
+func New(options ...seed.Option) seed.Seed {
 	return input.New(
-		updater,
 		seed.Options(options),
 	)
 }

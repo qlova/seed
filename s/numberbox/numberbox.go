@@ -7,31 +7,25 @@ import (
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/html/input"
 	"qlova.org/seed/script"
-	"qlova.org/seed/sum"
 )
 
 //New returns a new textbox widget.
-func New(s sum.Float64, options ...seed.Option) seed.Seed {
-	_, variable := sum.ToFloat64(s)
-
-	var updater seed.Option
-
-	switch v := variable.(type) {
-	case *clientside.Float64:
-		updater = seed.NewOption(func(c seed.Seed) {
-			clientside.Hook(v, c)
-			c.With(
-				script.On("render", script.Element(c).Set("value", v)),
-				script.On("input", v.SetTo(js.Number{Value: js.Func("Number").Call(script.Element(c).Get("value"))})),
-			)
-		})
-	}
-
+func New(options ...seed.Option) seed.Seed {
 	return input.New(
 		attr.Set("type", "number"),
-		updater,
 		seed.Options(options),
 	)
+}
+
+//Update syncs the given variable with the numberbox's value.
+func Update(variable *clientside.Float64) seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		clientside.Hook(variable, c)
+		c.With(
+			script.On("render", script.Element(c).Set("value", variable)),
+			script.On("input", variable.SetTo(js.Number{Value: script.Element(c).Get("value")})),
+		)
+	})
 }
 
 //SetPlaceholder sets the placeholder of the textbox.

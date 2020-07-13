@@ -1,7 +1,6 @@
 package asset
 
 import (
-	"reflect"
 	"strings"
 
 	"qlova.org/seed"
@@ -11,7 +10,6 @@ import (
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
-	"qlova.org/seed/sum"
 )
 
 func init() {
@@ -28,25 +26,25 @@ func init() {
 }
 
 //Path returns the correct path from the given base path.
-func Path(src sum.String) sum.String {
-	switch p := src.(type) {
-	case string:
-		assets.New(p)
-		if !strings.HasPrefix(p, "/") && !strings.HasPrefix(p, "http") {
-			return "/assets/" + p
-		}
-		return p
+func Path(src string) string {
+	assets.New(src)
+	if !strings.HasPrefix(src, "/") && !strings.HasPrefix(src, "http") {
+		return "/assets/" + src
+	}
+	return src
+}
 
+//PathOf returns the correct path from the given base path.
+func PathOf(src client.String) client.String {
+	switch p := src.(type) {
 	case clientfmt.String:
 		return clientfmt.NewString(js.String{Value: js.Func("seed.asset").Call(p)}, p)
 
 	case *clientside.String:
 		return clientfmt.NewString(js.String{Value: js.Func("seed.asset").Call(p)}, p)
 
-	case client.Value:
+	case client.String:
 		return js.String{Value: js.Func("seed.asset").Call(p)}
-
-	default:
-		panic("asset.Path: invalid argument " + reflect.TypeOf(src).String())
 	}
+	return nil
 }

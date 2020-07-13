@@ -2,16 +2,24 @@ package iframe
 
 import (
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
-	"qlova.org/seed/sum"
 )
 
 //New returns a new HTML input element.
-func New(src sum.String, options ...seed.Option) seed.Seed {
+func New(options ...seed.Option) seed.Seed {
 	return seed.New(
 		html.SetTag("iframe"),
-		attr.Set("src", src),
+
 		seed.Options(options),
 	)
+}
+
+func Set(src string) seed.Option {
+	return attr.Set("src", src)
+}
+
+func SetTo(src client.String) seed.Option {
+	return attr.SetTo("src", src)
 }

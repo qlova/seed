@@ -10,7 +10,6 @@ import (
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/script"
-	"qlova.org/seed/sum"
 )
 
 //Data stores html data with a seed.
@@ -118,20 +117,10 @@ func Set(html string) seed.Option {
 }
 
 //SetAttribute returns an option that sets an HTML attribute of this seed.
-func SetAttribute(name string, value sum.String) seed.Option {
-
-	var constant, variable = sum.ToString(value)
-
+func SetAttribute(name string, constant string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data Data
 		c.Read(&data)
-
-		if variable != nil {
-			clientside.Hook(variable, c)
-			client.OnRender(
-				script.Element(c).Run("setAttribute", client.NewString(name), variable.GetString()),
-			).AddTo(c)
-		}
 
 		switch q := c.(type) {
 		case script.Seed:
@@ -150,6 +139,18 @@ func SetAttribute(name string, value sum.String) seed.Option {
 		}
 
 		c.Write(data)
+	})
+}
+
+//SetAttributeTo returns an option that sets an HTML attribute of this seed.
+func SetAttributeTo(name string, variable client.String) seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		if variable != nil {
+			clientside.Hook(variable, c)
+			client.OnRender(
+				script.Element(c).Run("setAttribute", client.NewString(name), variable.GetString()),
+			).AddTo(c)
+		}
 	})
 }
 
@@ -174,18 +175,8 @@ func SetStyle(property, value string) seed.Option {
 }
 
 //SetInnerText returns an option that sets the HTML innerText associated with the seed.
-func SetInnerText(text sum.String) seed.Option {
-
-	var constant, variable = sum.ToString(text)
-
+func SetInnerText(constant string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-
-		if variable != nil {
-			clientside.Hook(variable, c)
-			client.OnRender(
-				script.Element(c).Set("innerText", variable.GetString()),
-			).AddTo(c)
-		}
 
 		var data Data
 		c.Read(&data)
@@ -203,5 +194,17 @@ func SetInnerText(text sum.String) seed.Option {
 		}
 
 		c.Write(data)
+	})
+}
+
+//SetInnerTextTo returns an option that sets the HTML innerText associated with the seed.
+func SetInnerTextTo(variable client.String) seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		if variable != nil {
+			clientside.Hook(variable, c)
+			client.OnRender(
+				script.Element(c).Set("innerText", variable.GetString()),
+			).AddTo(c)
+		}
 	})
 }

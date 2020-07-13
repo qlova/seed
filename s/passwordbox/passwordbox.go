@@ -12,7 +12,7 @@ import (
 
 //New returns a new passwordbox widget.
 func New(options ...seed.Option) seed.Seed {
-	return textbox.New(nil, attr.Set("type", "password"), seed.Options(options))
+	return textbox.New( attr.Set("type", "password"), seed.Options(options))
 }
 
 //Update updates the given variable whenever the textbox text is modified.
