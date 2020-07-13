@@ -262,7 +262,7 @@ func Download(fn interface{}, args ...Value) Script {
 
 		goExports[name] = value
 
-		var CallingString = `/call/` + name + `?`
+		var CallingString = `/go/` + name + `?`
 
 		var formdata = script.Unique()
 
