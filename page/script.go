@@ -27,6 +27,10 @@ seed.LastPage = null;
 seed.goto = async function(id, args, url) {
 	if(!url) url = "";
 
+	if (!id) {
+		return false;
+	}
+
 	//Don't goto if we are already going to something.
 	if (seed.NextPage != null) {
 		seed.goto.queue.push(arguments);
