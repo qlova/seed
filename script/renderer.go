@@ -60,7 +60,7 @@ func Render(root seed.Seed) []byte {
 	var b bytes.Buffer
 
 	b.WriteString(`seed = {}; seeds = {}; c = seed; s = seeds;
-seed.production = (location.hostname != "localhost" && location.hostname != "127.0.0.1" && location.hostname != "[::]");
+seed.production = (location.hostname != "localhost" && location.hostname != "127.0.0.1" && location.hostname != "[::]" && location.hostname != "[::1]");
 
 seed.op = function(element, func, propagate) {
 	let handler = async function(event) {
