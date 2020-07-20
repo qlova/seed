@@ -28,7 +28,7 @@ func (h *harvester) harvest(c seed.Seed) harvester {
 	for _, hook := range data.hooks {
 		var address, _ = hook.variable.Variable()
 		var update = h.hooks[address]
-		update.do = update.do.Append(hook.do)
+		update.do = js.Append(update.do, hook.do)
 		update.variable = hook.variable
 		update.render.Add(hook.render.Slice()...)
 		h.hooks[address] = update

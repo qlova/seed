@@ -21,6 +21,10 @@ func newMacroWriter(w io.Writer, seeds ...seed.Seed) macroWriter {
 	return macroWriter{bufio.NewWriter(w), seeds}
 }
 
+func (m macroWriter) Flush() {
+	m.w.Flush()
+}
+
 func (m macroWriter) Write(data []byte) (int, error) {
 	for i := 0; i < len(data); i++ {
 		b := data[i]

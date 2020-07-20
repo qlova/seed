@@ -222,8 +222,8 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 
 	//This is slow for arrays.
-	u.Execute(func(q Ctx) {
+	u.Execute(js.Script(func(q Ctx) {
 		q(fmt.Sprintf(`return %v;`, buffer.String()))
-	})
+	}))
 	return
 }

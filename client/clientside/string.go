@@ -4,7 +4,6 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 //String is a string variable in client memory.
@@ -70,7 +69,7 @@ func (s *String) OnChange(do ...client.Script) seed.Option {
 		c.Read(&data)
 		data.hooks = append(data.hooks, hook{
 			variable: s,
-			do:       script.New(do...),
+			do:       client.NewScript(do...),
 		})
 		c.Write(data)
 	})

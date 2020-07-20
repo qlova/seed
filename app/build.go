@@ -6,6 +6,7 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/app/manifest"
 	"qlova.org/seed/asset/assets"
+	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
@@ -53,7 +54,7 @@ func (a App) build() {
 			}
 		})),
 
-		script.OnReady(clientside.Render(app.document.Body)),
+		client.OnLoad(clientside.Render(app.document.Body)),
 	)
 
 	app.document.Body.With(

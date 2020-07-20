@@ -35,13 +35,13 @@ func Restart() script.Script {
 }
 
 //Launch launches the current app as new window in an installed state.
-func Launch() script.Script {
+func Launch() client.Script {
 	return js.Func("launch").Run(location.Origin, js.NewString("installed"), js.NewNumber(800), js.NewNumber(600))
 }
 
 //Install installs the app as a PWA installed application on supported browsers.
-func Install() script.Script {
-	return script.New(
+func Install() client.Script {
+	return client.NewScript(
 		Installable.Set(false),
 		js.Func("install").Run(),
 	)

@@ -2,6 +2,7 @@ package filepicker
 
 import (
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
 	"qlova.org/seed/script"
@@ -18,18 +19,9 @@ func New(options ...seed.Option) seed.Seed {
 	return input.New(attr.Set("type", "file"), seed.Options(options))
 }
 
-//Var returns a filepicker that sets the attachment to reflect the user's input.
-func Var(a attachment.Attachment, options ...seed.Option) seed.Seed {
-	return New(seed.NewOption(func(c seed.Seed) {
-		c.With(script.On("input", func(q script.Ctx) {
-			a.Set(js.NewValue(script.Scope(c, q).Element() + `.files[0]`))(q)
-		}))
-	}), seed.Options(options))
-}
-
 //SelectFile asks the user to select a file, if and only if they do select a file, the handler will be called.
 //There is no way to tell if the user did not select a file.
-func SelectFile(handler func(File) script.Script) script.Script {
+func SelectFile(handler func(File) client.Script) script.Script {
 	var a = attachment.New()
 
 	return func(q script.Ctx) {

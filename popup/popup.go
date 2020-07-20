@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/s/html/div"
@@ -106,10 +107,10 @@ func (c Manager) Hide(p Popup) script.Script {
 	}
 }
 
-func OnShow(f script.Script) seed.Option {
-	return script.On("show", f)
+func OnShow(f client.Script) seed.Option {
+	return client.On("show", f.GetScript())
 }
 
-func OnHide(f script.Script) seed.Option {
-	return script.On("hide", f)
+func OnHide(f client.Script) seed.Option {
+	return client.On("hide", f.GetScript())
 }

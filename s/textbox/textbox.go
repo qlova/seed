@@ -2,6 +2,7 @@ package textbox
 
 import (
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
@@ -22,8 +23,8 @@ func Update(variable *clientside.String) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		clientside.Hook(variable, c)
 		c.With(
-			script.On("render", script.Element(c).Set("value", variable)),
-			script.On("input", variable.SetTo(js.String{Value: script.Element(c).Get("value")})),
+			client.On("render", script.Element(c).Set("value", variable)),
+			client.On("input", variable.SetTo(js.String{Value: script.Element(c).Get("value")})),
 		)
 	})
 }

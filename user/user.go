@@ -48,9 +48,11 @@ func (u Ctx) Serve(handler http.Handler) {
 }
 
 //Execute sends and evaluates the provided javascript.
-func (u Ctx) Execute(script js.Script) error {
+func (u Ctx) Execute(script js.AnyScript) error {
 	if u.w != nil {
-		js.NewCtx(u.w)(script)
+		ctx := js.NewCtx(u.w)
+		ctx(script.GetScript())
+		ctx.Flush()
 		return nil
 	}
 

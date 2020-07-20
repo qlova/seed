@@ -9,4 +9,5 @@ require (
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/minify/v2 v2.7.3
 	github.com/tdewolff/parse v2.3.4+incompatible
+	qlova.tech/rgb v1.0.1
 )

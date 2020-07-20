@@ -5,6 +5,22 @@ import (
 	"qlova.org/seed/script"
 )
 
+type Script = js.AnyScript
+
+func NewScript(do ...Script) Script {
+	var s js.Script
+	for _, scriptable := range do {
+		if scriptable == nil {
+			continue
+		}
+		s = s.Append(scriptable.GetScript())
+	}
+	if s == nil {
+		return js.Script(func(q js.Ctx) {})
+	}
+	return s
+}
+
 type Object = js.AnyObject
 
 type Bool = js.AnyBool

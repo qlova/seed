@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
@@ -81,12 +82,12 @@ type data struct {
 
 var seeds = make(map[seed.Seed]data)
 
-func OnEnter(f script.Script) seed.Option {
-	return script.On("pageenter", f)
+func OnEnter(f client.Script) seed.Option {
+	return client.On("pageenter", f)
 }
 
-func OnExit(f script.Script) seed.Option {
-	return script.On("pageexit", f)
+func OnExit(f client.Script) seed.Option {
+	return client.On("pageexit", f)
 }
 
 //Is returns true if the given page is the current page.
@@ -98,14 +99,14 @@ func Is(p Page) *clientside.Bool {
 
 type EnterIfOption struct {
 	condition js.AnyBool
-	otherwise script.Script
+	otherwise client.Script
 }
 
 func EnterIf(condition js.AnyBool) EnterIfOption {
 	return EnterIfOption{condition, nil}
 }
 
-func (e EnterIfOption) Else(do script.Script) seed.Option {
+func (e EnterIfOption) Else(do client.Script) seed.Option {
 	e.otherwise = do
 	return e
 }
@@ -116,7 +117,7 @@ func (e EnterIfOption) AddTo(c seed.Seed) {
 	}
 
 	if e.otherwise != nil {
-		condition["otherwise"] = js.NewFunction(e.otherwise)
+		condition["otherwise"] = e.otherwise.GetFunction()
 	}
 
 	c.With(

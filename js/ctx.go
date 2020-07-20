@@ -8,6 +8,11 @@ import (
 	"qlova.org/seed"
 )
 
+type AnyScript interface {
+	AnyFunction
+	GetScript() Script
+}
+
 //Script is any js script.
 type Script func(Ctx)
 
@@ -19,8 +24,31 @@ func (s Script) GetValue() Value {
 	return s.GetFunction().Value
 }
 
+func (s Script) GetScript() Script {
+	return s
+}
+
 func (s Script) GetFunction() Function {
 	return NewFunction(s)
+}
+
+func Append(a, b AnyScript) Script {
+	if a == nil {
+		if b == nil {
+			return func(Ctx) {}
+		}
+		return b.GetScript()
+	}
+	if b == nil {
+		if a == nil {
+			return func(Ctx) {}
+		}
+		return a.GetScript()
+	}
+	return func(c Ctx) {
+		a.GetScript()(c)
+		b.GetScript()(c)
+	}
 }
 
 //Append appends two scripts to return a new script.
@@ -45,7 +73,7 @@ type Ctx func(interface{})
 func NewCtx(w io.Writer, seeds ...seed.Seed) Ctx {
 	var ctx func(in interface{})
 
-	w = newMacroWriter(w, seeds...)
+	mw := newMacroWriter(w, seeds...)
 
 	ctx = func(in interface{}) {
 		switch arg := in.(type) {
@@ -61,14 +89,16 @@ func NewCtx(w io.Writer, seeds ...seed.Seed) Ctx {
 			if arg != nil {
 				arg(ctx)
 			}
+		case error:
+			mw.Flush()
 		case rune:
-			fmt.Fprint(w, string(arg))
+			fmt.Fprint(mw, string(arg))
 		case string:
-			fmt.Fprint(w, arg)
+			fmt.Fprint(mw, arg)
 		case []byte:
-			w.Write(arg)
+			mw.Write(arg)
 		case AnyValue:
-			fmt.Fprint(w, arg.GetValue())
+			fmt.Fprint(mw, arg.GetValue())
 		case seed.Option:
 			for _, c := range seeds {
 				arg.AddTo(c)
@@ -85,6 +115,10 @@ func NewCtx(w io.Writer, seeds ...seed.Seed) Ctx {
 func (q Ctx) Write(b []byte) (int, error) {
 	q(b)
 	return len(b), nil
+}
+
+func (q Ctx) Flush() {
+	q(io.EOF)
 }
 
 var unique int

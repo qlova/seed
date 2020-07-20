@@ -3,6 +3,7 @@ package clientfmt
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
@@ -24,8 +25,19 @@ func (s String) Components() []client.Value {
 }
 
 //Concat returns a+b
-func Concat(a, b js.AnyString) String {
-	return NewString(js.String{js.NewValue("(%v + %v)", a, b)}, a, b)
+func Concat(first client.String, more ...client.String) String {
+	var result strings.Builder
+	result.WriteByte('(')
+	result.WriteString(first.GetString().String())
+
+	for _, element := range more {
+		result.WriteByte('+')
+		result.WriteString(element.GetString().String())
+	}
+
+	result.WriteByte(')')
+
+	return NewString(js.String{Value: js.NewValue(result.String())})
 }
 
 //Sprintf replaces the "%v" values in the fmt string with the given client values.

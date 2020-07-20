@@ -5,6 +5,7 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client/render"
+	"qlova.org/seed/js"
 	"qlova.org/seed/script"
 )
 
@@ -25,10 +26,10 @@ func Set(starting View) seed.Option {
 				script.Scope(c, q).Element(), Name(starting))
 		}))
 
-		c.With(render.On(func(q script.Ctx) {
+		c.With(render.On(js.Script(func(q script.Ctx) {
 
 			fmt.Fprintf(q, `if (%[1]v.CurrentView) { %[1]v.CurrentView.args = %[2]v; if (%[1]v.CurrentView.onviewenter) %[1]v.CurrentView.onviewenter();  }`,
 				script.Scope(c, q).Element(), args.GetObject().String())
-		}))
+		})))
 	})
 }

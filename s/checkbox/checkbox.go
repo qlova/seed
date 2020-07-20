@@ -2,7 +2,10 @@ package checkbox
 
 import (
 	"qlova.org/seed"
+	"qlova.org/seed/client"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/html/attr"
+	"qlova.org/seed/js"
 	"qlova.org/seed/script"
 
 	"qlova.org/seed/s/html/input"
@@ -14,6 +17,17 @@ func New(options ...seed.Option) seed.Seed {
 		attr.Set("type", "checkbox"),
 		seed.Options(options),
 	)
+}
+
+//Update updates the given variable whenever the checkbox value is modified.
+func Update(variable *clientside.Bool) seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		clientside.Hook(variable, c)
+		c.With(
+			client.On("render", script.Element(c).Set("checked", variable)),
+			client.On("input", variable.SetTo(js.Bool{Value: script.Element(c).Get("checked")})),
+		)
+	})
 }
 
 //SetReadOnly sets the textbox to be readonly.

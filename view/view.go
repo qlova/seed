@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
@@ -113,10 +114,10 @@ type data struct {
 	views map[reflect.Type]bool
 }
 
-func OnEnter(f script.Script) seed.Option {
-	return script.On("viewenter", f)
+func OnEnter(f client.Script) seed.Option {
+	return client.On("viewenter", f)
 }
 
-func OnExit(f script.Script) seed.Option {
-	return script.On("viewexit", f)
+func OnExit(f client.Script) seed.Option {
+	return client.On("viewexit", f)
 }

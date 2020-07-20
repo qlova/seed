@@ -6,13 +6,14 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/asset"
+	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/page"
 	"qlova.org/seed/script"
 )
 
 func OnUpdateFound(do script.Script) seed.Option {
-	return script.On("updatefound", do)
+	return client.On("updatefound", do)
 }
 
 //SetLoadingPage sets the loading page of this app.

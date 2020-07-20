@@ -77,6 +77,10 @@ func Measure(u units.Unit) Unit {
 		return Rem(q)
 	case "vmin":
 		return Vmin(q)
+	case "vh":
+		return Vh(q)
+	case "vw":
+		return Vw(q)
 	case "%":
 		return Percent(q)
 	default:
@@ -123,6 +127,18 @@ func Rem(v float64) Unit {
 func Vmin(v float64) Unit {
 	return Unit{
 		fmt.Sprintf(`%fvmin`, v),
+	}
+}
+
+func Vh(v float64) Unit {
+	return Unit{
+		fmt.Sprintf(`%fvh`, v),
+	}
+}
+
+func Vw(v float64) Unit {
+	return Unit{
+		fmt.Sprintf(`%fvw`, v),
 	}
 }
 

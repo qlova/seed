@@ -90,7 +90,7 @@ func (b *Bool) OnChange(do ...client.Script) seed.Option {
 		c.Read(&data)
 		data.hooks = append(data.hooks, hook{
 			variable: b,
-			do:       script.New(do...),
+			do:       client.NewScript(do...),
 		})
 		c.Write(data)
 	})
@@ -111,7 +111,7 @@ func (b *Bool) If(options ...seed.Option) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		Hook(b, c)
 
-		c.With(script.On("render", func(q script.Ctx) {
+		c.With(client.On("render", js.Script(func(q script.Ctx) {
 			q.If(b, func(q script.Ctx) {
 				for _, option := range options {
 					if option == nil {
@@ -135,17 +135,17 @@ func (b *Bool) If(options ...seed.Option) seed.Option {
 					}
 				}
 			})
-		}))
+		})))
 	})
 }
 
 //Protect ensures that the given script will only have one running instance.
-func (b *Bool) Protect(do ...script.Script) script.Script {
+func (b *Bool) Protect(do ...client.Script) script.Script {
 	return js.If(b.Not(),
 		js.Try(
-			script.New(b.Set(true), script.New(do...), b.Set(false)),
+			client.NewScript(b.Set(true), client.NewScript(do...), b.Set(false)).GetScript(),
 		).Catch(
-			script.New(b.Set(false), js.Throw(js.NewValue("e"))),
+			client.NewScript(b.Set(false), js.Throw(js.NewValue("e"))).GetScript(),
 			"e"),
 	)
 }

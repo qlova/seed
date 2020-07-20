@@ -54,15 +54,15 @@ func New(options ...seed.Option) seed.Seed {
 			js.Require("/swiper.js", javascript),
 			html.AddClass("swiper-wrapper"),
 
-			render.On(func(q script.Ctx) {
+			render.On(js.Script(func(q script.Ctx) {
 				q(`if (!` + script.Element(Container).String() + `.swiper)`)
 				q(script.Element(Container).Set("swiper",
 					js.NewValue("new Swiper(%v, %v)",
 						script.Element(Container), js.ValueOf(config))))
 				q(script.Element(Container).Run("swiper.update"))
-			}),
+			})),
 
-			script.OnReady(func(q script.Ctx) {
+			script.OnReady(js.Script(func(q script.Ctx) {
 				q(`
 				window.addEventListener("resize", function() {
 					setTimeout(function() {
@@ -75,7 +75,7 @@ func New(options ...seed.Option) seed.Seed {
 						` + script.Element(Container).String() + `.swiper.update();
 					}, 250);
 				}, false);`)
-			}),
+			})),
 
 			seed.Options(slides),
 		),

@@ -79,6 +79,8 @@ func (a App) Launch() error {
 	}
 
 	if port == ":0" {
+		splits := strings.Split(listener.Addr().String(), ":")
+		port = ":" + splits[len(splits)-1]
 		go launch("http://" + listener.Addr().String())
 	}
 

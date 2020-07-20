@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientop"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/client/render"
@@ -78,11 +79,11 @@ func (field TextField) AddTo(c seed.Seed) {
 
 			render.If(Error, field.Theme.ErrorBox),
 
-			script.OnInput(Error.SetTo(js.NewString(""))),
+			client.OnInput(Error.SetTo(js.NewString(""))),
 
 			clientside.Catch(Error),
 
-			script.OnChange(field.Checker),
+			client.OnChange(field.Checker),
 
 			focusNextField(),
 
@@ -122,11 +123,11 @@ func (field FloatField) AddTo(c seed.Seed) {
 
 			render.If(Error, field.Theme.ErrorBox),
 
-			script.OnInput(Error.SetTo(js.NewString(""))),
+			client.OnInput(Error.SetTo(js.NewString(""))),
 
 			clientside.Catch(Error),
 
-			script.OnChange(field.Checker),
+			client.OnChange(field.Checker),
 
 			focusNextField(),
 
@@ -168,9 +169,9 @@ func (field EmailField) AddTo(c seed.Seed) {
 
 			render.If(clientop.And(Error, Email), field.Theme.ErrorBox),
 
-			script.OnInput(Error.SetTo(js.NewString(""))),
+			client.OnInput(Error.SetTo(js.NewString(""))),
 
-			script.OnChange(checkEmail),
+			client.OnChange(checkEmail),
 
 			focusNextField(),
 
@@ -222,7 +223,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 
 			render.If(Error, field.Theme.ErrorBox),
 
-			script.OnInput(Error.SetTo(js.NewString(""))),
+			client.OnInput(Error.SetTo(js.NewString(""))),
 
 			clientside.Catch(Error),
 
@@ -263,7 +264,7 @@ type SubmitButton struct {
 	Title             string
 	Theme, ThemeError seed.Options
 
-	OnSubmit script.Script
+	OnSubmit client.Script
 
 	Spinner seed.Seed
 }
@@ -285,11 +286,11 @@ func (submit SubmitButton) AddTo(c seed.Seed) {
 
 				script.OnPress(func(q script.Ctx) {
 					q.If(js.Func("s.form.reportValidity").Call(script.Element(c)),
-						script.New(
+						client.NewScript(
 							Processing.Set(true),
 							submit.OnSubmit,
 							Processing.Set(false),
-						),
+						).GetScript(),
 					)
 				}),
 			),

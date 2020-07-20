@@ -25,12 +25,9 @@ import (
 //Ctx is a client ctx
 type Ctx = user.Ctx
 
-//Script instructs the client to do something.
-type Script = js.Script
-
 //If runs the provided scripts if the clients condition is true.
 func If(condition Bool, do ...Script) Script {
-	return js.If(condition, script.New(do...))
+	return js.If(condition, NewScript(do...).GetScript())
 }
 
 //Contextual is any type that can load itself from Ctx.
@@ -185,16 +182,16 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 
 	//This is slow for arrays.
-	u.Execute(func(q script.Ctx) {
+	u.Execute(js.Script(func(q script.Ctx) {
 		q(fmt.Sprintf(`return %v;`, buffer.String()))
-	})
+	}))
 	return
 }
 
 //Go requests the client to call the given Go function with the given client Values automatically converted to equivalent Go values and are passed to the given function.
 //The function can optionally take a Ctx as the first argument, if so, then it is passed to the function and arguments are assigned to the following arguments.
 func Go(fn interface{}, args ...Value) Script {
-	return func(q script.Ctx) {
+	return js.Script(func(q script.Ctx) {
 		//Get a unique string reference for f.
 		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
 
@@ -239,13 +236,13 @@ func Go(fn interface{}, args ...Value) Script {
 		//}
 
 		//return js.NewValue(variable)
-	}
+	})
 }
 
 var rpcID int64
 
 func Download(fn interface{}, args ...Value) Script {
-	return func(q script.Ctx) {
+	return js.Script(func(q script.Ctx) {
 		//Get a unique string reference for f.
 		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
 
@@ -287,5 +284,5 @@ func Download(fn interface{}, args ...Value) Script {
 		q(js.Func(`seed.download`).Run(NewString(""), NewString(CallingString).GetString().Plus(
 			js.String{js.NewValue(`new URLSearchParams(%v).toString()`, js.NewValue(formdata))},
 		)))
-	}
+	})
 }

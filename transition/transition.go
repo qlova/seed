@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/css"
+	"qlova.org/seed/js"
 	"qlova.org/seed/page"
 	"qlova.org/seed/popup"
 	"qlova.org/seed/script"
@@ -45,15 +47,15 @@ func New(options ...Option) Transition {
 
 	t.Option = seed.NewOption(func(c seed.Seed) {
 
-		enter := func(q script.Ctx) {
+		enter := js.Script(func(q script.Ctx) {
 			t.In.AddTo(script.Scope(c, q))
 			fmt.Fprintf(q, `seed.in(%v, 0.4);`, script.Scope(c, q).Element())
-		}
+		})
 
-		exit := func(q script.Ctx) {
+		exit := js.Script(func(q script.Ctx) {
 			t.Out.AddTo(script.Scope(c, q))
 			fmt.Fprintf(q, `seed.out(%v, 0.4);`, script.Scope(c, q).Element())
-		}
+		})
 
 		switch c.(type) {
 		case page.Seed:
@@ -73,13 +75,13 @@ func New(options ...Option) Transition {
 			)
 		default:
 			c.With(
-				script.On("visible", func(q script.Ctx) {
+				client.On("visible", js.Script(func(q script.Ctx) {
 					t.In.AddTo(script.Scope(c, q))
 
-				}),
-				script.On("hidden", func(q script.Ctx) {
+				})),
+				client.On("hidden", js.Script(func(q script.Ctx) {
 					t.Out.AddTo(script.Scope(c, q))
-				}),
+				})),
 			)
 		}
 

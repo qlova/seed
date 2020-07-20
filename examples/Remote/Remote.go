@@ -1,27 +1,24 @@
 package main
 
 import (
-	"qlova.org/seed"
 	"qlova.org/seed/app"
+	"qlova.org/seed/client"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/s/button"
-	"qlova.org/seed/script"
-	"qlova.org/seed/state"
-	"qlova.org/seed/style"
-	"qlova.org/seed/user"
+	"qlova.org/seed/s/text"
+	"qlova.tech/rgb"
 )
 
 func main() {
 
-	Message := state.NewString("Click me!")
+	Message := &clientside.String{Value: "Click me!"}
 
 	app.New("Remote Code",
-		button.Var(Message,
+		button.New(text.SetTo(Message),
 
-			style.SetTextColor(seed.Red),
+			text.SetColor(rgb.Red),
 
-			script.OnClick(script.Go(func(u user.Ctx) {
-				Message.For(u).Set("You clicked me!")
-			})),
+			client.OnClick(Test(clientargs.Go, Message)),
 		),
 	).Launch()
 }
