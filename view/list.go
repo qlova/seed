@@ -41,6 +41,14 @@ func List(views ...View) seed.Option {
 	}
 }
 
+//Reset the controller to the default view.
+func (c Controller) Reset() js.Script {
+	return script.New(
+		script.Element(c.of).Get("view").Set("index", js.NewNumber(0)),
+		script.Element(c.of).Run("view", script.Element(c.of).Get("view").Get("index")),
+	)
+}
+
 //Next changes to the next view in the List
 func (c Controller) Next() js.Script {
 	return script.New(

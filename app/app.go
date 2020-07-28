@@ -60,6 +60,9 @@ func New(name string, options ...seed.Option) App {
 		}
 	}
 
+	if SeedCount == 0 {
+		options = append(options, css.Set("line-height", "100vh"))
+	}
 	if SeedCount == 1 {
 		options = append(options, space.Items().Outside())
 	}

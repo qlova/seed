@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+//New is equivalant to calling 'new Class(args...)' in js.
+func New(class AnyValue, args ...AnyValue) Value {
+	return NewValue(`new %v`, Function{class.GetValue()}.Call(args...))
+}
+
 type NewObject map[string]AnyValue
 
 func (literal NewObject) GetObject() Object {

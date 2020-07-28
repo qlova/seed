@@ -49,6 +49,10 @@ func isLocal(r *http.Request) (local bool) {
 
 //Handler returns an http.Handler that serve's the app.
 func (a App) Handler() http.Handler {
+
+	//TODO implement basic auth for staging endpoints.
+	//use crypto/subtle
+
 	var app app
 	a.Read(&app)
 

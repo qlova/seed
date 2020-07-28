@@ -29,3 +29,18 @@ func Scrollable() Style {
 func Color(c color.Color) Style {
 	return css.SetBackgroundColor(css.RGB{Color: c})
 }
+
+//Clip sets this seed to clip any children that cross the border.
+func Clip() Style {
+	return css.SetOverflow(css.Hidden)
+}
+
+//Hidden removes this seed from taking space and being visible.
+func Hidden() Style {
+	return css.SetDisplay(css.None)
+}
+
+//Visible sets the seed to be visible.
+func Visible() css.Rule {
+	return css.SetDisplay(css.Flex)
+}

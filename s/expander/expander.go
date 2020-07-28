@@ -12,3 +12,8 @@ func New(options ...seed.Option) seed.Seed {
 		css.SetFlexGrow(css.Number(1)),
 	)
 }
+
+//Set sets the seed to expand to fill up space.
+func Set() css.Rule {
+	return css.SetFlexGrow(css.Number(1))
+}

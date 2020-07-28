@@ -242,6 +242,11 @@ func Go(fn interface{}, args ...Value) Script {
 var rpcID int64
 
 func Download(fn interface{}, args ...Value) Script {
+
+	if url, ok := fn.(String); ok {
+		return js.Func("c.download").Run(NewString(""), url)
+	}
+
 	return js.Script(func(q script.Ctx) {
 		//Get a unique string reference for f.
 		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
