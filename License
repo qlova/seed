@@ -62,10 +62,8 @@ Qlova Public License Version 2.0
     Contributor Version.
 
 1.13. "Secondary License"
-    means either the GNU General Public License, Version 2.0, the GNU
-    Lesser General Public License, Version 2.1, the GNU Affero General
-    Public License, Version 3.0, or any later versions of those
-    licenses.
+    means the GNU Affero General Public License, Version 3.0, or any later version of this
+    license.
 
 1.14. "Service Form"
     means any form of the work (other than Source Code Form) which users
@@ -129,14 +127,14 @@ Contributor:
 
 This License does not grant any rights in the trademarks, service marks,
 or logos of any Contributor (except as may be necessary to comply with
-the notice requirements in Section 3.4).
+the notice requirements in Section 3.5).
 
 2.4. Subsequent Licenses
 
 No Contributor makes additional grants as a result of Your choice to
 distribute the Covered Software under a subsequent version of this
 License (see Section 10.2) or under the terms of a Secondary License (if
-permitted under the terms of Section 3.3).
+permitted under the terms of Section 3.4).
 
 2.5. Representation
 
@@ -366,12 +364,12 @@ notice described in Exhibit B of this License must be attached.
 Exhibit A - Source Code Form License Notice
 -------------------------------------------
 
-  This Source Code Form is subject to the terms of the Qlova Public
-  License, v. 2.0. If a copy of the QPL was not distributed with this
-  file, You can obtain one at https://license.qlova.co.nz
+  This work is subject to the terms of the Qlova Public
+  License, Version 2.0. If a copy of the QPL was not distributed with this
+  work, You can obtain one at https://license.qlova.org/v2
 
 If it is not possible or desirable to put the notice in a particular
-file, then You may include the notice in a location (such as a LICENSE
+file, then You may include the notice in a location (such as a LICENSE or README
 file in a relevant directory) where a recipient would be likely to look
 for such a notice.
 
