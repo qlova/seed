@@ -79,7 +79,7 @@ func (c Manager) Show(p Popup) script.Script {
 }
 
 //Wrap shows the provided popup while the provided script is running.
-func (c Manager) Wrap(p Popup, s script.Script) script.Script {
+func (c Manager) Wrap(p Popup, s ...client.Script) script.Script {
 	return func(q script.Ctx) {
 
 		//Sort out script arguments of the page.
@@ -95,7 +95,7 @@ func (c Manager) Wrap(p Popup, s script.Script) script.Script {
 		data.popups[reflect.TypeOf(p)] = popup
 
 		fmt.Fprintf(q, `seed.show("%v", %v); try {`, ID(p), args.GetObject().String())
-		s(q)
+		client.NewScript(s...).GetScript()(q)
 		fmt.Fprintf(q, `seed.hide("%[1]v"); } catch(e) { seed.hide("%[1]v"); throw e;  }`, ID(p))
 	}
 }
