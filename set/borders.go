@@ -2,10 +2,39 @@ package set
 
 import (
 	"fmt"
+	"image/color"
 
 	"qlova.org/seed/css"
 	"qlova.org/seed/units"
 )
+
+//BorderStyle determines how a border is rendered.
+type BorderStyle int
+
+const (
+	//Solid is a solid border.
+	Solid BorderStyle = iota
+)
+
+//Border sets the border style.
+func Border(s BorderStyle) Style {
+	switch s {
+	case Solid:
+		return css.SetBorderStyle(css.Solid)
+	default:
+		panic("invalid border style")
+	}
+}
+
+//BorderColor sets the border color of the seed.
+func BorderColor(c color.Color) Style {
+	return css.SetBorderColor(css.RGB{Color: c})
+}
+
+//BorderWidth sets the width of the border.
+func BorderWidth(w units.Unit) Style {
+	return css.Set("border-width", string(css.Measure(w).Rule()))
+}
 
 //Rounded sets how round this seed is, by rounding it's corners.
 //If more than one argument is provided different corners are rounded differently.
