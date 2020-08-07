@@ -68,6 +68,9 @@ func (a App) Launch() error {
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}
+	if os.Getenv("GOPORT") != "" {
+		port = os.Getenv("GOPORT")
+	}
 
 	a.port = port
 
