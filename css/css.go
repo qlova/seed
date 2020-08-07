@@ -17,7 +17,7 @@ type data struct {
 
 	prefix, suffix *OrderedMap
 
-	queries map[string]*data
+	queries map[string]Rules
 
 	sheets map[string]struct{}
 

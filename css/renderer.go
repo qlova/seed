@@ -30,6 +30,24 @@ func render(c seed.Seed, tracker map[string]struct{}) []byte {
 		fmt.Fprint(&b, "}\n")
 	}
 
+	if len(data.queries) > 0 {
+		//Deterministic render.
+		keys := make([]string, 0, len(data.queries))
+		for i := range data.queries {
+			keys = append(keys, string(i))
+		}
+		sort.Strings(keys)
+
+		for _, query := range keys {
+			fmt.Fprintf(&b, "\n%v%v {\n", Selector(c), query)
+			for _, rule := range data.queries[query] {
+				property, value := rule.Split()
+				fmt.Fprintf(&b, "\t%v: %v;", property, value)
+			}
+			fmt.Fprint(&b, "}\n")
+		}
+	}
+
 	//harvest sheets.
 	if len(data.sheets) > 0 {
 
