@@ -11,7 +11,6 @@ import (
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 	"qlova.org/seed/page"
-	"qlova.org/seed/style/space"
 )
 
 type App struct {
@@ -58,13 +57,10 @@ func New(name string, options ...seed.Option) App {
 		if _, ok := options[i].(seed.Seed); ok {
 			SeedCount++
 		}
-	}
 
-	if SeedCount == 0 {
-		options = append(options, css.Set("line-height", "100vh"))
-	}
-	if SeedCount == 1 {
-		options = append(options, space.Items().Outside())
+		if _, ok := options[i].(page.Seed); ok {
+			SeedCount++
+		}
 	}
 
 	var app = app{
