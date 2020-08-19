@@ -204,5 +204,13 @@ func (a App) Handler() http.Handler {
 		w.Write(document)
 	})))
 
-	return router
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		//PWA's require HTTPS to work.
+		if r.Header.Get("X-Forwarded-Proto") == "http" && r.Host != "localhost" {
+			http.Redirect(w, r, "https://"+r.Host+r.URL.String(), http.StatusSeeOther)
+		}
+
+		router.ServeHTTP(w, r)
+	})
 }
