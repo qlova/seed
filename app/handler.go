@@ -111,7 +111,7 @@ func (a App) Handler() http.Handler {
 				MaxAge: -1,
 			})
 
-			w.Write([]byte(`document.body.onupdatefound();`))
+			w.Write([]byte(`await document.body.onupdatefound(); throw "";`))
 			return
 		}
 
@@ -129,7 +129,7 @@ func (a App) Handler() http.Handler {
 				MaxAge: -1,
 			})
 
-			w.Write([]byte(`document.body.onupdatefound();`))
+			w.Write([]byte(`await document.body.onupdatefound();; throw "";`))
 			return
 		}
 
