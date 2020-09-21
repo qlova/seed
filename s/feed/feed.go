@@ -18,6 +18,17 @@ type Field interface {
 	FieldName() string
 }
 
+type field string
+
+func (f field) FieldName() string {
+	return string(f)
+}
+
+//Get converts a string into a field.
+func Get(name string) Field {
+	return field(name)
+}
+
 //Feed has food ready to populate.
 type Feed struct {
 	feed, template seed.Seed

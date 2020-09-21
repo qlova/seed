@@ -4,7 +4,9 @@ package user
 import (
 	"bytes"
 	"errors"
+	"io"
 	"net/http"
+	"net/http/httptest"
 	"regexp"
 	"strings"
 
@@ -20,6 +22,27 @@ type Ctx struct {
 	r *http.Request
 
 	buffer *bytes.Buffer
+}
+
+//New creates a dummy user Ctx, use this for testing.
+//pass method, url, body as strings.
+func New(args ...string) Ctx {
+	method := "GET"
+	if len(args) > 0 {
+		method = args[0]
+	}
+	url := "/"
+	if len(args) > 1 {
+		url = args[1]
+	}
+	body := io.Reader(nil)
+	if len(args) > 2 {
+		body = strings.NewReader(args[2])
+	}
+	return Ctx{
+		w: httptest.NewRecorder(),
+		r: httptest.NewRequest(method, url, body),
+	}
 }
 
 //CtxFromHandler returns a user ctx from the request and responsewriter inside an http Handler.

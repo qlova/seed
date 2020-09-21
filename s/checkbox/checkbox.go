@@ -30,6 +30,16 @@ func Update(variable *clientside.Bool) seed.Option {
 	})
 }
 
+//PartialUpdate renders the checkbox to be partially checked when the given bool is true.
+func PartialUpdate(variable *clientside.Bool) seed.Option {
+	return seed.NewOption(func(c seed.Seed) {
+		clientside.Hook(variable, c)
+		c.With(
+			client.On("render", script.Element(c).Set("indeterminate", variable)),
+		)
+	})
+}
+
 //SetReadOnly sets the textbox to be readonly.
 func SetReadOnly() seed.Option {
 	return attr.Set("readonly", "")

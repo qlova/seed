@@ -62,6 +62,11 @@ func (s *String) SetTo(value client.String) client.Script {
 		client.NewString(string(memory)), value)
 }
 
+//GoSet sets the string from a Go function.
+func (s *String) GoSet(fn interface{}, args ...client.Value) client.Script {
+	return s.SetTo(js.String{Value: client.Call(fn, args...).GetValue()})
+}
+
 //OnChange runs the given script when the value of this string is changed.
 func (s *String) OnChange(do ...client.Script) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {

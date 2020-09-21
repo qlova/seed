@@ -42,13 +42,12 @@ func (s StripeBox) OnCardConfirmed(do script.Script) seed.Option {
 //New returns a new stripe payment box.
 func (s StripeBox) New(options ...seed.Option) seed.Seed {
 
-	var PaymentBox = seed.NewLink()
+	var PaymentBox = div.New()
 
 	var Stripe = js.Function{js.NewValue(`Stripe`)}
 
-	return div.New(
+	return PaymentBox.With(
 		js.Require("https://js.stripe.com/v3/", ""),
-		PaymentBox.Link(),
 
 		script.OnReady(func(q script.Ctx) {
 			var element = script.Element(PaymentBox).Var(q)

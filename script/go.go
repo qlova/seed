@@ -73,6 +73,8 @@ func rpc(f interface{}, await bool, args ...AnyValue) func(q Ctx) Value {
 				switch arg.(type) {
 				case AnyFile:
 					q.Run(f, q.String(string('a'+rune(i))), arg)
+				case js.AnySet:
+					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(Array.from(%v))`, arg))
 				default:
 					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(%v)`, arg))
 				}

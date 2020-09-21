@@ -20,12 +20,12 @@ func (a Attachment) Set(v script.Value) func(script.Ctx) {
 	}
 }
 
-func (a Attachment) GetFile() script.File {
-	return script.File{js.NewValue(`window.attachments[%v]`, js.NewString(a.string))}
+func (a Attachment) GetFile() js.Value {
+	return js.NewValue(`window.attachments[%v]`, js.NewString(a.string))
 }
 
 func (a Attachment) GetValue() script.Value {
-	return a.GetFile().Value
+	return a.GetFile()
 }
 
 func (a Attachment) GetBool() script.Bool {

@@ -21,9 +21,44 @@ func NewLink() *Link {
 	return new(Link)
 }
 
-type Creator interface {
-	New(...Option)
+var argid int64
+
+//Arg is a convienience type for seed arguments.
+type Arg struct {
+	int64
 }
+
+type argument struct {
+	Arg
+	Value interface{}
+}
+
+func (argument) AddTo(c Seed) {}
+
+func (arg *Arg) Set(v interface{}) Option {
+	if arg.int64 == 0 {
+		argid++
+		arg.int64 = argid
+	}
+	return argument{
+		*arg,
+		v,
+	}
+}
+
+func (arg *Arg) Get(options Options, into interface{}) bool {
+	for i := len(options) - 1; i >= 0; i-- {
+		if a, ok := options[i].(argument); ok {
+			if a.Arg.int64 == arg.int64 {
+				reflect.ValueOf(into).Elem().Set(reflect.ValueOf(a.Value))
+				return true
+			}
+		}
+	}
+	return false
+}
+
+type Creator func(...Option) Seed
 
 //Dir is the working directory of the seed.
 var Dir = filepath.Dir(os.Args[0])

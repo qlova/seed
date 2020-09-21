@@ -38,8 +38,9 @@ seed.goto = async function(id, args, url) {
 	}
 
 	seed.NextPage = q.get(id);
-	if (!seed.NextPage) {
+	if (!seed.NextPage || !seed.NextPage.classList.contains("page")) {
 		console.error("seed.goto: invalid page ", id);
+		seed.NextPage = null;
 		return;
 	}
 
@@ -75,9 +76,15 @@ seed.goto = async function(id, args, url) {
 
 	if (window.flipping) flipping.read();
 
-	seed.NextPage.template = seed.NextPage.parent;
+	if (seed.NextPage.parent) {
+		seed.NextPage.template = seed.NextPage.parent;
 
-	seed.NextPage.parent.parentElement.appendChild(seed.NextPage);
+		seed.NextPage.parent.parentElement.appendChild(seed.NextPage);
+	} else {
+		console.error("invalid nextpage", seed.NextPage);
+		seed.NextPage = null;
+		return false;
+	}
 
 	let promises = [];
 	
@@ -299,6 +306,10 @@ seed.goto.ready = async function() {
 			await seed.goto(seed.StartingPage);
 		}
 	} else {
+		await seed.goto(seed.StartingPage);
+	}
+
+	if (seed.CurrentPage == seed.LoadingPage) {
 		await seed.goto(seed.StartingPage);
 	}
 }

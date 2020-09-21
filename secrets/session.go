@@ -91,17 +91,21 @@ func (s Secret) SetFor(q client.Ctx, value string) {
 	binary.PutVarint(buffer[:], time.Now().Unix())
 
 	var data = append(buffer[:], value...)
-	var cookie string
+	var body string
 	if value != "" {
-		cookie = Encrypt(data)
+		body = Encrypt(data)
 	}
-	http.SetCookie(q.ResponseWriter(), &http.Cookie{
+
+	cookie := &http.Cookie{
 		Name:     s.string,
-		Value:    cookie,
+		Value:    body,
 		Secure:   !isLocal(q.Request()),
 		HttpOnly: true,
 		Expires:  time.Now().Add(time.Hour * 24 * 30),
 		SameSite: http.SameSiteStrictMode,
 		Path:     "/",
-	})
+	}
+
+	q.Request().AddCookie(cookie)
+	http.SetCookie(q.ResponseWriter(), cookie)
 }

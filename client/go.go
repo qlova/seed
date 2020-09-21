@@ -223,6 +223,8 @@ func Go(fn interface{}, args ...Value) Script {
 				switch arg.(type) {
 				case script.AnyFile:
 					q.Run(f, q.String(string('a'+rune(i))), arg)
+				case js.AnySet:
+					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(Array.from(%v))`, arg))
 				default:
 					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(%v)`, arg))
 				}
@@ -239,7 +241,54 @@ func Go(fn interface{}, args ...Value) Script {
 	})
 }
 
-var rpcID int64
+//Call calls a go function and returns the result.
+func Call(fn interface{}, args ...Value) Value {
+	return js.Await(js.Call(js.NewFunction(func(q script.Ctx) {
+		//Get a unique string reference for f.
+		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
+
+		rpcID++
+
+		var value = reflect.ValueOf(fn)
+
+		if value.Kind() != reflect.Func || value.Type().NumOut() > 2 {
+			panic("script.Go: Must pass a Go function without zero or one return values, not a " + reflect.TypeOf(fn).String())
+		}
+		if value.Type().NumOut() > 2 && value.Type().Out(1) != reflect.TypeOf(error(nil)) {
+			panic("script.Go: Must pass a Go function with an error value as the second parameter " + reflect.TypeOf(fn).String())
+		}
+
+		goExports[name] = value
+
+		var CallingString = `/go/` + name
+
+		fmt.Println(CallingString)
+
+		var formdata = script.Unique()
+
+		q(`let ` + formdata + ` = new FormData();`)
+
+		//Get all positional arguments and add them to the formdata.
+		var f = js.Function{js.NewValue(formdata + `.set`)}
+
+		if len(args) > 0 {
+			for i, arg := range args {
+				switch arg.(type) {
+				case script.AnyFile:
+					q.Run(f, q.String(string('a'+rune(i))), arg)
+				case js.AnySet:
+					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(Array.from(%v))`, arg))
+				default:
+					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(%v)`, arg))
+				}
+			}
+		}
+
+		q([]byte(`return await seed.request("POST", ` + formdata + `, "` + CallingString + `", false);`))
+	})))
+}
+
+var rpcID int64 = 1
 
 func Download(fn interface{}, args ...Value) Script {
 
@@ -276,6 +325,8 @@ func Download(fn interface{}, args ...Value) Script {
 		if len(args) > 0 {
 			for i, arg := range args {
 				switch arg.(type) {
+				case js.AnySet:
+					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(Array.from(%v))`, arg))
 				default:
 					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(%v)`, arg))
 				}

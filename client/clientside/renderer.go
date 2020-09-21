@@ -150,6 +150,15 @@ func init() {
 			this.refresh = function() {};
 			this.data = {};
 
+			this.getset = function(key, memory) {
+				let set = this.getvar(key, memory);
+				if (!set) {
+					set = new Set();
+					this.setvar(key, memory, set);
+				}
+				return set;
+			}
+
 			this.getvar = function(key, memory) {
 				switch (memory) {
 				case "":

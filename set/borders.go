@@ -11,9 +11,10 @@ import (
 //BorderStyle determines how a border is rendered.
 type BorderStyle int
 
+//BorderStyles
 const (
-	//Solid is a solid border.
 	Solid BorderStyle = iota
+	Dashed
 )
 
 //Border sets the border style.
@@ -21,6 +22,8 @@ func Border(s BorderStyle) Style {
 	switch s {
 	case Solid:
 		return css.SetBorderStyle(css.Solid)
+	case Dashed:
+		return css.SetBorderStyle(css.Dashed)
 	default:
 		panic("invalid border style")
 	}

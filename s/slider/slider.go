@@ -24,7 +24,7 @@ func Update(variable *clientside.Int) seed.Option {
 		clientside.Hook(variable, c)
 		c.With(
 			client.On("render", script.Element(c).Set("value", variable)),
-			client.On("input", variable.SetTo(js.Number{Value: script.Element(c).Get("value")})),
+			client.On("input", variable.SetTo(js.Number{Value: js.NewValue("+%v", script.Element(c).Get("value"))})),
 		)
 	})
 }

@@ -1,8 +1,8 @@
-package script
+package client
 
 import "qlova.org/seed/js"
 
-type AnyFile interface {
-	AnyValue
+type File interface {
+	Value
 	GetFile() js.Value
 }
