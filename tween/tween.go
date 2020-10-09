@@ -2,11 +2,11 @@ package tween
 
 import (
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 //Auto tween.
@@ -42,10 +42,10 @@ func Track(key string) seed.Option {
 }
 
 //Tween attempts to tween any elements with This() options that have changed position, scale or rotation.
-func Tween(s script.Script) script.Script {
-	return func(q script.Ctx) {
+func Tween(s client.Script) js.Script {
+	return func(q js.Ctx) {
 		q(`try { flipping.read(); } catch(error) { seed.report(error) }`)
-		s(q)
+		s.GetScript()(q)
 		q(`try { flipping.flip(); } catch(error) {seed.report(error) }`)
 	}
 }

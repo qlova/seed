@@ -2,7 +2,7 @@ package swiper
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/client/render"
+	"qlova.org/seed/client/clientrender"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/column"
@@ -54,25 +54,25 @@ func New(options ...seed.Option) seed.Seed {
 			js.Require("/swiper.js", javascript),
 			html.AddClass("swiper-wrapper"),
 
-			render.On(js.Script(func(q script.Ctx) {
-				q(`if (!` + script.Element(Container).String() + `.swiper)`)
-				q(script.Element(Container).Set("swiper",
+			clientrender.On(js.Script(func(q js.Ctx) {
+				q(`if (!` + html.Element(Container).String() + `.swiper)`)
+				q(html.Element(Container).Set("swiper",
 					js.NewValue("new Swiper(%v, %v)",
-						script.Element(Container), js.ValueOf(config))))
-				q(script.Element(Container).Run("swiper.update"))
+						html.Element(Container), js.ValueOf(config))))
+				q(html.Element(Container).Run("swiper.update"))
 			})),
 
-			script.OnReady(js.Script(func(q script.Ctx) {
+			script.OnReady(js.Script(func(q js.Ctx) {
 				q(`
 				window.addEventListener("resize", function() {
 					setTimeout(function() {
-						if (` + script.Element(Container).String() + `.swiper)
-						` + script.Element(Container).String() + `.swiper.update();
+						if (` + html.Element(Container).String() + `.swiper)
+						` + html.Element(Container).String() + `.swiper.update();
 					}, 250);
 				}, false);window.addEventListener("orientationchange", function() {
 					setTimeout(function() {
-						if (` + script.Element(Container).String() + `.swiper)
-						` + script.Element(Container).String() + `.swiper.update();
+						if (` + html.Element(Container).String() + `.swiper)
+						` + html.Element(Container).String() + `.swiper.update();
 					}, 250);
 				}, false);`)
 			})),

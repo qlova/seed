@@ -5,10 +5,10 @@ import (
 	"sort"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
-	"qlova.org/seed/script"
 )
 
 type harvester struct {
@@ -50,7 +50,7 @@ func (h harvester) harvest(c seed.Seed) {
 			var element = p.Popup(ManagerOf(template))
 			element.With(
 				html.SetID(ID(p)),
-				script.SetID(ID(p)),
+				client.SetID(ID(p)),
 				css.SetSelector("#"+ID(p)),
 
 				seed.NewOption(func(c seed.Seed) {

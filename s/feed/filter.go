@@ -3,7 +3,6 @@ package feed
 import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 //Item is an individual element of a feed.
@@ -21,8 +20,8 @@ func (item Item) Previous() Item {
 
 //Filter filters the food on the client with a given filter function.
 func Filter(food Food, fn func(Item) client.Bool) Food {
-	return func(q script.Ctx) js.Value {
-		return js.NewValue(`%v.filter(%v)`, food2Data(food, q), js.NewNormalFunction(func(q script.Ctx) {
+	return func(q js.Ctx) js.Value {
+		return js.NewValue(`(%v).filter(%v)`, food2Data(food, q), js.NewNormalFunction(func(q js.Ctx) {
 			q.Return(fn(Item{
 				Value: js.NewValue("value"),
 				Index: js.Number{js.NewValue("index")},

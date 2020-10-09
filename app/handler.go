@@ -17,7 +17,6 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)
@@ -100,24 +99,6 @@ func (a App) Handler() http.Handler {
 		AssetsServer.ServeHTTP(w, r)
 	}))
 
-	router.Handle("/call/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		if version, err := r.Cookie("version"); err == nil && version.Value != app.worker.Version {
-
-			http.SetCookie(w, &http.Cookie{
-				Name:   "version",
-				Value:  "",
-				Path:   "/",
-				MaxAge: -1,
-			})
-
-			w.Write([]byte(`await document.body.onupdatefound(); throw "";`))
-			return
-		}
-
-		script.Handler(w, r, r.URL.Path[6:])
-	}))
-
 	router.Handle("/go/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if version, err := r.Cookie("version"); err == nil && version.Value != app.worker.Version {
@@ -129,7 +110,12 @@ func (a App) Handler() http.Handler {
 				MaxAge: -1,
 			})
 
-			w.Write([]byte(`await document.body.onupdatefound();; throw "";`))
+			w.Write([]byte(`if (!seed.production) {
+				throw "";
+			} else {
+				if (document.body.onupdatefound) await document.body.onupdatefound();
+				throw "";
+			}`))
 			return
 		}
 

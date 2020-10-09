@@ -5,38 +5,38 @@ import (
 	"github.com/stripe/stripe-go/v71"
 	"github.com/stripe/stripe-go/v71/setupintent"
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/html/div"
-	"qlova.org/seed/script"
-	"qlova.org/seed/signal"
 )
 
 var StripePublishableKey string
 
 type StripeBox struct {
 	BillingName, Value *clientside.String
-	confirmCardSetup   signal.Type
-	confirmedCardSetup signal.Type
+	confirmCardSetup   *clientside.Signal
+	confirmedCardSetup *clientside.Signal
 }
 
 func NewStripe() StripeBox {
 	return StripeBox{
 		BillingName:        new(clientside.String),
 		Value:              new(clientside.String),
-		confirmCardSetup:   signal.New(),
-		confirmedCardSetup: signal.New(),
+		confirmCardSetup:   new(clientside.Signal),
+		confirmedCardSetup: new(clientside.Signal),
 	}
 }
 
 //ConfirmCardSetup tells the stripebox to confirm the user provided details.
-func (s StripeBox) ConfirmCardSetup() script.Script {
-	return signal.Emit(s.confirmCardSetup)
+func (s StripeBox) ConfirmCardSetup() client.Script {
+	return s.confirmCardSetup
 }
 
 //OnCardConfirmed runs when the card has been confirmed.
-func (s StripeBox) OnCardConfirmed(do script.Script) seed.Option {
-	return signal.On(s.confirmedCardSetup, do)
+func (s StripeBox) OnCardConfirmed(do js.Script) seed.Option {
+	return s.confirmedCardSetup.On(do)
 }
 
 //New returns a new stripe payment box.
@@ -49,18 +49,18 @@ func (s StripeBox) New(options ...seed.Option) seed.Seed {
 	return PaymentBox.With(
 		js.Require("https://js.stripe.com/v3/", ""),
 
-		script.OnReady(func(q script.Ctx) {
-			var element = script.Element(PaymentBox).Var(q)
+		client.OnLoad(js.Script(func(q js.Ctx) {
+			var element = html.Element(PaymentBox).Var(q)
 			q(element.Set(`stripe`, js.Call(Stripe, js.NewString(StripePublishableKey))))
 			var elements = element.Get("stripe").Call("elements").Var(q)
 			q(element.Set(`card`, elements.Call(`create`, js.NewString("card"), js.NewObject(make(map[string]js.AnyValue)))))
 			q(element.Get(`card`).Run(`mount`, element))
-		}),
+		})),
 
-		signal.On(s.confirmCardSetup, func(q script.Ctx) {
-			var element = script.Element(PaymentBox).Var(q)
+		s.confirmCardSetup.On(js.Script(func(q js.Ctx) {
+			var element = html.Element(PaymentBox).Var(q)
 
-			var secret = script.RPC(func() (string, error) {
+			var secret = client.Call(func() (string, error) {
 				intent, err := setupintent.New(&stripe.SetupIntentParams{
 					PaymentMethodTypes: []*string{
 						stripe.String("card"),
@@ -72,7 +72,7 @@ func (s StripeBox) New(options ...seed.Option) seed.Seed {
 				}
 
 				return intent.ClientSecret, nil
-			})(q).Var(q)
+			}).GetValue().Var(q)
 
 			var result = js.Await(element.Get(`stripe`).Call(`confirmCardSetup`, secret, js.NewObject{
 				"payment_method": js.NewObject{
@@ -90,8 +90,8 @@ func (s StripeBox) New(options ...seed.Option) seed.Seed {
 			q(s.Value.SetTo(js.String{
 				Value: result.Get("setupIntent").Get("payment_method"),
 			}))
-			q(signal.Emit(s.confirmedCardSetup))
-		}),
+			q(s.confirmedCardSetup)
+		})),
 
 		seed.Options(options),
 	)

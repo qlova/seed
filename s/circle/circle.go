@@ -2,6 +2,7 @@ package circle
 
 import (
 	"qlova.org/seed"
+	"qlova.org/seed/css"
 	"qlova.org/seed/s/column"
 	"qlova.org/seed/set"
 	"qlova.org/seed/units"
@@ -11,7 +12,7 @@ import (
 //New returns a new circle.
 func New(options ...seed.Option) seed.Seed {
 	return column.New(
-
+		css.SetFlexShrink(css.Zero),
 		seed.Options(options),
 	)
 }

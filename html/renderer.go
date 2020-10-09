@@ -7,12 +7,12 @@ import (
 	"strconv"
 
 	"qlova.org/seed"
-	"qlova.org/seed/script"
+	"qlova.org/seed/client"
 )
 
 //ID returns the html ID of this seed.
 func ID(root seed.Seed) string {
-	return script.ID(root)
+	return client.ID(root)
 }
 
 //Render renders the html of a seed.
@@ -58,7 +58,7 @@ func Render(c seed.Seed) []byte {
 			fmt.Fprint(&b, `" `)
 		}
 
-		_, ok := c.(script.Seed)
+		_, ok := c.(client.Seed)
 
 		if data.Style != nil || ok {
 			fmt.Fprint(&b, ` style="`)

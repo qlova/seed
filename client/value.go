@@ -5,7 +5,7 @@ import (
 )
 
 //Value is a readonly client-typed value.
-type Value js.AnyValue
+type Value = js.AnyValue
 
 //ValueOf returns a client-typed value of the given argument.
 func ValueOf(any interface{}) Value {

@@ -8,7 +8,6 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 type harvester struct {
@@ -42,7 +41,7 @@ func (h *harvester) harvest(c seed.Seed) harvester {
 }
 
 func init() {
-	script.RegisterRootRenderer(func(c seed.Seed) []byte {
+	client.RegisterRootRenderer(func(c seed.Seed) []byte {
 		var harvested = newHarvester().harvest(c)
 		var b bytes.Buffer
 
@@ -230,13 +229,13 @@ func init() {
 			var array = make(js.NewArray, len(seeds))
 
 			for i, seed := range seeds {
-				array[i] = js.NewString(script.ID(seed))
+				array[i] = js.NewString(client.ID(seed))
 			}
 
 			fmt.Fprintf(&b, `seed.variable.hook[%v] = %v;`, stringAddress, array)
 
 			if hook.do != nil {
-				fmt.Fprintf(&b, `seed.variable.onchange[%v] = %v;`, stringAddress, hook.do.GetFunction())
+				fmt.Fprintf(&b, `seed.variable.onchange[%v] = %v;`, stringAddress, hook.do.GetScript().GetFunction())
 			}
 		}
 

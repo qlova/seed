@@ -19,8 +19,8 @@ func SetReadOnly() seed.Option {
 }
 
 //Focus focuses the textbox.
-func Focus(c seed.Seed) script.Script {
-	return func(q script.Ctx) {
-		q(script.Element(c).Run(`focus`))
+func Focus(c seed.Seed) js.Script {
+	return func(q js.Ctx) {
+		q(html.Element(c).Run(`focus`))
 	}
 }

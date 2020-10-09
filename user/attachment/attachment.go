@@ -6,15 +6,14 @@ import (
 	"math/big"
 
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 type Attachment struct {
 	string
 }
 
-func (a Attachment) Set(v script.Value) func(script.Ctx) {
-	return func(q script.Ctx) {
+func (a Attachment) Set(v js.Value) func(js.Ctx) {
+	return func(q js.Ctx) {
 		q(`if (!window.attachments) window.attachments = {};`)
 		q(fmt.Sprintf(`window.attachments["%v"] = %v;`, a.string, v))
 	}
@@ -24,11 +23,11 @@ func (a Attachment) GetFile() js.Value {
 	return js.NewValue(`window.attachments[%v]`, js.NewString(a.string))
 }
 
-func (a Attachment) GetValue() script.Value {
+func (a Attachment) GetValue() js.Value {
 	return a.GetFile()
 }
 
-func (a Attachment) GetBool() script.Bool {
+func (a Attachment) GetBool() js.Bool {
 	return a.GetValue().GetBool()
 }
 

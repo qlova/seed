@@ -9,10 +9,9 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/page"
-	"qlova.org/seed/script"
 )
 
-func OnUpdateFound(do script.Script) seed.Option {
+func OnUpdateFound(do client.Script) seed.Option {
 	return client.On("updatefound", do)
 }
 
@@ -20,8 +19,8 @@ func OnUpdateFound(do script.Script) seed.Option {
 func SetLoadingPage(p page.Page) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		switch c.(type) {
-		case script.Seed, script.Undo:
-			panic("app.SetLoadingPage must not be called on a script.Seed")
+		case client.Seed, client.Undo:
+			panic("app.SetLoadingPage must not be called on a client.Seed")
 		}
 
 		var app app
@@ -38,9 +37,9 @@ func SetColor(col color.Color) seed.Option {
 		c.Read(&app)
 
 		switch q := c.(type) {
-		case script.Seed:
+		case client.Seed:
 			q.Javascript(`document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: col}.Rule())
-		case script.Undo:
+		case client.Undo:
 			q.Javascript(`document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: app.color}.Rule())
 		default:
 			app.manifest.SetThemeColor(col)
@@ -60,7 +59,7 @@ func SetIcon(icon string) seed.Option {
 		c.Read(&app)
 
 		switch q := c.(type) {
-		case script.Seed:
+		case client.Seed:
 			q.Javascript(`
 			{
 				let head = document.head || document.getElementsByTagName('head')[0];
@@ -76,7 +75,7 @@ func SetIcon(icon string) seed.Option {
 				head.appendChild(link);
 			}
 			`, strconv.Quote(icon))
-		case script.Undo:
+		case client.Undo:
 			q.Javascript(`document.getElementById('dynamic-favicon').removeChild(oldLink);`)
 		default:
 			app.manifest.SetIcon(icon)

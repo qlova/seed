@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../theme"
+		},
+		{
+			"path": "../send"
 		}
 	],
 	"settings": {}

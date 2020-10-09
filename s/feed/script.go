@@ -2,12 +2,12 @@ package feed
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/script"
+	"qlova.org/seed/client"
 )
 
 func init() {
-	script.RegisterRenderer(func(c seed.Seed) []byte {
-		return []byte(`s.feed = {}; s.feed.onrefresh = (q, id, feed, exe) => {
+	client.RegisterRenderer(func(c seed.Seed) []byte {
+		return []byte(`s.feed = {}; s.feed.onrefresh = (q, id, feed, exe, mem, adr) => {
 			let l = q.get(id);
 			if (!l) return;
 
@@ -18,6 +18,8 @@ func init() {
 				//don't refresh if we are already refreshing.
 				if (l.refreshing) return;
 				l.refreshing = true;
+
+				q.setvar(mem, adr, false);
 
 				//remove previous content.
 				while (l.childNodes.length > 1) l.removeChild(l.lastChild);
@@ -38,6 +40,10 @@ func init() {
 							l.refreshing = false;
 							return;
 						}
+					}
+
+					if (food.length > 0) {
+						await q.setvar(mem, adr, true);
 					}
 
 					let i = 0;

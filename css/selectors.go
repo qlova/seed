@@ -2,7 +2,7 @@ package css
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/script"
+	"qlova.org/seed/client"
 )
 
 //Select applies a selector like :hover to the seed.
@@ -12,11 +12,11 @@ func Select(selector string, rules ...Rule) seed.Option {
 		c.Read(&d)
 
 		switch c.(type) {
-		case script.Seed:
-			panic("cannot hover on script.Seed")
+		case client.Seed:
+			panic("cannot hover on client.Seed")
 
-		case script.Undo:
-			panic("cannot hover on script.Seed")
+		case client.Undo:
+			panic("cannot hover on client.Seed")
 		default:
 			if d.queries == nil {
 				d.queries = make(map[string]Rules)

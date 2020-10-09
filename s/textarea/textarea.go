@@ -4,8 +4,9 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
+	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
-	"qlova.org/seed/script"
+	"qlova.org/seed/js"
 
 	"qlova.org/seed/s/html/textarea"
 	"qlova.org/seed/s/textbox"
@@ -35,8 +36,8 @@ func SetReadOnly() seed.Option {
 }
 
 //Focus focuses the textbox.
-func Focus(c seed.Seed) script.Script {
-	return func(q script.Ctx) {
-		q(script.Element(c).Run(`focus`))
+func Focus(c seed.Seed) js.Script {
+	return func(q js.Ctx) {
+		q(html.Element(c).Run(`focus`))
 	}
 }

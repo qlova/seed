@@ -10,7 +10,6 @@ import (
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/dropzone"
-	"qlova.org/seed/script"
 )
 
 //Policy determines what is zipped.
@@ -47,7 +46,7 @@ type File struct {
 
 //Choose asks the client to choose a File.
 func (f *File) Choose() client.Script {
-	return js.Script(func(q script.Ctx) {
+	return js.Script(func(q js.Ctx) {
 		q(`"'#(import "/jszip.js")`)
 		var input = js.Global().Get("document").Call("createElement", js.NewString("input")).Var(q)
 		q(input.Set("type", js.NewString("file")))
@@ -58,7 +57,7 @@ func (f *File) Choose() client.Script {
 
 		q("let active = seed.active;")
 
-		q(input.Set("oninput", js.NewFunction(func(q script.Ctx) {
+		q(input.Set("oninput", js.NewFunction(func(q js.Ctx) {
 			q(js.Global().Get("seed").Set("active", js.NewValue(`active`)))
 
 			if f.WhenZippingSet != nil {
@@ -96,14 +95,14 @@ func (f *File) Dropzone() seed.Option {
 	return seed.Options{
 		js.Require("/jszip.js", jszip),
 
-		client.On("dragenter", js.Script(func(q script.Ctx) {
+		client.On("dragenter", js.Script(func(q js.Ctx) {
 			q(`arguments[0].preventDefault();`)
 		})),
-		client.On("dragover", js.Script(func(q script.Ctx) {
+		client.On("dragover", js.Script(func(q js.Ctx) {
 			q(`arguments[0].preventDefault();`)
 		})),
 
-		dropzone.OnDrop(js.Script(func(q script.Ctx) {
+		dropzone.OnDrop(js.Script(func(q js.Ctx) {
 
 			if f.WhenZippingSet != nil {
 				q(f.WhenZippingSet.Set(true))

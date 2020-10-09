@@ -4,7 +4,6 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 type hook struct {
@@ -21,7 +20,7 @@ type data struct {
 
 //Render rerenders the given seed as a client script.
 func Render(c seed.Seed) client.Script {
-	return js.Func("await c.r").Run(script.Q, js.NewString(script.ID(c)))
+	return js.Func("await c.r").Run(js.NewValue("q"), js.NewString(client.ID(c)))
 }
 
 //Hook renders the given seed whenever the value changes.

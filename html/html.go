@@ -9,7 +9,6 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/css"
-	"qlova.org/seed/script"
 )
 
 //Data stores html data with a seed.
@@ -35,9 +34,9 @@ func SetID(id string) seed.Option {
 		c.Read(&data)
 
 		switch q := c.(type) {
-		case script.Seed:
+		case client.Seed:
 			q.Javascript(`%v.id = %v;`, q.Element(), strconv.Quote(id))
-		case script.Undo:
+		case client.Undo:
 			if data.ID != nil {
 				q.Javascript(`%v.id = %v;`, q.Element(), strconv.Quote(*data.ID))
 			} else {
@@ -58,9 +57,9 @@ func AddClass(class string) seed.Option {
 		c.Read(&data)
 
 		switch q := c.(type) {
-		case script.Seed:
+		case client.Seed:
 			q.Javascript(`%v.classList.With(%v);`, q.Element(), strconv.Quote(class))
-		case script.Undo:
+		case client.Undo:
 			q.Javascript(`%v.classList.remove(%v);`, q.Element(), strconv.Quote(class))
 		default:
 
@@ -85,9 +84,9 @@ func SetTag(tag string) seed.Option {
 		c.Read(&data)
 
 		switch q := c.(type) {
-		case script.Seed:
+		case client.Seed:
 			q.Javascript(`%v = document.createElement("%v"); %v.id = "temp%v";`, q.Element(), tag, q.Element(), c.ID())
-		case script.Undo:
+		case client.Undo:
 			q.Javascript(`%v = document.createElement("%v"); %v.id = "temp%v";`, q.Element(), data.Tag, q.Element(), c.ID())
 		default:
 			data.Tag = tag
@@ -104,9 +103,9 @@ func Set(html string) seed.Option {
 		c.Read(&data)
 
 		switch q := c.(type) {
-		case script.Seed:
+		case client.Seed:
 			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(html))
-		case script.Undo:
+		case client.Undo:
 			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.InnerHTML))
 		default:
 			data.InnerHTML = html
@@ -123,9 +122,9 @@ func SetAttribute(name string, constant string) seed.Option {
 		c.Read(&data)
 
 		switch q := c.(type) {
-		case script.Seed:
+		case client.Seed:
 			q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(constant))
-		case script.Undo:
+		case client.Undo:
 			if attr, ok := data.Attributes[name]; ok {
 				q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(attr))
 			} else {
@@ -148,7 +147,7 @@ func SetAttributeTo(name string, variable client.String) seed.Option {
 		if variable != nil {
 			clientside.Hook(variable, c)
 			client.OnRender(
-				script.Element(c).Run("setAttribute", client.NewString(name), variable.GetString()),
+				Element(c).Run("setAttribute", client.NewString(name), variable.GetString()),
 			).AddTo(c)
 		}
 	})
@@ -161,7 +160,7 @@ func SetStyle(property, value string) seed.Option {
 		c.Read(&data)
 
 		switch c.(type) {
-		case script.Seed, script.Undo:
+		case client.Seed, client.Undo:
 			css.Set(property, value).AddTo(c)
 		default:
 			if data.Style == nil {
@@ -182,9 +181,9 @@ func SetInnerText(constant string) seed.Option {
 		c.Read(&data)
 
 		switch q := c.(type) {
-		case script.Seed:
+		case client.Seed:
 			q.Javascript(`%v.innerText = %v;`, q.Element(), strconv.Quote(constant))
-		case script.Undo:
+		case client.Undo:
 			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.InnerHTML))
 		default:
 			data.InnerHTML = html.EscapeString(constant)
@@ -203,7 +202,7 @@ func SetInnerTextTo(variable client.String) seed.Option {
 		if variable != nil {
 			clientside.Hook(variable, c)
 			client.OnRender(
-				script.Element(c).Set("innerText", variable.GetString()),
+				Element(c).Set("innerText", variable.GetString()),
 			).AddTo(c)
 		}
 	})

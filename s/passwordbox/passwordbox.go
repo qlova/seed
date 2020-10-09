@@ -4,9 +4,9 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 
 	"qlova.org/seed/s/textbox"
 )
@@ -21,7 +21,7 @@ func Update(variable *clientside.Secret) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		clientside.Hook(variable, c)
 		c.With(
-			client.On("input", variable.SetTo(js.String{Value: script.Element(c).Get("value")})),
+			client.On("input", variable.SetTo(js.String{Value: html.Element(c).Get("value")})),
 		)
 	})
 }

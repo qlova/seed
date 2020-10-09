@@ -3,9 +3,9 @@ package filepicker
 import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
+	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 	"qlova.org/seed/user/attachment"
 
 	"qlova.org/seed/s/html/input"
@@ -23,8 +23,8 @@ func New(options ...seed.Option) seed.Seed {
 func Update(a attachment.Attachment) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		c.With(
-			client.OnInput(js.Script(func(q script.Ctx) {
-				q(js.Global().Get("seed").Set("active", script.Element(c)))
+			client.OnInput(js.Script(func(q js.Ctx) {
+				q(js.Global().Get("seed").Set("active", html.Element(c)))
 				q("try {")
 				q(a.Set(js.NewValue(`event.target.files[0]`)))
 				q("} catch(e) { seed.report(e) }")
@@ -35,17 +35,17 @@ func Update(a attachment.Attachment) seed.Option {
 
 //SelectFile asks the user to select a file, if and only if they do select a file, the handler will be called.
 //There is no way to tell if the user did not select a file.
-func SelectFile(handler func(File) client.Script) script.Script {
+func SelectFile(handler func(File) client.Script) js.Script {
 	var a = attachment.New()
 
-	return func(q script.Ctx) {
+	return func(q js.Ctx) {
 		var input = js.Global().Get("document").Call("createElement", js.NewString("input")).Var(q)
 		q(input.Set("type", js.NewString("file")))
 
 		q("let active = seed.active;")
 		q("console.log(active.id);")
 
-		q(input.Set("onchange", js.NewFunction(func(q script.Ctx) {
+		q(input.Set("onchange", js.NewFunction(func(q js.Ctx) {
 			q(js.Global().Get("seed").Set("active", js.NewValue(`active`)))
 
 			q("try {")

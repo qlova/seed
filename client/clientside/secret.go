@@ -3,7 +3,6 @@ package clientside
 import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 //Secret is a 'secret' string variable in client memory.
@@ -64,7 +63,7 @@ func (s *Secret) Variable() (Address, Memory) {
 }
 
 //GetString implements script.AnyString
-func (s *Secret) GetString() script.String {
+func (s *Secret) GetString() js.String {
 	address, memory := s.Variable()
 	return js.String{Value: js.NewValue(`"'#(import "/argon2_exec.js")(await argon2.hash({
 		pass: q.getvar(%v, %v),
@@ -84,13 +83,13 @@ func (s *Secret) GetString() script.String {
 }
 
 //GetBool implements script.AnyBool
-func (s *Secret) GetBool() script.Bool {
+func (s *Secret) GetBool() js.Bool {
 	address, memory := s.Variable()
 	return js.Bool{Value: js.NewValue(`(q.getvar(%v, %v) != "")`, client.NewString(string(address)), client.NewString(string(memory)))}
 }
 
 //GetValue implements script.AnyValue
-func (s *Secret) GetValue() script.Value {
+func (s *Secret) GetValue() js.Value {
 	return s.GetString().Value
 }
 

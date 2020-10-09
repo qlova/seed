@@ -4,9 +4,10 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
-	"qlova.org/seed/client/render"
+	"qlova.org/seed/client"
+	"qlova.org/seed/client/clientrender"
+	"qlova.org/seed/html"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 //List creates a viewset that can be used with Index, Back & Next functions.
@@ -19,13 +20,13 @@ func List(views ...View) seed.Option {
 		Set(views[0]),
 
 		seed.NewOption(func(c seed.Seed) {
-			script.OnReady(func(q script.Ctx) {
-				q(script.Element(c).Set("view", js.NewFunction(func(q script.Ctx) {
-					q("if (" + script.Element(c).Get("view").Get("index").String() + " < 0)")
-					q(script.Element(c).Get("view").Set("index", js.NewNumber(0)))
-					q("if (" + script.Element(c).Get("view").Get("index").String() + " >= " + fmt.Sprint(len(views)) + ")")
-					q(script.Element(c).Get("view").Set("index", js.NewNumber(float64(len(views)-1))))
-					q("switch (" + script.Element(c).Get("view").Get("index").String() + ") {")
+			client.OnLoad(js.Script(func(q js.Ctx) {
+				q(html.Element(c).Set("view", js.NewFunction(func(q js.Ctx) {
+					q("if (" + html.Element(c).Get("view").Get("index").String() + " < 0)")
+					q(html.Element(c).Get("view").Set("index", js.NewNumber(0)))
+					q("if (" + html.Element(c).Get("view").Get("index").String() + " >= " + fmt.Sprint(len(views)) + ")")
+					q(html.Element(c).Get("view").Set("index", js.NewNumber(float64(len(views)-1))))
+					q("switch (" + html.Element(c).Get("view").Get("index").String() + ") {")
 					for i, v := range views {
 						fmt.Fprintf(q, "case %v:", i)
 						q(ControllerOf(c).Goto(v))
@@ -33,34 +34,34 @@ func List(views ...View) seed.Option {
 					}
 					q("}")
 				})))
-				q(script.Element(c).Get("view").Set("index", js.NewNumber(0)))
-			}).AddTo(c)
+				q(html.Element(c).Get("view").Set("index", js.NewNumber(0)))
+			})).AddTo(c)
 
-			render.On(script.Element(c).Run("view", script.Element(c).Get("view").Get("index"))).AddTo(c)
+			clientrender.On(html.Element(c).Run("view", html.Element(c).Get("view").Get("index"))).AddTo(c)
 		}),
 	}
 }
 
 //Reset the controller to the default view.
-func (c Controller) Reset() js.Script {
-	return script.New(
-		script.Element(c.of).Get("view").Set("index", js.NewNumber(0)),
-		script.Element(c.of).Run("view", script.Element(c.of).Get("view").Get("index")),
+func (c Controller) Reset() client.Script {
+	return client.NewScript(
+		html.Element(c.of).Get("view").Set("index", js.NewNumber(0)),
+		html.Element(c.of).Run("view", html.Element(c.of).Get("view").Get("index")),
 	)
 }
 
 //Next changes to the next view in the List
-func (c Controller) Next() js.Script {
-	return script.New(
-		script.Element(c.of).Get("view").Set("index", js.Number{script.Element(c.of).Get("view").Get("index")}.Plus(js.NewNumber(1))),
-		script.Element(c.of).Run("view", script.Element(c.of).Get("view").Get("index")),
+func (c Controller) Next() client.Script {
+	return client.NewScript(
+		html.Element(c.of).Get("view").Set("index", js.Number{html.Element(c.of).Get("view").Get("index")}.Plus(js.NewNumber(1))),
+		html.Element(c.of).Run("view", html.Element(c.of).Get("view").Get("index")),
 	)
 }
 
 //Back changes to the back view in the List
-func (c Controller) Back() js.Script {
-	return script.New(
-		script.Element(c.of).Get("view").Set("index", js.Number{script.Element(c.of).Get("view").Get("index")}.Minus(js.NewNumber(1))),
-		script.Element(c.of).Run("view", script.Element(c.of).Get("view.index")),
+func (c Controller) Back() client.Script {
+	return client.NewScript(
+		html.Element(c.of).Get("view").Set("index", js.Number{html.Element(c.of).Get("view").Get("index")}.Minus(js.NewNumber(1))),
+		html.Element(c.of).Run("view", html.Element(c.of).Get("view.index")),
 	)
 }

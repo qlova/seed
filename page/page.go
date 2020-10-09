@@ -11,7 +11,6 @@ import (
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 	"qlova.org/seed/style"
 )
 
@@ -32,7 +31,7 @@ func RouterOf(c seed.Seed) Router {
 
 //Goto returns a script that goes to the given page.
 func (r Router) Goto(page Page) js.Script {
-	return func(q script.Ctx) {
+	return func(q js.Ctx) {
 		//Sort out script arguments of the page.
 		page, args, path := parseArgs(page)
 
@@ -117,13 +116,13 @@ func (e EnterIfOption) AddTo(c seed.Seed) {
 	}
 
 	if e.otherwise != nil {
-		condition["otherwise"] = e.otherwise.GetFunction()
+		condition["otherwise"] = e.otherwise.GetScript().GetFunction()
 	}
 
 	c.With(
-		script.OnReady(script.New(
-			script.Element(c).Set("conditions", js.NewValue(`(%v || [])`, script.Element(c).Get("conditions"))),
-			script.Element(c).Get("conditions").Run("push", condition),
+		client.OnLoad(client.NewScript(
+			html.Element(c).Set("conditions", js.NewValue(`(%v || [])`, html.Element(c).Get("conditions"))),
+			html.Element(c).Get("conditions").Run("push", condition),
 		)),
 	)
 }

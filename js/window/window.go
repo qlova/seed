@@ -2,7 +2,6 @@ package window
 
 import (
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 //Alert creates a popup window with the provided text message.
@@ -25,11 +24,11 @@ func Prompt(msg js.AnyString) js.String {
 	return js.String{js.Global().Call(`prompt`, msg)}
 }
 
-func SetTimeout(do js.Script, timeout js.AnyNumber) script.Script {
+func SetTimeout(do js.Script, timeout js.AnyNumber) js.Script {
 	return js.Global().Run("setTimeout", js.NewFunction(do), timeout)
 }
 
-func SetInterval(do js.Script, timeout js.AnyNumber) script.Script {
+func SetInterval(do js.Script, timeout js.AnyNumber) js.Script {
 	return js.Global().Run("setInterval", js.NewFunction(do), timeout)
 }
 

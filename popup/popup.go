@@ -9,8 +9,8 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
+	"qlova.org/seed/js"
 	"qlova.org/seed/s/html/div"
-	"qlova.org/seed/script"
 	"qlova.org/seed/style"
 )
 
@@ -59,8 +59,8 @@ type data struct {
 }
 
 //Show shows the provided popup.
-func (c Manager) Show(p Popup) script.Script {
-	return func(q script.Ctx) {
+func (c Manager) Show(p Popup) js.Script {
+	return func(q js.Ctx) {
 
 		//Sort out script arguments of the page.
 		popup, args := parseArgs(p)
@@ -79,8 +79,8 @@ func (c Manager) Show(p Popup) script.Script {
 }
 
 //Wrap shows the provided popup while the provided script is running.
-func (c Manager) Wrap(p Popup, s ...client.Script) script.Script {
-	return func(q script.Ctx) {
+func (c Manager) Wrap(p Popup, s ...client.Script) js.Script {
+	return func(q js.Ctx) {
 
 		//Sort out script arguments of the page.
 		popup, args := parseArgs(p)
@@ -101,8 +101,8 @@ func (c Manager) Wrap(p Popup, s ...client.Script) script.Script {
 }
 
 //Hide hides the provided popup.
-func (c Manager) Hide(p Popup) script.Script {
-	return func(q script.Ctx) {
+func (c Manager) Hide(p Popup) js.Script {
+	return func(q js.Ctx) {
 		fmt.Fprintf(q, `seed.hide("%v");`, ID(p))
 	}
 }

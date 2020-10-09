@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
-	"qlova.org/seed/client/render"
+	"qlova.org/seed/client"
+	"qlova.org/seed/client/clientrender"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 //Set adds and sets an initial view to the seed.
@@ -21,15 +21,15 @@ func Set(starting View) seed.Option {
 
 		ControllerOf(c).Goto(starting)
 
-		c.With(script.OnReady(func(q script.Ctx) {
+		c.With(client.OnLoad(js.Script(func(q js.Ctx) {
 			fmt.Fprintf(q, `seed.view.ready(%v, "%v");`,
-				script.Scope(c, q).Element(), Name(starting))
-		}))
+				client.Seed{c, q}.Element(), Name(starting))
+		})))
 
-		c.With(render.On(js.Script(func(q script.Ctx) {
+		c.With(clientrender.On(js.Script(func(q js.Ctx) {
 
 			fmt.Fprintf(q, `if (%[1]v.CurrentView) { %[1]v.CurrentView.args = %[2]v; if (%[1]v.CurrentView.onviewenter) %[1]v.CurrentView.onviewenter();  }`,
-				script.Scope(c, q).Element(), args.GetObject().String())
+				client.Seed{c, q}.Element(), args.GetObject().String())
 		})))
 	})
 }

@@ -5,10 +5,11 @@ import (
 	"reflect"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
+	"qlova.org/seed/js"
 	"qlova.org/seed/s/column"
-	"qlova.org/seed/script"
 	"qlova.org/seed/style"
 )
 
@@ -26,9 +27,9 @@ func newHarvester(parent seed.Seed) harvester {
 }
 
 func Set(page Page) seed.Option {
-	return script.OnReady(func(q script.Ctx) {
+	return client.OnLoad(js.Script(func(q js.Ctx) {
 		fmt.Fprintf(q, `seed.StartingPage = "%v";`, ID(page))
-	})
+	}))
 }
 
 func AddPages(pages ...Page) seed.Option {
@@ -63,7 +64,7 @@ func add(page Page) seed.Option {
 			html.AddClass("page"),
 			html.AddClass(ID(page)[1:]),
 			css.SetSelector(ID(page)),
-			script.SetID(ID(page)),
+			client.SetID(ID(page)),
 			html.SetID(html.ID(element)),
 		)
 		element.Use()
@@ -114,8 +115,8 @@ func Harvest(starting Page) seed.Option {
 		newHarvester(container).harvest(c)
 		container.AddTo(c)
 
-		c.With(script.OnReady(func(q script.Ctx) {
+		c.With(client.OnLoad(js.Script(func(q js.Ctx) {
 			fmt.Fprintf(q, `seed.goto.ready("%v");`, ID(starting))
-		}))
+		})))
 	})
 }

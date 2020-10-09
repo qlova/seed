@@ -46,14 +46,44 @@ func Not(a client.Bool) Bool {
 	return NewBool(js.NewValue("(!%v)", a), a)
 }
 
-//And returns true if both values are true.
-func And(a, b client.Value) Bool {
-	return NewBool(js.NewValue("(%v && %v)", a, b), a, b)
+//And returns true if all values are true.
+func And(a, b client.Value, more ...client.Value) Bool {
+	if len(more) == 0 {
+		return NewBool(js.NewValue("(%v && %v)", a, b), a, b)
+	}
+
+	var components = []client.Value{a, b}
+
+	var expression = "(%v && %v"
+
+	for _, v := range more {
+		expression += " && %v"
+		components = append(components, v)
+	}
+
+	expression += ")"
+
+	return NewBool(js.NewValue(expression, components...), components...)
 }
 
 //Or returns true if one of the values is true.
-func Or(a, b client.Value) Bool {
-	return NewBool(js.NewValue("(%v || %v)", a, b), a, b)
+func Or(a, b client.Value, more ...client.Value) Bool {
+	if len(more) == 0 {
+		return NewBool(js.NewValue("(%v || %v)", a, b), a, b)
+	}
+
+	var components = []client.Value{a, b}
+
+	var expression = "(%v || %v"
+
+	for _, v := range more {
+		expression += " || %v"
+		components = append(components, v)
+	}
+
+	expression += ")"
+
+	return NewBool(js.NewValue(expression, components...), components...)
 }
 
 //Number is a client number.
@@ -71,6 +101,11 @@ func NewNumber(n js.Number, components ...client.Value) Number {
 //Components implements clientside.Compound
 func (n Number) Components() []client.Value {
 	return n.components
+}
+
+//Add returns a+b
+func Add(a, b js.AnyNumber) Number {
+	return NewNumber(js.Number{js.NewValue("(%v + %v)", a, b)}, a, b)
 }
 
 //Divide returns a/b

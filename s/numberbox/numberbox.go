@@ -4,10 +4,10 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/html/input"
-	"qlova.org/seed/script"
 )
 
 //New returns a new textbox widget.
@@ -23,8 +23,8 @@ func Update(variable *clientside.Float64) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		clientside.Hook(variable, c)
 		c.With(
-			client.On("render", script.Element(c).Set("value", variable)),
-			client.On("input", variable.SetTo(js.Number{js.NewValue("+%v", script.Element(c).Get("value"))})),
+			client.On("render", html.Element(c).Set("value", variable)),
+			client.On("input", variable.SetTo(js.Number{js.NewValue("+%v", html.Element(c).Get("value"))})),
 		)
 	})
 }
@@ -40,8 +40,8 @@ func SetReadOnly() seed.Option {
 }
 
 //Focus focuses the textbox.
-func Focus(c seed.Seed) script.Script {
-	return func(q script.Ctx) {
-		q(script.Element(c).Run(`focus`))
+func Focus(c seed.Seed) js.Script {
+	return func(q js.Ctx) {
+		q(html.Element(c).Run(`focus`))
 	}
 }

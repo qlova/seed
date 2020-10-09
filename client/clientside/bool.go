@@ -4,7 +4,6 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 //Bool is an bool variable in client memory.
@@ -111,27 +110,27 @@ func (b *Bool) If(options ...seed.Option) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		Hook(b, c)
 
-		c.With(client.On("render", js.Script(func(q script.Ctx) {
-			q.If(b, func(q script.Ctx) {
+		c.With(client.On("render", js.Script(func(q js.Ctx) {
+			q.If(b, func(q js.Ctx) {
 				for _, option := range options {
 					if option == nil {
 						continue
 					}
 					if other, ok := option.(seed.Seed); ok {
-						script.Scope(other, q).AddTo(script.Scope(c, q))
+						client.Seed{other, q}.AddTo(client.Seed{c, q})
 					} else {
-						option.AddTo(script.Scope(c, q))
+						option.AddTo(client.Seed{c, q})
 					}
 				}
-			}).Else(func(q script.Ctx) {
+			}).Else(func(q js.Ctx) {
 				for _, option := range options {
 					if option == nil {
 						continue
 					}
 					if other, ok := option.(seed.Seed); ok {
-						script.Scope(c, q).Undo(script.Scope(other, q))
+						client.Seed{c, q}.Undo(client.Seed{other, q})
 					} else {
-						script.Scope(c, q).Undo(option)
+						client.Seed{c, q}.Undo(option)
 					}
 				}
 			})
@@ -140,7 +139,7 @@ func (b *Bool) If(options ...seed.Option) seed.Option {
 }
 
 //Protect ensures that the given script will only have one running instance.
-func (b *Bool) Protect(do ...client.Script) script.Script {
+func (b *Bool) Protect(do ...client.Script) js.Script {
 	return js.If(b.Not(),
 		js.Try(
 			client.NewScript(b.Set(true), client.NewScript(do...), b.Set(false)).GetScript(),

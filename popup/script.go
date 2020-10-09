@@ -2,11 +2,11 @@ package popup
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/script"
+	"qlova.org/seed/client"
 )
 
 func init() {
-	script.RegisterRenderer(func(c seed.Seed) []byte {
+	client.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
 
 seed.CurrentPopup = null;
@@ -49,6 +49,8 @@ seed.hide = async function(id) {
 		console.error("seed.show: invalid popup ", id);
 		return;
 	}
+
+	if (!popup.template) return;
 
 	if (popup.onhide) await popup.onhide();
 

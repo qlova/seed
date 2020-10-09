@@ -11,19 +11,20 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
+	"qlova.org/seed/s/text/rich"
 	"qlova.org/seed/units"
 )
 
 //New returns a new text widget.
 func New(options ...seed.Option) seed.Seed {
 	return seed.New(
-		html.SetTag("p"),
+		html.SetTag("span"),
 		seed.Options(options),
 	)
 }
 
-//Set sets the text content of the text.
-func Set(value string) seed.Option {
+//SetString sets the text from the given string.
+func SetString(value string) seed.Option {
 	value = html_go.EscapeString(value)
 	value = strings.Replace(value, "\n", "<br>", -1)
 	value = strings.Replace(value, "  ", "&nbsp;&nbsp;", -1)
@@ -32,8 +33,23 @@ func Set(value string) seed.Option {
 	return html.Set(value)
 }
 
-//SetTo sets the text content of the text.
-func SetTo(value client.String) seed.Option {
+//Set sets the text content of the text to the given formatted lines, each argument is seperated by a newline.
+func Set(lines ...rich.Text) seed.Option {
+
+	var result string
+
+	for i, line := range lines {
+		if i > 0 {
+			result += "<br>"
+		}
+		result += line.HTML()
+	}
+
+	return html.Set(result)
+}
+
+//SetStringTo sets the text content of the text.
+func SetStringTo(value client.String) seed.Option {
 	return html.SetInnerTextTo(value)
 }
 

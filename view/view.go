@@ -11,7 +11,6 @@ import (
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 	"qlova.org/seed/style"
 )
 
@@ -36,7 +35,7 @@ func (c Controller) Seed() seed.Seed {
 //Is returns true if the given view is the current view of the given controller..
 func (c Controller) Is(v View) *clientside.Bool {
 	return &clientside.Bool{
-		Name: script.ID(c.of) + ".view." + Name(v),
+		Name: client.ID(c.of) + ".view." + Name(v),
 	}
 }
 
@@ -75,8 +74,8 @@ func (c Controller) Goto(view View) js.Script {
 
 	var seed_view = js.Function{js.NewValue(`seed.view`)}
 
-	return func(q script.Ctx) {
-		q.Run(seed_view, js.NewValue(script.Scope(c.of, q).Element()), js.NewString(Name(view)), args)
+	return func(q js.Ctx) {
+		q.Run(seed_view, js.NewValue(client.Seed{c.of, q}.Element()), js.NewString(Name(view)), args)
 	}
 }
 

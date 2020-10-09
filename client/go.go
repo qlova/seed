@@ -18,17 +18,11 @@ import (
 
 	"qlova.org/seed/js"
 	"qlova.org/seed/js/console"
-	"qlova.org/seed/script"
 	"qlova.org/seed/user"
 )
 
 //Ctx is a client ctx
 type Ctx = user.Ctx
-
-//If runs the provided scripts if the clients condition is true.
-func If(condition Bool, do ...Script) Script {
-	return js.If(condition, NewScript(do...).GetScript())
-}
 
 //Contextual is any type that can load itself from Ctx.
 type Contextual interface {
@@ -182,16 +176,16 @@ func Handler(w http.ResponseWriter, r *http.Request, call string) {
 	}
 
 	//This is slow for arrays.
-	u.Execute(js.Script(func(q script.Ctx) {
+	u.Execute(js.Script(func(q js.Ctx) {
 		q(fmt.Sprintf(`return %v;`, buffer.String()))
 	}))
 	return
 }
 
-//Go requests the client to call the given Go function with the given client Values automatically converted to equivalent Go values and are passed to the given function.
+//Go requests the client to call the given Go function in a new goroutine, with the given client Values automatically converted to equivalent Go values and are passed to the given function.
 //The function can optionally take a Ctx as the first argument, if so, then it is passed to the function and arguments are assigned to the following arguments.
 func Go(fn interface{}, args ...Value) Script {
-	return js.Script(func(q script.Ctx) {
+	return js.Script(func(q js.Ctx) {
 		//Get a unique string reference for f.
 		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
 
@@ -210,8 +204,7 @@ func Go(fn interface{}, args ...Value) Script {
 
 		var CallingString = `/go/` + name
 
-		var formdata = script.Unique()
-		var variable = script.Unique()
+		var formdata = Unique()
 
 		q(`let ` + formdata + ` = new FormData();`)
 
@@ -221,7 +214,7 @@ func Go(fn interface{}, args ...Value) Script {
 		if len(args) > 0 {
 			for i, arg := range args {
 				switch arg.(type) {
-				case script.AnyFile:
+				case File:
 					q.Run(f, q.String(string('a'+rune(i))), arg)
 				case js.AnySet:
 					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(Array.from(%v))`, arg))
@@ -231,19 +224,58 @@ func Go(fn interface{}, args ...Value) Script {
 			}
 		}
 
-		//if await {
-		//	q([]byte(`let ` + variable + ` = await seed.request("POST", ` + formdata + `, "` + CallingString + `", false);`))
-		//} else {
-		q([]byte(`let ` + variable + ` = seed.request("POST", ` + formdata + `, "` + CallingString + `", false, seed.active);`))
-		//}
+		q([]byte(`seed.request("POST", ` + formdata + `, "` + CallingString + `", false, seed.active);`))
+	})
+}
 
-		//return js.NewValue(variable)
+//Run runs a go function, blocking until it completes.
+func Run(fn interface{}, args ...Value) Script {
+	return js.Script(func(q js.Ctx) {
+		//Get a unique string reference for f.
+		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
+
+		rpcID++
+
+		var value = reflect.ValueOf(fn)
+
+		if value.Kind() != reflect.Func || value.Type().NumOut() > 2 {
+			panic("script.Run: Must pass a Go function without zero or one return values, not a " + reflect.TypeOf(fn).String())
+		}
+		if value.Type().NumOut() > 2 && value.Type().Out(1) != reflect.TypeOf(error(nil)) {
+			panic("script.Run: Must pass a Go function with an error value as the second parameter " + reflect.TypeOf(fn).String())
+		}
+
+		goExports[name] = value
+
+		var CallingString = `/go/` + name
+
+		var formdata = Unique()
+
+		q(`let ` + formdata + ` = new FormData();`)
+
+		//Get all positional arguments and add them to the formdata.
+		var f = js.Function{js.NewValue(formdata + `.set`)}
+
+		if len(args) > 0 {
+			for i, arg := range args {
+				switch arg.(type) {
+				case File:
+					q.Run(f, q.String(string('a'+rune(i))), arg)
+				case js.AnySet:
+					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(Array.from(%v))`, arg))
+				default:
+					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(%v)`, arg))
+				}
+			}
+		}
+
+		q([]byte(`await seed.request("POST", ` + formdata + `, "` + CallingString + `", false, seed.active);`))
 	})
 }
 
 //Call calls a go function and returns the result.
 func Call(fn interface{}, args ...Value) Value {
-	return js.Await(js.Call(js.NewFunction(func(q script.Ctx) {
+	return js.Await(js.Call(js.NewFunction(func(q js.Ctx) {
 		//Get a unique string reference for f.
 		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
 
@@ -264,7 +296,7 @@ func Call(fn interface{}, args ...Value) Value {
 
 		fmt.Println(CallingString)
 
-		var formdata = script.Unique()
+		var formdata = Unique()
 
 		q(`let ` + formdata + ` = new FormData();`)
 
@@ -274,7 +306,7 @@ func Call(fn interface{}, args ...Value) Value {
 		if len(args) > 0 {
 			for i, arg := range args {
 				switch arg.(type) {
-				case script.AnyFile:
+				case File:
 					q.Run(f, q.String(string('a'+rune(i))), arg)
 				case js.AnySet:
 					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(Array.from(%v))`, arg))
@@ -296,7 +328,7 @@ func Download(fn interface{}, args ...Value) Script {
 		return js.Func("c.download").Run(NewString(""), url)
 	}
 
-	return js.Script(func(q script.Ctx) {
+	return js.Script(func(q js.Ctx) {
 		//Get a unique string reference for f.
 		var name = base64.RawURLEncoding.EncodeToString(big.NewInt(rpcID).Bytes())
 
@@ -315,7 +347,7 @@ func Download(fn interface{}, args ...Value) Script {
 
 		var CallingString = `/go/` + name + `?`
 
-		var formdata = script.Unique()
+		var formdata = Unique()
 
 		q(`let ` + formdata + ` = new FormData();`)
 

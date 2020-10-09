@@ -33,6 +33,7 @@ func (con Condition) AddTo(c seed.Seed) {
 	}
 
 	var q = `@media`
+
 	if con.portrait != "" {
 		q += ` screen and ` + con.portrait + ` and (orientation:portrait)`
 		if con.landscape != "" {
@@ -42,6 +43,7 @@ func (con Condition) AddTo(c seed.Seed) {
 	if con.landscape != "" {
 		q += ` screen and ` + con.landscape + ` and (orientation:landscape)`
 	}
+
 	if con.portrait == "" && con.landscape == "" {
 		q += ` screen and ` + con.query
 	}

@@ -9,11 +9,10 @@ import (
 	"qlova.org/seed/client/clientfmt"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 func init() {
-	script.RegisterRenderer(func(c seed.Seed) []byte {
+	client.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
 			seed.asset = function(src) {
 				if (!src.startsWith("/") && !src.startsWith("http")) {

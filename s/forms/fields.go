@@ -7,9 +7,9 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientop"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/client/render"
+	"qlova.org/seed/client/clientrender"
+	"qlova.org/seed/html"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 
 	"qlova.org/seed/s/button"
 	"qlova.org/seed/s/column"
@@ -17,13 +17,14 @@ import (
 	"qlova.org/seed/s/numberbox"
 	"qlova.org/seed/s/passwordbox"
 	"qlova.org/seed/s/text"
+	"qlova.org/seed/s/textarea"
 	"qlova.org/seed/s/textbox"
 )
 
 func focusNextField() seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		script.OnEnter(func(q script.Ctx) {
-			q(fmt.Sprintf(`{let current = %v;`, script.Element(c)))
+		client.OnEnterKey(js.Script(func(q js.Ctx) {
+			q(fmt.Sprintf(`{let current = %v;`, html.Element(c)))
 			q(`
 				let inputs = document.querySelectorAll("form input, form button");
 				let found = false;
@@ -45,12 +46,12 @@ func focusNextField() seed.Option {
 				}
 				if (found) inputs[inputs.length-1].focus();
 			}`)
-		}).AddTo(c)
+		})).AddTo(c)
 	})
 }
 
 type FieldTheme struct {
-	Title, Box, Column, ErrorText, ErrorBox seed.Options
+	Title, Box, Area, Column, ErrorText, ErrorBox seed.Options
 }
 
 type TextField struct {
@@ -58,9 +59,9 @@ type TextField struct {
 
 	Update *clientside.String
 
-	Checker script.Script
+	Checker client.Script
 
-	Required bool
+	Required, Multiline bool
 
 	Theme FieldTheme
 }
@@ -68,16 +69,24 @@ type TextField struct {
 func (field TextField) AddTo(c seed.Seed) {
 	var Error = new(clientside.String)
 
+	var box = textbox.New
+	var theme = field.Theme.Box
+
+	if field.Multiline {
+		box = textarea.New
+		theme = field.Theme.Area
+	}
+
 	c.With(column.New(
 		field.Theme.Column,
 
-		text.New(text.Set(field.Title), field.Theme.Title),
-		textbox.New(textbox.Update(field.Update), field.Theme.Box,
+		text.New(text.SetString(field.Title), field.Theme.Title),
+		box(textbox.Update(field.Update), theme,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
 
-			render.If(Error, field.Theme.ErrorBox),
+			clientrender.If(Error, field.Theme.ErrorBox),
 
 			client.OnInput(Error.SetTo(js.NewString(""))),
 
@@ -91,8 +100,8 @@ func (field TextField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		render.If(Error,
-			text.New(text.SetTo(Error), field.Theme.ErrorText),
+		clientrender.If(Error,
+			text.New(text.SetStringTo(Error), field.Theme.ErrorText),
 		),
 	))
 }
@@ -102,7 +111,7 @@ type FloatField struct {
 
 	Update *clientside.Float64
 
-	Checker script.Script
+	Checker client.Script
 
 	Required bool
 
@@ -115,13 +124,13 @@ func (field FloatField) AddTo(c seed.Seed) {
 	c.With(column.New(
 		field.Theme.Column,
 
-		text.New(text.Set(field.Title), field.Theme.Title),
+		text.New(text.SetString(field.Title), field.Theme.Title),
 		numberbox.New(numberbox.Update(field.Update), field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
 
-			render.If(Error, field.Theme.ErrorBox),
+			clientrender.If(Error, field.Theme.ErrorBox),
 
 			client.OnInput(Error.SetTo(js.NewString(""))),
 
@@ -135,8 +144,8 @@ func (field FloatField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		render.If(Error,
-			text.New(text.SetTo(Error), field.Theme.ErrorText),
+		clientrender.If(Error,
+			text.New(text.SetStringTo(Error), field.Theme.ErrorText),
 		),
 	))
 }
@@ -161,13 +170,13 @@ func (field EmailField) AddTo(c seed.Seed) {
 	c.With(column.New(
 		field.Theme.Column,
 
-		text.New(text.Set(field.Title), field.Theme.Title),
+		text.New(text.SetString(field.Title), field.Theme.Title),
 		emailbox.New(textbox.Update(field.Update), field.Theme.Box,
 			textbox.SetPlaceholder(field.Placeholder),
 
 			seed.If(field.Required, SetRequired()),
 
-			render.If(clientop.And(Error, Email), field.Theme.ErrorBox),
+			clientrender.If(clientop.And(Error, Email), field.Theme.ErrorBox),
 
 			client.OnInput(Error.SetTo(js.NewString(""))),
 
@@ -179,7 +188,7 @@ func (field EmailField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		render.If(clientop.And(Error, Email),
+		clientrender.If(clientop.And(Error, Email),
 			text.New(text.Set("please input a valid email address"), field.Theme.ErrorText),
 		),
 	))
@@ -214,14 +223,14 @@ func (field PasswordField) AddTo(c seed.Seed) {
 	c.With(column.New(
 		field.Theme.Column,
 
-		text.New(text.Set(field.Title), field.Theme.Title),
+		text.New(text.SetString(field.Title), field.Theme.Title),
 		passwordbox.New(field.Theme.Box,
 
 			passwordbox.Update(field.Update),
 
 			seed.If(field.Required, SetRequired()),
 
-			render.If(Error, field.Theme.ErrorBox),
+			clientrender.If(Error, field.Theme.ErrorBox),
 
 			client.OnInput(Error.SetTo(js.NewString(""))),
 
@@ -233,19 +242,19 @@ func (field PasswordField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		render.If(Error,
-			text.New(text.SetTo(Error), field.Theme.ErrorText),
+		clientrender.If(Error,
+			text.New(text.SetStringTo(Error), field.Theme.ErrorText),
 		),
 
 		seed.If(field.Confirm,
-			text.New(text.Set("Confirm "+field.Title), field.Theme.Title),
+			text.New(text.SetString("Confirm "+field.Title), field.Theme.Title),
 			passwordbox.New(field.Theme.Box,
 
 				passwordbox.Update(PasswordToConfirm),
 
 				seed.If(field.Required, SetRequired()),
 
-				render.If(PasswordMismatched, field.Theme.ErrorBox),
+				clientrender.If(PasswordMismatched, field.Theme.ErrorBox),
 
 				focusNextField(),
 
@@ -253,7 +262,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 				//script.OnEnter(textbox.Focus(EmailBox)),
 			),
 
-			render.If(clientop.And(PasswordMismatched, Password.GetBool()),
+			clientrender.If(clientop.And(PasswordMismatched, Password.GetBool()),
 				text.New(text.Set("this password is different from the one above"), field.Theme.ErrorText),
 			),
 		),
@@ -274,25 +283,27 @@ func (submit SubmitButton) AddTo(c seed.Seed) {
 	var Processing = new(clientside.Bool)
 
 	c.With(
-		render.If(Error, text.New(text.SetTo(Error), submit.ThemeError)),
+		clientrender.If(Error, text.New(text.SetStringTo(Error), submit.ThemeError)),
 
 		Processing.Not().If(
-			button.New(text.Set(submit.Title), submit.Theme,
+			button.New(text.SetString(submit.Title), submit.Theme,
 
-				script.OnError(func(q script.Ctx, err script.Error) {
-					q(Error.SetTo(err.String))
-					q(Processing.Set(false))
+				client.OnError(func(err client.String) client.Script {
+					return client.NewScript(
+						Error.SetTo(err),
+						Processing.Set(false),
+					)
 				}),
 
-				script.OnPress(func(q script.Ctx) {
-					q.If(js.Func("s.form.reportValidity").Call(script.Element(c)),
+				client.OnClick(js.Script(func(q js.Ctx) {
+					q.If(js.Func("s.form.reportValidity").Call(html.Element(c)),
 						client.NewScript(
 							Processing.Set(true),
 							submit.OnSubmit,
 							Processing.Set(false),
 						).GetScript(),
 					)
-				}),
+				})),
 			),
 		),
 

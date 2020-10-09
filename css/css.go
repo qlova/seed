@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"qlova.org/seed"
-	"qlova.org/seed/script"
+	"qlova.org/seed/client"
 )
 
 type data struct {
@@ -58,7 +58,7 @@ func (r Rule) AddTo(c seed.Seed) {
 	c.Read(&d)
 
 	switch c := c.(type) {
-	case script.Seed:
+	case client.Seed:
 		property, value := r.Split()
 		if strings.HasPrefix(property, "-") {
 			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "%v");`, c.Element(), property, value)
@@ -66,7 +66,7 @@ func (r Rule) AddTo(c seed.Seed) {
 			fmt.Fprintf(c.Q, `%v.style.%v = "%v";`, c.Element(), dashes2camels(property), value)
 		}
 
-	case script.Undo:
+	case client.Undo:
 		property := r.Property()
 		if strings.HasPrefix(property, "-") {
 			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "");`, c.Element(), property)
@@ -104,7 +104,7 @@ func Selector(c seed.Seed) string {
 		return d.selector
 	}
 
-	return "#" + script.ID(c)
+	return "#" + client.ID(c)
 }
 
 func dashes2camels(s string) string {
@@ -139,8 +139,8 @@ func Set(property, value string) Rule {
 func Add(stylesheet string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		switch c.(type) {
-		case script.Seed, script.Undo:
-			panic("css.Add must not be called on a script.Seed")
+		case client.Seed, client.Undo:
+			panic("css.Add must not be called on a client.Seed")
 		}
 
 		var d data

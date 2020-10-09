@@ -2,11 +2,11 @@ package forms
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/script"
+	"qlova.org/seed/client"
 )
 
 func init() {
-	script.RegisterRenderer(func(c seed.Seed) []byte {
+	client.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`s.form = {};
 
 		s.form.reportValidity = function(el) {

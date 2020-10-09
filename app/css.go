@@ -259,4 +259,28 @@ textarea {
     background: #ccc;
     color: #000;
     padding: 0.2em 0;
-}`
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+p {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+}
+
+ol {
+    list-style-type: decimal;
+}
+
+
+ul {
+    list-style-type: disc;
+}
+
+`

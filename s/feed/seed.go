@@ -4,16 +4,16 @@ import (
 	"reflect"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 func convertToClasses(c seed.Seed) {
 	for _, child := range c.Children() {
 
-		if sc, ok := child.(script.Seed); ok {
+		if sc, ok := child.(client.Seed); ok {
 			child = sc.Seed
 		}
 
@@ -32,32 +32,30 @@ type Food interface{}
 
 type rpc struct {
 	f    interface{}
-	args []script.AnyValue
+	args []client.Value
 }
 
-func Go(f interface{}, args ...script.AnyValue) Food {
+func Go(f interface{}, args ...client.Value) Food {
 	return rpc{f, args}
 }
 
-func food2Data(food Food, q script.Ctx) script.Value {
+func food2Data(food Food, q js.Ctx) client.Value {
 	if food == nil {
 		return js.Null()
 	}
 	switch reflect.TypeOf(food).Kind() {
 	case reflect.Func:
 		switch f := food.(type) {
-		case func(q script.Ctx) js.Value:
+		case func(q js.Ctx) js.Value:
 			return f(q)
 		}
-		return script.RPC(food)(q)
+		return client.Call(food)
 	default:
 		switch f := food.(type) {
 		case rpc:
-			return script.RPC(f.f, f.args...)(q)
-		case script.Value:
+			return client.Call(f.f, f.args...)
+		case client.Value:
 			return f
-		case script.AnyValue:
-			return f.GetValue()
 		}
 		panic("unsupported feed.Food: " + reflect.TypeOf(food).String())
 	}

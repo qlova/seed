@@ -81,6 +81,10 @@ func NewCtx(w io.Writer, seeds ...seed.Seed) Ctx {
 			if arg != nil {
 				arg(ctx)
 			}
+		case AnyScript:
+			if arg != nil {
+				arg.GetScript()(ctx)
+			}
 		case func(Ctx):
 			if arg != nil {
 				arg(ctx)

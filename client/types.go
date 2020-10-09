@@ -2,7 +2,6 @@ package client
 
 import (
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 )
 
 type Script = js.AnyScript
@@ -43,6 +42,6 @@ func NewFloat64(from float64) Float {
 	return js.NewNumber(from)
 }
 
-func NewFunction(from script.Script) Function {
+func NewFunction(from js.Script) Function {
 	return js.NewFunction(from)
 }

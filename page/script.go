@@ -1,24 +1,24 @@
 package page
 
 import (
+	"qlova.org/seed/client"
 	"qlova.org/seed/js"
 
 	"qlova.org/seed"
-	"qlova.org/seed/script"
 )
 
-func Refresh() script.Script {
-	return func(q script.Ctx) {
+func Refresh() js.Script {
+	return func(q js.Ctx) {
 		q("await c.r(q, seed.CurrentPage);")
 	}
 }
 
-func GoBack() script.Script {
+func GoBack() js.Script {
 	return js.Func("await seed.back").Run()
 }
 
 func init() {
-	script.RegisterRenderer(func(c seed.Seed) []byte {
+	client.RegisterRenderer(func(c seed.Seed) []byte {
 		return []byte(`
 seed.CurrentPage = null;
 seed.NextPage = null;

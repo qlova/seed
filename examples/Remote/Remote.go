@@ -14,7 +14,7 @@ func main() {
 	Message := &clientside.String{Value: "Click me!"}
 
 	app.New("Remote Code",
-		button.New(text.SetTo(Message),
+		button.New(text.SetStringTo(Message),
 
 			text.SetColor(rgb.Red),
 

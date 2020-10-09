@@ -4,9 +4,9 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
-	"qlova.org/seed/script"
 
 	"qlova.org/seed/s/html/input"
 )
@@ -24,8 +24,8 @@ func Update(variable *clientside.Bool) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		clientside.Hook(variable, c)
 		c.With(
-			client.On("render", script.Element(c).Set("checked", variable)),
-			client.On("input", variable.SetTo(js.Bool{Value: script.Element(c).Get("checked")})),
+			client.On("render", html.Element(c).Set("checked", variable)),
+			client.On("input", variable.SetTo(js.Bool{Value: html.Element(c).Get("checked")})),
 		)
 	})
 }
@@ -35,7 +35,7 @@ func PartialUpdate(variable *clientside.Bool) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		clientside.Hook(variable, c)
 		c.With(
-			client.On("render", script.Element(c).Set("indeterminate", variable)),
+			client.On("render", html.Element(c).Set("indeterminate", variable)),
 		)
 	})
 }
@@ -46,8 +46,8 @@ func SetReadOnly() seed.Option {
 }
 
 //Focus focuses the textbox.
-func Focus(c seed.Seed) script.Script {
-	return func(q script.Ctx) {
-		q(script.Element(c).Run(`focus`))
+func Focus(c seed.Seed) js.Script {
+	return func(q js.Ctx) {
+		q(html.Element(c).Run(`focus`))
 	}
 }

@@ -171,6 +171,28 @@ func (c seed) Write(d Data) {
 	c[t] = reflect.ValueOf(d)
 }
 
+//Mutate a seed with a given seed.Data
+//panics on illegal arguments.
+//In Go2, signature will become Mutate[T seed.Data](f func(*T)) Option
+func Mutate(f interface{}) Option {
+	T := reflect.TypeOf(f)
+	if T.Kind() != reflect.Func || T.In(0).Kind() != reflect.Ptr || !T.In(0).Implements(reflect.TypeOf([0]Data{}).Elem()) {
+		panic("illegal argument to seed.Mutate")
+	}
+
+	V := reflect.ValueOf(f)
+
+	data := reflect.New(T.In(0).Elem())
+
+	return NewOption(func(c Seed) {
+		c.Read(data.Interface().(Data))
+
+		V.Call([]reflect.Value{data})
+
+		c.Write(data.Elem().Interface().(Data))
+	})
+}
+
 func (c seed) ID() int {
 	var d data
 	c.Read(&d)

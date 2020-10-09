@@ -10,7 +10,6 @@ import (
 	"qlova.org/seed/js"
 	"qlova.org/seed/page"
 	"qlova.org/seed/popup"
-	"qlova.org/seed/script"
 	"qlova.org/seed/vfx/animation"
 	"qlova.org/seed/view"
 )
@@ -47,14 +46,14 @@ func New(options ...Option) Transition {
 
 	t.Option = seed.NewOption(func(c seed.Seed) {
 
-		enter := js.Script(func(q script.Ctx) {
-			t.In.AddTo(script.Scope(c, q))
-			fmt.Fprintf(q, `seed.in(%v, 0.4);`, script.Scope(c, q).Element())
+		enter := js.Script(func(q js.Ctx) {
+			t.In.AddTo(client.Seed{c, q})
+			fmt.Fprintf(q, `seed.in(%v, 0.4);`, client.Seed{c, q}.Element())
 		})
 
-		exit := js.Script(func(q script.Ctx) {
-			t.Out.AddTo(script.Scope(c, q))
-			fmt.Fprintf(q, `seed.out(%v, 0.4);`, script.Scope(c, q).Element())
+		exit := js.Script(func(q js.Ctx) {
+			t.Out.AddTo(client.Seed{c, q})
+			fmt.Fprintf(q, `seed.out(%v, 0.4);`, client.Seed{c, q}.Element())
 		})
 
 		switch c.(type) {
@@ -75,12 +74,12 @@ func New(options ...Option) Transition {
 			)
 		default:
 			c.With(
-				client.On("visible", js.Script(func(q script.Ctx) {
-					t.In.AddTo(script.Scope(c, q))
+				client.On("visible", js.Script(func(q js.Ctx) {
+					t.In.AddTo(client.Seed{c, q})
 
 				})),
-				client.On("hidden", js.Script(func(q script.Ctx) {
-					t.Out.AddTo(script.Scope(c, q))
+				client.On("hidden", js.Script(func(q js.Ctx) {
+					t.Out.AddTo(client.Seed{c, q})
 				})),
 			)
 		}

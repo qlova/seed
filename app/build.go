@@ -15,7 +15,6 @@ import (
 	"qlova.org/seed/js/window"
 	"qlova.org/seed/page"
 	"qlova.org/seed/popup"
-	"qlova.org/seed/script"
 
 	"qlova.org/seed/s/column"
 	"qlova.org/seed/s/html/link"
@@ -33,13 +32,13 @@ func (a App) build() {
 	a.Seed.Read(&app)
 
 	//We need to check if onerror is defined.
-	var Script script.Data
+	var Script client.Data
 	app.document.Body.Read(&Script)
 
 	app.document.Body.With(
 		seed.If(Script.On["error"] == nil,
-			script.OnError(func(q script.Ctx, err script.Error) {
-				q(window.Alert(err.String))
+			client.OnError(func(err client.String) client.Script {
+				return window.Alert(err)
 			}),
 		),
 
@@ -48,9 +47,9 @@ func (a App) build() {
 				loading_page := app.loadingPage.Page(page.RouterOf(c))
 				app.document.Body.With(loading_page)
 
-				c.With(script.OnReady(func(q script.Ctx) {
+				c.With(client.OnLoad(js.Script(func(q js.Ctx) {
 					fmt.Fprintf(q, `seed.LoadingPage = q.get("%v"); seed.CurrentPage = seed.LoadingPage;`, html.ID(loading_page))
-				}))
+				})))
 			}
 		})),
 
@@ -62,7 +61,7 @@ func (a App) build() {
 		popup.Harvest(),
 	)
 
-	var onready = string(script.Render(a))
+	var onready = string(client.Render(a))
 	var scripts = js.Scripts(a)
 	var stylesheets = css.Stylesheets(a)
 
@@ -211,8 +210,12 @@ func (a App) build() {
 											}
 
 											console.log("updating");
-											
-											if (document.body.onupdatefound) document.body.onupdatefound();
+
+											if (!seed.production) {
+												window.location.reload();
+											} else {
+												if (document.body.onupdatefound) document.body.onupdatefound();
+											}
 										}
 								}
 							};
@@ -229,6 +232,8 @@ func (a App) build() {
 				}
 
 				document.addEventListener("contextmenu", function (e) {
+					if (e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA") return;
+
 					e.preventDefault();
 				}, false);
 
