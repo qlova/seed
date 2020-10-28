@@ -11,7 +11,9 @@ import (
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
-	"qlova.org/seed/style"
+	"qlova.org/seed/set"
+	"qlova.org/seed/transition"
+	"qlova.org/seed/units/percentage/of"
 )
 
 func Name(view View) string {
@@ -45,13 +47,13 @@ func (c Controller) Goto(view View) js.Script {
 	view, args := parseArgs(view, c.of)
 
 	var data data
-	c.of.Read(&data)
+	c.of.Load(&data)
 
 	var key = reflect.TypeOf(view)
 	if _, ok := data.views[key]; !ok {
 		if data.views == nil {
 			data.views = make(map[reflect.Type]bool)
-			c.of.Write(data)
+			c.of.Save(data)
 		}
 
 		data.views[reflect.TypeOf(view)] = true
@@ -70,29 +72,25 @@ func (c Controller) Goto(view View) js.Script {
 		element.AddTo(template)
 	}
 
-	c.of.Write(data)
+	c.of.Save(data)
 
 	var seed_view = js.Function{js.NewValue(`seed.view`)}
 
 	return func(q js.Ctx) {
-		q.Run(seed_view, js.NewValue(client.Seed{c.of, q}.Element()), js.NewString(Name(view)), args)
+		q.Run(seed_view, html.Element(c.of), js.NewString(Name(view)), args)
 	}
 }
 
 //View is a local view.
 type View interface {
-	View(Controller) Seed
+	View(Controller) seed.Seed
 }
 
-type Seed struct {
-	seed.Seed
-}
-
-func New(options ...seed.Option) Seed {
-	return Seed{seed.New(
+func New(options ...seed.Option) seed.Seed {
+	return seed.New(
 		html.SetTag("div"),
 
-		style.SetSize(100, 100),
+		set.Size(100%of.Parent, 100%of.Parent),
 
 		css.SetDisplay(css.Flex),
 		css.SetFlexDirection(css.Column),
@@ -103,20 +101,21 @@ func New(options ...seed.Option) Seed {
 			)
 		}),
 
+		transition.SetOnEnter(OnEnter),
+		transition.SetOnExit(OnExit),
+
 		seed.Options(options),
-	)}
+	)
 }
 
 type data struct {
-	seed.Data
-
 	views map[reflect.Type]bool
 }
 
-func OnEnter(f client.Script) seed.Option {
-	return client.On("viewenter", f)
+func OnEnter(f ...client.Script) seed.Option {
+	return client.On("viewenter", f...)
 }
 
-func OnExit(f client.Script) seed.Option {
-	return client.On("viewexit", f)
+func OnExit(f ...client.Script) seed.Option {
+	return client.On("viewexit", f...)
 }

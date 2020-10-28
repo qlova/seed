@@ -18,7 +18,7 @@ func main() {
 
 			text.SetColor(rgb.Red),
 
-			client.OnClick(Test(clientargs.Go, Message)),
+			client.OnClick(Message.Set("hello")),
 		),
 	).Launch()
 }

@@ -24,7 +24,7 @@ func RegisterRootRenderer(r Renderer) {
 func render(child seed.Seed) []byte {
 	var b bytes.Buffer
 	var d Data
-	child.Read(&d)
+	child.Load(&d)
 
 	//Deterministic render.
 	keys := make([]string, 0, len(d.On))
@@ -36,7 +36,7 @@ func render(child seed.Seed) []byte {
 	for _, event := range keys {
 		handler := d.On[event]
 		js.NewCtx(&b)(func(q js.Ctx) {
-			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Seed{child, q}.Element(), event)
+			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Element(child), event)
 			handler.GetScript()(q)
 			q(`});`)
 		})
@@ -48,7 +48,7 @@ func render(child seed.Seed) []byte {
 
 	if _, ok := d.On["ready"]; ok {
 		js.NewCtx(&b)(func(q js.Ctx) {
-			fmt.Fprintf(q, `await %[1]v.onready();`, Seed{child, q}.Element())
+			fmt.Fprintf(q, `await %[1]v.onready();`, Element(child))
 		})
 	}
 
@@ -127,15 +127,33 @@ seed.report = function(err, element) {
 
 seed.globals = {};
 
-seed.on = function(element, event, handler) {
+//seed.on registers an event handler for the given element and the given event name.
+//if 'id' is provided, then the handler can be removed by calling seed.off(element, event, id)
+seed.on = function(element, event, handler, id) {
+	if (id != null) {
+		if (!element["don"+event]) element["don"+event] = {};
+
+		element["don"+event][id] = handler;
+		return;
+	}
+
 	let f = async function(ev) {
 		seed.active = element;
 		try {
 			await handler(ev);
+
+			let dynamic_handlers = element["don"+event];
+			if (dynamic_handlers) {
+				for (const h in dynamic_handlers) {
+					await dynamic_handlers[h]();
+				}
+			}
+			
 		} catch(e) {
 			seed.report(e, element);
 		}
 	};
+
 	if (event == "press") {
 		seed.op(element, f);
 	} else if (event == "enter") {
@@ -148,6 +166,12 @@ seed.on = function(element, event, handler) {
 		element["on"+event] = f;
 	}
 };
+
+seed.off = function(element, event, id) {
+	if (!element["don"+event]) return;
+
+	delete element["don"+event][id];
+}
 
 seed.get_template = function(template, id) {
 
@@ -238,12 +262,9 @@ seed.request = async function(method, formdata, url, manual, active) {
 
 	const slave = async function(response) {
 		if (response == "") return null;
-		try {
-			const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-			return await (new AsyncFunction(response))();
-		} catch(e) {
-			return null;
-		}
+		const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
+		return await (new AsyncFunction(response))();
 	}
 
 	if (window.rpc && rpc[url]) {
@@ -266,7 +287,11 @@ seed.request = async function(method, formdata, url, manual, active) {
 			if (this.status >= 200 && this.status < 300) {
 				resolve(xhr.response);
 			} else {
-				if (this.status != 404) slave(xhr.response);
+				if (this.status != 404) slave(xhr.response).then(function() {
+					reject(seed.request.error);
+				}).catch(function(e) {
+					reject(e);
+				});
 				reject(seed.request.error);
 			}
 		};
@@ -281,6 +306,7 @@ seed.request = async function(method, formdata, url, manual, active) {
 		return await slave(response);
 	} catch(e) {
 		seed.report(e, active);
+		throw e;
 	}
 }
 
@@ -315,7 +341,7 @@ func Adopt(c seed.Seed) Script {
 func adopt(child seed.Seed) Script {
 	var s = js.Script(func(q js.Ctx) {})
 	var d Data
-	child.Read(&d)
+	child.Load(&d)
 
 	//Deterministic render.
 	keys := make([]string, 0, len(d.On))
@@ -329,7 +355,7 @@ func adopt(child seed.Seed) Script {
 		var e = event
 		var h = handler
 		s = s.Append(func(q js.Ctx) {
-			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Seed{child, q}.Element(), e)
+			fmt.Fprintf(q, `seed.on(%v, "%v", async function() {`, Element(child), e)
 			h.GetScript()(q)
 			fmt.Fprint(q, `});`)
 		})
@@ -344,7 +370,7 @@ func adopt(child seed.Seed) Script {
 
 	if _, ok := d.On["ready"]; ok {
 		s = s.Append(func(q js.Ctx) {
-			fmt.Fprintf(q, `await %[1]v.onready();`, Seed{child, q}.Element())
+			fmt.Fprintf(q, `await %[1]v.onready();`, Element(child))
 		})
 		delete(d.On, "ready")
 	}

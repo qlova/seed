@@ -11,7 +11,10 @@ import (
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
-	"qlova.org/seed/style"
+	"qlova.org/seed/s/expander"
+	"qlova.org/seed/set"
+	"qlova.org/seed/transition"
+	"qlova.org/seed/units/percentage/of"
 )
 
 //ID returns the DOM id of the provided page.
@@ -36,9 +39,9 @@ func (r Router) Goto(page Page) js.Script {
 		page, args, path := parseArgs(page)
 
 		var data data
-		r.c.Read(&data)
+		r.c.Load(&data)
 		data.pages = append(data.pages, page)
-		r.c.Write(data)
+		r.c.Save(data)
 
 		q.Run(js.Function{js.NewValue(`seed.goto`)}, js.NewString(ID(page)), args, path)
 	}
@@ -46,24 +49,23 @@ func (r Router) Goto(page Page) js.Script {
 
 //Page is a global view.
 type Page interface {
-	Page(Router) Seed
+	Page(Router) seed.Seed
 }
 
-type Seed struct {
-	seed.Seed
-}
-
-func New(options ...seed.Option) Seed {
-	var Page = Seed{seed.New()}
+func New(options ...seed.Option) seed.Seed {
+	var Page = seed.New()
 
 	Page.With(
 		html.SetTag("div"),
 
 		css.SetDisplay(css.Flex),
 		css.SetFlexDirection(css.Column),
-		style.Expand(),
+		expander.Set(),
 
-		style.SetSize(100, 100),
+		set.Size(100%of.Parent, 100%of.Parent),
+
+		transition.SetOnEnter(OnEnter),
+		transition.SetOnExit(OnExit),
 	)
 
 	for _, option := range options {
@@ -74,19 +76,15 @@ func New(options ...seed.Option) Seed {
 }
 
 type data struct {
-	seed.Data
-
 	pages []Page
 }
 
-var seeds = make(map[seed.Seed]data)
-
-func OnEnter(f client.Script) seed.Option {
-	return client.On("pageenter", f)
+func OnEnter(f ...client.Script) seed.Option {
+	return client.On("pageenter", f...)
 }
 
-func OnExit(f client.Script) seed.Option {
-	return client.On("pageexit", f)
+func OnExit(f ...client.Script) seed.Option {
+	return client.On("pageexit", f...)
 }
 
 //Is returns true if the given page is the current page.

@@ -21,7 +21,7 @@ func newHarvester() harvester {
 
 func (h harvester) harvest(c seed.Seed) map[string]*bytes.Buffer {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	//Deterministic render.
 	keys := make([]string, 0, len(data.queries))

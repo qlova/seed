@@ -141,7 +141,7 @@ func (text Text) HTML() string {
 		case rgba:
 			return "<span style='color:#" + s[2:10] + ";'>" + convert(s[10:]) + "</span>"
 		case icon:
-			return "<img style='height:1em;font-size:inherit;' src='" + s[3:3+int(s[2])] + "'>" + convert(s[3+int(s[2]):])
+			return "<img style='margin-top: 0.1em;vertical-align:text-top;height:1em;font-size:inherit;' src='" + s[3:3+int(s[2])] + "'>" + convert(s[3+int(s[2]):])
 		default:
 			panic("invalid text format")
 		}

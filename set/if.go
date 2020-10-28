@@ -3,12 +3,8 @@ package set
 import "qlova.org/seed"
 
 type data struct {
-	seed.Data
-
 	queries map[string]string
 }
-
-var seeds = make(map[seed.Seed]data)
 
 //Condition backs the If variable and can apply conditional styles.
 type Condition struct {
@@ -18,7 +14,7 @@ type Condition struct {
 
 func (con Condition) AddTo(c seed.Seed) {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	if data.queries == nil {
 		data.queries = make(map[string]string)
@@ -50,7 +46,7 @@ func (con Condition) AddTo(c seed.Seed) {
 
 	data.queries[q] = rules
 
-	c.Write(data)
+	c.Save(data)
 }
 
 func (con Condition) And(options ...seed.Option) seed.Option {

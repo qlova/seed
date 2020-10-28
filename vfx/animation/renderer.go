@@ -21,7 +21,7 @@ func newHarvester() harvester {
 
 func (h harvester) harvest(c seed.Seed) map[int]Animation {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	for _, anim := range data.animations {
 		h.animations[anim.id] = anim

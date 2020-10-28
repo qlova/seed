@@ -5,7 +5,7 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/client/clientrender"
+	"qlova.org/seed/client/change"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 )
@@ -37,7 +37,7 @@ func List(views ...View) seed.Option {
 				q(html.Element(c).Get("view").Set("index", js.NewNumber(0)))
 			})).AddTo(c)
 
-			clientrender.On(html.Element(c).Run("view", html.Element(c).Get("view").Get("index"))).AddTo(c)
+			change.On(html.Element(c).Run("view", html.Element(c).Get("view").Get("index"))).AddTo(c)
 		}),
 	}
 }

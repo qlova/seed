@@ -8,7 +8,7 @@ import (
 func Require(path string, contents string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var d data
-		c.Read(&d)
+		c.Load(&d)
 
 		if d.requires == nil {
 			d.requires = make(map[string]string)
@@ -16,13 +16,13 @@ func Require(path string, contents string) seed.Option {
 
 		d.requires[path] = contents
 
-		c.Write(d)
+		c.Save(d)
 	})
 }
 
 func styles(c seed.Seed, fill map[string]string) {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	if data.requires != nil {
 		for path, contents := range data.requires {

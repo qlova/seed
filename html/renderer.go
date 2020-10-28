@@ -20,7 +20,7 @@ func Render(c seed.Seed) []byte {
 	var b bytes.Buffer
 	var data Data
 
-	c.Read(&data)
+	c.Load(&data)
 
 	if data.Tag != "" {
 		fmt.Fprintf(&b, `<%v`, data.Tag)
@@ -58,7 +58,8 @@ func Render(c seed.Seed) []byte {
 			fmt.Fprint(&b, `" `)
 		}
 
-		_, ok := c.(client.Seed)
+		mode, _ := client.Seed(c)
+		ok := mode == client.AddTo
 
 		if data.Style != nil || ok {
 			fmt.Fprint(&b, ` style="`)

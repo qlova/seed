@@ -53,7 +53,7 @@ func (a App) Handler() http.Handler {
 	//use crypto/subtle
 
 	var app app
-	a.Read(&app)
+	a.Load(&app)
 
 	var AssetsServer = inbed.FileSystem{}
 
@@ -74,8 +74,8 @@ func (a App) Handler() http.Handler {
 		document = rendered
 	}
 
-	var scripts = js.Scripts(app.document)
-	var stylesheets = css.Stylesheets(app.document)
+	var scripts = js.Scripts(app.document.Seed)
+	var stylesheets = css.Stylesheets(app.document.Seed)
 	var imports = js.Imports()
 
 	//Checksum is used for versioning, ensure deterministic renderers are used to prevent distributed versions from mismatching.
@@ -154,7 +154,7 @@ func (a App) Handler() http.Handler {
 		}
 	})))
 
-	for route, handler := range api.Routes(app.document) {
+	for route, handler := range api.Routes(app.document.Seed) {
 		router.Handle(route, handler)
 	}
 

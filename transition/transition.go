@@ -8,10 +8,7 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/css"
 	"qlova.org/seed/js"
-	"qlova.org/seed/page"
-	"qlova.org/seed/popup"
 	"qlova.org/seed/vfx/animation"
-	"qlova.org/seed/view"
 )
 
 var fadeIn = animation.New(
@@ -36,7 +33,23 @@ type Transition struct {
 	In, Out animation.Animation
 }
 
+type data struct {
+	OnEnter, OnExit func(...client.Script) seed.Option
+}
+
 type Option func(*Transition)
+
+func SetOnEnter(onenter func(...client.Script) seed.Option) seed.Option {
+	return seed.Mutate(func(d *data) {
+		d.OnEnter = onenter
+	})
+}
+
+func SetOnExit(onexit func(...client.Script) seed.Option) seed.Option {
+	return seed.Mutate(func(d *data) {
+		d.OnExit = onexit
+	})
+}
 
 func New(options ...Option) Transition {
 	var t Transition
@@ -47,43 +60,34 @@ func New(options ...Option) Transition {
 	t.Option = seed.NewOption(func(c seed.Seed) {
 
 		enter := js.Script(func(q js.Ctx) {
-			t.In.AddTo(client.Seed{c, q})
-			fmt.Fprintf(q, `seed.in(%v, 0.4);`, client.Seed{c, q}.Element())
+			client.Option(t.In, q).AddTo(c)
+			fmt.Fprintf(q, `seed.in(%v, 0.4);`, client.Element(c))
 		})
 
 		exit := js.Script(func(q js.Ctx) {
-			t.Out.AddTo(client.Seed{c, q})
-			fmt.Fprintf(q, `seed.out(%v, 0.4);`, client.Seed{c, q}.Element())
+			client.Option(t.Out, q).AddTo(c)
+			fmt.Fprintf(q, `seed.out(%v, 0.4);`, client.Element(c))
 		})
 
-		switch c.(type) {
-		case page.Seed:
+		var d data
+		c.Load(&d)
+
+		if d.OnEnter != nil && d.OnExit != nil {
 			c.With(
-				page.OnEnter(enter),
-				page.OnExit(exit),
+				d.OnEnter(enter),
+				d.OnExit(exit),
 			)
-		case popup.Seed:
-			c.With(
-				popup.OnShow(enter),
-				popup.OnHide(exit),
-			)
-		case view.Seed:
-			c.With(
-				view.OnEnter(enter),
-				view.OnExit(exit),
-			)
-		default:
+		} else {
 			c.With(
 				client.On("visible", js.Script(func(q js.Ctx) {
-					t.In.AddTo(client.Seed{c, q})
+					client.Option(t.In, q).AddTo(c)
 
 				})),
 				client.On("hidden", js.Script(func(q js.Ctx) {
-					t.Out.AddTo(client.Seed{c, q})
+					client.Option(t.Out, q).AddTo(c)
 				})),
 			)
 		}
-
 	})
 
 	return t

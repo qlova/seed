@@ -16,7 +16,7 @@ type String struct {
 }
 
 func NewString(s client.String, components ...client.Value) String {
-	return String{s, client.FlattenComponents(components)}
+	return String{s, client.FlattenComponents(components...)}
 }
 
 //Components implements clientside.Compound

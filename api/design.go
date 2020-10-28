@@ -2,11 +2,14 @@
 package api
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"reflect"
 
 	"qlova.org/seed"
-	"qlova.org/seed/user"
+	"qlova.org/seed/client"
+	"qlova.org/seed/client/clientsafe"
 )
 
 type Option func(*Design)
@@ -41,8 +44,6 @@ func New(options ...Option) Design {
 }
 
 type data struct {
-	seed.Data
-
 	handlers map[string]http.Handler
 }
 
@@ -53,11 +54,11 @@ func (d Design) And(more ...seed.Option) seed.Option {
 //AddTo app.
 func (d Design) AddTo(c seed.Seed) {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	if data.handlers == nil {
 		data.handlers = make(map[string]http.Handler)
-		c.Write(data)
+		c.Save(data)
 	}
 
 	for _, endpoint := range d.endpoints {
@@ -69,89 +70,33 @@ func (d Design) AddTo(c seed.Seed) {
 				r.URL.Path = path[len(route):]
 			}
 
-			var u = user.CtxFromHandler(w, r)
+			var cr = client.NewRequest(w, r)
 
-			//Create API struct
-			T := reflect.TypeOf(handler)
-			if T.NumIn() == 2 {
-				var args = reflect.New(T.In(1))
+			var in = []reflect.Value{reflect.ValueOf(cr)}
 
-				for i := 0; i < args.Elem().NumField(); i++ {
-					var field = args.Elem().Type().Field(i)
-					switch field.Type {
-					case reflect.TypeOf(""):
-						args.Elem().Field(i).Set(reflect.ValueOf(u.Arg(field.Name).String()))
-					}
-
-				}
-
-				var in = []reflect.Value{reflect.ValueOf(u), args.Elem()}
-
-				reflect.ValueOf(handler).Call(in)
-			} else if T.NumIn() == 1 {
-				var in = []reflect.Value{reflect.ValueOf(u)}
-
-				reflect.ValueOf(handler).Call(in)
-			}
-		})
-	}
-
-	/*
-		var f = reflect.ValueOf(endpoint.handler)
-		var route = endpoint.Route
-		app.Handlers[route] = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-			var path = r.URL.Path
-			if len(path) > len(route) && path[0:len(route)] == route {
-				r.URL.Path = path[len(route):]
-			}
-
-			var u = user.CtxFromHandler(w, r)
-
-			var in []reflect.Value
-
-			var StartFrom = 0
-			//The function can take an optional client as it's first argument.
-			if f.Type().NumIn() > 0 && f.Type().In(0) == reflect.TypeOf(user.Ctx{}) {
-				StartFrom = 1
-
-				//Make the user, the first argument.
-				in = append(in, reflect.ValueOf(u))
-			}
-
-			for i := StartFrom; i < f.Type().NumIn(); i++ {
-				var arg = u.Arg(strconv.Itoa(i - StartFrom))
-
-				switch f.Type().In(i).Kind() {
-				case reflect.String:
-
-					in = append(in, reflect.ValueOf(arg.String()))
-
-				case reflect.Int:
-					var number, _ = strconv.Atoi(arg.String())
-					in = append(in, reflect.ValueOf(number))
-
-				default:
-					println("unimplemented callHandler for " + f.Type().String())
-					return
-				}
-			}
-
-			var results = f.Call(in)
+			//Call the function.
+			var results = reflect.ValueOf(handler).Call(in)
 
 			if len(results) == 0 {
+				fmt.Fprintf(w, "\n")
 				return
 			}
 
-			if len(results) == 1 {
-				var buffer bytes.Buffer
-				err := json.NewEncoder(&buffer).Encode(results[0].Interface())
-				if err != nil {
-					fmt.Println("rpc function could not send return value: ", err)
+			//Check if an error was returned.
+			if err, ok := results[len(results)-1].Interface().(error); ok && err != nil {
+				log.Println(err)
+
+				switch e := err.(type) {
+				case clientsafe.Error:
+					fmt.Fprintf(w, "%v", e.ClientError())
+				case client.Redirect:
+					http.Redirect(w, r, string(e), http.StatusSeeOther)
 				}
-				u.Execute(fmt.Sprintf(`return %v;`, buffer.String()))
+
 				return
 			}
+
+			return
 		})
-	}*/
+	}
 }

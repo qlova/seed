@@ -5,14 +5,35 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/client/clientop"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/client/if/not"
 	"qlova.org/seed/css"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/html/div"
 	"qlova.org/seed/s/html/template"
 )
+
+type data struct {
+	
+
+	templates []seed.Seed
+}
+
+func Templates(root seed.Seed) []seed.Seed {
+	var data data
+	root.Load(&data)
+
+	var result = data.templates
+
+	for _, child := range root.Children() {
+		if slice := Templates(child); slice != nil {
+			result = append(result, slice...)
+		}
+	}
+
+	return result
+}
 
 //Field can be used to select feed data.
 type Field interface {
@@ -41,7 +62,7 @@ type Feed struct {
 	//boolean is true if the feed has items.
 	boolean *clientside.Bool
 
-	Empty clientop.Bool
+	Empty client.Bool
 }
 
 //GetBool implements js.AnyBool
@@ -69,16 +90,21 @@ func (f *Feed) Int(field Field) client.Int {
 
 //Refresh refreshes the feed.
 func (f *Feed) Refresh() client.Script {
-	return html.Element(f.template).Run("onrefresh")
+	return html.Element(f.feed).Run("onrefresh")
 }
 
 //With returns a new Feed on the given Food, the options provided will be applied to the feed itself.
 func With(food Food, options ...seed.Option) *Feed {
 
 	var template = template.New()
-	var feed = div.New(template,
+	var feed = div.New(
 		css.Set("display", "flex"),
 		css.Set("flex-direction", "column"),
+
+		seed.Mutate(func(data *data) {
+			data.templates = append(data.templates, template)
+		}),
+
 		seed.Options(options),
 	)
 
@@ -97,7 +123,7 @@ func With(food Food, options ...seed.Option) *Feed {
 		},
 	}
 
-	f.Empty = clientop.Not(f.boolean)
+	f.Empty = not.True(f.boolean)
 
 	return f
 }
@@ -107,7 +133,7 @@ func (f *Feed) New(options ...seed.Option) seed.Seed {
 	var template = f.template
 	var feed = f.feed
 
-	template.With(css.SetSelector("#"+html.ID(feed)), seed.Options(options))
+	template.With(css.SetSelector("#"+html.ID(feed)), html.AddClass("sortable-ignore"), seed.Options(options))
 
 	convertToClasses(template)
 
@@ -122,7 +148,7 @@ func (f *Feed) New(options ...seed.Option) seed.Seed {
 	mem, adr := f.boolean.Variable()
 
 	feed.With(
-		client.OnLoad(js.Func("s.feed.orf").Run(js.NewValue("q"), js.NewString(client.ID(feed)), js.NewFunction(func(q js.Ctx) {
+		client.OnLoad(js.Func("s.feed.orf").Run(js.NewValue("q"), js.NewString(client.ID(feed)), js.NewString(client.ID(template)), js.NewFunction(func(q js.Ctx) {
 			q.Return(food2Data(f.food, q))
 		}), js.NewFunction(func(q js.Ctx) {
 			q("return async function(q) {")

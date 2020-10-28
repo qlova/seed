@@ -86,12 +86,12 @@ func (b *Bool) Toggle() client.Script {
 func (b *Bool) OnChange(do ...client.Script) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data data
-		c.Read(&data)
+		c.Load(&data)
 		data.hooks = append(data.hooks, hook{
 			variable: b,
 			do:       client.NewScript(do...),
 		})
-		c.Write(data)
+		c.Save(data)
 	})
 
 }
@@ -104,38 +104,6 @@ func (b *Bool) Not() *Bool {
 	var not = *b
 	not.not = true
 	return &not
-}
-
-func (b *Bool) If(options ...seed.Option) seed.Option {
-	return seed.NewOption(func(c seed.Seed) {
-		Hook(b, c)
-
-		c.With(client.On("render", js.Script(func(q js.Ctx) {
-			q.If(b, func(q js.Ctx) {
-				for _, option := range options {
-					if option == nil {
-						continue
-					}
-					if other, ok := option.(seed.Seed); ok {
-						client.Seed{other, q}.AddTo(client.Seed{c, q})
-					} else {
-						option.AddTo(client.Seed{c, q})
-					}
-				}
-			}).Else(func(q js.Ctx) {
-				for _, option := range options {
-					if option == nil {
-						continue
-					}
-					if other, ok := option.(seed.Seed); ok {
-						client.Seed{c, q}.Undo(client.Seed{other, q})
-					} else {
-						client.Seed{c, q}.Undo(option)
-					}
-				}
-			})
-		})))
-	})
 }
 
 //Protect ensures that the given script will only have one running instance.

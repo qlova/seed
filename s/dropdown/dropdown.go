@@ -15,7 +15,7 @@ import (
 )
 
 type data struct {
-	seed.Data
+	
 
 	values []string
 
@@ -29,7 +29,7 @@ func New(options ...seed.Option) seed.Seed {
 
 	var c = htmlselect.New(options...)
 
-	c.Read(&data)
+	c.Load(&data)
 
 	if data.placeholder != "" {
 		option.New(

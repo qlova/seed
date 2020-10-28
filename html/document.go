@@ -27,7 +27,7 @@ func (doc Document) Render() []byte {
 	var b bytes.Buffer
 
 	b.WriteString("<!DOCTYPE html>")
-	b.Write(Render(doc))
+	b.Write(Render(doc.Seed))
 
 	return b.Bytes()
 }

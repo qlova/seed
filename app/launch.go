@@ -88,7 +88,7 @@ func (a App) Launch() error {
 	}
 
 	var data app
-	a.Read(&data)
+	a.Load(&data)
 
 	fmt.Printf("\nlaunching %v version %v on http://localhost%v\n", data.name, data.worker.Version, port)
 

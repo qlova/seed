@@ -7,13 +7,16 @@ import (
 
 func init() {
 	client.RegisterRenderer(func(c seed.Seed) []byte {
-		return []byte(`s.feed = {}; s.feed.onrefresh = (q, id, feed, exe, mem, adr) => {
+		return []byte(`s.feed = {}; s.feed.onrefresh = (q, id, template_id, feed, exe, mem, adr) => {
 			let l = q.get(id);
 			if (!l) return;
 
-			let template = l.children[0];
+			let template = document.getElementById(template_id);
 
-			template.onrefresh = () => {
+			if (!template) console.error("template missing", template_id);
+
+
+			l.onrefresh = () => {
 
 				//don't refresh if we are already refreshing.
 				if (l.refreshing) return;
@@ -22,7 +25,7 @@ func init() {
 				q.setvar(mem, adr, false);
 
 				//remove previous content.
-				while (l.childNodes.length > 1) l.removeChild(l.lastChild);
+				l.textContent = "";
 
 				feed().catch((e) => {
 					seed.report(e, l);
@@ -65,19 +68,26 @@ func init() {
 	
 						l.appendChild(clone);
 	
-						let offset = i*nodes+1;
+						let offset = i*nodes;
 	
 						let ctx = new c.Ctx(q);
 						ctx.data = piece;
 						ctx.i = offset;
 						ctx.feed = food;
+
+						ctx.nodes = [];
+						for (let i = 0; i < nodes; i++) {
+							let child = l.children[offset+i];
+							ctx.nodes.push(child);
+						}
+
 						ctx.get = function(id) {
 							if (id instanceof HTMLElement) return id;
 							
 							let result;
 	
-							for (let i = 0; i < nodes; i++) {
-								let child = l.children[offset+i];
+							for (let i = 0; i < ctx.nodes.length; i++) {
+								let child = ctx.nodes[i];
 								if (!child) debugger;
 								if (child.className == id) return child;
 								result= child.querySelector("." + id);
@@ -100,14 +110,15 @@ func init() {
 							seed.report(e, l);
 						}
 	
-						for (let i = 0; i < nodes; i++) {
-							let child = l.children[offset+i];
-							await seed.render(ctx, child);
+						for (let j = 0; j < nodes; j++) {
+							let child = l.children[offset+j];
+							child.setAttribute('data-id', i);
 						}
 						
 						i++;
 					}
-	
+
+					await seed.render(q, l);
 					l.refreshing = false;
 				});
 				

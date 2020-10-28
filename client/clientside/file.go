@@ -60,12 +60,12 @@ func (f *File) SetToRaw(value client.Value) client.Script {
 func (f *File) OnChange(do ...client.Script) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data data
-		c.Read(&data)
+		c.Load(&data)
 		data.hooks = append(data.hooks, hook{
 			variable: f,
 			do:       client.NewScript(do...),
 		})
-		c.Write(data)
+		c.Save(data)
 	})
 
 }

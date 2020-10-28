@@ -4,11 +4,13 @@ package inbed
 
 import (
 	"bufio"
+	"bytes"
 	"compress/gzip"
 	"encoding/gob"
 	"encoding/hex"
 	"fmt"
 	"strings"
+	"time"
 
 	"io"
 	"net/http"
@@ -88,16 +90,26 @@ func init() {
 	})*/
 }
 
-func embedFile(name string, w *os.File, r *os.File) error {
-	info, err := r.Stat()
-	if err != nil {
-		return fmt.Errorf("could not stat file: %w", err)
+func embedFile(name string, w *os.File, r io.Reader) error {
+	var info os.FileInfo
+	var err error
+
+	if f, ok := r.(*os.File); ok {
+		info, err = f.Stat()
+		if err != nil {
+			return fmt.Errorf("could not stat file: %w", err)
+		}
+	}
+
+	var fname = name
+	if info != nil {
+		fname = info.Name()
 	}
 
 	var reader io.Reader
 	var writer io.Writer
 
-	switch path.Ext(info.Name()) {
+	switch path.Ext(fname) {
 	case ".html":
 		reader = mini.Reader("text/html", r)
 	case ".svg":
@@ -120,15 +132,18 @@ func embedFile(name string, w *os.File, r *os.File) error {
 
 	writer = bufio.NewWriter(w)
 
-	info, err = w.Stat()
-	if err != nil {
-		return fmt.Errorf("could not stat file: %w", err)
-	}
+	if info != nil {
+		if _, err := w.WriteString(fmt.Sprintf(`	inbed.Data(%q, %v, %v, []byte("`,
+			name, info.ModTime().UnixNano(), uint32(info.Mode()))); err != nil {
 
-	if _, err := w.WriteString(fmt.Sprintf(`	inbed.Data(%q, %v, %v, []byte("`,
-		name, info.ModTime().UnixNano(), uint32(info.Mode()))); err != nil {
+			return fmt.Errorf("could not write assets file: %w", err)
+		}
+	} else {
+		if _, err := w.WriteString(fmt.Sprintf(`	inbed.Data(%q, %v, %v, []byte("`,
+			name, time.Now().UnixNano(), uint32(os.ModePerm))); err != nil {
 
-		return fmt.Errorf("could not write assets file: %w", err)
+			return fmt.Errorf("could not write assets file: %w", err)
+		}
 	}
 
 	for {
@@ -209,12 +224,21 @@ func embedFile(name string, w *os.File, r *os.File) error {
 
 func buildEmbeddings() error {
 
-	assets, err := os.Create(filepath.Join(Root, PackageName, PackageName+".go"))
+	var InbedFilePath = filepath.Join(Root, PackageName, PackageName+".go")
+	if SingleFile != "" {
+		InbedFilePath = filepath.Join(Root, SingleFile)
+	}
+
+	assets, err := os.Create(InbedFilePath)
 	if err != nil {
 		return fmt.Errorf("could not create inbed package file: %w", err)
 	}
 
-	if _, err := assets.WriteString(`//+build bundle
+	if SingleFile == "" {
+		assets.WriteString(`//+build bundle`)
+	}
+
+	if _, err := assets.WriteString(`
 
 package ` + PackageName + `
 
@@ -223,6 +247,12 @@ import "qlova.org/seed/asset/inbed"
 func init() {
 `); err != nil {
 		return fmt.Errorf("could not write inbed package header: %w", err)
+	}
+
+	for path, data := range memory {
+		if err := embedFile(path, assets, bytes.NewReader(data)); err != nil {
+			return fmt.Errorf("could not embed data %v: %w", path, err)
+		}
 	}
 
 	for _, embedding := range embeddings {
@@ -308,66 +338,69 @@ func init() {
 
 //Done should be called after all calls to File and before any calls to Open.
 func Done() error {
-	if len(embeddings) == 0 {
+	if len(embeddings) == 0 && len(memory) == 0 {
 		return nil
 	}
 
-	//Create an inbed.go file in the project root
-	if _, err := os.Stat(filepath.Join(Root, ImporterName)); os.IsNotExist(err) {
-		file, err := os.Create(filepath.Join(Root, ImporterName))
-		if err != nil {
-			return fmt.Errorf("could not create %v file: %w", ImporterName, err)
-		}
+	if SingleFile == "" {
 
-		if _, err := file.WriteString(`//+build bundle
-
-package main
-
-import _ "./` + PackageName + `"
-`); err != nil {
-			return fmt.Errorf("could not write %v file: %w", ImporterName, err)
-		}
-
-		if err := file.Close(); err != nil {
-			return fmt.Errorf("could not close %v file: %w", ImporterName, err)
-		}
-	}
-
-	//Create an inbed package directory.
-	if info, err := os.Stat(filepath.Join(Root, PackageName)); os.IsNotExist(err) {
-		if err := os.Mkdir(filepath.Join(Root, PackageName), os.ModePerm); err != nil {
-			return fmt.Errorf("could not create %v directory: %w", PackageName, err)
-		}
-	} else if err == nil && !info.IsDir() {
-		return fmt.Errorf("%v is not a directory", PackageName)
-	}
-
-	inbedInfo, err := os.Stat(filepath.Join(Root, PackageName, PackageName+".go"))
-	if err == nil {
-		var lastInbedTime = inbedInfo.ModTime()
-
-		for _, embedding := range embeddings {
-			info, err := os.Stat(filepath.Join(Root, embedding))
+		//Create an inbed.go file in the project root
+		if _, err := os.Stat(filepath.Join(Root, ImporterName)); os.IsNotExist(err) {
+			file, err := os.Create(filepath.Join(Root, ImporterName))
 			if err != nil {
-				return fmt.Errorf("could not stat embedding %v: %w", embedding, err)
+				return fmt.Errorf("could not create %v file: %w", ImporterName, err)
 			}
-			if info.ModTime().After(lastInbedTime) {
-				return buildEmbeddings()
+
+			if _, err := file.WriteString(`//+build bundle
+
+	package main
+
+	import _ "./` + PackageName + `"
+	`); err != nil {
+				return fmt.Errorf("could not write %v file: %w", ImporterName, err)
+			}
+
+			if err := file.Close(); err != nil {
+				return fmt.Errorf("could not close %v file: %w", ImporterName, err)
 			}
 		}
 
-		//Try the cache.
-		if cache, err := os.Open(filepath.Join(Root, PackageName, "cache.gob")); err == nil {
-			var oldEmbeddings []string
-			if err := gob.NewDecoder(cache).Decode(&oldEmbeddings); err == nil {
-				if !embeddingsEqual(oldEmbeddings) {
+		//Create an inbed package directory.
+		if info, err := os.Stat(filepath.Join(Root, PackageName)); os.IsNotExist(err) {
+			if err := os.Mkdir(filepath.Join(Root, PackageName), os.ModePerm); err != nil {
+				return fmt.Errorf("could not create %v directory: %w", PackageName, err)
+			}
+		} else if err == nil && !info.IsDir() {
+			return fmt.Errorf("%v is not a directory", PackageName)
+		}
+
+		inbedInfo, err := os.Stat(filepath.Join(Root, PackageName, PackageName+".go"))
+		if err == nil {
+			var lastInbedTime = inbedInfo.ModTime()
+
+			for _, embedding := range embeddings {
+				info, err := os.Stat(filepath.Join(Root, embedding))
+				if err != nil {
+					return fmt.Errorf("could not stat embedding %v: %w", embedding, err)
+				}
+				if info.ModTime().After(lastInbedTime) {
 					return buildEmbeddings()
 				}
 			}
-			cache.Close()
-		}
 
-		return nil
+			//Try the cache.
+			if cache, err := os.Open(filepath.Join(Root, PackageName, "cache.gob")); err == nil {
+				var oldEmbeddings []string
+				if err := gob.NewDecoder(cache).Decode(&oldEmbeddings); err == nil {
+					if !embeddingsEqual(oldEmbeddings) {
+						return buildEmbeddings()
+					}
+				}
+				cache.Close()
+			}
+
+			return nil
+		}
 	}
 
 	return buildEmbeddings()
@@ -375,6 +408,10 @@ import _ "./` + PackageName + `"
 
 //Open opens a previously embedded file. If Done hasn't been called, it is called.
 func Open(name string) (http.File, error) {
+	if len(name) > 0 && name[0] == '/' {
+		name = name[1:]
+	}
+
 	if !done {
 		if err := Done(); err != nil {
 			return nil, err
@@ -383,6 +420,10 @@ func Open(name string) (http.File, error) {
 
 	file, err := os.Open(filepath.Join(Root, name))
 	if err != nil {
+		if f, ok := files[name]; ok {
+			return f.Open()
+		}
+
 		if strings.Contains(name, "..") {
 			return nil, os.ErrNotExist
 		}

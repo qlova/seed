@@ -5,7 +5,8 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/client/clientrender"
+	"qlova.org/seed/client/change"
+	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 )
 
@@ -23,13 +24,13 @@ func Set(starting View) seed.Option {
 
 		c.With(client.OnLoad(js.Script(func(q js.Ctx) {
 			fmt.Fprintf(q, `seed.view.ready(%v, "%v");`,
-				client.Seed{c, q}.Element(), Name(starting))
+				html.Element(c), Name(starting))
 		})))
 
-		c.With(clientrender.On(js.Script(func(q js.Ctx) {
+		c.With(change.On(js.Script(func(q js.Ctx) {
 
 			fmt.Fprintf(q, `if (%[1]v.CurrentView) { %[1]v.CurrentView.args = %[2]v; if (%[1]v.CurrentView.onviewenter) %[1]v.CurrentView.onviewenter();  }`,
-				client.Seed{c, q}.Element(), args.GetObject().String())
+				html.Element(c), args.GetObject().String())
 		})))
 	})
 }

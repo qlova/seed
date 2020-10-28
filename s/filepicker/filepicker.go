@@ -1,18 +1,18 @@
 package filepicker
 
 import (
+	"encoding/base64"
+	"fmt"
+	"math/big"
+
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/html"
 	"qlova.org/seed/html/attr"
 	"qlova.org/seed/js"
-	"qlova.org/seed/user/attachment"
 
 	"qlova.org/seed/s/html/input"
 )
-
-//File is a type of attachment.
-type File = attachment.Attachment
 
 //New returns a new filepicker widget.
 func New(options ...seed.Option) seed.Seed {
@@ -20,7 +20,7 @@ func New(options ...seed.Option) seed.Seed {
 }
 
 //Update the attachment when a file is picked.
-func Update(a attachment.Attachment) seed.Option {
+func Update(a File) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		c.With(
 			client.OnInput(js.Script(func(q js.Ctx) {
@@ -36,7 +36,7 @@ func Update(a attachment.Attachment) seed.Option {
 //SelectFile asks the user to select a file, if and only if they do select a file, the handler will be called.
 //There is no way to tell if the user did not select a file.
 func SelectFile(handler func(File) client.Script) js.Script {
-	var a = attachment.New()
+	var a = NewFile()
 
 	return func(q js.Ctx) {
 		var input = js.Global().Get("document").Call("createElement", js.NewString("input")).Var(q)
@@ -56,4 +56,34 @@ func SelectFile(handler func(File) client.Script) js.Script {
 
 		q(input.Run("click"))
 	}
+}
+
+type File struct {
+	string
+}
+
+func (a File) Set(v js.Value) func(js.Ctx) {
+	return func(q js.Ctx) {
+		q(`if (!window.attachments) window.attachments = {};`)
+		q(fmt.Sprintf(`window.attachments["%v"] = %v;`, a.string, v))
+	}
+}
+
+func (a File) GetFile() js.Value {
+	return js.NewValue(`window.attachments[%v]`, js.NewString(a.string))
+}
+
+func (a File) GetValue() js.Value {
+	return a.GetFile()
+}
+
+func (a File) GetBool() js.Bool {
+	return a.GetValue().GetBool()
+}
+
+var id int64
+
+func NewFile() File {
+	id++
+	return File{base64.RawURLEncoding.EncodeToString(big.NewInt(int64(id)).Bytes())}
 }

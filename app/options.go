@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"image/color"
 	"strconv"
 
@@ -18,15 +19,15 @@ func OnUpdateFound(do client.Script) seed.Option {
 //SetLoadingPage sets the loading page of this app.
 func SetLoadingPage(p page.Page) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		switch c.(type) {
-		case client.Seed, client.Undo:
+		switch mode, _ := client.Seed(c); mode {
+		case client.AddTo, client.Undo:
 			panic("app.SetLoadingPage must not be called on a client.Seed")
 		}
 
 		var app app
-		c.Read(&app)
+		c.Load(&app)
 		app.loadingPage = p
-		c.Write(app)
+		c.Save(app)
 	})
 }
 
@@ -34,19 +35,19 @@ func SetLoadingPage(p page.Page) seed.Option {
 func SetColor(col color.Color) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var app app
-		c.Read(&app)
+		c.Load(&app)
 
-		switch q := c.(type) {
-		case client.Seed:
-			q.Javascript(`document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: col}.Rule())
+		switch mode, q := client.Seed(c); mode {
+		case client.AddTo:
+			fmt.Fprintf(q, `document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: col}.Rule())
 		case client.Undo:
-			q.Javascript(`document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: app.color}.Rule())
+			fmt.Fprintf(q, `document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: app.color}.Rule())
 		default:
 			app.manifest.SetThemeColor(col)
 			app.color = col
 		}
 
-		c.Write(app)
+		c.Save(app)
 	})
 }
 
@@ -56,11 +57,11 @@ func SetIcon(icon string) seed.Option {
 
 	return seed.NewOption(func(c seed.Seed) {
 		var app app
-		c.Read(&app)
+		c.Load(&app)
 
-		switch q := c.(type) {
-		case client.Seed:
-			q.Javascript(`
+		switch mode, q := client.Seed(c); mode {
+		case client.AddTo:
+			fmt.Fprintf(q, `
 			{
 				let head = document.head || document.getElementsByTagName('head')[0];
 
@@ -76,11 +77,11 @@ func SetIcon(icon string) seed.Option {
 			}
 			`, strconv.Quote(icon))
 		case client.Undo:
-			q.Javascript(`document.getElementById('dynamic-favicon').removeChild(oldLink);`)
+			fmt.Fprintf(q, `document.getElementById('dynamic-favicon').removeChild(oldLink);`)
 		default:
 			app.manifest.SetIcon(icon)
 		}
 
-		c.Write(app)
+		c.Save(app)
 	})
 }

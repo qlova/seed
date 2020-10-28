@@ -6,7 +6,7 @@ import (
 
 //Data stores associations between seeds and event handlers.
 type Data struct {
-	seed.Data
+	
 
 	On map[string]func()
 }
@@ -14,11 +14,11 @@ type Data struct {
 func On(event string, f func()) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data Data
-		c.Read(&data)
+		c.Load(&data)
 
 		if data.On == nil {
 			data.On = make(map[string]func())
-			c.Write(data)
+			c.Save(data)
 		}
 
 		data.On[event] = f

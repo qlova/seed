@@ -7,272 +7,28 @@ import (
 	"sort"
 )
 
-type Link struct {
-	Seed
-}
-
-func (link *Link) Link() Option {
-	return NewOption(func(c Seed) {
-		link.Seed = c
-	})
-}
-
-func NewLink() *Link {
-	return new(Link)
-}
-
-var argid int64
-
-//Arg is a convienience type for seed arguments.
-type Arg struct {
-	int64
-}
-
-type argument struct {
-	Arg
-	Value interface{}
-}
-
-func (argument) AddTo(c Seed) {}
-
-func (arg *Arg) Set(v interface{}) Option {
-	if arg.int64 == 0 {
-		argid++
-		arg.int64 = argid
-	}
-	return argument{
-		*arg,
-		v,
-	}
-}
-
-func (arg *Arg) Get(options Options, into interface{}) bool {
-	for i := len(options) - 1; i >= 0; i-- {
-		if a, ok := options[i].(argument); ok {
-			if a.Arg.int64 == arg.int64 {
-				reflect.ValueOf(into).Elem().Set(reflect.ValueOf(a.Value))
-				return true
-			}
-		}
-	}
-	return false
-}
-
-type Creator func(...Option) Seed
-
-//Dir is the working directory of the seed.
-var Dir = filepath.Dir(os.Args[0])
-
-const Production = true
-
-//Data is any data associated with a seed.
-//You must provide a way for your data to be deleted.
-type Data interface {
-	data()
-}
-
-var id int
-
+//data associated with a seed by this package.
 type data struct {
-	Data
-
-	id int
-
 	used bool
 
-	parent Seed
-
+	parent   Seed
 	children []Seed
 }
 
-//Option can be used to modify a seed.
-type Option interface {
-	AddTo(Seed)
-}
-
-type Options []Option
-
-func (options Options) AddTo(c Seed) {
-	for _, o := range options {
-		if o != nil {
-			o.AddTo(c)
-		}
-	}
-}
-
-func (options Options) And(more ...Option) Options {
-	return append(options, more...)
-}
-
-//OptionFunc can be used to create an Option.
-type OptionFunc func(c Seed)
-
-//NewOption can be used to create options.
-type NewOption = OptionFunc
-
-//AddTo implements Option.AddTo
-func (o OptionFunc) AddTo(c Seed) {
-	o(c)
-}
-
-//And implements Option.And
-func (o OptionFunc) And(more ...Option) Option {
-	return And(o, more...)
-}
-
-//And implements Option.And
-func And(o Option, more ...Option) Option {
-	return NewOption(func(c Seed) {
-		o.AddTo(c)
-		for _, o = range more {
-			o.AddTo(c)
-		}
-	})
-}
-
-//Seed is a generic reference component, 'everything is a seed'.
-//Like an enitity in a ECS, other packages can associate Data with this reference.
-type Seed interface {
-	Option
-
-	ID() int
-	Use()
-	Used() bool
-
-	Read(Data)
-	Write(Data)
-
-	Parent() Seed
-	Children() []Seed
-
-	With(...Option) Seed
-}
-
-type seed map[reflect.Type]reflect.Value
-
-func (c seed) seed() seed {
-	return c
-}
-
-func (c seed) Read(d Data) {
-	t := reflect.TypeOf(d).Elem()
-	if v, ok := c[t]; ok {
-		reflect.ValueOf(d).Elem().Set(v)
-		return
-	}
-	reflect.ValueOf(d).Elem().Set(reflect.Zero(t))
-}
-
-func (c seed) Write(d Data) {
-	t := reflect.TypeOf(d)
-	if t.Kind() == reflect.Ptr {
-		panic("do not pass pointer to seed.Seed.Write")
-	}
-	c[t] = reflect.ValueOf(d)
-}
-
-//Mutate a seed with a given seed.Data
-//panics on illegal arguments.
-//In Go2, signature will become Mutate[T seed.Data](f func(*T)) Option
-func Mutate(f interface{}) Option {
-	T := reflect.TypeOf(f)
-	if T.Kind() != reflect.Func || T.In(0).Kind() != reflect.Ptr || !T.In(0).Implements(reflect.TypeOf([0]Data{}).Elem()) {
-		panic("illegal argument to seed.Mutate")
-	}
-
-	V := reflect.ValueOf(f)
-
-	data := reflect.New(T.In(0).Elem())
-
-	return NewOption(func(c Seed) {
-		c.Read(data.Interface().(Data))
-
-		V.Call([]reflect.Value{data})
-
-		c.Write(data.Elem().Interface().(Data))
-	})
-}
-
-func (c seed) ID() int {
-	var d data
-	c.Read(&d)
-	return d.id
-}
-
-func (c seed) Parent() Seed {
-	var d data
-	c.Read(&d)
-	return d.parent
-}
-
-func (c seed) Use() {
-	var d data
-	c.Read(&d)
-	d.used = true
-	c.Write(d)
-}
-
-func (c seed) Used() bool {
-	var d data
-	c.Read(&d)
-	return d.used
-}
-
-func (c seed) Children() []Seed {
-	var d data
-	c.Read(&d)
-	return d.children
-}
-
-func (c seed) With(options ...Option) Seed {
-	for _, o := range options {
-		o.AddTo(c)
-	}
-	return c
-}
-
-func Add(a, b Seed) {
-	var d data
-	b.Read(&d)
-
-	//Don't re-add children.
-	if parent := a.Parent(); parent != nil {
-		if parent.ID() == b.ID() {
-			return
-		}
-	}
-
-	for _, child := range d.children {
-		if child.ID() == a.ID() {
-			return
-		}
-	}
-
-	d.children = append(d.children, a)
-	b.Write(d)
-
-	a.Read(&d)
-	d.parent = b
-	a.Write(d)
-}
-
-func (c seed) AddTo(other Seed) {
-	Add(c, other)
-}
-
-func (c seed) And(more ...Option) Option {
-	return And(c, more...)
+//Seed is an extendable entity type. Other packages can associate data with a seed.
+//Seeds can have options applied to them and are also options themselves (seeds can be added to seeds).
+type Seed struct {
+	id   int
+	data map[reflect.Type]reflect.Value
 }
 
 //New returns a new seed with the applied options.
 func New(options ...Option) Seed {
-	c := make(seed)
+	var c Seed
 
 	id++
-	var d data
-	c.Read(&d)
-	d.id = id
-	c.Write(d)
+	c.id = id
+	c.data = make(map[reflect.Type]reflect.Value)
 
 	for _, o := range options {
 		if o != nil {
@@ -283,21 +39,113 @@ func New(options ...Option) Seed {
 	return c
 }
 
-//If applies the options if the condition is true.
-func If(condition bool, options ...Option) Option {
-	return NewOption(func(c Seed) {
-		if condition {
-			for _, o := range options {
-				o.AddTo(c)
-			}
-		}
-	})
+//Load loads the associated data of data's type into data and then returns true.
+//If no data is found, data is set to the empty value and false is returned instead.
+func (c Seed) Load(data interface{}) bool {
+	t := reflect.TypeOf(data).Elem()
+	if v, ok := c.data[t]; ok {
+		reflect.ValueOf(data).Elem().Set(v)
+		return true
+	}
+	reflect.ValueOf(data).Elem().Set(reflect.Zero(t))
+	return false
 }
 
+//Save saves data of the given type to the seed.
+func (c Seed) Save(data interface{}) {
+	t := reflect.TypeOf(data)
+	v := reflect.ValueOf(data)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+		v = v.Elem()
+	}
+	c.data[t] = v
+}
+
+//ID returns the Seed's ID.
+func (c Seed) ID() int {
+	return c.id
+}
+
+//Parent returns the seeds parent.
+func (c Seed) Parent() Seed {
+	var d data
+	c.Load(&d)
+	return d.parent
+}
+
+//Use marks the seed as used.
+func (c Seed) Use() {
+	var d data
+	c.Load(&d)
+	d.used = true
+	c.Save(d)
+}
+
+//Used reports whether or not the seed has been used.
+func (c Seed) Used() bool {
+	var d data
+	c.Load(&d)
+	return d.used
+}
+
+//Children returns the seeds children.
+func (c Seed) Children() []Seed {
+	var d data
+	c.Load(&d)
+	return d.children
+}
+
+//With is depreciated.
+func (c Seed) With(options ...Option) Seed {
+	for _, o := range options {
+		o.AddTo(c)
+	}
+	return c
+}
+
+//Builder is a function that takes one or more options and returns a seed.
+type Builder func(...Option) Seed
+
+//Dir is the working directory of the seed.
+var Dir = filepath.Dir(os.Args[0])
+
+var id int
+
+//AddTo implements Option.
+func (c Seed) AddTo(other Seed) {
+	var d data
+	other.Load(&d)
+
+	//Don't re-add children.
+	if c.Parent().ID() == other.ID() {
+		return
+	}
+
+	if c.ID() == other.ID() {
+		panic("child added to itself")
+	}
+
+	for _, child := range d.children {
+		if child.ID() == c.ID() {
+			return
+		}
+	}
+
+	d.children = append(d.children, c)
+	other.Save(d)
+
+	c.Load(&d)
+	d.parent = other
+	c.Save(d)
+}
+
+//Set returns an unordered set of seeds.
 type Set struct {
 	mapping map[int]Seed
 }
 
+//NewSet creates a new unordered set of seeds out of the given seed arguments.
 func NewSet(seeds ...Seed) Set {
 	var set Set
 	set.mapping = make(map[int]Seed, len(seeds))
@@ -307,6 +155,7 @@ func NewSet(seeds ...Seed) Set {
 	return set
 }
 
+//Add adds seeds to the set.
 func (s *Set) Add(seeds ...Seed) {
 	if seeds == nil {
 		return
@@ -315,21 +164,22 @@ func (s *Set) Add(seeds ...Seed) {
 		s.mapping = make(map[int]Seed)
 	}
 	for _, seed := range seeds {
-		if seed == nil {
+		if seed.id == 0 {
 			continue
 		}
 		s.mapping[seed.ID()] = seed
 	}
 }
 
+//Remove removes a seed from the set.
 func (s *Set) Remove(c Seed) {
-	if c == nil {
+	if c.id == 0 {
 		return
 	}
 	delete(s.mapping, c.ID())
 }
 
-//Slice returns an ordered list of seeds by id.
+//Slice returns a slice of all the seeds in this set, ordered by id.
 func (s *Set) Slice() []Seed {
 	var slice = make([]Seed, 0, len(s.mapping))
 	for _, seed := range s.mapping {

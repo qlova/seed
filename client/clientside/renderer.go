@@ -22,7 +22,7 @@ func newHarvester() *harvester {
 
 func (h *harvester) harvest(c seed.Seed) harvester {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	for _, hook := range data.hooks {
 		var address, _ = hook.variable.Variable()
@@ -188,14 +188,14 @@ func init() {
 					console.error("invalid memory: ", memory)
 				}
 
+				if (JSON.stringify(old) != JSON.stringify(value)) {
+					if (seed.variable.onchange[key]) seed.variable.onchange[key]();
+				}
+
 				if (seed.variable.hook[key])
 					for (let id of seed.variable.hook[key]) {
 						c.renderALL(this, id);
 					};
-
-				if (JSON.stringify(old) != JSON.stringify(value)) {
-					if (seed.variable.onchange[key]) seed.variable.onchange[key]();
-				}
 			};
 		}; 
 

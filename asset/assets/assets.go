@@ -11,7 +11,7 @@ func init() {
 }
 
 type data struct {
-	seed.Data
+	
 
 	assets []string
 }
@@ -21,9 +21,9 @@ func New(src string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		if src != "" {
 			var data data
-			c.Read(&data)
+			c.Load(&data)
 			data.assets = append(data.assets, src)
-			c.Write(data)
+			c.Save(data)
 		}
 	})
 }
@@ -31,7 +31,7 @@ func New(src string) seed.Option {
 func of(c seed.Seed, addto map[string]bool) {
 
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	for _, asset := range data.assets {
 		addto[asset] = true

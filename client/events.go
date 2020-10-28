@@ -16,21 +16,16 @@ func on(event string, do Script) seed.Option {
 		do.GetScript()(js.NewCtx(ioutil.Discard, c)) //Catch errors and harvest pages.
 
 		var d Data
-		c.Read(&d)
+		c.Load(&d)
 
-		switch data := c.(type) {
-		case Seed:
+		switch mode, q := Seed(c); mode {
+		case AddTo:
 			c.Use()
-			data.Q(fmt.Sprintf(`seed.on(%v, "%v", async function() {`, data.Element(), event))
-			do.GetScript()(data.Q)
-			data.Q(`});`)
+			q(fmt.Sprintf(`seed.on(%v, "%v", async function() {`, Element(c), event))
+			do.GetScript()(q)
+			q(fmt.Sprintf(`}, %v);`, c.ID())) //add dynamic event handler by ID.
 		case Undo:
-			//s.Root().Use()
-			data.Q(fmt.Sprintf(`seed.on(%v, "%v", async function() {`, data.Element(), event))
-			if d.On[event] != nil {
-				d.On[event].GetScript()(js.NewCtx(data.Q))
-			}
-			data.Q(`});`)
+			q(fmt.Sprintf(`seed.off(%v, "%v", '%v');`, Element(c), event, c.ID())) //remove id.
 		default:
 			//s.Root().Use()
 			if d.On == nil {
@@ -39,7 +34,7 @@ func on(event string, do Script) seed.Option {
 			d.On[event] = d.On[event].Append(do.GetScript())
 		}
 
-		c.Write(d)
+		c.Save(d)
 	})
 }
 
@@ -79,4 +74,9 @@ func OnError(do func(err String) Script) seed.Option {
 	return On("error", NewScript(
 		do(js.String{Value: js.NewValue(`arguments[0]`)}),
 	))
+}
+
+//OnRender is called whenever this seed is asked to render itself.
+func OnRender(do Script) seed.Option {
+	return On("render", do)
 }

@@ -71,12 +71,12 @@ func (s *String) GoSet(fn interface{}, args ...client.Value) client.Script {
 func (s *String) OnChange(do ...client.Script) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data data
-		c.Read(&data)
+		c.Load(&data)
 		data.hooks = append(data.hooks, hook{
 			variable: s,
 			do:       client.NewScript(do...),
 		})
-		c.Write(data)
+		c.Save(data)
 	})
 
 }

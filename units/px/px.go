@@ -5,6 +5,9 @@ import "fmt"
 //Unit is a pixel-quantity unit.
 type Unit float64
 
+//One px.
+const One = Unit(1)
+
 //New returns the given quantity as a unit.
 func New(quantity float64) Unit {
 	return Unit(quantity)

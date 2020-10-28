@@ -10,7 +10,9 @@ import (
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 	"qlova.org/seed/s/column"
-	"qlova.org/seed/style"
+	"qlova.org/seed/s/expander"
+	"qlova.org/seed/set"
+	"qlova.org/seed/units/percentage/of"
 )
 
 type harvester struct {
@@ -35,9 +37,9 @@ func Set(page Page) seed.Option {
 func AddPages(pages ...Page) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var container = column.New(
-			style.SetWidth(100),
-			style.Expand(),
-			style.SetMinHeight(0),
+			set.Width(100%of.Parent),
+			expander.Set(),
+			set.MinHeight(nil),
 		)
 		for _, page := range pages {
 			add(page).AddTo(container)
@@ -75,7 +77,7 @@ func add(page Page) seed.Option {
 
 func (h harvester) harvest(c seed.Seed) {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	for _, p := range data.pages {
 		var key = reflect.TypeOf(p)
@@ -104,13 +106,13 @@ func Harvest(starting Page) seed.Option {
 		}
 
 		var data data
-		c.Read(&data)
+		c.Load(&data)
 		data.pages = append(data.pages, starting)
-		c.Write(data)
+		c.Save(data)
 
 		var container = column.New(
-			style.SetWidth(100),
-			style.Expand(),
+			set.Width(100%of.Parent),
+			expander.Set(),
 		)
 		newHarvester(container).harvest(c)
 		container.AddTo(c)

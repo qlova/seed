@@ -9,8 +9,6 @@ import (
 )
 
 type data struct {
-	seed.Data
-
 	selector string
 
 	rules *OrderedMap
@@ -55,23 +53,23 @@ func (r Rule) Value() string {
 
 func (r Rule) AddTo(c seed.Seed) {
 	var d data
-	c.Read(&d)
+	c.Load(&d)
 
-	switch c := c.(type) {
-	case client.Seed:
+	switch mode, q := client.Seed(c); mode {
+	case client.AddTo:
 		property, value := r.Split()
 		if strings.HasPrefix(property, "-") {
-			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "%v");`, c.Element(), property, value)
+			fmt.Fprintf(q, `%v.style.setProperty("%v", "%v");`, client.Element(c), property, value)
 		} else {
-			fmt.Fprintf(c.Q, `%v.style.%v = "%v";`, c.Element(), dashes2camels(property), value)
+			fmt.Fprintf(q, `%v.style.%v = "%v";`, client.Element(c), dashes2camels(property), value)
 		}
 
 	case client.Undo:
 		property := r.Property()
 		if strings.HasPrefix(property, "-") {
-			fmt.Fprintf(c.Q, `%v.style.setProperty("%v", "");`, c.Element(), property)
+			fmt.Fprintf(q, `%v.style.setProperty("%v", "");`, client.Element(c), property)
 		} else {
-			fmt.Fprintf(c.Q, `%v.style.%v = "";`, c.Element(), dashes2camels(property))
+			fmt.Fprintf(q, `%v.style.%v = "";`, client.Element(c), dashes2camels(property))
 		}
 	default:
 		if d.rules == nil {
@@ -81,7 +79,7 @@ func (r Rule) AddTo(c seed.Seed) {
 		d.rules.Set(property, value)
 	}
 
-	c.Write(d)
+	c.Save(d)
 }
 
 func (r Rule) And(options ...seed.Option) seed.Option {
@@ -98,7 +96,7 @@ func Selector(c seed.Seed) string {
 	c.Use()
 
 	var d data
-	c.Read(&d)
+	c.Load(&d)
 
 	if d.selector != "" {
 		return d.selector
@@ -124,9 +122,9 @@ func dashes2camels(s string) string {
 func SetSelector(selector string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var d data
-		c.Read(&d)
+		c.Load(&d)
 		d.selector = selector
-		c.Write(d)
+		c.Save(d)
 	})
 }
 
@@ -138,17 +136,17 @@ func Set(property, value string) Rule {
 //Add adds a stylesheet associated with this seed.
 func Add(stylesheet string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
-		switch c.(type) {
-		case client.Seed, client.Undo:
+		switch mode, _ := client.Seed(c); mode {
+		case client.AddTo, client.Undo:
 			panic("css.Add must not be called on a client.Seed")
 		}
 
 		var d data
-		c.Read(&d)
+		c.Load(&d)
 
 		if d.sheets == nil {
 			d.sheets = make(map[string]struct{})
-			c.Write(d)
+			c.Save(d)
 		}
 
 		d.sheets[stylesheet] = struct{}{}

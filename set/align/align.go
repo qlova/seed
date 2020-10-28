@@ -2,7 +2,7 @@ package align
 
 import (
 	"qlova.org/seed/css"
-	"qlova.org/seed/style"
+	"qlova.org/seed/set"
 )
 
 //Left aligns the seed to the start or left of its container.
@@ -27,9 +27,9 @@ func Bottom() css.Rule {
 
 //Aligner can align things.
 type Aligner interface {
-	Left() style.Style
-	Center() style.Style
-	Right() style.Style
+	Left() set.Style
+	Center() set.Style
+	Right() set.Style
 }
 
 //Items returns an aligner that aligns children.
@@ -39,15 +39,15 @@ func Items() Aligner {
 
 type itemsAligner struct{}
 
-func (itemsAligner) Left() style.Style {
+func (itemsAligner) Left() set.Style {
 	return css.SetAlignItems(css.FlexStart)
 }
 
-func (itemsAligner) Center() style.Style {
+func (itemsAligner) Center() set.Style {
 	return css.SetAlignItems(css.Center)
 }
 
-func (itemsAligner) Right() style.Style {
+func (itemsAligner) Right() set.Style {
 	return css.SetAlignItems(css.FlexStart)
 }
 
@@ -58,14 +58,14 @@ func Text() Aligner {
 
 type textAligner struct{}
 
-func (textAligner) Left() style.Style {
+func (textAligner) Left() set.Style {
 	return css.SetTextAlign(css.Left)
 }
 
-func (textAligner) Center() style.Style {
+func (textAligner) Center() set.Style {
 	return css.SetTextAlign(css.Center)
 }
 
-func (textAligner) Right() style.Style {
+func (textAligner) Right() set.Style {
 	return css.SetTextAlign(css.Right)
 }

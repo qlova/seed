@@ -26,7 +26,7 @@ func newHarvester(parent seed.Seed) harvester {
 
 func (h harvester) harvest(c seed.Seed) {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	keys := make([]reflect.Type, 0, len(data.popups))
 	for i := range data.popups {
@@ -47,7 +47,7 @@ func (h harvester) harvest(c seed.Seed) {
 			template.Use()
 			template.AddTo(h.Parent)
 
-			var element = p.Popup(ManagerOf(template))
+			var element = p.Popup()
 			element.With(
 				html.SetID(ID(p)),
 				client.SetID(ID(p)),

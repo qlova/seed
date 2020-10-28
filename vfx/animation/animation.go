@@ -27,11 +27,11 @@ func (anim Animation) InReverse() Animation {
 func Set(anim Animation) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data data
-		c.Read(&data)
+		c.Load(&data)
 
 		data.animations = append(data.animations, anim)
 
-		c.Write(data)
+		c.Save(data)
 
 		css.SetAnimationName(css.AnimationName("a" + strconv.Itoa(anim.id))).AddTo(c)
 		for _, o := range anim.options {
@@ -41,7 +41,7 @@ func Set(anim Animation) seed.Option {
 }
 
 type data struct {
-	seed.Data
+	
 
 	animations []Animation
 }
@@ -120,11 +120,11 @@ func Duration(d time.Duration) Option {
 
 func (anim Animation) AddTo(c seed.Seed) {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	data.animations = append(data.animations, anim)
 
-	c.Write(data)
+	c.Save(data)
 
 	css.SetAnimationName(css.AnimationName("a" + strconv.Itoa(anim.id))).AddTo(c)
 	for _, o := range anim.options {

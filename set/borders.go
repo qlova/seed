@@ -29,6 +29,11 @@ func Border(s BorderStyle) Style {
 	}
 }
 
+//Borderless removes the border of the seed.
+func Borderless() Style {
+	return css.Set("border", "none")
+}
+
 //BorderColor sets the border color of the seed.
 func BorderColor(c color.Color) Style {
 	return css.SetBorderColor(css.RGB{Color: c})

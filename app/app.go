@@ -21,8 +21,6 @@ type App struct {
 
 //App is a webapp generator.
 type app struct {
-	seed.Data
-
 	manifest manifest.Manifest
 	worker   *service.Worker
 
@@ -57,10 +55,6 @@ func New(name string, options ...seed.Option) App {
 		if _, ok := options[i].(seed.Seed); ok {
 			SeedCount++
 		}
-
-		if _, ok := options[i].(page.Seed); ok {
-			SeedCount++
-		}
 	}
 
 	var app = app{
@@ -80,15 +74,15 @@ func New(name string, options ...seed.Option) App {
 		Sizes:  "512x512",
 	})
 
-	document.Body.Write(app)
+	document.Body.Save(app)
 
 	for _, o := range options {
 		o.AddTo(document.Body)
 	}
 
-	document.Body.Read(&app)
+	document.Body.Load(&app)
 
-	document.Write(app)
+	document.Save(app)
 
-	return App{document, ""}
+	return App{document.Seed, ""}
 }

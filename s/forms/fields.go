@@ -5,9 +5,12 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/client/clientop"
+	"qlova.org/seed/client/change"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/client/clientrender"
+	"qlova.org/seed/client/if/all"
+	"qlova.org/seed/client/if/not"
+	"qlova.org/seed/client/if/the"
+	"qlova.org/seed/client/visible"
 	"qlova.org/seed/html"
 	"qlova.org/seed/js"
 
@@ -86,7 +89,7 @@ func (field TextField) AddTo(c seed.Seed) {
 
 			seed.If(field.Required, SetRequired()),
 
-			clientrender.If(Error, field.Theme.ErrorBox),
+			change.When(Error, field.Theme.ErrorBox),
 
 			client.OnInput(Error.SetTo(js.NewString(""))),
 
@@ -100,7 +103,7 @@ func (field TextField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		clientrender.If(Error,
+		change.When(Error,
 			text.New(text.SetStringTo(Error), field.Theme.ErrorText),
 		),
 	))
@@ -130,7 +133,7 @@ func (field FloatField) AddTo(c seed.Seed) {
 
 			seed.If(field.Required, SetRequired()),
 
-			clientrender.If(Error, field.Theme.ErrorBox),
+			change.When(Error, field.Theme.ErrorBox),
 
 			client.OnInput(Error.SetTo(js.NewString(""))),
 
@@ -144,7 +147,7 @@ func (field FloatField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		clientrender.If(Error,
+		change.When(Error,
 			text.New(text.SetStringTo(Error), field.Theme.ErrorText),
 		),
 	))
@@ -176,7 +179,7 @@ func (field EmailField) AddTo(c seed.Seed) {
 
 			seed.If(field.Required, SetRequired()),
 
-			clientrender.If(clientop.And(Error, Email), field.Theme.ErrorBox),
+			change.When(all.AreTrue(Error, Email), field.Theme.ErrorBox),
 
 			client.OnInput(Error.SetTo(js.NewString(""))),
 
@@ -188,7 +191,7 @@ func (field EmailField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		clientrender.If(clientop.And(Error, Email),
+		visible.When(all.AreTrue(Error, Email),
 			text.New(text.Set("please input a valid email address"), field.Theme.ErrorText),
 		),
 	))
@@ -214,7 +217,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 		CPU: Password.CPU,
 		RAM: Password.RAM,
 	}
-	var PasswordMismatched = clientop.NotEq(Password, PasswordToConfirm)
+	var PasswordMismatched = the.ValueOf(Password).IsNot(PasswordToConfirm)
 
 	if field.Title == "" {
 		field.Title = "Password"
@@ -230,7 +233,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 
 			seed.If(field.Required, SetRequired()),
 
-			clientrender.If(Error, field.Theme.ErrorBox),
+			change.When(Error, field.Theme.ErrorBox),
 
 			client.OnInput(Error.SetTo(js.NewString(""))),
 
@@ -242,7 +245,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 
-		clientrender.If(Error,
+		change.When(Error,
 			text.New(text.SetStringTo(Error), field.Theme.ErrorText),
 		),
 
@@ -254,7 +257,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 
 				seed.If(field.Required, SetRequired()),
 
-				clientrender.If(PasswordMismatched, field.Theme.ErrorBox),
+				change.When(PasswordMismatched, field.Theme.ErrorBox),
 
 				focusNextField(),
 
@@ -262,7 +265,7 @@ func (field PasswordField) AddTo(c seed.Seed) {
 				//script.OnEnter(textbox.Focus(EmailBox)),
 			),
 
-			clientrender.If(clientop.And(PasswordMismatched, Password.GetBool()),
+			visible.When(all.AreTrue(PasswordMismatched, Password.GetBool()),
 				text.New(text.Set("this password is different from the one above"), field.Theme.ErrorText),
 			),
 		),
@@ -283,9 +286,9 @@ func (submit SubmitButton) AddTo(c seed.Seed) {
 	var Processing = new(clientside.Bool)
 
 	c.With(
-		clientrender.If(Error, text.New(text.SetStringTo(Error), submit.ThemeError)),
+		visible.When(Error, text.New(text.SetStringTo(Error), submit.ThemeError)),
 
-		Processing.Not().If(
+		visible.When(not.True(Processing),
 			button.New(text.SetString(submit.Title), submit.Theme,
 
 				client.OnError(func(err client.String) client.Script {
@@ -307,7 +310,7 @@ func (submit SubmitButton) AddTo(c seed.Seed) {
 			),
 		),
 
-		Processing.If(
+		visible.When(Processing,
 			submit.Spinner,
 		),
 	)

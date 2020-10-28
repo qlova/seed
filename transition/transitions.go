@@ -3,7 +3,8 @@ package transition
 import (
 	"time"
 
-	"qlova.org/seed/style"
+	"qlova.org/seed/set"
+	"qlova.org/seed/units/percentage/of"
 	"qlova.org/seed/vfx/animation"
 )
 
@@ -19,8 +20,8 @@ func SlideRight() Transition {
 
 	slide := animation.New(
 		animation.Frames{
-			0:   style.Translate(100, 0),
-			100: style.Translate(0, 0),
+			0:   set.Translation(100%of.Parent, nil),
+			100: set.Translation(nil, nil),
 		},
 		animation.Duration(400*time.Millisecond),
 	)
@@ -36,8 +37,8 @@ func SlideLeft() Transition {
 
 	slide := animation.New(
 		animation.Frames{
-			0:   style.Translate(-100, 0),
-			100: style.Translate(0, 0),
+			0:   set.Translation(-100%of.Parent, nil),
+			100: set.Translation(nil, nil),
 		},
 		animation.Duration(400*time.Millisecond),
 	)
@@ -53,8 +54,8 @@ func DropDown() Transition {
 
 	slide := animation.New(
 		animation.Frames{
-			0:   style.Translate(0, -100),
-			100: style.Translate(0, 0),
+			0:   set.Translation(nil, -100%of.Parent),
+			100: set.Translation(nil, nil),
 		},
 		animation.Duration(400*time.Millisecond),
 	)

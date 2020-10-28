@@ -57,12 +57,12 @@ func (v *Value) SetTo(value client.Value) client.Script {
 func (v *Value) OnChange(do ...client.Script) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data data
-		c.Read(&data)
+		c.Load(&data)
 		data.hooks = append(data.hooks, hook{
 			variable: v,
 			do:       client.NewScript(do...),
 		})
-		c.Write(data)
+		c.Save(data)
 	})
 
 }

@@ -12,11 +12,6 @@ import (
 
 func convertToClasses(c seed.Seed) {
 	for _, child := range c.Children() {
-
-		if sc, ok := child.(client.Seed); ok {
-			child = sc.Seed
-		}
-
 		child.With(
 			css.SetSelector(`.`+html.ID(child)),
 			html.SetID(""),

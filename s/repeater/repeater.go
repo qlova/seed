@@ -33,8 +33,6 @@ type Seed struct {
 }
 
 type seedData struct {
-	seed.Data
-
 	data Data
 }
 
@@ -46,10 +44,10 @@ func New(data interface{}, options ...seed.Option) seed.Seed {
 	case reflect.Slice:
 		for i := 0; i < value.Len(); i++ {
 			var d seedData
-			repeater.Read(&d)
+			repeater.Load(&d)
 
 			d.data = Data{i, value.Index(i).Interface()}
-			repeater.Write(d)
+			repeater.Save(d)
 
 			for _, o := range options {
 				repeater = repeater.With(o)
@@ -71,10 +69,10 @@ func New(data interface{}, options ...seed.Option) seed.Seed {
 
 		for _, key := range keys {
 			var d seedData
-			repeater.Read(&d)
+			repeater.Load(&d)
 
 			d.data = Data{key, value.MapIndex(reflect.ValueOf(key)).Interface()}
-			repeater.Write(d)
+			repeater.Save(d)
 
 			for _, o := range options {
 				repeater.With(o)
@@ -91,7 +89,7 @@ func New(data interface{}, options ...seed.Option) seed.Seed {
 func Do(f func(Seed)) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var d seedData
-		c.Read(&d)
+		c.Load(&d)
 		f(Seed{c, d.data})
 	})
 }

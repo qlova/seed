@@ -17,6 +17,7 @@ import (
 	"qlova.org/seed/popup"
 
 	"qlova.org/seed/s/column"
+	"qlova.org/seed/s/feed"
 	"qlova.org/seed/s/html/link"
 	"qlova.org/seed/s/html/meta"
 	"qlova.org/seed/s/html/style"
@@ -29,11 +30,11 @@ import (
 //Build builds the app.
 func (a App) build() {
 	var app app
-	a.Seed.Read(&app)
+	a.Seed.Load(&app)
 
 	//We need to check if onerror is defined.
 	var Script client.Data
-	app.document.Body.Read(&Script)
+	app.document.Body.Load(&Script)
 
 	app.document.Body.With(
 		seed.If(Script.On["error"] == nil,
@@ -61,12 +62,16 @@ func (a App) build() {
 		popup.Harvest(),
 	)
 
-	var onready = string(client.Render(a))
-	var scripts = js.Scripts(a)
-	var stylesheets = css.Stylesheets(a)
+	for _, template := range feed.Templates(app.document.Body) {
+		app.document.Body.With(template)
+	}
 
-	app.worker.Assets = assets.Of(a)
-	a.Seed.Write(app)
+	var onready = string(client.Render(a.Seed))
+	var scripts = js.Scripts(a.Seed)
+	var stylesheets = css.Stylesheets(a.Seed)
+
+	app.worker.Assets = assets.Of(a.Seed)
+	a.Seed.Save(app)
 
 	app.document.Head.With(
 		meta.Charset("utf-8"),
@@ -116,7 +121,7 @@ func (a App) build() {
 			))
 		})),
 
-		style.New(html.Set(CSS+string(css.Render(a)))),
+		style.New(html.Set(CSS+string(css.Render(a.Seed)))),
 
 		//Add external scripts.
 		repeater.New(scripts, repeater.Do(func(c repeater.Seed) {

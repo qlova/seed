@@ -1,6 +1,7 @@
 package html
 
 import (
+	"fmt"
 	"html"
 	"strconv"
 	"strings"
@@ -13,8 +14,6 @@ import (
 
 //Data stores html data with a seed.
 type Data struct {
-	seed.Data
-
 	ID  *string
 	Tag string
 
@@ -31,22 +30,22 @@ type Data struct {
 func SetID(id string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data Data
-		c.Read(&data)
+		c.Load(&data)
 
-		switch q := c.(type) {
-		case client.Seed:
-			q.Javascript(`%v.id = %v;`, q.Element(), strconv.Quote(id))
+		switch mode, q := client.Seed(c); mode {
+		case client.AddTo:
+			fmt.Fprintf(q, `%v.id = %v;`, client.Element(c), strconv.Quote(id))
 		case client.Undo:
 			if data.ID != nil {
-				q.Javascript(`%v.id = %v;`, q.Element(), strconv.Quote(*data.ID))
+				fmt.Fprintf(q, `%v.id = %v;`, client.Element(c), strconv.Quote(*data.ID))
 			} else {
-				q.Javascript(`%v.id = %v;`, q.Element(), c.ID())
+				fmt.Fprintf(q, `%v.id = %v;`, client.Element(c), c.ID())
 			}
 		default:
 			data.ID = &id
 		}
 
-		c.Write(data)
+		c.Save(data)
 	})
 }
 
@@ -54,18 +53,18 @@ func SetID(id string) seed.Option {
 func AddClass(class string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data Data
-		c.Read(&data)
+		c.Load(&data)
 
-		switch q := c.(type) {
-		case client.Seed:
-			q.Javascript(`%v.classList.With(%v);`, q.Element(), strconv.Quote(class))
+		switch mode, q := client.Seed(c); mode {
+		case client.AddTo:
+			fmt.Fprintf(q, `%v.classList.With(%v);`, client.Element(c), strconv.Quote(class))
 		case client.Undo:
-			q.Javascript(`%v.classList.remove(%v);`, q.Element(), strconv.Quote(class))
+			fmt.Fprintf(q, `%v.classList.remove(%v);`, client.Element(c), strconv.Quote(class))
 		default:
 
 			for _, existing := range data.Classes {
 				if class == existing {
-					c.Write(data)
+					c.Save(data)
 					return
 				}
 			}
@@ -73,7 +72,7 @@ func AddClass(class string) seed.Option {
 			data.Classes = append(data.Classes, class)
 		}
 
-		c.Write(data)
+		c.Save(data)
 	})
 }
 
@@ -81,18 +80,18 @@ func AddClass(class string) seed.Option {
 func SetTag(tag string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data Data
-		c.Read(&data)
+		c.Load(&data)
 
-		switch q := c.(type) {
-		case client.Seed:
-			q.Javascript(`%v = document.createElement("%v"); %v.id = "temp%v";`, q.Element(), tag, q.Element(), c.ID())
+		switch mode, q := client.Seed(c); mode {
+		case client.AddTo:
+			fmt.Fprintf(q, `%v = document.createElement("%v"); %v.id = "temp%v";`, client.Element(c), tag, client.Element(c), c.ID())
 		case client.Undo:
-			q.Javascript(`%v = document.createElement("%v"); %v.id = "temp%v";`, q.Element(), data.Tag, q.Element(), c.ID())
+			fmt.Fprintf(q, `%v = document.createElement("%v"); %v.id = "temp%v";`, client.Element(c), data.Tag, client.Element(c), c.ID())
 		default:
 			data.Tag = tag
 		}
 
-		c.Write(data)
+		c.Save(data)
 	})
 }
 
@@ -100,18 +99,18 @@ func SetTag(tag string) seed.Option {
 func Set(html string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data Data
-		c.Read(&data)
+		c.Load(&data)
 
-		switch q := c.(type) {
-		case client.Seed:
-			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(html))
+		switch mode, q := client.Seed(c); mode {
+		case client.AddTo:
+			fmt.Fprintf(q, `%v.innerHTML = %v;`, client.Element(c), strconv.Quote(html))
 		case client.Undo:
-			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.InnerHTML))
+			fmt.Fprintf(q, `%v.innerHTML = %v;`, client.Element(c), strconv.Quote(data.InnerHTML))
 		default:
 			data.InnerHTML = html
 		}
 
-		c.Write(data)
+		c.Save(data)
 	})
 }
 
@@ -119,16 +118,16 @@ func Set(html string) seed.Option {
 func SetAttribute(name string, constant string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data Data
-		c.Read(&data)
+		c.Load(&data)
 
-		switch q := c.(type) {
-		case client.Seed:
-			q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(constant))
+		switch mode, q := client.Seed(c); mode {
+		case client.AddTo:
+			fmt.Fprintf(q, `%v.setAttribute(%v, %v);`, client.Element(c), strconv.Quote(name), strconv.Quote(constant))
 		case client.Undo:
 			if attr, ok := data.Attributes[name]; ok {
-				q.Javascript(`%v.setAttribute(%v, %v);`, q.Element(), strconv.Quote(name), strconv.Quote(attr))
+				fmt.Fprintf(q, `%v.setAttribute(%v, %v);`, client.Element(c), strconv.Quote(name), strconv.Quote(attr))
 			} else {
-				q.Javascript(`%v.removeAttribute(%v);`, q.Element(), strconv.Quote(name))
+				fmt.Fprintf(q, `%v.removeAttribute(%v);`, client.Element(c), strconv.Quote(name))
 			}
 		default:
 			if data.Attributes == nil {
@@ -137,7 +136,7 @@ func SetAttribute(name string, constant string) seed.Option {
 			data.Attributes[name] = constant
 		}
 
-		c.Write(data)
+		c.Save(data)
 	})
 }
 
@@ -157,10 +156,10 @@ func SetAttributeTo(name string, variable client.String) seed.Option {
 func SetStyle(property, value string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var data Data
-		c.Read(&data)
+		c.Load(&data)
 
-		switch c.(type) {
-		case client.Seed, client.Undo:
+		switch mode, _ := client.Seed(c); mode {
+		case client.AddTo, client.Undo:
 			css.Set(property, value).AddTo(c)
 		default:
 			if data.Style == nil {
@@ -169,7 +168,7 @@ func SetStyle(property, value string) seed.Option {
 			data.Style[property] = value
 		}
 
-		c.Write(data)
+		c.Save(data)
 	})
 }
 
@@ -178,13 +177,13 @@ func SetInnerText(constant string) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 
 		var data Data
-		c.Read(&data)
+		c.Load(&data)
 
-		switch q := c.(type) {
-		case client.Seed:
-			q.Javascript(`%v.innerText = %v;`, q.Element(), strconv.Quote(constant))
+		switch mode, q := client.Seed(c); mode {
+		case client.AddTo:
+			fmt.Fprintf(q, `%v.innerText = %v;`, client.Element(c), strconv.Quote(constant))
 		case client.Undo:
-			q.Javascript(`%v.innerHTML = %v;`, q.Element(), strconv.Quote(data.InnerHTML))
+			fmt.Fprintf(q, `%v.innerHTML = %v;`, client.Element(c), strconv.Quote(data.InnerHTML))
 		default:
 			data.InnerHTML = html.EscapeString(constant)
 			data.InnerHTML = strings.Replace(data.InnerHTML, "\n", "<br>", -1)
@@ -192,7 +191,7 @@ func SetInnerText(constant string) seed.Option {
 			data.InnerHTML = strings.Replace(data.InnerHTML, "\t", "&emsp;", -1)
 		}
 
-		c.Write(data)
+		c.Save(data)
 	})
 }
 

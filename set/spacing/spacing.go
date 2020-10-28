@@ -2,25 +2,25 @@ package spacing
 
 import (
 	"qlova.org/seed/css"
-	"qlova.org/seed/style"
+	"qlova.org/seed/set"
 )
 
-func Outside() style.Style {
+func Outside() set.Style {
 	return css.SetJustifyContent(css.Center)
 }
 
-func Inbetween() style.Style {
+func Inbetween() set.Style {
 	return css.SetJustifyContent(css.SpaceBetween)
 }
 
-func Before() style.Style {
+func Before() set.Style {
 	return css.SetJustifyContent(css.FlexEnd)
 }
 
-func After() style.Style {
+func After() set.Style {
 	return css.SetJustifyContent(css.FlexStart)
 }
 
-func Divide() style.Style {
+func Divide() set.Style {
 	return css.SetJustifyContent(css.SpaceEvenly)
 }

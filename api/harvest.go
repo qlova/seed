@@ -18,7 +18,7 @@ func newHarvester() harvester {
 
 func (h harvester) harvest(c seed.Seed) map[string]http.Handler {
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	for route, handler := range data.handlers {
 		h.Map[route] = handler

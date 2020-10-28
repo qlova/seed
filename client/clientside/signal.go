@@ -64,12 +64,12 @@ func (s *Signal) On(do ...client.Script) seed.Option {
 		js.NewCtx(ioutil.Discard, c)(client.NewScript(do...))
 
 		var data data
-		c.Read(&data)
+		c.Load(&data)
 		data.hooks = append(data.hooks, hook{
 			variable: s,
 			do:       client.NewScript(do...),
 		})
-		c.Write(data)
+		c.Save(data)
 	})
 
 }

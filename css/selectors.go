@@ -9,10 +9,10 @@ import (
 func Select(selector string, rules ...Rule) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var d data
-		c.Read(&d)
+		c.Load(&d)
 
-		switch c.(type) {
-		case client.Seed:
+		switch mode, _ := client.Seed(c); mode {
+		case client.AddTo:
 			panic("cannot hover on client.Seed")
 
 		case client.Undo:
@@ -24,7 +24,7 @@ func Select(selector string, rules ...Rule) seed.Option {
 			d.queries[selector] = append(d.queries[selector], rules...)
 		}
 
-		c.Write(d)
+		c.Save(d)
 	})
 }
 

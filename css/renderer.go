@@ -19,7 +19,7 @@ func RegisterRenderer(r Renderer) {
 func render(c seed.Seed, tracker map[string]struct{}) []byte {
 	var b bytes.Buffer
 	var data data
-	c.Read(&data)
+	c.Load(&data)
 
 	if data.rules != nil && data.rules.Len() > 0 {
 		fmt.Fprintf(&b, "\n%v {\n", Selector(c))

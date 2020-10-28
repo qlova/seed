@@ -5,6 +5,9 @@ import "fmt"
 //Unit is equal to the global font-size setting of the user.
 type Unit float64
 
+//One rem.
+const One = Unit(1)
+
 //New returns the given quantity as a unit.
 func New(quantity float64) Unit {
 	return Unit(quantity)

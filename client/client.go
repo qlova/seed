@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"qlova.org/seed"
 	"qlova.org/seed/js"
 )
 
 //Data on how to handle client events.
 type Data struct {
-	seed.Data
-
 	id string
 
 	On map[string]js.Script
@@ -35,9 +32,11 @@ func Print() Script {
 	return js.Func(`window.print`).Run()
 }
 
-//OnRender is called whenever this seed is asked to render itself.
-func OnRender(do Script) seed.Option {
-	return On("render", do)
+//Cancel cancels the current script.
+func Cancel() Script {
+	return js.Script(func(q js.Ctx) {
+		fmt.Fprintf(q, "throw '';")
+	})
 }
 
 //After runs the given scripts after the specified duration has passed.
@@ -52,13 +51,13 @@ type Compound interface {
 
 func flatten(value Value) []Value {
 	if c, ok := value.(Compound); ok {
-		return FlattenComponents(c.Components())
+		return FlattenComponents(c.Components()...)
 	}
 	return []Value{value}
 }
 
 //FlattenComponents flattens the components to their root components.
-func FlattenComponents(components []Value) []Value {
+func FlattenComponents(components ...Value) []Value {
 	var flattened []Value
 
 	for _, component := range components {
