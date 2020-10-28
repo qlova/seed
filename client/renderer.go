@@ -6,7 +6,7 @@ import (
 	"sort"
 
 	"qlova.org/seed"
-	"qlova.org/seed/js"
+	"qlova.org/seed/web/js"
 )
 
 type Renderer func(root seed.Seed) []byte
@@ -301,13 +301,8 @@ seed.request = async function(method, formdata, url, manual, active) {
 		xhr.send(formdata);
 	});
 
-	try {
-		let response = await promise;
-		return await slave(response);
-	} catch(e) {
-		seed.report(e, active);
-		throw e;
-	}
+	let response = await promise;
+	return await slave(response);
 }
 
 seed.request.error = "connection failed";

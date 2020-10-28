@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 
 	"qlova.org/seed"
-	"qlova.org/seed/js"
+	"qlova.org/seed/web/js"
 )
 
 func on(event string, do Script) seed.Option {

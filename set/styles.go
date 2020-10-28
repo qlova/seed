@@ -4,7 +4,7 @@ import (
 	"image/color"
 
 	"qlova.org/seed"
-	"qlova.org/seed/css"
+	"qlova.org/seed/web/css"
 )
 
 //Style is a setter that wraps css styling.

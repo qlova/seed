@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"qlova.org/seed/client/clientsafe"
-	"qlova.org/seed/js"
+	"qlova.org/seed/web/js"
 )
 
 //Requesty is any type that can load itself from a Request.
@@ -164,7 +164,10 @@ func Handler(w http.ResponseWriter, r *http.Request, id string) {
 		safe, ok := err.(clientsafe.Error)
 		if ok {
 			fmt.Fprintf(w, "throw %v;", strconv.Quote(safe.ClientError()))
+			return
 		}
+
+		fmt.Fprintf(w, "throw %v;", strconv.Quote("there was an error"))
 		return
 	}
 

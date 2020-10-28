@@ -2,7 +2,7 @@ package clientside
 
 import (
 	"qlova.org/seed/client"
-	"qlova.org/seed/js"
+	"qlova.org/seed/web/js"
 )
 
 //Set implements a type-safe clientside equivalant to map[interface{}]struct{}

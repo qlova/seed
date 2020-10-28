@@ -3,8 +3,8 @@ package set
 import (
 	"fmt"
 
-	"qlova.org/seed/css"
-	"qlova.org/seed/units"
+	"qlova.org/seed/web/css"
+	"qlova.org/seed/web/css/units"
 )
 
 //Translation sets the translation of this seed.

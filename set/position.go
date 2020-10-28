@@ -1,8 +1,8 @@
 package set
 
 import (
-	"qlova.org/seed/css"
-	"qlova.org/seed/units"
+	"qlova.org/seed/web/css"
+	"qlova.org/seed/web/css/units"
 )
 
 //Layer sets the z-index of this seed.

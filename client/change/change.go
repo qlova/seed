@@ -4,7 +4,7 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/js"
+	"qlova.org/seed/web/js"
 )
 
 //On executes the provided script whenever this seed is rendered.

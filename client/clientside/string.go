@@ -3,7 +3,7 @@ package clientside
 import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/js"
+	"qlova.org/seed/web/js"
 )
 
 //String is a string variable in client memory.

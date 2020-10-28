@@ -7,8 +7,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
-	"qlova.org/seed/secrets"
 )
 
 //Cookie is an client-request associated value that is encrypted by default.
@@ -74,7 +72,7 @@ func (cr Request) Set(c Cookie, value string) {
 		Path:     "/",
 		Secure:   !cr.Local(),
 
-		Value: secrets.Encrypt([]byte(value)),
+		Value: Encrypt([]byte(value)),
 	}
 	cr.request.AddCookie(cookie)
 	http.SetCookie(cr.writer, cookie)
@@ -86,7 +84,7 @@ func (cr Request) Get(c Cookie) string {
 	if err != nil {
 		return ""
 	}
-	return string(secrets.Decrypt(a.Value))
+	return string(Decrypt(a.Value))
 }
 
 var intranet, _ = regexp.Compile(`(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5]):.*$)`)

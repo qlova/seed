@@ -18,6 +18,8 @@ type err struct {
 	safe string
 }
 
+var _ Error = err{}
+
 //Err returns a new clientsafe.Error that wraps the given internal error.
 //format and args are passed to fmt.Sprintf
 func Err(internal error, format string, args ...interface{}) Error {

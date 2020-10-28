@@ -1,6 +1,6 @@
 package client
 
-import "qlova.org/seed/js"
+import "qlova.org/seed/web/js"
 
 //String is a readonly client-typed string.
 type String js.AnyString

@@ -6,7 +6,7 @@ import (
 	"sort"
 
 	"qlova.org/seed"
-	"qlova.org/seed/css"
+	"qlova.org/seed/web/css"
 )
 
 type harvester struct {
