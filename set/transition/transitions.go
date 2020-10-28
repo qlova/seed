@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"qlova.org/seed/set"
-	"qlova.org/seed/web/css/units/percentage/of"
+	"qlova.org/seed/use/css/units/percentage/of"
 	"qlova.org/seed/new/animation"
 )
 

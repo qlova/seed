@@ -1,8 +1,8 @@
 package main
 
 import (
-	"qlova.org/seed/app"
-	"qlova.org/seed/s/text"
+	"qlova.org/seed/new/app"
+	"qlova.org/seed/new/text"
 )
 
 func main() {

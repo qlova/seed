@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
-	"qlova.org/seed/web/css"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/new/html/div"
-	"qlova.org/seed/web/css/units"
+	"qlova.org/seed/use/css/units"
 )
 
 //New returns a new grid.

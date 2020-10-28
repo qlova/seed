@@ -8,13 +8,13 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/web/css"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/css"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 	"qlova.org/seed/new/expander"
 	"qlova.org/seed/set"
 	"qlova.org/seed/set/transition"
-	"qlova.org/seed/web/css/units/percentage/of"
+	"qlova.org/seed/use/css/units/percentage/of"
 )
 
 //ID returns the DOM id of the provided page.

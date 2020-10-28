@@ -2,7 +2,7 @@ package htmlselect
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/html"
+	"qlova.org/seed/use/html"
 )
 
 //New returns a new HTML select element.

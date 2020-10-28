@@ -9,10 +9,10 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/css"
-	"qlova.org/seed/web/html"
+	"qlova.org/seed/use/css"
+	"qlova.org/seed/use/html"
 	"qlova.org/seed/new/text/rich"
-	"qlova.org/seed/web/css/units"
+	"qlova.org/seed/use/css/units"
 )
 
 //New returns a new text widget.

@@ -2,7 +2,7 @@ package set
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/css"
+	"qlova.org/seed/use/css"
 )
 
 //OnHover applies the given Styles when the user is hovering over the seed.

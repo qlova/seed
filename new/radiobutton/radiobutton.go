@@ -2,7 +2,7 @@ package radiobutton
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/html/attr"
+	"qlova.org/seed/use/html/attr"
 	"qlova.org/seed/script"
 
 	"qlova.org/seed/new/html/input"

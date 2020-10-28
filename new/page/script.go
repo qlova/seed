@@ -2,7 +2,7 @@ package page
 
 import (
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 
 	"qlova.org/seed"
 )

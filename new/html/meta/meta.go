@@ -2,8 +2,8 @@ package meta
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/html/attr"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/html/attr"
 )
 
 //New returns an HTML meta element.

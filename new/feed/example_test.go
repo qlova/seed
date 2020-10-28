@@ -3,9 +3,9 @@ package feed_test
 import (
 	"image/color"
 
-	"qlova.org/seed/web/app"
+	"qlova.org/seed/new/app"
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/js/console"
+	"qlova.org/seed/use/js/console"
 	"qlova.org/seed/new/button"
 	"qlova.org/seed/new/feed"
 	"qlova.org/seed/new/text"

@@ -7,7 +7,7 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 type harvester struct {

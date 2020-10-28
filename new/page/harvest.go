@@ -6,13 +6,13 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/css"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/css"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 	"qlova.org/seed/new/column"
 	"qlova.org/seed/new/expander"
 	"qlova.org/seed/set"
-	"qlova.org/seed/web/css/units/percentage/of"
+	"qlova.org/seed/use/css/units/percentage/of"
 )
 
 type harvester struct {

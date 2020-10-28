@@ -2,9 +2,9 @@ package spacer
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/css"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/set"
-	"qlova.org/seed/web/css/units"
+	"qlova.org/seed/use/css/units"
 
 	"qlova.org/seed/new/html/div"
 )

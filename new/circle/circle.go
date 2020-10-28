@@ -2,11 +2,11 @@ package circle
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/css"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/new/column"
 	"qlova.org/seed/set"
-	"qlova.org/seed/web/css/units"
-	"qlova.org/seed/web/css/units/percentage/of"
+	"qlova.org/seed/use/css/units"
+	"qlova.org/seed/use/css/units/percentage/of"
 )
 
 //New returns a new circle.

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //Data on how to handle client events.

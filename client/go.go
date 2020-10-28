@@ -5,8 +5,8 @@ import (
 	"math/big"
 	"reflect"
 
-	"qlova.org/seed/web/js"
-	"qlova.org/seed/web/js/console"
+	"qlova.org/seed/use/js"
+	"qlova.org/seed/use/js/console"
 )
 
 var goExports = make(map[string]reflect.Value)

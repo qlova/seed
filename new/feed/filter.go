@@ -2,7 +2,7 @@ package feed
 
 import (
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //Item is an individual element of a feed.

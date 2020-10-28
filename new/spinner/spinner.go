@@ -4,8 +4,8 @@ import (
 	"image/color"
 
 	"qlova.org/seed"
-	"qlova.org/seed/web/css"
-	"qlova.org/seed/web/html"
+	"qlova.org/seed/use/css"
+	"qlova.org/seed/use/html"
 	"qlova.org/seed/new/html/div"
 )
 

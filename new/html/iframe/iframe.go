@@ -3,8 +3,8 @@ package iframe
 import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/html/attr"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/html/attr"
 )
 
 //New returns a new HTML input element.

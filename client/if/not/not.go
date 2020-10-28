@@ -3,7 +3,7 @@ package not
 import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/if/the"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //True returns a client.Bool that is true when b is false.

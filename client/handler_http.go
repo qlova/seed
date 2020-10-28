@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"qlova.org/seed/client/clientsafe"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //Requesty is any type that can load itself from a Request.

@@ -5,9 +5,9 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/client/change"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/set/change"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 )
 
 //List creates a viewset that can be used with Index, Back & Next functions.

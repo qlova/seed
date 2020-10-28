@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"qlova.org/seed/assets/inbed"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 func main() {

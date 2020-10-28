@@ -2,7 +2,7 @@ package style
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/html"
+	"qlova.org/seed/use/html"
 )
 
 //New returns an HTML style element.

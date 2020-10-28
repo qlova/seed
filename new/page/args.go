@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 func valueAs(v js.AnyValue, T reflect.Type) reflect.Value {

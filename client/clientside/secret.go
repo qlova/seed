@@ -2,7 +2,7 @@ package clientside
 
 import (
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //Secret is a 'secret' string variable in client memory.

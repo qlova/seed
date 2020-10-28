@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //String is a client formatted string.

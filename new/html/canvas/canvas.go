@@ -2,7 +2,7 @@ package canvas
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/html"
+	"qlova.org/seed/use/html"
 )
 
 //New returns a new HTML canvas element.

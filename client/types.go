@@ -1,7 +1,7 @@
 package client
 
 import (
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 type Script = js.AnyScript

@@ -6,8 +6,8 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/css"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/css"
+	"qlova.org/seed/use/js"
 	"qlova.org/seed/new/animation"
 )
 

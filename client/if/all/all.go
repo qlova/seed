@@ -3,7 +3,7 @@ package all
 import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/if/the"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //AreTrue returns a client.Bool that is true if any of its arguments are true.

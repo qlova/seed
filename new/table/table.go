@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
-	"qlova.org/seed/web/css"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/new/html/table"
 	"qlova.org/seed/new/html/table/td"
 	"qlova.org/seed/new/html/table/th"
 	"qlova.org/seed/new/html/table/tr"
 	"qlova.org/seed/new/text"
 	"qlova.org/seed/set"
-	"qlova.org/seed/web/css/units"
+	"qlova.org/seed/use/css/units"
 )
 
 //New returns a new Table.

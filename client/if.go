@@ -1,6 +1,6 @@
 package client
 
-import "qlova.org/seed/web/js"
+import "qlova.org/seed/use/js"
 
 //IfElseChain allows else to be called on it.
 type IfElseChain struct {

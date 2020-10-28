@@ -7,9 +7,9 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/client/if/not"
-	"qlova.org/seed/web/css"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/css"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 	"qlova.org/seed/new/html/div"
 	"qlova.org/seed/new/html/template"
 )

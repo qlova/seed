@@ -4,7 +4,7 @@ import (
 	"regexp"
 
 	"qlova.org/seed"
-	"qlova.org/seed/web/html"
+	"qlova.org/seed/use/html"
 	"qlova.org/seed/new/html/div"
 
 	"github.com/gomarkdown/markdown"

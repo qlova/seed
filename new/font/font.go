@@ -7,7 +7,7 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/assets"
-	"qlova.org/seed/web/css"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/new/asset"
 )
 

@@ -2,7 +2,7 @@ package clientside
 
 import (
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //Float64 is an float64 variable in client memory.

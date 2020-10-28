@@ -3,10 +3,10 @@ package textarea
 import (
 	"qlova.org/seed"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/web/css"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/html/attr"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/css"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/html/attr"
+	"qlova.org/seed/use/js"
 
 	"qlova.org/seed/new/html/textarea"
 	"qlova.org/seed/new/textbox"

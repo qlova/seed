@@ -2,7 +2,7 @@ package swiper
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/css"
+	"qlova.org/seed/use/css"
 )
 
 func init() {

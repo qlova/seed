@@ -8,8 +8,8 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 )
 
 func valueAs(v js.AnyValue, T reflect.Type) reflect.Value {

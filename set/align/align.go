@@ -1,7 +1,7 @@
 package align
 
 import (
-	"qlova.org/seed/web/css"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/set"
 )
 

@@ -2,7 +2,7 @@ package row
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/css"
+	"qlova.org/seed/use/css"
 
 	"qlova.org/seed/new/html/div"
 )

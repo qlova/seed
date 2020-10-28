@@ -2,7 +2,7 @@ package th
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/web/html"
+	"qlova.org/seed/use/html"
 )
 
 //New returns an HTML 'th' element.

@@ -3,8 +3,8 @@ package swiper
 import (
 	"qlova.org/seed"
 	"qlova.org/seed/client/clientrender"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 	"qlova.org/seed/new/column"
 	"qlova.org/seed/new/html/div"
 	"qlova.org/seed/new/row"

@@ -3,7 +3,7 @@ package the
 import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //Value is a value.

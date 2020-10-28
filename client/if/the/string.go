@@ -2,7 +2,7 @@ package the
 
 import (
 	"qlova.org/seed/client"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //StringExpression is an expression containing a client.String.

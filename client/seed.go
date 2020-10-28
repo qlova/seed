@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"qlova.org/seed"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/use/js"
 )
 
 //Element returns the js.Element of the given seed.

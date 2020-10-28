@@ -1,6 +1,6 @@
 package clientzip
 
-import "qlova.org/seed/web/js"
+import "qlova.org/seed/use/js"
 
 func init() {
 	js.NewImport("/jszip.js", jszip)

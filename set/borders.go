@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"image/color"
 
-	"qlova.org/seed/web/css"
-	"qlova.org/seed/web/css/units"
+	"qlova.org/seed/use/css"
+	"qlova.org/seed/use/css/units"
 )
 
 //BorderStyle determines how a border is rendered.

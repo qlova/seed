@@ -5,14 +5,14 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/client/change"
+	"qlova.org/seed/set/change"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/client/if/all"
 	"qlova.org/seed/client/if/not"
 	"qlova.org/seed/client/if/the"
-	"qlova.org/seed/client/visible"
-	"qlova.org/seed/web/html"
-	"qlova.org/seed/web/js"
+	"qlova.org/seed/set/visible"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 
 	"qlova.org/seed/new/button"
 	"qlova.org/seed/new/column"
