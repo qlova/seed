@@ -65,15 +65,23 @@ func Handler(w http.ResponseWriter, r *http.Request, id string) {
 
 	}
 
+	var skip = 0
+
 	//Parse each argument as JSON.
 	for i := StartFrom; i < f.Type().NumIn(); i++ {
 
-		var key = string(rune('a' + (i - StartFrom)))
+		var key = string(rune('a' + (i - StartFrom - skip)))
 		var val = cr.request.FormValue(key)
 
 		var rvalue reflect.Value
 
 		switch f.Type().In(i) {
+
+		case reflect.TypeOf([0]func() time.Time{}).Elem():
+			rvalue = reflect.ValueOf(func() time.Time {
+				return time.Now().In(time.UTC)
+			})
+			skip++
 
 		//Argument is a file/stream.
 		case reflect.TypeOf(Stream{}), reflect.TypeOf([0]io.Reader{}).Elem():

@@ -1,5 +1,3 @@
-//go:generate go run -tags generate generate.go
-
 package sortable
 
 import (
@@ -7,9 +5,9 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/set/change"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/client/if/not"
+	"qlova.org/seed/set/change"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/html/attr"
 	"qlova.org/seed/use/js"

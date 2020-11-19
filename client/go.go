@@ -6,7 +6,6 @@ import (
 	"reflect"
 
 	"qlova.org/seed/use/js"
-	"qlova.org/seed/use/js/console"
 )
 
 var goExports = make(map[string]reflect.Value)
@@ -149,6 +148,14 @@ func Call(fn interface{}, args ...Value) Value {
 
 var rpcID int64 = 1
 
+type Name struct {
+	String
+}
+
+func NameAs(s String) Name {
+	return Name{s}
+}
+
 func Download(fn interface{}, args ...Value) Script {
 
 	if url, ok := fn.(String); ok {
@@ -181,23 +188,25 @@ func Download(fn interface{}, args ...Value) Script {
 		//Get all positional arguments and add them to the formdata.
 		var f = js.Function{js.NewValue(formdata + `.set`)}
 
+		var filename = NewString("")
+
 		if len(args) > 0 {
+			var skip = 0
+
 			for i, arg := range args {
-				switch arg.(type) {
+				switch v := arg.(type) {
 				case js.AnySet:
-					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(Array.from(%v))`, arg))
+					q.Run(f, q.String(string('a'+rune(i-skip))), js.NewValue(`JSON.stringify(Array.from(%v))`, arg))
+				case Name:
+					filename = v.String
 				default:
-					q.Run(f, q.String(string('a'+rune(i))), js.NewValue(`JSON.stringify(%v)`, arg))
+					q.Run(f, q.String(string('a'+rune(i-skip))), js.NewValue(`JSON.stringify(%v)`, arg))
 				}
 			}
 		}
 
-		q(console.Log(NewString(CallingString).GetString().Plus(
-			js.String{js.NewValue(`new URLSearchParams(%v).toString()`, js.NewValue(formdata))},
-		)))
-
-		q(js.Func(`seed.download`).Run(NewString(""), NewString(CallingString).GetString().Plus(
-			js.String{js.NewValue(`new URLSearchParams(%v).toString()`, js.NewValue(formdata))},
+		q(js.Func(`seed.download`).Run(filename, NewString(CallingString).GetString().Plus(
+			js.String{Value: js.NewValue(`new URLSearchParams(%v).toString()`, js.NewValue(formdata))},
 		)))
 	})
 }

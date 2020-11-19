@@ -78,7 +78,6 @@ func (d Design) AddTo(c seed.Seed) {
 			var results = reflect.ValueOf(handler).Call(in)
 
 			if len(results) == 0 {
-				fmt.Fprintf(w, "\n")
 				return
 			}
 

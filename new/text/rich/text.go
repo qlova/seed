@@ -11,6 +11,8 @@ const (
 
 	style
 
+	reset
+
 	italic
 	bold
 	underline
@@ -45,13 +47,13 @@ func (text *Text) format() {
 //Italic returns the text formatted as italic.
 func (text Text) Italic() Text {
 	text.format()
-	return Text([]byte{rich, style, italic}) + text
+	return Text([]byte{rich, style, italic}) + text + Text([]byte{rich, style, reset})
 }
 
 //Bold returns the text formatted bold.
 func (text Text) Bold() Text {
 	text.format()
-	return Text([]byte{rich, style, bold}) + text
+	return Text([]byte{rich, style, bold}) + text + Text([]byte{rich, style, reset})
 }
 
 //In returns the text in the given color.
@@ -61,10 +63,10 @@ func (text Text) In(c color.Color) Text {
 	r, g, b, a := c.RGBA()
 	if a == 0xffff {
 
-		return Text([]byte{rich, style, rgb}) + Text(encode3ToString(uint8(r>>8), uint8(g>>8), uint8(b>>8))) + text
+		return Text([]byte{rich, style, rgb}) + Text(encode3ToString(uint8(r>>8), uint8(g>>8), uint8(b>>8))) + text + Text([]byte{rich, style, reset})
 	}
 	if a == 0 {
-		return Text([]byte{rich, style, rgba}) + Text(encode4ToString(0, 0, 0, 0)) + text
+		return Text([]byte{rich, style, rgba}) + Text(encode4ToString(0, 0, 0, 0)) + text + Text([]byte{rich, style, reset})
 	}
 
 	// Since Color.RGBA returns an alpha-premultiplied color, we should have r <= a && g <= a && b <= a.
@@ -72,7 +74,7 @@ func (text Text) In(c color.Color) Text {
 	g = (g * 0xffff) / a
 	b = (b * 0xffff) / a
 
-	return Text([]byte{rich, style, rgba}) + Text(encode4ToString(uint8(r>>8), uint8(g>>8), uint8(b>>8), uint8(a>>8))) + text
+	return Text([]byte{rich, style, rgba}) + Text(encode4ToString(uint8(r>>8), uint8(g>>8), uint8(b>>8), uint8(a>>8))) + text + Text([]byte{rich, style, reset})
 }
 
 //Icon embeds an icon in the text.
@@ -80,7 +82,7 @@ func Icon(src string) Text {
 	if len(src) > 255 {
 		return ""
 	}
-	return Text(append([]byte{rich, style, icon, byte(len(src))}, src...))
+	return Text(append([]byte{rich, style, icon, byte(len(src))}, src...)) + Text([]byte{rich, style, reset})
 }
 
 func (text Text) String() string {
@@ -132,6 +134,8 @@ func (text Text) HTML() string {
 		}
 
 		switch s[1] {
+		case reset:
+			return s[2:]
 		case italic:
 			return "<em>" + convert(s[2:]) + "</em>"
 		case bold:

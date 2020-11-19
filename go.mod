@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/qlova/seed v0.2.2
+	github.com/qlova/seeds v0.2.2
 	github.com/stripe/stripe-go/v71 v71.40.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/minify/v2 v2.7.3

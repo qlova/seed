@@ -40,7 +40,7 @@ func init() {
 					return new File([single], name);
 				}
 
-				return new File([await zip.generateAsync({type: "blob"})], name+".zip");
+				return new File([await zip.generateAsync({type: "blob", streamFiles: true})], name+".zip");
 			};
 
 			clientzip.WebkitRelativePaths = async function(input, policy) {
@@ -65,7 +65,7 @@ func init() {
 					return new File([single], name);
 				}
 
-				return new File([await zip.generateAsync({type: "blob"})], name+".zip");
+				return new File([await zip.generateAsync({type: "blob", streamFiles: true})], name+".zip");
 			};
 
 			clientzip.AsEntries = async function(items, policy) {
@@ -104,7 +104,7 @@ func init() {
 					return new File([single], name);
 				}
 
-				return new File([await zip.generateAsync({type: "blob"})], name+".zip");
+				return new File([await zip.generateAsync({type: "blob", streamFiles: true})], name+".zip");
 			};
 		`)
 	})

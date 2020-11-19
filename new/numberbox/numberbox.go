@@ -4,16 +4,18 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/new/html/input"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/html/attr"
 	"qlova.org/seed/use/js"
-	"qlova.org/seed/new/html/input"
 )
 
 //New returns a new textbox widget.
 func New(options ...seed.Option) seed.Seed {
 	return input.New(
 		attr.Set("type", "number"),
+		attr.Set("inputmode", "numeric"),
+		attr.Set("pattern", "[0-9]"),
 		seed.Options(options),
 	)
 }

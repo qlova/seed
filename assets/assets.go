@@ -29,10 +29,16 @@ func init() {
 	})
 }
 
+//In returns the assets within the given folder.
+func In(folder string) []string {
+	return inbed.List("." + Path(folder))
+}
+
 //Path returns the correct path from the given base path.
 func Path(src string) string {
 	//New(src)
-	if !strings.HasPrefix(src, "/") && !strings.HasPrefix(src, "http") {
+	if !strings.HasPrefix(src, "/") && !strings.HasPrefix(src, "http") &&
+		!strings.HasPrefix(src, "assets") && !strings.HasPrefix(src, "/assets") {
 		return "/assets/" + src
 	}
 	return src

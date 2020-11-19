@@ -4,17 +4,17 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
-	"qlova.org/seed/new/app/manifest"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/new/app/manifest"
+	"qlova.org/seed/new/asset"
+	"qlova.org/seed/new/page"
+	"qlova.org/seed/new/popup"
 	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/html/attr"
 	"qlova.org/seed/use/js"
 	"qlova.org/seed/use/js/window"
-	"qlova.org/seed/new/asset"
-	"qlova.org/seed/new/page"
-	"qlova.org/seed/new/popup"
 
 	"qlova.org/seed/new/column"
 	"qlova.org/seed/new/feed"
@@ -74,6 +74,8 @@ func (a App) build() {
 	a.Seed.Save(app)
 
 	app.document.Head.With(
+		seed.Options(app.head),
+
 		meta.Charset("utf-8"),
 
 		meta.New(meta.Viewport{

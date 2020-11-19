@@ -8,8 +8,8 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/assets"
 	"qlova.org/seed/client"
-	"qlova.org/seed/use/css"
 	"qlova.org/seed/new/page"
+	"qlova.org/seed/use/css"
 )
 
 func OnUpdateFound(do client.Script) seed.Option {
@@ -31,6 +31,13 @@ func SetLoadingPage(p page.Page) seed.Option {
 	})
 }
 
+//Head sets the options of the head of the app.
+func Head(o ...seed.Option) seed.Option {
+	return seed.Mutate(func(a *app) {
+		a.head = append(a.head, o...)
+	})
+}
+
 //SetColor sets the color of the app.
 func SetColor(col color.Color) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
@@ -39,9 +46,9 @@ func SetColor(col color.Color) seed.Option {
 
 		switch mode, q := client.Seed(c); mode {
 		case client.AddTo:
-			fmt.Fprintf(q, `document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: col}.Rule())
+			fmt.Fprintf(q, `document.querySelector("meta[name=theme-color]").setAttribute("content", "%v");`, css.RGB{Color: col}.Rule())
 		case client.Undo:
-			fmt.Fprintf(q, `document.querySelector("meta[name=theme-color]").setAttribute("content", %v);`, css.RGB{Color: app.color}.Rule())
+			fmt.Fprintf(q, `document.querySelector("meta[name=theme-color]").setAttribute("content", "%v");`, css.RGB{Color: app.color}.Rule())
 		default:
 			app.manifest.SetThemeColor(col)
 			app.color = col

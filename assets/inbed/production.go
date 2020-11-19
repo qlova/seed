@@ -5,6 +5,7 @@ package inbed
 import (
 	"net/http"
 	"os"
+	"strings"
 )
 
 const production = true
@@ -29,4 +30,19 @@ func Open(name string) (http.File, error) {
 		return nil, os.ErrNotExist
 	}
 	return asset.Open()
+}
+
+//List lists the paths of any files starting with the prefix 'folder'
+func List(folder string) []string {
+	var result []string
+
+	folder = strings.TrimPrefix(folder, "./")
+
+	for f := range files {
+		if strings.HasPrefix(f, folder) {
+			result = append(result, f)
+		}
+	}
+
+	return result
 }

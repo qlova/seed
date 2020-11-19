@@ -32,6 +32,11 @@ func Print() Script {
 	return js.Func(`window.print`).Run()
 }
 
+//Throw throws the provided error.
+func Throw(err String) Script {
+	return js.Throw(err)
+}
+
 //Cancel cancels the current script.
 func Cancel() Script {
 	return js.Script(func(q js.Ctx) {

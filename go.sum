@@ -26,8 +26,11 @@ github.com/microcosm-cc/bluemonday v1.0.4/go.mod h1:8iwZnFn2CDDNZ0r6UXhF4xawGvza
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/qlova/script v0.1.0 h1:ZlOExosLTJRHo379IPQH3PhTDQoiRvvv8GHSL48phIs=
 github.com/qlova/script v0.1.0/go.mod h1:BA8cNnAEKmjYyvnBCNxKqN6pspLc8tJQSkk6CskaHYU=
+github.com/qlova/seed v0.2.1/go.mod h1:I4EBag+KsWgdkj5zXSKAsHp/ap3GZKOntriFe9kV+XM=
 github.com/qlova/seed v0.2.2 h1:djxooxej8kSGUudhifBxfBoKa1B5m5oVmCUpvuWgjx4=
 github.com/qlova/seed v0.2.2/go.mod h1:rd9LdqtDI2XE1O5RHbp9U/AKtnMftgge5C0Ry+EiPFo=
+github.com/qlova/seeds v0.2.2 h1:RZYktKFdkzMOaVn/iX8YiXusnSZIqt5GPUU/g4YNj+I=
+github.com/qlova/seeds v0.2.2/go.mod h1:Y93lDraJwBNOgJvyAVW2csQb6Elkddv2HpkFIYGOABk=
 github.com/radovskyb/watcher v1.0.7 h1:AYePLih6dpmS32vlHfhCeli8127LzkIgwJGcwwe8tUE=
 github.com/radovskyb/watcher v1.0.7/go.mod h1:78okwvY5wPdzcb1UYnip1pvrZNIVEIh/Cm+ZuvsUYIg=
 github.com/russross/blackfriday/v2 v2.0.1 h1:lPqVAte+HuHNfhJ/0LC98ESWRz8afy9tM/0RK8m9o+Q=

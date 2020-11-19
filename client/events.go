@@ -43,9 +43,15 @@ func On(event string, do ...Script) seed.Option {
 	return on(event, NewScript(do...).GetScript())
 }
 
+//ClickCursor is an option that is added to all OnClicks.
+var ClickCursor seed.Option
+
 //OnClick is called when the seed is clicked by the client.
 func OnClick(do ...Script) seed.Option {
-	return On("click", do...)
+	return seed.Options{
+		On("click", do...),
+		ClickCursor,
+	}
 }
 
 //OnInput is called when the seed recieves input from the client.
@@ -77,6 +83,6 @@ func OnError(do func(err String) Script) seed.Option {
 }
 
 //OnRender is called whenever this seed is asked to render itself.
-func OnRender(do Script) seed.Option {
-	return On("render", do)
+func OnRender(do ...Script) seed.Option {
+	return On("render", do...)
 }

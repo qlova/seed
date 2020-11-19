@@ -1,9 +1,9 @@
 package main
 
 import (
-	"qlova.org/seed/new/app"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/new/app"
 	"qlova.org/seed/new/button"
 	"qlova.org/seed/new/text"
 	"qlova.tech/rgb"

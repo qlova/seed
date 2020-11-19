@@ -3,9 +3,9 @@ package transition
 import (
 	"time"
 
+	"qlova.org/seed/new/animation"
 	"qlova.org/seed/set"
 	"qlova.org/seed/use/css/units/percentage/of"
-	"qlova.org/seed/new/animation"
 )
 
 func Fade() Transition {
@@ -55,6 +55,23 @@ func DropDown() Transition {
 	slide := animation.New(
 		animation.Frames{
 			0:   set.Translation(nil, -100%of.Parent),
+			100: set.Translation(nil, nil),
+		},
+		animation.Duration(400*time.Millisecond),
+	)
+
+	return New(
+		In(slide),
+		Out(slide.InReverse()),
+	)
+}
+
+//SlideUp slides up from the bottom.
+func SlideUp() Transition {
+
+	slide := animation.New(
+		animation.Frames{
+			0:   set.Translation(nil, 100%of.Parent),
 			100: set.Translation(nil, nil),
 		},
 		animation.Duration(400*time.Millisecond),

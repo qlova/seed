@@ -8,6 +8,10 @@ import (
 	"qlova.org/seed/client"
 )
 
+func init() {
+	client.ClickCursor = SetCursor(Pointer)
+}
+
 type data struct {
 	selector string
 

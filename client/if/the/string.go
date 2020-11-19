@@ -21,6 +21,12 @@ func (a StringExpression) Components() []client.Value {
 	return a.components
 }
 
+//Is returns a == b as a BoolExpression
+func (a StringExpression) Is(literal string) BoolExpression {
+	b := client.NewString(literal)
+	return Bool(js.NewValue("(%v == %v)", a, b), a, b)
+}
+
 //TernaryString is a StringExpression that can be one of two values depending on a condition.
 type TernaryString struct {
 	Condition client.Bool

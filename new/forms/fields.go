@@ -5,17 +5,18 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/set/change"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/client/if/all"
 	"qlova.org/seed/client/if/not"
 	"qlova.org/seed/client/if/the"
+	"qlova.org/seed/set/change"
 	"qlova.org/seed/set/visible"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/js"
 
 	"qlova.org/seed/new/button"
 	"qlova.org/seed/new/column"
+	"qlova.org/seed/new/datebox"
 	"qlova.org/seed/new/emailbox"
 	"qlova.org/seed/new/numberbox"
 	"qlova.org/seed/new/passwordbox"
@@ -193,6 +194,42 @@ func (field EmailField) AddTo(c seed.Seed) {
 
 		visible.When(all.AreTrue(Error, Email),
 			text.New(text.Set("please input a valid email address"), field.Theme.ErrorText),
+		),
+	))
+}
+
+type DateField struct {
+	Title, Placeholder string
+
+	Update *clientside.String
+
+	Required bool
+
+	Theme FieldTheme
+}
+
+func (field DateField) AddTo(c seed.Seed) {
+	var Error = new(clientside.Bool)
+
+	var Date = field.Update
+
+	c.With(column.New(
+		field.Theme.Column,
+
+		text.New(text.SetString(field.Title), field.Theme.Title),
+		datebox.New(textbox.Update(field.Update), field.Theme.Box,
+			textbox.SetPlaceholder(field.Placeholder),
+
+			seed.If(field.Required, SetRequired()),
+
+			change.When(all.AreTrue(Error, Date), field.Theme.ErrorBox),
+
+			client.OnInput(Error.SetTo(js.NewString(""))),
+
+			focusNextField(),
+
+			//How to focus the next field?
+			//script.OnEnter(textbox.Focus(EmailBox)),
 		),
 	))
 }

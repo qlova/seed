@@ -17,9 +17,6 @@ type Shadow struct {
 	Inset bool
 }
 
-//New is an alias for Gradient.
-type New = Shadow
-
 func (shadow Shadow) AddTo(c seed.Seed) {
 	var inset = ""
 	if shadow.Inset {

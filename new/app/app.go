@@ -4,13 +4,13 @@ import (
 	"image/color"
 
 	"qlova.org/seed"
+	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/new/app/manifest"
 	"qlova.org/seed/new/app/service"
-	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/new/page"
 	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/js"
-	"qlova.org/seed/new/page"
 )
 
 type App struct {
@@ -33,6 +33,8 @@ type app struct {
 	description string
 
 	color color.Color
+
+	head []seed.Option
 }
 
 //Installable is true when the app can be installed (that is when the OS has granted the app a beforeinstallprompt event).

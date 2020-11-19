@@ -432,3 +432,22 @@ func Open(name string) (http.File, error) {
 
 	return file, err
 }
+
+//List lists the paths of any files starting with the prefix 'folder'
+func List(folder string) []string {
+	f, err := os.Open(folder)
+	if err != nil {
+		return nil
+	}
+
+	names, err := f.Readdirnames(-1)
+	if err != nil {
+		return nil
+	}
+
+	for i, name := range names {
+		names[i] = strings.TrimPrefix(folder+"/"+name, ".")
+	}
+
+	return names
+}

@@ -106,7 +106,7 @@ seed.title = document.title;
 seed.active = null;
 
 //seed.report is the error handling function. Pass the current element for 'OnError' based error handling.
-seed.report = function(err, element) {
+seed.report = async function(err, element) {
 	if (err == "") return; //ignore empty errors.
 
 	if (!element) element = seed.active;
@@ -114,8 +114,12 @@ seed.report = function(err, element) {
 	if (element) {
 		while (true) {
 			if (element.onerror) {
-				element.onerror(err);
-				break;
+				try {
+					await element.onerror(err);
+					break;
+				} catch(e) {
+					err = e;
+				}
 			}
 			element = element.parentElement || element.parent;
 			if (!element) break;
@@ -150,7 +154,11 @@ seed.on = function(element, event, handler, id) {
 			}
 			
 		} catch(e) {
-			seed.report(e, element);
+			if (event == "error") {
+				throw e;
+			} else {
+				seed.report(e, element);
+			}
 		}
 	};
 

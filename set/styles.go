@@ -30,6 +30,11 @@ func Color(c color.Color) Style {
 	return css.SetBackgroundColor(css.RGB{Color: c})
 }
 
+//Opacity sets the transparency of this seed.
+func Opacity(v float64) Style {
+	return css.SetOpacity(css.Number(v))
+}
+
 //Clipped sets this seed to clip any children that cross the border.
 func Clipped() Style {
 	return css.SetOverflow(css.Hidden)
