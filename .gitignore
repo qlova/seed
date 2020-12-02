@@ -3,6 +3,7 @@
 !*.go
 !assets/*
 !License
+!Licensing
 !Copying
 !Readme.md
 !.gitignore
