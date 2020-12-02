@@ -2,13 +2,12 @@ package swiper
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/client/clientrender"
-	"qlova.org/seed/use/html"
-	"qlova.org/seed/use/js"
+	"qlova.org/seed/client"
 	"qlova.org/seed/new/column"
 	"qlova.org/seed/new/html/div"
 	"qlova.org/seed/new/row"
-	"qlova.org/seed/script"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 )
 
 type Slide struct {
@@ -54,7 +53,7 @@ func New(options ...seed.Option) seed.Seed {
 			js.Require("/swiper.js", javascript),
 			html.AddClass("swiper-wrapper"),
 
-			clientrender.On(js.Script(func(q js.Ctx) {
+			client.OnRender(js.Script(func(q js.Ctx) {
 				q(`if (!` + html.Element(Container).String() + `.swiper)`)
 				q(html.Element(Container).Set("swiper",
 					js.NewValue("new Swiper(%v, %v)",
@@ -62,7 +61,7 @@ func New(options ...seed.Option) seed.Seed {
 				q(html.Element(Container).Run("swiper.update"))
 			})),
 
-			script.OnReady(js.Script(func(q js.Ctx) {
+			client.OnLoad(js.Script(func(q js.Ctx) {
 				q(`
 				window.addEventListener("resize", function() {
 					setTimeout(function() {

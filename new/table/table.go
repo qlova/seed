@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"qlova.org/seed"
-	"qlova.org/seed/use/css"
 	"qlova.org/seed/new/html/table"
 	"qlova.org/seed/new/html/table/td"
 	"qlova.org/seed/new/html/table/th"
 	"qlova.org/seed/new/html/table/tr"
 	"qlova.org/seed/new/text"
 	"qlova.org/seed/set"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/css/units"
 )
 
@@ -23,7 +23,7 @@ func New(options ...seed.Option) seed.Seed {
 func SetColumns(labels ...interface{}) seed.Seed {
 	var row = tr.New()
 	for _, label := range labels {
-		th.New(text.Set(fmt.Sprint(label))).AddTo(row)
+		th.New(text.SetString(fmt.Sprint(label))).AddTo(row)
 	}
 	return row
 }
@@ -32,7 +32,7 @@ func SetColumns(labels ...interface{}) seed.Seed {
 func Row(labels ...interface{}) seed.Seed {
 	var row = tr.New()
 	for _, label := range labels {
-		td.New(text.Set(fmt.Sprint(label))).AddTo(row)
+		td.New(text.SetString(fmt.Sprint(label))).AddTo(row)
 	}
 	return row
 }
