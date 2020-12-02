@@ -1,17 +1,12 @@
 package main
 
 import (
-	"github.com/qlova/seed"
-	"github.com/qlova/seeds/expander"
-	"github.com/qlova/seeds/text"
+	"qlova.org/seed/new/app"
+	"qlova.org/seed/new/text"
 )
 
 func main() {
-	var App = seed.NewApp("Hello World")
-
-	expander.AddTo(App)
-	text.AddTo(App, "Hello World")
-	expander.AddTo(App)
-
-	App.Launch()
+	app.New("Hello World",
+		text.Set("Hello World"),
+	).Launch()
 }

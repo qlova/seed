@@ -1,4 +1,4 @@
-Qlova Public License Version 1.0
+Qlova Public License Version 2.0
 ==================================
 
 1. Definitions
@@ -23,27 +23,24 @@ Qlova Public License Version 1.0
 
 1.5. "Incompatible With Secondary Licenses"
     means that the initial Contributor has attached the notice described
-	in Exhibit B to the Covered Software.
+    in Exhibit B to the Covered Software.
 
 1.6. "Executable Form"
     means any form of the work other than Source Code Form.
-    
-1.7. "Package"
-	means a folder directly containing any files in Source Code Form.
 
-1.8. "Larger Work"
-    means a work that combines Covered Software with other material, in 
+1.7. "Larger Work"
+    means a work that combines Covered Software with other material, in
     a separate Package, that is not Covered Software.
 
-1.9. "License"
+1.8. "License"
     means this document.
 
-1.10. "Licensable"
+1.9. "Licensable"
     means having the right to grant, to the maximum extent possible,
     whether at the time of the initial grant or subsequently, any and
     all of the rights conveyed by this License.
 
-1.11. "Modifications"
+1.10. "Modifications"
     means any of the following:
 
     (a) any Package that results from an addition to,
@@ -52,6 +49,9 @@ Qlova Public License Version 1.0
 
     (b) any new Package that contains any Covered
         Software.
+
+1.11. "Package"
+    means a folder directly containing files in Source Code Form.
 
 1.12. "Patent Claims" of a Contributor
     means any patent claim(s), including without limitation, method,
@@ -62,15 +62,17 @@ Qlova Public License Version 1.0
     Contributor Version.
 
 1.13. "Secondary License"
-    means either the GNU General Public License, Version 2.0, the GNU
-    Lesser General Public License, Version 2.1, the GNU Affero General
-    Public License, Version 3.0, or any later versions of those
-    licenses.
+    means the GNU Affero General Public License, Version 3.0, or any later version of this
+    license.
 
-1.14. "Source Code Form"
+1.14. "Service Form"
+    means any form of the work (other than Source Code Form) which users
+    can remotely interact with through a computer network.
+
+1.15. "Source Code Form"
     means the form of the work preferred for making modifications.
 
-1.15. "You" (or "Your")
+1.16. "You" (or "Your")
     means an individual or a legal entity exercising rights under this
     License. For legal entities, "You" includes any entity that
     controls, is controlled by, or is under common control with You. For
@@ -125,14 +127,14 @@ Contributor:
 
 This License does not grant any rights in the trademarks, service marks,
 or logos of any Contributor (except as may be necessary to comply with
-the notice requirements in Section 3.4).
+the notice requirements in Section 3.5).
 
 2.4. Subsequent Licenses
 
 No Contributor makes additional grants as a result of Your choice to
 distribute the Covered Software under a subsequent version of this
 License (see Section 10.2) or under the terms of a Secondary License (if
-permitted under the terms of Section 3.3).
+permitted under the terms of Section 3.4).
 
 2.5. Representation
 
@@ -148,7 +150,7 @@ equivalents.
 
 2.7. Conditions
 
-Sections 3.1, 3.2, 3.3, and 3.4 are conditions of the licenses granted
+Sections 3.1, 3.2, 3.3, 3.4 and 3.5 are conditions of the licenses granted
 in Section 2.1.
 
 3. Responsibilities
@@ -179,7 +181,17 @@ If You distribute Covered Software in Executable Form then:
     license for the Executable Form does not attempt to limit or alter
     the recipients' rights in the Source Code Form under this License.
 
-3.3. Distribution of a Larger Work
+3.3. Providing Covered Software as a Service
+
+If You provide Covered Software in Service Form then:
+
+(a) such Covered Software must also be made available in Source Code
+    Form, as described in Section 3.1, and You must provide a method
+    for users of the Service to obtain a copy of such Source Code
+    Form by reasonable means in a timely manner, at a charge no more
+    than the cost of distribution to the recipient.
+
+3.4. Distribution of a Larger Work
 
 You may create and distribute a Larger Work under terms of Your choice,
 provided that You also comply with the requirements of this License for
@@ -192,7 +204,7 @@ the Larger Work may, at their option, further distribute the Covered
 Software under the terms of either this License or such Secondary
 License(s).
 
-3.4. Notices
+3.5. Notices
 
 You may not remove or alter the substance of any license notices
 (including copyright notices, patent notices, disclaimers of warranty,
@@ -200,7 +212,7 @@ or limitations of liability) contained within the Source Code Form of
 the Covered Software, except that You may alter any license notices to
 the extent required to remedy known factual inaccuracies.
 
-3.5. Application of Additional Terms
+3.6. Application of Additional Terms
 
 You may choose to offer, and to charge a fee for, warranty, support,
 indemnity or liability obligations to one or more recipients of Covered
@@ -352,12 +364,12 @@ notice described in Exhibit B of this License must be attached.
 Exhibit A - Source Code Form License Notice
 -------------------------------------------
 
-  This Source Code Form is subject to the terms of the Qlova Public
-  License, v. 1.0. If a copy of the QPL was not distributed with this
-  file, You can obtain one at https://license.qlova.co.nz
+  This work is subject to the terms of the Qlova Public
+  License, Version 2.0. If a copy of the QPL was not distributed with this
+  work, You can obtain one at https://license.qlova.org/v2
 
 If it is not possible or desirable to put the notice in a particular
-file, then You may include the notice in a location (such as a LICENSE
+file, then You may include the notice in a location (such as a LICENSE or README
 file in a relevant directory) where a recipient would be likely to look
 for such a notice.
 
@@ -367,4 +379,4 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 ---------------------------------------------------------
 
   This Source Code Form is "Incompatible With Secondary Licenses", as
-  defined by the Qlova Public License, v. 1.0.
+  defined by the Qlova Public License, v. 2.0.

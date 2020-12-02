@@ -1,12 +1,11 @@
 *
 !*/
 !*.go
+!assets/*
 !License
-!Readme
+!Copying
+!Readme.md
 !.gitignore
 !*.yml
 !go.mod
 !go.sum
-
-**/assets.go
-**/production.go

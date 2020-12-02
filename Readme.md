@@ -1,6 +1,6 @@
-# ![logo](media/logo.svg) [![Godoc](https://godoc.org/github.com/qlova/seed?status.svg)](https://godoc.org/github.com/qlova/seed) [![Go Report Card](https://goreportcard.com/badge/github.com/qlova/seed)](https://goreportcard.com/report/github.com/qlova/seed) [![Build Status](https://travis-ci.org/qlova/seed.svg?branch=master)](https://travis-ci.org/qlova/seed)
+# ![logo](assets/logo.svg) [![Godoc](https://godoc.org/qlova.org/seed?status.svg)](https://qlova.org/seed) [![Go Report Card](https://goreportcard.com/badge/github.com/qlova/seed)](https://goreportcard.com/report/github.com/qlova/seed) [![Build Status](https://travis-ci.org/qlova/seed.svg?branch=master)](https://travis-ci.org/qlova/seed)
 
-The cross-platform Go framework for building apps.
+The cross-platform Go module for building apps.
 
 ## Usecases
 
@@ -18,7 +18,7 @@ The cross-platform Go framework for building apps.
 
 [Examples](examples)
 
-![showcase](media/showcase.jpg)
+![showcase](assets/showcase.jpg)
 
 ## Getting started
 
@@ -27,20 +27,16 @@ Create HelloWorld.go file and paste in the following contents:
 ```go
 package main
 
-import "github.com/qlova/seed"
-import "github.com/qlova/seeds/text"
-import "github.com/qlova/seeds/expander"
+import (
+	"qlova.org/seed/new/app"
+	"qlova.org/seed/new/text"
+)
 
 func main() {
-	var App = seed.NewApp("Hello World")
-
-	expander.AddTo(App)
-	text.AddTo(App, "Hello World")
-	expander.AddTo(App)
-
-	App.Launch()
+	app.New("Hello World",
+		text.Set("Hello World"),
+	).Launch()
 }
-
 ```
 
 In the same folder, run 'go mod init .' to initialise the project and then 'go build' to create an executable for the app, run this to launch the app. By default, Qlovaseed will start a WebServer and open a browser window displaying your app.
@@ -51,24 +47,32 @@ Qlovaseed is a full-stack cross-platform application-development framework.
 This means that Apps created with Qlovaseed under the hood feature both a client and server component.  
 
 Qlovaseed aims to blur the client-server distinction, the app is written as a whole, in Go.
-Then communication is achieved with 'script' and 'user' contexts.
+Then communication is achieved with 'client' and 'clientside' packages.
 
 Javascript and http.Handlers are managed by the framework.
 
-This is a script callback that changes the text of the button on the client-side.
+This is a clientside pattern that changes the text of the button on the client-side.
 ```go
-	Button := button.AddTo(App)
-	Button.OnClick(func(q script.Ctx) {
-		Button.Ctx(q).SetText(q.String("You clicked me!"))
-	})
+    var Text = new(clientside.String)
+
+    button.New(
+        text.SetTo(Text),
+
+        client.OnClick(Text.Set("You Clicked me")),
+    )
 ```
 
-This is a user handler that changes the text of the button from the server-side.
+This is client handler that changes the text of the button from the server.
 ```go
-	Button := button.AddTo(App)
-	Button.OnClick(seed.Go(func(u user.Ctx) {
-		Button.For(u).SetText("You clicked me!")
-	}))
+	var Text = new(clientside.String)
+
+    button.New(
+        text.SetTo(Text),
+
+        client.OnClick(client.Go(func() client.Script {
+            return Text.Set("You Clicked me")
+        }),
+    )
 ```
 
 Given an App, by default Qlovaseed will create a web server, manage the handlers, HTML, JS & CSS. All these resources are pre-rendered by Qlovaseed.
@@ -81,63 +85,97 @@ This will serve the app as a Lighthouse-compliant progressive WebApp.
 ```go
 package main
 
-import "github.com/qlova/seed"
+import (
+	"image/color"
 
-//Import a seed to use it, a list of seeds can be found [here](https://github.com/qlova/seeds).
-import "github.com/qlova/seeds/button"
+	"qlova.org/seed/client"
+	"qlova.org/seed/client/clientside"
+
+	//Import a seed to use it, a list of seeds can be found [here](https://github.com/qlova/seed/tree/master/new).
+	"qlova.org/seed/new/app"
+	"qlova.org/seed/new/button"
+	"qlova.org/seed/new/text"
+
+	"qlova.org/seed/set"
+)
 
 func main() {
-	var App = seed.NewApp("My App")
+	var Text1 = &clientside.String{Value: "My callback runs on the client"}
+	var Text2 = &clientside.String{Value: "My callback runs on the server"}
 
-	//In order to add a widget to your app, or container, use the package's AddTo method.
-	ClientPowered := button.AddTo(App, "My callback runs on the client")
-	
-	ClientPowered.OnClick(func(q script.Ctx) {
-		ClientPowered.Ctx(q).SetText(q.String("You clicked me!"))
-	})
-	
-	
-	ServerPowered := button.AddTo(App, "My callback runs on the server")
-	
-	//You can style widgets with methods of the style package.
-	ServerPowered.SetColor(seed.RGB(100, 100, 0))
+	app.New("My App",
+		button.New(
+			text.SetStringTo(Text1),
 
-	ServerPowered.OnClick(seed.Go(func(u user.Ctx) {
-		ServerPowered.For(u).SetText("You clicked me!")
-	}))
+			client.OnClick(Text1.Set("You Clicked me")),
+		),
 
-	App.Launch()
+		button.New(
+			text.SetStringTo(Text2),
+
+			set.Color(color.RGBA{100, 100, 0, 255}),
+
+			client.OnClick(client.Go(func() client.Script {
+				return Text2.Set("You Clicked me")
+			})),
+		),
+	).Launch()
 }
 ```
 
-This example shows a quick glimpse on how powerful Qlovaseed is. You can find more widgets in the [seeds repository](https://github.com/qlova/seeds).
+This example shows a quick glimpse on how powerful Qlovaseed is.
+
+## Project folder structure
+
+For larger apps, it is a good idea to seperate the ui from the business logic. The recomended folder structure is:
+
+```
+    domain (business logic)
+    |
+    ├───── main (main package that launches the app)
+    |      └─── main.go
+    |
+    ├───── ui (pages & popups)
+    |      ├─ new (place custom seed packages in here)
+    |      |  └─── customseed
+    |      |        └──────── customseed.go
+    |      |
+    |      ├─ user (global clientside state)
+    |      |  └─── user.go
+    |      |
+    |      ├─ style (styles for your seeds)
+    |      |  └─── styles.go
+    |      |
+    |      └─ page.Home.go
+    |
+    └───── domain.go
+```
 
 ## Styles
 
-All widgets/seeds can be styled with methods from the style package.
-https://godoc.org/github.com/qlova/seed/style
+All seeds can be styled with methods from the set package.
 
 ```
-import "github.com/qlova/seed/unit"
-import "github.com/qlova/seeds/text"
+import "color"
+import "qlova.org/seed/set"
+import "qlova.org/seed/new/text"
+import "qlova.org/seed/use/css/units/rem"
 
-var Text = text.AddTo(App, "Some syllable text)
-Text.SetBold()
-Text.Align().Left()
-Text.SetColor(seed.RGB(100, 0, 0)
-Text.SetOuterSpacing(unit.Em, unit.Em)
+text.New(set.Color(color.RGBA{100, 0, 0, 255}),
+    set.Margin(rem.One, rem.One),
+
+    text.Set("Some stylable text"),
+)
 ```
 
 ## HTML/CSS/JS
 
-Qlovaseed discourages the use of HTML, CSS and Javascript to build apps.
-However, there may be good reasons to use these technologies to extend missing functionality. This is how:
+The use of raw HTML, CSS and Javascript to build apps is discouraged.
+However, there may be good reasons to use these technologies to extend functionality or to create new seeds.
 
-* Seeds have a SetContent method for setting raw HTML.
-* All seeds have a CSS method that returns a css.Style object with type-safe Set methods.
-* When in doubt, seed.CSS().Set can be used to set css styles with strings,
-* seed.Script has a Javascript method for raw Javascript.
-* seed.Embed & seed.Seed.Require are useful for embedding Javascript and CSS files. Checkout the editor & swiper seeds.
+* Seeds have a html.Set option for setting raw HTML.
+* When in doubt, css.Set can be used to set css styles with strings,
+* js.Bundle is useful for embedding Javascript and CSS files. Checkout the gallery seed.
 
 ## Community 
 
@@ -146,3 +184,10 @@ There is a reddit community: [/r/Qlovaseed](https://www.reddit.com/r/Qlovaseed/)
 Please don't hesitate to ask questions here. I haven't invested a lot of time into documentation yet.
 
 **Please remember**, this framework is in development, it does not have a stable API and features are currently implemented as needed.
+
+**License**  
+This work is subject to the terms of the Qlova Public
+License, Version 2.0. If a copy of the QPL was not distributed with this
+work, You can obtain one at https://license.qlova.org/v2
+
+The QPL is compatible with the AGPL which is why both licenses are provided within this repository.

@@ -1,24 +1,19 @@
-module github.com/qlova/seed
+module qlova.org/seed
 
 go 1.13
 
-replace github.com/qlova/script => /home/quentin/Git/qlova/script
-
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/foobaz/lossypng v0.0.0-20170418091904-b2e79a7cd5f1
-	github.com/fsnotify/fsnotify v1.4.7
-	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee // indirect
-	github.com/gobwas/pool v0.2.0 // indirect
-	github.com/gobwas/ws v1.0.2
-	github.com/gorilla/websocket v1.4.1
-	github.com/qlova/script v0.2.0
-	github.com/radovskyb/watcher v1.0.7
-	github.com/russross/blackfriday/v2 v2.0.1
-	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
+	github.com/gomarkdown/markdown v0.0.0-20200824053859-8c8b3816f167
+	github.com/google/uuid v1.1.1
+	github.com/gorilla/websocket v1.4.2
+	github.com/microcosm-cc/bluemonday v1.0.4
+	github.com/qlova/seed v0.2.2
+	github.com/qlova/seeds v0.2.2
+	github.com/stripe/stripe-go/v71 v71.40.0
 	github.com/tdewolff/minify v2.3.6+incompatible
-	github.com/tdewolff/minify/v2 v2.5.2
-	github.com/tdewolff/parse v2.3.4+incompatible // indirect
-	github.com/zserge/webview v0.0.0-20190123072648-16c93bcaeaeb
-	golang.org/x/sys v0.0.0-20190927073244-c990c680b611 // indirect
+	github.com/tdewolff/minify/v2 v2.7.3
+	github.com/tdewolff/parse v2.3.4+incompatible
+	qlova.org/should v1.0.2
+	qlova.tech/rgb v1.0.1
 )
