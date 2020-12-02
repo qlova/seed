@@ -11,6 +11,7 @@ import (
 //If more than one argument is provided different sides are padded.
 //eg.
 //
+//		Padding(all)
 // 		Padding(x, y)
 // 		Padding(x, top, bottom)
 // 		Padding(left, right, top, bottom)
@@ -62,6 +63,7 @@ func PaddingRight(u units.Unit) Style {
 //If more than one argument is provided different sides are padded.
 //eg.
 //
+//		Margin(all)
 // 		Margin(x, y)
 // 		Margin(x, top, bottom)
 // 		Margin(left, right, top, bottom)
