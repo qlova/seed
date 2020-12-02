@@ -5,18 +5,16 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/use/html"
-	"qlova.org/seed/use/html/attr"
-	"qlova.org/seed/use/js"
 	"qlova.org/seed/new/html/htmlselect"
 	"qlova.org/seed/new/html/option"
 	"qlova.org/seed/new/text"
 	"qlova.org/seed/new/text/rich"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/html/attr"
+	"qlova.org/seed/use/js"
 )
 
 type data struct {
-	
-
 	values []string
 
 	placeholder string

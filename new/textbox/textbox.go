@@ -8,14 +8,42 @@ import (
 	"qlova.org/seed/use/html/attr"
 	"qlova.org/seed/use/js"
 
+	"qlova.org/seed/new/html/datalist"
 	"qlova.org/seed/new/html/input"
+	"qlova.org/seed/new/html/option"
+	"qlova.org/seed/new/text"
 )
+
+//Data for a textbox.
+type Data struct {
+	Suggestions []string
+}
 
 //New returns a new textbox widget.
 func New(options ...seed.Option) seed.Seed {
-	return input.New(
+	Textbox := input.New(
 		seed.Options(options),
 	)
+
+	var data Data
+	Textbox.Load(&data)
+
+	if len(data.Suggestions) > 0 {
+		Datalist := datalist.New()
+
+		for _, suggestion := range data.Suggestions {
+			Datalist.With(
+				option.New(text.SetString(suggestion)),
+			)
+		}
+
+		Textbox.With(
+			attr.Set("list", client.ID(Datalist)),
+			Datalist,
+		)
+	}
+
+	return Textbox
 }
 
 //Update updates the given variable whenever the textbox text is modified.
@@ -26,6 +54,13 @@ func Update(variable *clientside.String) seed.Option {
 			client.On("render", html.Element(c).Set("value", variable)),
 			client.On("input", variable.SetTo(js.String{Value: html.Element(c).Get("value")})),
 		)
+	})
+}
+
+//SetSuggestions sets suggestions for the value in the textbox.
+func SetSuggestions(suggestions []string) seed.Option {
+	return seed.Mutate(func(data *Data) {
+		data.Suggestions = suggestions
 	})
 }
 

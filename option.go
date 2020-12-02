@@ -2,8 +2,6 @@ package seed
 
 import (
 	"reflect"
-
-	"github.com/qlova/seed"
 )
 
 //Option can be used to modify a seed.
@@ -65,7 +63,7 @@ func If(condition bool, options ...Option) Option {
 func Mutate(f interface{}) Option {
 	T := reflect.TypeOf(f)
 	if T.Kind() != reflect.Func || T.In(0).Kind() != reflect.Ptr || T.NumIn() > 2 ||
-		(T.NumIn() == 2 && T.In(1) != reflect.TypeOf(seed.Seed{})) {
+		(T.NumIn() == 2 && T.In(1) != reflect.TypeOf(Seed{})) {
 		panic("illegal argument to seed.Mutate")
 	}
 

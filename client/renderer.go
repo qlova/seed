@@ -154,6 +154,7 @@ seed.on = function(element, event, handler, id) {
 			}
 			
 		} catch(e) {
+			//prevent infinite error-handling loops.
 			if (event == "error") {
 				throw e;
 			} else {
@@ -296,15 +297,15 @@ seed.request = async function(method, formdata, url, manual, active) {
 				resolve(xhr.response);
 			} else {
 				if (this.status != 404) slave(xhr.response).then(function() {
-					reject(seed.request.error);
+					reject(reject(seed.httpErrString(this.status)));
 				}).catch(function(e) {
 					reject(e);
 				});
-				reject(seed.request.error);
+				reject(seed.httpErrString(this.status));
 			}
 		};
 		xhr.onerror = function () {
-			reject(seed.request.error);
+			reject(seed.httpErrString(this.status));
 		};
 		xhr.send(formdata);
 	});
@@ -313,7 +314,14 @@ seed.request = async function(method, formdata, url, manual, active) {
 	return await slave(response);
 }
 
-seed.request.error = "connection failed";
+seed.httpErrString = function(status) {
+	switch (status) {
+	case 413:
+		return "Payload Too Large";
+	default:
+		return "Connection Failed";
+	}
+}
 
 seed.dynamic = {};
 

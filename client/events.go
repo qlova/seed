@@ -31,7 +31,15 @@ func on(event string, do Script) seed.Option {
 			if d.On == nil {
 				d.On = make(map[string]js.Script)
 			}
-			d.On[event] = d.On[event].Append(do.GetScript())
+			if event == "error" {
+				d.On[event] = d.On[event].Append(do.GetScript())
+			} else {
+				d.On[event] = d.On[event].Append(func(q js.Ctx) {
+					q("try {")
+					q(do.GetScript())
+					q("} catch(e) { seed.report(e) }")
+				})
+			}
 		}
 
 		c.Save(d)

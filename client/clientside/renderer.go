@@ -171,7 +171,7 @@ func init() {
 				}
 			};
 			
-			this.setvar = function(key, memory, value) {
+			this.setvar = async function(key, memory, value) {
 				let old = this.getvar(key, memory);
 
 				switch (memory) {
@@ -189,12 +189,12 @@ func init() {
 				}
 
 				if (JSON.stringify(old) != JSON.stringify(value)) {
-					if (seed.variable.onchange[key]) seed.variable.onchange[key]();
+					if (seed.variable.onchange[key]) await seed.variable.onchange[key]();
 				}
 
 				if (seed.variable.hook[key])
 					for (let id of seed.variable.hook[key]) {
-						c.renderALL(this, id);
+						await c.renderALL(this, id);
 					};
 			};
 		}; 

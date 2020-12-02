@@ -32,3 +32,8 @@ func Select(selector string, rules ...Rule) seed.Option {
 func Hover(rules ...Rule) seed.Option {
 	return Select(":hover", rules...)
 }
+
+//After applies the css rules to an 'after' psuedo element.
+func After(rules ...Rule) seed.Option {
+	return Select(":after", rules...)
+}

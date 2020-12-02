@@ -65,6 +65,8 @@ type TextField struct {
 
 	Checker client.Script
 
+	Suggestions []string
+
 	Required, Multiline bool
 
 	Theme FieldTheme
@@ -93,6 +95,8 @@ func (field TextField) AddTo(c seed.Seed) {
 			change.When(Error, field.Theme.ErrorBox),
 
 			client.OnInput(Error.SetTo(js.NewString(""))),
+
+			textbox.SetSuggestions(field.Suggestions),
 
 			clientside.Catch(Error),
 

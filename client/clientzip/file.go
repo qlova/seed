@@ -8,8 +8,8 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/use/js"
 	"qlova.org/seed/new/dropzone"
+	"qlova.org/seed/use/js"
 )
 
 //Policy determines what is zipped.
