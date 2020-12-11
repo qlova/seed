@@ -130,6 +130,10 @@ func (text Text) HTML() string {
 			s = strings.Replace(s, "  ", "&nbsp;&nbsp;", -1)
 			s = strings.Replace(s, "\t", "&emsp;", -1)
 
+			if s[len(s)-1] == ' ' {
+				s = s[:len(s)-1] + "&nbsp;"
+			}
+
 			return s
 		}
 

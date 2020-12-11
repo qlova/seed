@@ -7,16 +7,14 @@ import (
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
 	"qlova.org/seed/client/if/not"
+	"qlova.org/seed/new/html/div"
+	"qlova.org/seed/new/html/template"
 	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/js"
-	"qlova.org/seed/new/html/div"
-	"qlova.org/seed/new/html/template"
 )
 
 type data struct {
-	
-
 	templates []seed.Seed
 }
 
@@ -128,12 +126,17 @@ func With(food Food, options ...seed.Option) *Feed {
 	return f
 }
 
+//Mutate mutates the container of the feed.
+func (f *Feed) Mutate(options ...seed.Option) {
+	f.feed.With(options...)
+}
+
 //New returns a new instantiated feed with the given options.
 func (f *Feed) New(options ...seed.Option) seed.Seed {
 	var template = f.template
 	var feed = f.feed
 
-	template.With(css.SetSelector("#"+html.ID(feed)), html.AddClass("sortable-ignore"), seed.Options(options))
+	template.With(css.SetSelector("#"+html.ID(feed)), html.AddClass("feed"), seed.Options(options))
 
 	convertToClasses(template)
 

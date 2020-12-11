@@ -47,8 +47,9 @@ func Hook(v client.Value, c seed.Seed) {
 	switch mode, q := client.Seed(c); mode {
 	case client.AddTo:
 		address, _ := variable.Variable()
-		fmt.Fprintf(q, `seed.variable.hook['%v'].push('%v');`, address, client.ID(c))
+		fmt.Fprintf(q, `if ( seed.variable.hook['%v'].indexOf('%v') === -1) seed.variable.hook['%v'].push('%v');`, address, client.ID(c), address, client.ID(c))
 	case client.Undo:
+		address, _ := variable.Variable()
 		fmt.Fprintf(q, `if (seed.variable.hook['%v']) seed.variable.hook['%v'].splice(seed.variable.hook['%v'].indexOf('%v'), 1);`, address, address, address, client.Element(c))
 	default:
 		data.hooks = append(data.hooks, hook{

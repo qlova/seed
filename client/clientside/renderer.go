@@ -95,7 +95,6 @@ func init() {
 		}; c.r = c.render;
 
 		c.render = async (q, id) => {
-			
 
 			let l = q.get(id);
 			if (!l) {
@@ -111,6 +110,8 @@ func init() {
 				return;
 			}
 
+			seed.rendering = l;
+
 			if (l.tagName == "TEMPLATE") {
 				return;
 			}
@@ -125,6 +126,8 @@ func init() {
 					await c.render(q, child);
 				}
 			}
+
+			seed.rendering = null;
 		}; c.r = c.render;
 
 		c.onrender = (q, id, exe) => {

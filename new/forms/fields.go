@@ -318,6 +318,7 @@ type SubmitButton struct {
 	Theme, ThemeError seed.Options
 
 	OnSubmit client.Script
+	OnError  func(client.String) client.Script
 
 	Spinner seed.Seed
 }
@@ -325,6 +326,10 @@ type SubmitButton struct {
 func (submit SubmitButton) AddTo(c seed.Seed) {
 	var Error = new(clientside.String)
 	var Processing = new(clientside.Bool)
+
+	if submit.OnError == nil {
+		submit.OnError = func(client.String) client.Script { return nil }
+	}
 
 	c.With(
 		visible.When(Error, text.New(text.SetStringTo(Error), submit.ThemeError)),
@@ -334,6 +339,8 @@ func (submit SubmitButton) AddTo(c seed.Seed) {
 
 				client.OnError(func(err client.String) client.Script {
 					return client.NewScript(
+						submit.OnError(err),
+
 						Error.SetTo(err),
 						Processing.Set(false),
 					)

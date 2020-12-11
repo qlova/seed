@@ -118,6 +118,8 @@ func init() {
 						i++;
 					}
 
+					if (l.onchange) await l.onchange();
+
 					await seed.render(q, l);
 					l.refreshing = false;
 				});

@@ -9,10 +9,10 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/use/css"
-	"qlova.org/seed/use/html"
 	"qlova.org/seed/new/text/rich"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/css/units"
+	"qlova.org/seed/use/html"
 )
 
 //New returns a new text widget.
@@ -66,6 +66,11 @@ func SetSize(s units.Unit) css.Rule {
 //SetLineHeight sets the line-height of the text.
 func SetLineHeight(height float64) css.Rule {
 	return css.Set("line-height", fmt.Sprint(height))
+}
+
+//Selectable sets the text content to be selectable.
+func Selectable() seed.Option {
+	return css.SetUserSelect(css.Text)
 }
 
 //Center aligns the text to to the center.

@@ -17,8 +17,8 @@ import (
 	"qlova.org/seed/use/js"
 )
 
-//Requesty is any type that can load itself from a Request.
-type Requesty interface {
+//Requester is any type that can load itself from a Request.
+type Requester interface {
 	FromRequest(Request) error
 }
 
@@ -45,12 +45,12 @@ func Handler(w http.ResponseWriter, r *http.Request, id string) {
 	}
 
 	//The function can take an optional Requesty as it's first argument.
-	if f.Type().NumIn() > 0 && reflect.PtrTo(f.Type().In(0)).Implements(reflect.TypeOf([0]Requesty{}).Elem()) {
+	if f.Type().NumIn() > 0 && reflect.PtrTo(f.Type().In(0)).Implements(reflect.TypeOf([0]Requester{}).Elem()) {
 		StartFrom = 1
 
 		var zero = reflect.New(f.Type().In(0))
 
-		if err := zero.Interface().(Requesty).FromRequest(cr); err != nil {
+		if err := zero.Interface().(Requester).FromRequest(cr); err != nil {
 			log.Println(err)
 
 			safe, ok := err.(clientsafe.Error)
@@ -65,6 +65,19 @@ func Handler(w http.ResponseWriter, r *http.Request, id string) {
 
 	}
 
+	handle := func(err error) {
+		log.Println(err)
+
+		safe, ok := err.(clientsafe.Error)
+		if ok {
+			fmt.Fprintf(w, "throw %v;", strconv.Quote(safe.ClientError()))
+			return
+		}
+
+		fmt.Fprintf(w, "throw %v;", strconv.Quote("there was an error"))
+		return
+	}
+
 	var skip = 0
 
 	//Parse each argument as JSON.
@@ -75,81 +88,98 @@ func Handler(w http.ResponseWriter, r *http.Request, id string) {
 
 		var rvalue reflect.Value
 
-		switch f.Type().In(i) {
+		if f.Type().In(i).Implements(reflect.TypeOf([0]Parser{}).Elem()) && f.Type().In(i).Kind() == reflect.Ptr {
+			rvalue = reflect.New(f.Type().In(i).Elem())
 
-		case reflect.TypeOf([0]func() time.Time{}).Elem():
-			rvalue = reflect.ValueOf(func() time.Time {
-				return time.Now().In(time.UTC)
-			})
-			skip++
-
-		//Argument is a file/stream.
-		case reflect.TypeOf(Stream{}), reflect.TypeOf([0]io.Reader{}).Elem():
-			var stream Stream
-
-			file, header, err := cr.request.FormFile(key)
-			if err == nil {
-				stream.head = header
-				stream.file = file
+			if err := rvalue.Interface().(Parser).Parse(val); err != nil {
+				handle(err)
+				return
 			}
+		} else {
 
-			rvalue = reflect.ValueOf(stream)
+			switch f.Type().In(i) {
 
-		case reflect.TypeOf(time.Time{}):
-			t, err := time.Parse(`"2006-01-02"`, val)
-			if err != nil {
-				t, err = time.Parse(`"2006-01"`, val)
+			case reflect.TypeOf([0]func() time.Time{}).Elem():
+				rvalue = reflect.ValueOf(func() time.Time {
+					return time.Now().In(time.UTC)
+				})
+				skip++
+
+			//Argument is a file/stream.
+			case reflect.TypeOf(Stream{}), reflect.TypeOf([0]io.Reader{}).Elem():
+				var stream Stream
+
+				file, header, err := cr.request.FormFile(key)
+				if err == nil {
+					stream.head = header
+					stream.file = file
+				}
+
+				rvalue = reflect.ValueOf(stream)
+
+			case reflect.TypeOf(time.Time{}):
+				t, err := time.Parse(`"2006-01-02"`, val)
+				if err != nil {
+					t, err = time.Parse(`"2006-01"`, val)
+					if err != nil {
+						w.WriteHeader(400)
+						log.Println(err)
+						fmt.Fprint(w, "throw 'bad request';")
+						return
+					}
+				}
+				rvalue = reflect.ValueOf(t)
+
+			case reflect.TypeOf(true):
+				if val == "true" {
+					rvalue = reflect.ValueOf(true)
+				} else {
+					rvalue = reflect.ValueOf(false)
+				}
+
+			case reflect.TypeOf(url.URL{}):
+				s, err := strconv.Unquote(val)
 				if err != nil {
 					w.WriteHeader(400)
 					log.Println(err)
 					fmt.Fprint(w, "throw 'bad request';")
 					return
 				}
-			}
-			rvalue = reflect.ValueOf(t)
+				location, err := url.Parse(s)
+				if err != nil {
+					w.WriteHeader(400)
+					log.Println(err)
+					fmt.Fprint(w, "throw 'bad request';")
+					return
+				}
+				rvalue = reflect.ValueOf(*location)
 
-		case reflect.TypeOf(true):
-			if val == "true" {
-				rvalue = reflect.ValueOf(true)
-			} else {
-				rvalue = reflect.ValueOf(false)
-			}
+			default:
+				var shell = reflect.New(f.Type().In(i)).Interface()
+				if err := json.NewDecoder(strings.NewReader(val)).Decode(shell); err != nil {
+					w.WriteHeader(400)
+					log.Println(err)
+					fmt.Fprint(w, "throw 'bad request';")
+					return
+				}
 
-		case reflect.TypeOf(url.URL{}):
-			s, err := strconv.Unquote(val)
-			if err != nil {
-				w.WriteHeader(400)
-				log.Println(err)
-				fmt.Fprint(w, "throw 'bad request';")
-				return
-			}
-			location, err := url.Parse(s)
-			if err != nil {
-				w.WriteHeader(400)
-				log.Println(err)
-				fmt.Fprint(w, "throw 'bad request';")
-				return
-			}
-			rvalue = reflect.ValueOf(*location)
-
-		default:
-			var shell = reflect.New(f.Type().In(i)).Interface()
-			if err := json.NewDecoder(strings.NewReader(val)).Decode(shell); err != nil {
-				w.WriteHeader(400)
-				log.Println(err)
-				fmt.Fprint(w, "throw 'bad request';")
-				return
+				rvalue = reflect.ValueOf(shell).Elem()
 			}
 
-			rvalue = reflect.ValueOf(shell).Elem()
+			var ElemType, ArgType = rvalue.Type(), f.Type().In(i)
+			if ElemType != ArgType {
+				if !(ArgType.Kind() == reflect.Interface && ElemType.Implements(ArgType)) {
+					log.Println("type mismatch")
+					w.WriteHeader(400)
+					fmt.Fprint(w, "throw 'bad request';")
+					return
+				}
+			}
 		}
 
-		var ElemType, ArgType = rvalue.Type(), f.Type().In(i)
-		if ElemType != ArgType {
-			if !(ArgType.Kind() == reflect.Interface && ElemType.Implements(ArgType)) {
-				log.Println("type mismatch")
-				w.WriteHeader(400)
-				fmt.Fprint(w, "throw 'bad request';")
+		if f.Type().In(i).Implements(reflect.TypeOf([0]Validator{}).Elem()) {
+			if err := rvalue.Interface().(Validator).Validate(); err != nil {
+				handle(err)
 				return
 			}
 		}
@@ -167,15 +197,7 @@ func Handler(w http.ResponseWriter, r *http.Request, id string) {
 
 	//Check if an error was returned.
 	if err, ok := results[len(results)-1].Interface().(error); ok && err != nil {
-		log.Println(err)
-
-		safe, ok := err.(clientsafe.Error)
-		if ok {
-			fmt.Fprintf(w, "throw %v;", strconv.Quote(safe.ClientError()))
-			return
-		}
-
-		fmt.Fprintf(w, "throw %v;", strconv.Quote("there was an error"))
+		handle(err)
 		return
 	}
 

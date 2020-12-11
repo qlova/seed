@@ -267,7 +267,7 @@ seed.download = async function(name, path) {
 	document.body.removeChild(link);
 }
 
-seed.request = async function(method, formdata, url, manual, active) {
+seed.request = async function(method, formdata, url, manual, active, onprogress) {
 
 	const slave = async function(response) {
 		if (response == "") return null;
@@ -291,11 +291,23 @@ seed.request = async function(method, formdata, url, manual, active) {
 
 	let promise = new Promise(function (resolve, reject) {
 		var xhr = new XMLHttpRequest();
-		xhr.open(method, url, true);
+
+		if (onprogress) {
+			xhr.upload.onprogress = function(event) {
+				if (event.lengthComputable) {
+					onprogress(event.loaded/event.total);
+				} else {
+					onprogress(-1);
+				}
+			};
+		}
+
 		xhr.onload = function () {
 			if (this.status >= 200 && this.status < 300) {
 				resolve(xhr.response);
 			} else {
+				if (onprogress) onprogress(0);
+
 				if (this.status != 404) slave(xhr.response).then(function() {
 					reject(reject(seed.httpErrString(this.status)));
 				}).catch(function(e) {
@@ -305,8 +317,12 @@ seed.request = async function(method, formdata, url, manual, active) {
 			}
 		};
 		xhr.onerror = function () {
+			if (onprogress) onprogress(0);
+			
 			reject(seed.httpErrString(this.status));
 		};
+
+		xhr.open(method, url, true);
 		xhr.send(formdata);
 	});
 
