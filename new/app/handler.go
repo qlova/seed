@@ -12,9 +12,9 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 
-	"qlova.org/seed/new/api"
 	"qlova.org/seed/assets/inbed"
 	"qlova.org/seed/client"
+	"qlova.org/seed/new/api"
 	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/js"
 )
@@ -141,6 +141,27 @@ func (a App) Handler() http.Handler {
 
 	router.Handle("/robots.txt", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("\n"))
+	})))
+
+	router.Handle("/.well-known/assetlinks.json", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if app.pkg != "" {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`[{
+"relation": ["delegate_permission/common.handle_all_urls"],
+"target" : { "namespace": "android_app", "package_name": "` + app.pkg + `",
+		   "sha256_cert_fingerprints": [`))
+
+			for i, hash := range app.hashes {
+				w.Write([]byte("\"" + hash + "\""))
+				if i < len(app.hashes)-1 {
+					w.Write([]byte(`,`))
+				}
+			}
+
+			w.Write([]byte(`] }
+}]`))
+			return
+		}
 	})))
 
 	router.Handle("/index.js", gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

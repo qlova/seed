@@ -26,11 +26,11 @@ type app struct {
 
 	document html.Document
 
-	name string
+	name, description, pkg string
+
+	hashes []string
 
 	page, loadingPage page.Page
-
-	description string
 
 	color color.Color
 

@@ -27,6 +27,11 @@ func Open(url String) Script {
 	return js.Func(`window.open`).Run(url, NewString("_blank"))
 }
 
+//ScrollTo the given id.
+func ScrollTo(id string) Script {
+	return js.Func(`(() => {  location.hash = "#_";  location.hash = "#` + id + `";})`).Run()
+}
+
 //Print asks the client to print the current page.
 func Print() Script {
 	return js.Func(`window.print`).Run()

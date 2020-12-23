@@ -98,6 +98,7 @@ func With(food Food, options ...seed.Option) *Feed {
 	var feed = div.New(
 		css.Set("display", "flex"),
 		css.Set("flex-direction", "column"),
+		css.Set("flex-shrink", "0"),
 
 		seed.Mutate(func(data *data) {
 			data.templates = append(data.templates, template)

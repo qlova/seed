@@ -13,7 +13,9 @@ func New(options ...seed.Option) seed.Seed {
 		css.SetDisplay(css.Flex),
 		css.SetFlexDirection(css.Row),
 
-		css.SetFlexShrink(css.Number(1)),
+		css.SetFlexShrink(css.Number(0)),
+
+		css.Set("flex-basis", "auto"),
 
 		seed.Options(options),
 	)

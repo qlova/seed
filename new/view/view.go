@@ -8,12 +8,12 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/use/css"
-	"qlova.org/seed/use/html"
-	"qlova.org/seed/use/js"
 	"qlova.org/seed/set"
 	"qlova.org/seed/set/transition"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/css/units/percentage/of"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 )
 
 func Name(view View) string {
@@ -90,10 +90,12 @@ func New(options ...seed.Option) seed.Seed {
 	return seed.New(
 		html.SetTag("div"),
 
-		set.Size(100%of.Parent, 100%of.Parent),
+		set.Width(100%of.Parent),
 
 		css.SetDisplay(css.Flex),
 		css.SetFlexDirection(css.Column),
+		css.Set("flex", "1"),
+		set.Height(100%of.Parent),
 
 		seed.NewOption(func(c seed.Seed) {
 			c.With(

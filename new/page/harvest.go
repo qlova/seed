@@ -6,13 +6,13 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/use/css"
-	"qlova.org/seed/use/html"
-	"qlova.org/seed/use/js"
 	"qlova.org/seed/new/column"
 	"qlova.org/seed/new/expander"
 	"qlova.org/seed/set"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/css/units/percentage/of"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 )
 
 type harvester struct {
@@ -38,6 +38,7 @@ func AddPages(pages ...Page) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var container = column.New(
 			set.Width(100%of.Parent),
+			set.Height(100%of.Parent),
 			expander.Set(),
 			set.MinHeight(nil),
 		)

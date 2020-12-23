@@ -8,13 +8,13 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/use/css"
-	"qlova.org/seed/use/html"
-	"qlova.org/seed/use/js"
 	"qlova.org/seed/new/expander"
 	"qlova.org/seed/set"
 	"qlova.org/seed/set/transition"
+	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/css/units/percentage/of"
+	"qlova.org/seed/use/html"
+	"qlova.org/seed/use/js"
 )
 
 //ID returns the DOM id of the provided page.
@@ -62,7 +62,11 @@ func New(options ...seed.Option) seed.Seed {
 		css.SetFlexDirection(css.Column),
 		expander.Set(),
 
-		set.Size(100%of.Parent, 100%of.Parent),
+		set.Width(100%of.Parent),
+		set.Height(100%of.Parent),
+		css.Set("flex-basis", "auto"),
+
+		//set.Size(100%of.Parent, 100%of.Parent),
 
 		transition.SetOnEnter(OnEnter),
 		transition.SetOnExit(OnExit),

@@ -38,6 +38,27 @@ func Head(o ...seed.Option) seed.Option {
 	})
 }
 
+//SetDescription sets the description of the app.
+func SetDescription(description string) seed.Option {
+	return seed.Mutate(func(a *app) {
+		a.description = description
+	})
+}
+
+//SetPackage sets the package name of the app.
+func SetPackage(pkg string) seed.Option {
+	return seed.Mutate(func(a *app) {
+		a.pkg = pkg
+	})
+}
+
+//SetHashes sets the hashes of the app.
+func SetHashes(hashes []string) seed.Option {
+	return seed.Mutate(func(a *app) {
+		a.hashes = hashes
+	})
+}
+
 //SetColor sets the color of the app.
 func SetColor(col color.Color) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
