@@ -4,6 +4,12 @@ import (
 	"qlova.org/seed/use/js"
 )
 
+//Client Boolean values.
+var (
+	True  = js.True
+	False = js.False
+)
+
 type Script = js.AnyScript
 
 func NewScript(do ...Script) Script {
