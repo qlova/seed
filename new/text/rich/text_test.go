@@ -13,7 +13,7 @@ func Test_Text(t *testing.T) {
 		rich.Text("Hello World").Italic().Bold().In(color.Black).HTML(),
 	).Test(t)
 
-	should.Be("<span style='color:#000000;'><strong><em>Hello </em></strong></span>World")(
+	should.Be("<span style='color:#000000;'><strong><em>Hello&nbsp;</em></strong></span>World")(
 		(rich.Text("Hello ").Italic().Bold().In(color.Black) + rich.Text("World")).HTML(),
 	).Test(t)
 
