@@ -4,8 +4,8 @@ import (
 	"regexp"
 
 	"qlova.org/seed"
-	"qlova.org/seed/use/html"
 	"qlova.org/seed/new/html/div"
+	"qlova.org/seed/use/html"
 
 	"github.com/gomarkdown/markdown"
 	"github.com/microcosm-cc/bluemonday"

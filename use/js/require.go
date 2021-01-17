@@ -5,8 +5,6 @@ import (
 )
 
 type data struct {
-	
-
 	requires map[string]string
 }
 

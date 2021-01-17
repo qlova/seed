@@ -4,9 +4,9 @@ import (
 	"image/color"
 
 	"qlova.org/seed"
+	"qlova.org/seed/new/html/div"
 	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/html"
-	"qlova.org/seed/new/html/div"
 )
 
 func Ellipsis(c color.Color, options ...seed.Option) seed.Seed {

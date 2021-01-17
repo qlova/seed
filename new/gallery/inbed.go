@@ -1,5 +1,3 @@
-
-
 package gallery
 
 import "qlova.org/seed/assets/inbed"

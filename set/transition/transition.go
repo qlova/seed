@@ -6,9 +6,9 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/client"
+	"qlova.org/seed/new/animation"
 	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/js"
-	"qlova.org/seed/new/animation"
 )
 
 var fadeIn = animation.New(

@@ -2,8 +2,8 @@ package expander
 
 import (
 	"qlova.org/seed"
-	"qlova.org/seed/use/css"
 	"qlova.org/seed/new/html/div"
+	"qlova.org/seed/use/css"
 )
 
 //New returns a new expander that expands to fill empty space.

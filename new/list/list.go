@@ -6,8 +6,6 @@ import (
 )
 
 type data struct {
-	
-
 	Items []seed.Seed
 
 	Options []Option

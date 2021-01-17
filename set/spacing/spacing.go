@@ -1,8 +1,8 @@
 package spacing
 
 import (
-	"qlova.org/seed/use/css"
 	"qlova.org/seed/set"
+	"qlova.org/seed/use/css"
 )
 
 func Outside() set.Style {

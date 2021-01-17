@@ -6,11 +6,11 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/assets"
 	"qlova.org/seed/client"
+	"qlova.org/seed/new/asset"
 	"qlova.org/seed/use/css"
+	"qlova.org/seed/use/css/units"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/html/attr"
-	"qlova.org/seed/new/asset"
-	"qlova.org/seed/use/css/units"
 )
 
 //New returns a new image widget.

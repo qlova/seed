@@ -7,9 +7,9 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/new/html/div"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/js"
-	"qlova.org/seed/new/html/div"
 )
 
 var StripePublishableKey string

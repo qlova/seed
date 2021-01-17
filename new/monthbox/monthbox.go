@@ -9,5 +9,5 @@ import (
 
 //New returns a new textbox widget.
 func New(options ...seed.Option) seed.Seed {
-	return textbox.New( attr.Set("type", "month"), seed.Options(options))
+	return textbox.New(attr.Set("type", "month"), seed.Options(options))
 }

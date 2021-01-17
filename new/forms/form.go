@@ -3,11 +3,11 @@ package forms
 import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
+	"qlova.org/seed/new/html/form"
 	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/html/attr"
 	"qlova.org/seed/use/js"
-	"qlova.org/seed/new/html/form"
 )
 
 //New returns a new HTML form element.
