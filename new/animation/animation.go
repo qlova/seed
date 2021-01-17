@@ -41,8 +41,6 @@ func Set(anim Animation) seed.Option {
 }
 
 type data struct {
-	
-
 	animations []Animation
 }
 
@@ -83,6 +81,8 @@ func New(options ...Option) Animation {
 
 	var a = Animation{id: id}
 
+	a.options = append(a.options, css.SetAnimationFillMode(css.Backwards))
+
 	for _, option := range options {
 		option.addto(&a)
 	}
@@ -114,6 +114,15 @@ func Duration(d time.Duration) Option {
 	return NewOption(func(a *Animation) {
 		a.options = append(a.options, css.Rules{
 			css.SetAnimationDuration(css.Duration(d)),
+		})
+	})
+}
+
+//Delay sets the delay before the animation plays.
+func Delay(d time.Duration) Option {
+	return NewOption(func(a *Animation) {
+		a.options = append(a.options, css.Rules{
+			css.SetAnimationDelay(css.Duration(d)),
 		})
 	})
 }
