@@ -1,6 +1,6 @@
 # ![logo](assets/logo.svg) [![Godoc](https://godoc.org/qlova.org/seed?status.svg)](https://qlova.org/seed) [![Go Report Card](https://goreportcard.com/badge/github.com/qlova/seed)](https://goreportcard.com/report/github.com/qlova/seed) [![Build Status](https://travis-ci.org/qlova/seed.svg?branch=master)](https://travis-ci.org/qlova/seed)
 
-The cross-platform Go module for building apps.
+The cross-platform Go module for building apps (pronounced klo-va-seed). 
 
 ## Usecases
 
