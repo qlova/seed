@@ -10,6 +10,9 @@ import (
 	"qlova.org/seed/new/row"
 	"qlova.org/seed/new/text"
 	"qlova.org/seed/new/textbox"
+	"qlova.org/seed/set"
+	"qlova.org/seed/set/change"
+	"qlova.org/seed/use/css/units/vh"
 )
 
 func someServerSideFunction(name string) string {
@@ -26,14 +29,19 @@ func main() {
 	app.New("Input Example",
 		column.New(
 			row.New(
+				set.Hidden(),
+				set.MarginBottom(vh.New(1)),
 				text.New(text.SetStringTo(FullName)),
+				change.When(FullName, set.Visible()),
 			),
 			row.New(
+				set.MarginBottom(vh.New(1)),
 				text.New(text.Set("What is your name?"),
 				),
 			),
 			row.New(
 				textbox.New(
+					set.MarginBottom(vh.New(1)),
 					textbox.SetPlaceholder("Enter your name"),
 					textbox.Update(Name),
 				),
