@@ -55,7 +55,7 @@ func (p AboutPage) Page(r page.Router) seed.Seed {
 }
 
 func main() {
-	app.New("Pages",
+	app.New("Pages Example",
 		page.AddPages(HomePage{}, AboutPage{}),
 		page.Set(HomePage{}),
 	).Launch()
