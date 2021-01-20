@@ -177,11 +177,13 @@ However, there may be good reasons to use these technologies to extend functiona
 * When in doubt, css.Set can be used to set css styles with strings,
 * js.Bundle is useful for embedding Javascript and CSS files. Checkout the gallery seed.
 
+## Contributing
+If you are missing a minor feature (such as a standard javascript wrapper, a css unit or the like) and decide to implement it please create a pull request 
+so that the feature can be added into the framework.
+
 ## Community 
-
 There is a reddit community: [/r/Qlovaseed](https://www.reddit.com/r/Qlovaseed/).
-
-Please don't hesitate to ask questions here. I haven't invested a lot of time into documentation yet.
+You can also ask questions on the [Github Discussions](https://github.com/qlova/seed/discussions) page.
 
 **Please remember**, this framework is in development, it does not have a stable API and features are currently implemented as needed.
 
@@ -189,5 +191,9 @@ Please don't hesitate to ask questions here. I haven't invested a lot of time in
 This work is subject to the terms of the Qlova Public
 License, Version 2.0. If a copy of the QPL was not distributed with this
 work, You can obtain one at https://license.qlova.org/v2
+
+The QPL is similar to the MPL except it tracks modifications at the Go package level instead at the file level and you 
+must release changes you make to the packages in this module if you distribute/host an app with a modified version of Qlovaseed. 
+The intent is to keep the Qlovaseed module open but allows you to import and use the framework inside a proprietary app.
 
 The QPL is compatible with the AGPL which is why both licenses are provided within this repository.
