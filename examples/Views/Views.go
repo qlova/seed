@@ -45,6 +45,19 @@ func (f ViewTwo) View(c view.Controller) seed.Seed {
 	)
 }
 
+type StandaloneView struct {
+}
+
+func (f StandaloneView) View(_ view.Controller) seed.Seed {
+	return view.New(
+		column.New(
+			row.New(
+				text.New(text.Set("View not in a list")),
+			),
+		),
+	)
+}
+
 func main() {
 	app.New("Views Example",
 		column.New(
@@ -59,9 +72,13 @@ func main() {
 				view.List(ViewOne{}, ViewTwo{}),
 			),
 			row.New(
+				set.MarginBottom(vh.New(2)),
 				text.New(
 					text.Set("Aren't they great?"),
 				),
+			),
+			row.New(
+				view.Set(StandaloneView{}),
 			),
 		),
 	).Launch()
