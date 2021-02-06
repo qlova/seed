@@ -2,6 +2,8 @@ package app
 
 import (
 	"fmt"
+	"hash/fnv"
+	"math"
 	"net"
 	"net/http"
 	"os"
@@ -72,23 +74,42 @@ func (a App) Launch() error {
 		port = os.Getenv("GOPORT")
 	}
 
+	var data app
+	a.Load(&data)
+
+	var browser bool
+
+	var iport uint16
+
+	//Determine a stable port number from the app's name.
+	if port == ":0" {
+		var hash = fnv.New64()
+		hash.Write([]byte(data.name))
+
+		iport = uint16(hash.Sum64()%(math.MaxUint16-1000)) + 1000
+
+		port = fmt.Sprint(":", iport)
+		browser = true
+	}
+
 	a.port = port
 
 	handler := a.Handler()
 
+retry:
 	listener, err := net.Listen("tcp", port)
 	if err != nil {
+		if strings.Contains(err.Error(), "address already in use") {
+			iport++
+			port = fmt.Sprint(":", iport)
+			goto retry
+		}
 		return err
 	}
 
-	if port == ":0" {
-		splits := strings.Split(listener.Addr().String(), ":")
-		port = ":" + splits[len(splits)-1]
+	if browser {
 		go launch("http://" + listener.Addr().String())
 	}
-
-	var data app
-	a.Load(&data)
 
 	fmt.Printf("\nlaunching %v version %v on http://localhost%v\n", data.name, data.worker.Version, port)
 
