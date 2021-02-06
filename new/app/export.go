@@ -6,8 +6,10 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 
 	"qlova.org/seed/assets/inbed"
+	"qlova.org/seed/use/js"
 )
 
 //Export exports the app to the folder "export" in the current working directory.
@@ -35,7 +37,51 @@ func (a App) Export() error {
 	}
 
 	//Todo package other assets.
-	//var scripts = js.Scripts(app.document.Seed)
+	var scripts = js.Scripts(app.document.Seed)
+
+	for path, script := range scripts {
+		opath := path
+		path = "export/" + path
+
+		dir := filepath.Dir(path)
+		os.MkdirAll(dir, os.ModePerm)
+
+		if script == "" {
+			f, err := inbed.Open(opath)
+			if err == nil {
+				b, err := ioutil.ReadAll(f)
+				if err != nil {
+					return err
+				}
+
+				if err := ioutil.WriteFile(path, b, os.ModePerm); err != nil {
+					return err
+				}
+			}
+		} else {
+
+			if err := ioutil.WriteFile(path, []byte(script), os.ModePerm); err != nil {
+				return err
+			}
+		}
+	}
+
+	{
+		f, err := inbed.Open("assets/wasm/index.wasm")
+		if err == nil {
+			b, err := ioutil.ReadAll(f)
+			if err != nil {
+				return err
+			}
+
+			os.MkdirAll("export/assets/wasm", os.ModePerm)
+
+			if err := ioutil.WriteFile("export/assets/wasm/index.wasm", b, os.ModePerm); err != nil {
+				return err
+			}
+		}
+	}
+
 	//var stylesheets = css.Stylesheets(app.document.Seed)
 	//var imports = js.Imports()
 

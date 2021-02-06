@@ -3,6 +3,8 @@
 package main
 
 import (
+	"fmt"
+
 	"qlova.org/seed/client"
 	"qlova.org/seed/new/app"
 	"qlova.org/seed/new/page"
@@ -15,7 +17,7 @@ import (
 
 func main() {
 
-	app.New("DatingApp",
+	var DatingApp = app.New("DatingApp",
 		row.Set(),
 
 		client.OnLoad(
@@ -25,5 +27,11 @@ func main() {
 		ui.NewSidebar(),
 		page.AddPages(ui.PopularPage{}, ui.CustomPage{}, ui.AddPage{}),
 		page.Set(ui.PopularPage{}),
-	).Launch()
+	)
+
+	if err := DatingApp.Export(); err != nil {
+		fmt.Println(err)
+	}
+
+	DatingApp.Launch()
 }
