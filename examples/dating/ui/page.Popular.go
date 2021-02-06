@@ -1,6 +1,8 @@
-package main
+package ui
 
 import (
+	"dating"
+
 	"qlova.org/seed"
 	"qlova.org/seed/new/feed"
 	"qlova.org/seed/new/page"
@@ -12,7 +14,7 @@ import (
 type PopularPage struct{}
 
 func (p PopularPage) Page(r page.Router) seed.Seed {
-	var holidays = feed.With(GetHolidays)
+	var holidays = feed.With(dating.GetHolidays)
 
 	return page.New(
 		transition.Fade(),

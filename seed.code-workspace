@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "../send"
+		},
+		{
+			"path": "examples/dating"
 		}
 	],
 	"settings": {}

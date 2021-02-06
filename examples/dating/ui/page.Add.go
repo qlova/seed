@@ -1,10 +1,12 @@
-package main
+package ui
 
 import (
+	"dating"
+	"dating/ui/style"
+
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
-	"qlova.org/seed/examples/dating/style"
 	"qlova.org/seed/new/button"
 	"qlova.org/seed/new/datebox"
 	"qlova.org/seed/new/expander"
@@ -83,8 +85,8 @@ func (p AddPage) Page(r page.Router) seed.Seed {
 
 				text.Set("DONE"),
 
-				client.OnClick(client.Run(AddCustom, name, date, hours),
-					client.Run(SaveCustom),
+				client.OnClick(client.Run(dating.AddCustom, name, date, hours),
+					client.Run(dating.SaveCustom),
 					r.Goto(CustomPage{})),
 			),
 		),

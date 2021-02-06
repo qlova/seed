@@ -1,6 +1,8 @@
-package main
+package ui
 
 import (
+	"dating"
+
 	"qlova.org/seed"
 	"qlova.org/seed/new/feed"
 	"qlova.org/seed/new/page"
@@ -12,7 +14,7 @@ import (
 type CustomPage struct{}
 
 func (p CustomPage) Page(r page.Router) seed.Seed {
-	var holidays = feed.With(GetCustom)
+	var holidays = feed.With(dating.GetCustom)
 
 	return page.New(
 		transition.Fade(),

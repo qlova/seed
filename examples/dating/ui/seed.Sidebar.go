@@ -1,9 +1,10 @@
-package main
+package ui
 
 import (
+	"dating/ui/style"
+
 	"qlova.org/seed"
 	"qlova.org/seed/client"
-	"qlova.org/seed/examples/dating/style"
 	"qlova.org/seed/new/column"
 	"qlova.org/seed/new/expander"
 	"qlova.org/seed/new/image"
