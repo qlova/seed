@@ -1,7 +1,5 @@
-// +build !generate
+// +build !generate,!wasm
 
 package wasm
 
-func Generate() {
-	<-make(chan bool)
-}
+func Generate() {}

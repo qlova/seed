@@ -20,13 +20,25 @@ if ("Go" in window) {
 
 	const go = new Go();
 	let mod, inst;
-	WebAssembly.instantiateStreaming(fetch("assets/wasm/index.wasm"), go.importObject).then((result) => {
+
+	let success, failure;
+	let finshed = new Promise(function(yes, no) {
+		success = yes;
+		failure = no;
+	});
+
+	window.GoPromise = success;
+
+	await WebAssembly.instantiateStreaming(fetch("assets/wasm/index.wasm"), go.importObject).then((result) => {
 		mod = result.module;
 		inst = result.instance;
 		go.run(inst);
 	}).catch((err) => {
 		console.error(err);
+		failure();
 	});
+
+	await finshed;
 }`
 
 var exports = make(map[string]struct{})
@@ -46,6 +58,14 @@ func Export(f interface{}) {
 func Run(f interface{}, args ...js.AnyValue) js.Script {
 	return js.Script(func(q js.Ctx) {
 		q(js.Require("assets/js/wasm_exec.js", ""))
-		q(js.Func("window['" + runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name() + "']").Call(args...))
+		q(js.Func("window['" + runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name() + "']").Run(args...))
 	})
+}
+
+//Call returns a client.Script that calls the given function with the given arguments.
+func Call(f interface{}, args ...js.AnyValue) js.AnyValue {
+	return js.NewFunction(js.Script(func(q js.Ctx) {
+		q(js.Require("assets/js/wasm_exec.js", ""))
+		q(js.Return(js.Func("window['" + runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name() + "']").Call(args...)))
+	})).Call()
 }

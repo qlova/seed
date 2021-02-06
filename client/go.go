@@ -142,6 +142,16 @@ func Run(fn interface{}, args ...Value) Script {
 
 //Call calls a go function and returns the result.
 func Call(fn interface{}, args ...Value) Value {
+	for i, arg := range args {
+		if a, ok := arg.(Argument); ok {
+			args[i] = a.AsArgument()
+		}
+	}
+
+	if wasm.Exported(fn) {
+		return wasm.Call(fn, args...)
+	}
+
 	return js.Await(js.Call(js.NewFunction(func(q js.Ctx) {
 		rec, CallingString, formdata := rpc(q, fn, args...)
 

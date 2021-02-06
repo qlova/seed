@@ -1,3 +1,5 @@
+// +build !generate,!wasm
+
 package main
 
 import (
