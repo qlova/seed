@@ -1,6 +1,5 @@
 //+build bundle
 
-	package main
+package main
 
-	import _ "./assets"
-	
+import _ "qlova.org/seed/examples/dating/assets"
