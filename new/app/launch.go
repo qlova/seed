@@ -81,6 +81,8 @@ func (a App) Launch() error {
 
 	var iport uint16
 
+	a.port = port
+
 	//Determine a stable port number from the app's name.
 	if port == ":0" {
 		var hash = fnv.New64()
@@ -91,8 +93,6 @@ func (a App) Launch() error {
 		port = fmt.Sprint(":", iport)
 		browser = true
 	}
-
-	a.port = port
 
 	handler := a.Handler()
 
