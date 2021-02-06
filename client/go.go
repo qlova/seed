@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"qlova.org/seed/use/js"
+	"qlova.org/seed/use/wasm"
 )
 
 var goExports = make(map[string]reflect.Value)
@@ -116,6 +117,16 @@ func Go(fn interface{}, args ...Value) Script {
 
 //Run runs a go function, blocking until it completes.
 func Run(fn interface{}, args ...Value) Script {
+	for i, arg := range args {
+		if a, ok := arg.(Argument); ok {
+			args[i] = a.AsArgument()
+		}
+	}
+
+	if wasm.Exported(fn) {
+		return wasm.Run(fn, args...)
+	}
+
 	return js.Script(func(q js.Ctx) {
 		rec, CallingString, formdata := rpc(q, fn, args...)
 

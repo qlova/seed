@@ -1,6 +1,9 @@
 package clientside
 
 import (
+	"errors"
+	"strings"
+
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/use/js"
@@ -14,6 +17,24 @@ type String struct {
 	Memory  Memory
 
 	Value string
+}
+
+//Pointer returns a pointer to this bool, suitable for passing as an argument.
+func (s *String) Pointer() PointerToString {
+	return PointerToString{s}
+}
+
+//Parse parses a bool from a clientside.PointerToBool.AsArgument
+func (s *String) Parse(val string) error {
+	splits := strings.Split(val, ":")
+	if len(splits) != 2 {
+		return errors.New("invalid clientside.Pointer format: " + val)
+	}
+
+	s.Memory = Memory(splits[0])
+	s.address = Address(splits[1])
+
+	return nil
 }
 
 //Variable implements Variable

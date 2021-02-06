@@ -7,6 +7,7 @@ import (
 
 	"qlova.org/seed"
 	"qlova.org/seed/use/js"
+	"qlova.org/seed/use/wasm"
 )
 
 type Renderer func(root seed.Seed) []byte
@@ -19,6 +20,12 @@ func RegisterRenderer(r Renderer) {
 
 func RegisterRootRenderer(r Renderer) {
 	rootRenderers = append([]Renderer{r}, rootRenderers...)
+}
+
+func init() {
+	RegisterRootRenderer(func(seed.Seed) []byte {
+		return []byte(wasm.InstantiateStreaming)
+	})
 }
 
 func render(child seed.Seed) []byte {
@@ -267,11 +274,12 @@ seed.download = async function(name, path) {
 	document.body.removeChild(link);
 }
 
+window.AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
 seed.request = async function(method, formdata, url, manual, active, onprogress) {
 
 	const slave = async function(response) {
 		if (response == "") return null;
-		const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
 		return await (new AsyncFunction(response))();
 	}

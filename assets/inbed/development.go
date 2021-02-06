@@ -236,6 +236,8 @@ func buildEmbeddings() error {
 
 	if SingleFile == "" {
 		assets.WriteString(`//+build bundle`)
+	} else {
+		assets.WriteString(`//+build !wasm`)
 	}
 
 	if _, err := assets.WriteString(`
