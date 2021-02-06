@@ -27,15 +27,10 @@ Create HelloWorld.go file and paste in the following contents:
 ```go
 package main
 
-import (
-	"qlova.org/seed/new/app"
-	"qlova.org/seed/new/text"
-)
+import "qlova.org/seed/new/app"
 
 func main() {
-	app.New("Hello World",
-		text.Set("Hello World"),
-	).Launch()
+	app.New("Hello World").Launch()
 }
 ```
 

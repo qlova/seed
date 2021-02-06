@@ -8,6 +8,8 @@ import (
 	"qlova.org/seed/new/app/manifest"
 	"qlova.org/seed/new/app/service"
 	"qlova.org/seed/new/page"
+	"qlova.org/seed/new/text"
+	"qlova.org/seed/set/center"
 	"qlova.org/seed/use/css"
 	"qlova.org/seed/use/html"
 	"qlova.org/seed/use/js"
@@ -52,10 +54,12 @@ var Standalone = &clientside.Bool{
 func New(name string, options ...seed.Option) App {
 	var document = html.New()
 
-	var SeedCount = 0
-	for i := range options {
-		if _, ok := options[i].(seed.Seed); ok {
-			SeedCount++
+	//Make a little 'Hello World' app using the title.
+	if len(options) == 0 {
+		options = []seed.Option{
+			center.This(
+				text.New(text.SetString(name)),
+			),
 		}
 	}
 
