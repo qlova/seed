@@ -38,6 +38,12 @@ golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
+qlova.org/mirror v0.1.0 h1:VtabTwGVNSz5AuXNCix1E6718fT/ewJX0Vz/c77Ee/Q=
+qlova.org/mirror v0.1.0/go.mod h1:vweKgG67tlmXmyVFDCXaLjPD7sdmc2JF9dOIkyOfuq4=
+qlova.org/mirror v0.1.1 h1:9hmDAj41UPm9UeP8JXag0QGhhO9ucEe11jEOXvpi9RM=
+qlova.org/mirror v0.1.1/go.mod h1:vweKgG67tlmXmyVFDCXaLjPD7sdmc2JF9dOIkyOfuq4=
+qlova.org/mirror v0.1.2 h1:MGqRndinIgMvrs8unPfY+Hk/DDa8ZzOwxPwcIZEE7Qc=
+qlova.org/mirror v0.1.2/go.mod h1:vweKgG67tlmXmyVFDCXaLjPD7sdmc2JF9dOIkyOfuq4=
 qlova.org/should v1.0.2/go.mod h1:wco2Ze5mNjSwvZZIoxrmmOFzuxuhSkXO2XYauofWpCU=
 qlova.tech/rgb v1.0.1 h1:hF7ZxKXxVEtpg07d92YkmUTIWOZMYJUZOuX82qQdN3E=
 qlova.tech/rgb v1.0.1/go.mod h1:YwEWewTxM1jgjHibNrhH/VpnB8V1WSswj+EgSk5H8ao=
