@@ -3,6 +3,7 @@ package feed
 import (
 	"strings"
 
+	"qlova.org/mirror"
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
@@ -61,6 +62,8 @@ type Feed struct {
 	boolean *clientside.Bool
 
 	Empty client.Bool
+
+	mirror mirror.Type
 }
 
 //GetBool implements js.AnyBool
@@ -76,14 +79,6 @@ func (f *Feed) GetValue() js.Value {
 //Components implements client.Compound
 func (f *Feed) Components() []client.Value {
 	return []client.Value{f.boolean}
-}
-
-func (f *Feed) String(field Field) client.String {
-	return js.String{Value: f.Data.Get(field.FieldName())}
-}
-
-func (f *Feed) Int(field Field) client.Int {
-	return js.Number{Value: f.Data.Get(field.FieldName())}
 }
 
 //Refresh refreshes the feed.

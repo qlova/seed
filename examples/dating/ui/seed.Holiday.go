@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"dating"
 	"dating/ui/style"
 
 	"qlova.org/seed"
@@ -11,11 +12,14 @@ import (
 	"qlova.org/seed/new/text"
 	"qlova.org/seed/set"
 	"qlova.org/seed/use/css/units/rem"
-	"qlova.org/seed/use/js"
 	"qlova.tech/rgb"
 )
 
 func NewHolidays(f *feed.Feed) seed.Seed {
+
+	var holiday dating.Holiday
+	f.Into(&holiday)
+
 	return f.New(
 		row.New(style.Border,
 			set.Height(rem.New(10.0)),
@@ -30,7 +34,7 @@ func NewHolidays(f *feed.Feed) seed.Seed {
 
 				image.Crop(),
 
-				image.SetTo(js.String{f.Data.Get("Image")}),
+				image.SetTo(f.String(holiday.Image)),
 			),
 
 			text.New(style.Text,
@@ -41,8 +45,8 @@ func NewHolidays(f *feed.Feed) seed.Seed {
 				set.Padding(rem.New(2.0), rem.New(1.0)),
 
 				text.SetStringTo(clientfmt.Sprintf("%v until %v",
-					js.String{f.Data.Get("Distance")},
-					js.String{f.Data.Get("Name")})),
+					f.String(holiday.Distance),
+					f.String(holiday.Name))),
 			),
 		),
 	)

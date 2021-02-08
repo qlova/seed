@@ -17,7 +17,7 @@ type Holiday struct {
 	Image    string
 	Distance string
 
-	Time time.Time
+	Time time.Time `mirror:"ignore"`
 
 	distance time.Duration
 	nextTime func() time.Time
