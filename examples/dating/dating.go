@@ -3,6 +3,7 @@ package dating
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
 	"sort"
 	"time"
@@ -22,28 +23,28 @@ type Holiday struct {
 	nextTime func() time.Time
 }
 
-var Holidays = []Holiday{
-	{
-		Name:  "New Year's Eve",
-		Image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Fanciful_sketch_by_Marguerite_Martyn_of_a_New_Years_Eve_celebration.jpg/1280px-Fanciful_sketch_by_Marguerite_Martyn_of_a_New_Years_Eve_celebration.jpg",
-		nextTime: func() time.Time {
-			var now = time.Now()
-			return time.Date(
-				now.Year(), 12, 31, 0, 0, 0, 0, time.Local,
-			)
-		},
-	},
+var Holidays = []Holiday{}
 
-	{
-		Name:  "Christmas",
-		Image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/NativityChristmasLights2.jpg/1280px-NativityChristmasLights2.jpg",
-		nextTime: func() time.Time {
-			var now = time.Now()
-			return time.Date(
-				now.Year(), 12, 25, 0, 0, 0, 0, time.Local,
-			)
-		},
-	},
+func readPopular(r io.Reader) {
+	var rawHolidays []HolidayJSON
+	var err = json.NewDecoder(r).Decode(&rawHolidays)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, hol := range rawHolidays {
+		t := hol.Start
+		if hol.Substitute {
+			continue
+		}
+		Holidays = append(Holidays, Holiday{
+			Name:     hol.Name,
+			Time:     hol.Start,
+			Image:    "https://loremflickr.com/500/500/" + hol.Name + "?lock=1",
+			nextTime: func() time.Time { return t },
+		})
+	}
 }
 
 var Custom = []Holiday{}
