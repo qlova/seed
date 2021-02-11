@@ -28,13 +28,20 @@ func NewHolidays(f *feed.Feed) seed.Seed {
 
 			image.New(
 				set.Width(rem.New(10.0)),
+				set.If.Small(
+					set.Width(rem.New(5.0)),
+				),
+
 				image.Crop(),
 
 				image.SetTo(f.String(holiday.Image)),
 			),
 
 			text.New(style.Text,
-				text.SetSize(rem.New(3.0)),
+				text.SetSize(rem.New(2.0)),
+				set.If.Small(
+					text.SetSize(rem.New(1.5)),
+				),
 				set.Padding(rem.New(2.0), rem.New(1.0)),
 
 				text.SetStringTo(clientfmt.Sprintf("%v until %v",

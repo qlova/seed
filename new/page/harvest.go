@@ -37,7 +37,6 @@ func Set(page Page) seed.Option {
 func AddPages(pages ...Page) seed.Option {
 	return seed.NewOption(func(c seed.Seed) {
 		var container = column.New(
-			set.Width(nil),
 			set.Height(100%of.Parent),
 			expander.Set(),
 			set.MinHeight(nil),
