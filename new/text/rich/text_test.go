@@ -25,7 +25,7 @@ func Test_Text(t *testing.T) {
 		(rich.Icon("img.png") + rich.Text("Hello World")).HTML(),
 	).Test(t)
 
-	should.Be("<a href='http://example.co'>Click me</a><strong>Hello World</strong>")(
+	should.Be("<a href='http://example.com'>Click me</a><strong>Hello World</strong>")(
 		(rich.Link("http://example.com", "Click me") + rich.Text("Hello World").Bold()).HTML(),
 	).Test(t)
 }

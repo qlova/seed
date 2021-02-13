@@ -166,7 +166,7 @@ func (text Text) HTML() string {
 		case icon:
 			return "<img style='margin-top: 0.1em;vertical-align:text-top;height:1em;font-size:inherit;' src='" + s[3:3+int(s[2])] + "'>" + convert(s[3+int(s[2]):])
 		case link:
-			url := s[4 : 3+int(s[2])]
+			url := s[4 : 4+int(s[2])]
 			label := convert(s[4+int(s[2]) : 4+int(s[2])+int(s[3])])
 			return "<a href='" + url + "'>" + label + "</a>"
 		default:
