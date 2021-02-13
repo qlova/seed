@@ -92,6 +92,9 @@ func Link(url, label string) Text {
 	if len(url) > 255 {
 		panic("rich.Link src length less than 255, use a shorter length or fix the rich package.")
 	}
+	if len(label) == 0 {
+		label = url
+	}
 	return Text(append([]byte{rich, style, link, byte(len(url)), byte(len(label))}, (url+string(label))...)) + Text([]byte{rich, style, reset})
 }
 
