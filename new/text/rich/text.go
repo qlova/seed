@@ -23,6 +23,7 @@ const (
 
 	font
 	icon
+	link
 )
 
 //Text holds rich-formatted text.
@@ -80,9 +81,18 @@ func (text Text) In(c color.Color) Text {
 //Icon embeds an icon in the text.
 func Icon(src string) Text {
 	if len(src) > 255 {
-		return ""
+		panic("rich.Icon src length less than 255, use a shorter length or fix the rich package.")
 	}
 	return Text(append([]byte{rich, style, icon, byte(len(src))}, src...)) + Text([]byte{rich, style, reset})
+}
+
+//Link embeds a url link in the text with the given label.
+//If the label is the empty string, the url is used as the link.
+func Link(url, label string) Text {
+	if len(url) > 255 {
+		panic("rich.Link src length less than 255, use a shorter length or fix the rich package.")
+	}
+	return Text(append([]byte{rich, style, link, byte(len(url)), byte(len(label))}, (url+string(label))...)) + Text([]byte{rich, style, reset})
 }
 
 func (text Text) String() string {
@@ -100,6 +110,8 @@ func (text Text) String() string {
 			return text[text[1]+2:].String()
 		case icon:
 			return text[text[1]+2:].String()
+		case link:
+			return text[3+text[1]:].String()
 		}
 
 		return text[2:].String()
@@ -150,6 +162,10 @@ func (text Text) HTML() string {
 			return "<span style='color:#" + s[2:10] + ";'>" + convert(s[10:]) + "</span>"
 		case icon:
 			return "<img style='margin-top: 0.1em;vertical-align:text-top;height:1em;font-size:inherit;' src='" + s[3:3+int(s[2])] + "'>" + convert(s[3+int(s[2]):])
+		case link:
+			url := s[4 : 3+int(s[2])]
+			label := convert(s[4+int(s[2]) : 4+int(s[2])+int(s[3])])
+			return "<a href='" + url + "'>" + label + "</a>"
 		default:
 			panic("invalid text format")
 		}
