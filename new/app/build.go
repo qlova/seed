@@ -123,7 +123,7 @@ func (a App) build() {
 			))
 		})),
 
-		style.New(html.Set(normaliseCSS+string(css.Render(a.Seed)))),
+		style.New(html.Set(builtinCSS+normaliseCSS+string(css.Render(a.Seed)))),
 
 		//Add external scripts.
 		repeater.New(scripts, repeater.Do(func(c repeater.Seed) {
