@@ -8,24 +8,9 @@ import (
 
 //Value is an untyped variable in client memory.
 type Value struct {
-	Name string
-
-	address Address
-	Memory  Memory
+	MemoryAddress
 
 	Value client.Value
-}
-
-//Variable implements Variable
-func (v *Value) Variable() (Address, Memory) {
-	if v.address == "" {
-		if v.Name != "" {
-			v.address = Address(v.Name)
-		} else {
-			v.address = NewAddress()
-		}
-	}
-	return v.address, v.Memory
 }
 
 //GetBool implements client.Bool

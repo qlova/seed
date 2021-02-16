@@ -11,10 +11,7 @@ import (
 
 //Signal is a communication tool.
 type Signal struct {
-	Name string
-
-	address Address
-	Memory  Memory
+	MemoryAddress
 
 	Value string
 }
@@ -22,18 +19,6 @@ type Signal struct {
 //GetDefaultValue implements Variable
 func (s *Signal) GetDefaultValue() client.Value {
 	return js.Null()
-}
-
-//Variable implements Variable
-func (s *Signal) Variable() (Address, Memory) {
-	if s.address == "" {
-		if s.Name != "" {
-			s.address = Address(s.Name)
-		} else {
-			s.address = NewAddress()
-		}
-	}
-	return s.address, s.Memory
 }
 
 //GetBool implements client.Bool

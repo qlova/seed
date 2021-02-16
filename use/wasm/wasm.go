@@ -77,16 +77,24 @@ func Export(f interface{}) {
 
 				switch rtype.In(i) {
 				case reflect.TypeOf(time.Time{}):
-					val := args[i].String()
+					if args[i].Type() == js.TypeNumber {
 
-					t, err := time.Parse(`2006-01-02`, val)
-					if err != nil {
-						t, err = time.Parse(`2006-01`, val)
+						val := time.Millisecond * time.Duration(args[i].Float())
+						converted[i] = reflect.ValueOf(time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC).Add(val))
+
+					} else {
+
+						val := args[i].String()
+
+						t, err := time.Parse(`2006-01-02`, val)
 						if err != nil {
-							return handle(fmt.Errorf("bad request: %w", err))
+							t, err = time.Parse(`2006-01`, val)
+							if err != nil {
+								return handle(fmt.Errorf("bad request: %w", err))
+							}
 						}
+						converted[i] = reflect.ValueOf(t)
 					}
-					converted[i] = reflect.ValueOf(t)
 
 				default:
 					switch rtype.In(i).Kind() {

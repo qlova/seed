@@ -41,12 +41,16 @@ type app struct {
 
 //Installable is true when the app can be installed (that is when the OS has granted the app a beforeinstallprompt event).
 var Installable = &clientside.Bool{
-	Name: "app.installable",
+	MemoryAddress: clientside.MemoryAddress{
+		Name: "app.installable",
+	},
 }
 
 //Standalone is true when the app is running from an installed instance.
 var Standalone = &clientside.Bool{
-	Name:  "app.standalone",
+	MemoryAddress: clientside.MemoryAddress{
+		Name: "app.standalone",
+	},
 	Value: js.NewValue(`(document.fullscreen || (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || window.name == 'installed')`),
 }
 

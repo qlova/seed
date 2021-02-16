@@ -37,7 +37,9 @@ func (c Controller) Seed() seed.Seed {
 //Is returns true if the given view is the current view of the given controller..
 func (c Controller) Is(v View) *clientside.Bool {
 	return &clientside.Bool{
-		Name: client.ID(c.of) + ".view." + Name(v),
+		MemoryAddress: clientside.MemoryAddress{
+			Name: client.ID(c.of) + ".view." + Name(v),
+		},
 	}
 }
 

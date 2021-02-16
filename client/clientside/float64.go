@@ -7,24 +7,9 @@ import (
 
 //Float64 is an float64 variable in client memory.
 type Float64 struct {
-	Name string
-
-	address Address
-	Memory  Memory
+	MemoryAddress
 
 	Value float64
-}
-
-//Variable implements Variable
-func (v *Float64) Variable() (Address, Memory) {
-	if v.address == "" {
-		if v.Name != "" {
-			v.address = Address(v.Name)
-		} else {
-			v.address = NewAddress()
-		}
-	}
-	return v.address, v.Memory
 }
 
 //GetNumber implements client.Number

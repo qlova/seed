@@ -7,10 +7,7 @@ import (
 
 //Set implements a type-safe clientside equivalant to map[interface{}]struct{}
 type Set struct {
-	Name string
-
-	address Address
-	Memory  Memory
+	MemoryAddress
 
 	Value map[interface{}]struct{}
 }
@@ -18,18 +15,6 @@ type Set struct {
 //GetDefaultValue implements Variable
 func (s *Set) GetDefaultValue() client.Value {
 	return js.NewValue("new Set()")
-}
-
-//Variable implements Variable
-func (s *Set) Variable() (Address, Memory) {
-	if s.address == "" {
-		if s.Name != "" {
-			s.address = Address(s.Name)
-		} else {
-			s.address = NewAddress()
-		}
-	}
-	return s.address, s.Memory
 }
 
 //GetSet implements js.AnySet

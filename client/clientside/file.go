@@ -8,22 +8,7 @@ import (
 
 //File is a (potentially zipped) file in client memory.
 type File struct {
-	Name string
-
-	address Address
-	Memory  Memory
-}
-
-//Variable implements Variable
-func (f *File) Variable() (Address, Memory) {
-	if f.address == "" {
-		if f.Name != "" {
-			f.address = Address(f.Name)
-		} else {
-			f.address = NewAddress()
-		}
-	}
-	return f.address, f.Memory
+	MemoryAddress
 }
 
 //GetFile implements client.File

@@ -94,7 +94,9 @@ func OnExit(f ...client.Script) seed.Option {
 //Is returns true if the given page is the current page.
 func Is(p Page) *clientside.Bool {
 	return &clientside.Bool{
-		Name: "page " + ID(p)[1:],
+		MemoryAddress: clientside.MemoryAddress{
+			Name: "page " + ID(p)[1:],
+		},
 	}
 }
 

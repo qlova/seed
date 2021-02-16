@@ -3,8 +3,6 @@ package clientside
 import (
 	"encoding/base64"
 	"math/big"
-
-	"qlova.org/seed/client"
 )
 
 //Memory is a type of client memory for SideValues.
@@ -27,10 +25,4 @@ var address int64
 func NewAddress() Address {
 	address++
 	return Address(base64.RawURLEncoding.EncodeToString(big.NewInt(address).Bytes()))
-}
-
-//Variable is a clientside variable.
-type Variable interface {
-	Variable() (Address, Memory)
-	GetDefaultValue() client.Value
 }

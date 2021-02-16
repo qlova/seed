@@ -7,24 +7,9 @@ import (
 
 //Int is an int variable in client memory.
 type Int struct {
-	Name string
-
-	address Address
-	Memory  Memory
+	MemoryAddress
 
 	Value int
-}
-
-//Variable implements Variable
-func (i *Int) Variable() (Address, Memory) {
-	if i.address == "" {
-		if i.Name != "" {
-			i.address = Address(i.Name)
-		} else {
-			i.address = NewAddress()
-		}
-	}
-	return i.address, i.Memory
 }
 
 //GetNumber implements client.Int
