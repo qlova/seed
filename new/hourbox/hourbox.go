@@ -28,7 +28,6 @@ func init() {
 	client.RegisterRootRenderer(func(seed.Seed) []byte {
 		return []byte(`
 		seeds.sethourbox = function(t) {
-			if (t == 0) return null;
 			let date = new Date(t);
 			return date.getUTCHours().toString().padStart(2, 0) + ':' + 
 				date.getUTCMinutes().toString().padStart(2, 0) + ':' + 
