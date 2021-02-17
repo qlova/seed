@@ -177,8 +177,18 @@ func NameAs(s String) Name {
 
 func Download(fn interface{}, args ...Value) Script {
 
+	for i, arg := range args {
+		if a, ok := arg.(Argument); ok {
+			args[i] = a.AsArgument()
+		}
+	}
+
 	if url, ok := fn.(String); ok {
 		return js.Func("c.download").Run(NewString(""), url)
+	}
+
+	if wasm.Exported(fn) {
+		return wasm.Download(fn, args...)
 	}
 
 	return js.Script(func(q js.Ctx) {

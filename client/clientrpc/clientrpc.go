@@ -25,6 +25,9 @@ type Request interface {
 	Path() string
 	Arg(name string) string
 
+	Header(key string) string
+	SetHeader(key, value string)
+
 	Get(Cookie) string
 	Set(Cookie, string)
 

@@ -69,3 +69,11 @@ func Call(f interface{}, args ...js.AnyValue) js.AnyValue {
 		q(js.Return(js.Func("window['" + runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name() + "']").Call(args...)))
 	})).Call()
 }
+
+//Download downloads the response of the given function.
+func Download(f interface{}, args ...js.AnyValue) js.Script {
+	return js.Script(func(q js.Ctx) {
+		q(js.Require("assets/js/wasm_exec.js", ""))
+		q(js.Func("window['" + runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name() + ".download']").Run(args...))
+	})
+}

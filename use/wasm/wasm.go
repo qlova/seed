@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"runtime"
 	"runtime/debug"
+	"strconv"
+	"strings"
 	"syscall/js"
 
 	"qlova.org/seed/client/clientrpc"
@@ -89,9 +91,8 @@ func (b *blobReader) Read(bytes []byte) (int, error) {
 
 var _ io.Reader = new(blobReader)
 
-func Export(f interface{}) {
-	exports[runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()] = struct{}{}
-	js.Global().Set(runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name(), js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+func handle(f interface{}, download bool) js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		defer func() {
 			if err := recover(); err != nil {
 				fmt.Println(err)
@@ -107,7 +108,7 @@ func Export(f interface{}) {
 
 		var iargs []interface{}
 
-		for i := 0; i < reflect.ValueOf(f).Type().NumIn(); i++ {
+		for i := range args {
 			var jsv = args[i]
 			var val interface{}
 
@@ -143,13 +144,50 @@ func Export(f interface{}) {
 				log.Println(err)
 			}
 
-			ctx.Return(i, err)
+			if download {
 
-			v, _ := await(js.Global().Get("AsyncFunction").New(buffer.String()).Invoke())
+				var arraybuf = js.Global().Get("ArrayBuffer").New(buffer.Len())
+				var u8array = js.Global().Get("Uint8Array").New(arraybuf)
 
-			resolve.Invoke(v)
+				js.CopyBytesToJS(u8array, buffer.Bytes())
+
+				var a = js.Global().Get("document").Call("createElement", "a")
+				var file = js.Global().Get("Blob").New([]interface{}{arraybuf})
+
+				a.Set("href", js.Global().Get("URL").Call("createObjectURL", file))
+
+				filename := ""
+				contentdisp := ctx.Request.Header("Content-Disposition")
+				if contentdisp != "" {
+					split := strings.Split(contentdisp, "=")
+					if len(split) > 1 {
+						filename = split[1]
+						if filename[0] == '"' {
+							filename, _ = strconv.Unquote(filename)
+						}
+					}
+				}
+
+				a.Set("download", filename)
+				a.Call("click")
+				resolve.Invoke()
+			} else {
+
+				ctx.Return(i, err)
+
+				v, _ := await(js.Global().Get("AsyncFunction").New(buffer.String()).Invoke())
+				resolve.Invoke(v)
+			}
+
 		}()
 
 		return promise
-	}))
+	})
+}
+
+func Export(f interface{}) {
+	exports[runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()] = struct{}{}
+	name := runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
+	js.Global().Set(name, handle(f, false))
+	js.Global().Set(name+".download", handle(f, true))
 }

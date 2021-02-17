@@ -39,6 +39,14 @@ type Request struct {
 	request *http.Request
 }
 
+func (cr Request) SetHeader(key, value string) {
+	cr.writer.Header().Set(key, value)
+}
+
+func (cr Request) Header(key string) string {
+	return cr.request.Header.Get(key)
+}
+
 func (cr Request) Path() string {
 	return cr.path
 }

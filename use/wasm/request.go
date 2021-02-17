@@ -12,6 +12,16 @@ type Request struct {
 	path string
 
 	response io.Writer
+
+	headers map[string]string
+}
+
+func (cr Request) SetHeader(key, value string) {
+	cr.headers[key] = value
+}
+
+func (cr Request) Header(key string) string {
+	return cr.headers[key]
 }
 
 func (cr Request) Path() string {
@@ -27,6 +37,7 @@ func NewRequest(buffer *bytes.Buffer) Request {
 	return Request{
 		path:     "/",
 		response: buffer,
+		headers:  make(map[string]string),
 	}
 }
 
