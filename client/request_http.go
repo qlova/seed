@@ -7,13 +7,12 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"qlova.org/seed/client/clientrpc"
 )
 
 //Cookie is an client-request associated value that is encrypted by default.
-type Cookie struct {
-	Name   string
-	MaxAge time.Duration
-}
+type Cookie = clientrpc.Cookie
 
 //NewCookie creates a new cookie with the given name.
 func NewCookie(name string) Cookie {
@@ -32,19 +31,27 @@ func (r Redirect) Error() string {
 
 //Request holds the metadata about an incomming request from the client.
 type Request struct {
-	Path string
+	path string
 
-	Response io.Writer
+	response io.Writer
 
 	writer  http.ResponseWriter
 	request *http.Request
 }
 
+func (cr Request) Path() string {
+	return cr.path
+}
+
+func (cr Request) Writer() io.Writer {
+	return cr.response
+}
+
 //NewRequest returns a new request from the given values.
 func NewRequest(w http.ResponseWriter, r *http.Request) Request {
 	return Request{
-		Path:     r.URL.Path,
-		Response: w,
+		path:     r.URL.Path,
+		response: w,
 
 		writer:  w,
 		request: r,

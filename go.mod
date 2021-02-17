@@ -8,6 +8,7 @@ require (
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/microcosm-cc/bluemonday v1.0.4
+	github.com/spf13/cast v1.3.1
 	github.com/stripe/stripe-go/v71 v71.40.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/minify/v2 v2.7.3
