@@ -29,6 +29,10 @@ func Call(f interface{}, args ...qjs.AnyValue) qjs.AnyValue {
 	return nil
 }
 
+func Download(f interface{}, args ...qjs.AnyValue) qjs.AnyValue {
+	return nil
+}
+
 var exports = make(map[string]struct{})
 
 //Exported returns true if the given function was exported with this package.
