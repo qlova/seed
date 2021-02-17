@@ -29,7 +29,7 @@ func Call(f interface{}, args ...qjs.AnyValue) qjs.AnyValue {
 	return nil
 }
 
-func Download(f interface{}, args ...qjs.AnyValue) qjs.AnyValue {
+func Download(f interface{}, args ...qjs.AnyValue) qjs.Script {
 	return nil
 }
 
