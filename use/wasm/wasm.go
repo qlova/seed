@@ -179,8 +179,12 @@ func handle(f interface{}, download bool) js.Func {
 
 				ctx.Return(i, err)
 
-				v, _ := await(js.Global().Get("AsyncFunction").New(buffer.String()).Invoke())
-				resolve.Invoke(v)
+				v, ok := await(js.Global().Get("AsyncFunction").New(buffer.String()).Invoke())
+				if ok {
+					resolve.Invoke(v)
+				} else {
+					reject.Invoke(v)
+				}
 			}
 
 		}()
