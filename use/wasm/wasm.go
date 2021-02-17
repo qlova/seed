@@ -93,6 +93,27 @@ func (b *blobReader) Read(bytes []byte) (int, error) {
 	return i, nil
 }
 
+func (b *blobReader) Name() string {
+	return ""
+}
+
+func (b *blobReader) Close() error {
+	b.blob = js.Null()
+	return nil
+}
+
+func (b *blobReader) Size() int64 {
+	return int64(b.blob.Get("size").Float())
+}
+
+type fileReader struct {
+	blobReader
+}
+
+func (f *fileReader) Name() string {
+	return f.blob.Get("name").String()
+}
+
 var _ io.Reader = new(blobReader)
 
 func handle(f interface{}, download bool) js.Func {
@@ -121,12 +142,14 @@ func handle(f interface{}, download bool) js.Func {
 				val = jsv.String()
 
 			case js.TypeObject:
-				if jsv.InstanceOf(js.Global().Get("Blob")) {
+				switch true {
+				case jsv.InstanceOf(js.Global().Get("File")):
+					val = &fileReader{blobReader{0, jsv}}
+				case jsv.InstanceOf(js.Global().Get("Blob")):
 					val = &blobReader{0, jsv}
-				} else {
-					panic("unsupported object type")
+				default:
+					val = js.Global().Get("JSON").Call("stringify", jsv).String()
 				}
-
 			default:
 				val = js.Global().Get("JSON").Call("stringify", jsv).String()
 			}

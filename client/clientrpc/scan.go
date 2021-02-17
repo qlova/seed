@@ -39,7 +39,7 @@ func Scan(into reflect.Type, value interface{}) (reflect.Value, error) {
 		if reflect.TypeOf(value).Implements(into) {
 			return reflect.ValueOf(value), nil
 		}
-		return reflect.ValueOf(value), fmt.Errorf("clientrpc.Scan: does not implement interface")
+		return reflect.ValueOf(value), fmt.Errorf("clientrpc.Scan: %v does not implement interface %v", reflect.TypeOf(value), into)
 	}
 
 	switch into {
