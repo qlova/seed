@@ -20,8 +20,8 @@ const (
 
 	//Orientation is applied with the bitwise ^ operator.
 	Orientation
-	Portrait  = Orientation | 1<<(6)
-	Landscape = Orientation | 1<<(7)
+	Portrait            = Orientation | 1<<(6)
+	Landscape SizeQuery = 1 << (7)
 
 	//Screen size ranges.
 	TinyToSmall  = Tiny | Small
