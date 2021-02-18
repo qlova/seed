@@ -2,6 +2,8 @@
 package screen
 
 import (
+	"fmt"
+
 	"qlova.org/seed/client"
 	"qlova.org/seed/use/js"
 )
@@ -11,60 +13,95 @@ type SizeQuery uint8
 
 //Query types.
 const (
+	//Base screen sizes.
 	Tiny SizeQuery = 1 << iota
 	Small
 	Medium
 	Large
 	Huge
 
-	Portrait
-	Landscape
+	//Orientation is applied with the bitwise ^ operator.
+	Orientation
+	Portrait  = Orientation | 1<<(6)
+	Landscape = Orientation | 1<<(7)
 
-	Smaller = Tiny | Small
-	Larger  = Large | Huge
+	//Screen size ranges.
+	TinyToSmall  = Tiny | Small
+	TinyToMedium = TinyToSmall | Medium
+	TinyToLarge  = TinyToMedium | Large
+	TinyToHuge   = TinyToLarge | Huge
+
+	SmallToMedium = Small | Medium
+	SmallToLarge  = SmallToMedium | Large
+	SmallToHuge   = SmallToLarge | Huge
+
+	MediumToLarge = Medium | Large
+	MediumToHuge  = MediumToLarge | Huge
+
+	LargeToHuge = Large | Huge
+
+	//Inversions
+	NotTiny   = ^Tiny
+	NotSmall  = ^Small
+	NotMedium = ^Medium
+	NotLarge  = ^Large
+	NotHuge   = ^Huge
+
+	NotTinyToSmall  = ^TinyToSmall
+	NotTinyToMedium = ^TinyToMedium
+	NotTinyToLarge  = ^TinyToLarge
+	NotTinyToHuge   = ^TinyToHuge
+
+	NotSmallToMedium = ^SmallToMedium
+	NotSmallToLarge  = ^SmallToLarge
+	NotSmallToHuge   = ^SmallToHuge
+
+	NotMediumToLarge = ^MediumToLarge
+	NotMediumToHuge  = ^MediumToHuge
+
+	NotLargeToHuge = ^LargeToHuge
 )
 
 //Not returns the inverse of the query.
-func Not(q SizeQuery) SizeQuery {
-	p := q & Portrait
-	l := q & Landscape
-	return ^q | p | l
-}
+func Not(q SizeQuery) SizeQuery { return ^q }
 
 //Media returns the query as a CSS media query.
 func (q SizeQuery) Media() string {
 
+	fmt.Printf("p %v l %v o %v", q&Portrait, q&Landscape, q&Orientation)
+
 	var s string
 
 	var p, l bool
-	if q&Portrait+q&Landscape == 0 {
+	if (q&Portrait != 0) == (q&Landscape != 0) {
 		p = true
 		l = true
 	}
 
-	if q&Portrait != 0 {
+	if (q&Portrait != 0) == (q&Orientation != 0) {
 		p = true
 	}
 
-	if q&Landscape != 0 {
+	if (q&Landscape != 0) == (q&Orientation != 0) {
 		l = true
 	}
+
+	fmt.Println(p, l)
 
 	apply := func(portrait, landscape string) {
-		if len(s) > 0 {
-			s += ","
-		}
 
 		if p {
+			if len(s) > 0 {
+				s += ","
+			}
 			s += "screen and " + portrait +
 				" and (orientation:portrait)"
 		}
 
-		if len(s) > 0 {
-			s += ","
-		}
-
 		if l {
+			if len(s) > 0 {
+				s += ","
+			}
 			s += "screen and " + landscape +
 				" and (orientation:landscape)"
 		}
@@ -98,6 +135,8 @@ func (q SizeQuery) Media() string {
 			s += "(orientation:landscape)"
 		}
 	}
+
+	fmt.Println(s, q&Portrait, q&Landscape)
 
 	return s
 }
