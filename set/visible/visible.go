@@ -6,6 +6,8 @@ import (
 	"qlova.org/seed"
 	"qlova.org/seed/client"
 	"qlova.org/seed/client/clientside"
+	"qlova.org/seed/client/screen"
+	"qlova.org/seed/set"
 	"qlova.org/seed/use/js"
 )
 
@@ -16,6 +18,16 @@ func On(do client.Script) seed.Option {
 
 //When renders the give seeds only when the condition is true.
 func When(condition client.Bool, seeds ...seed.Seed) seed.Option {
+	if q, ok := condition.(screen.SizeQuery); ok {
+		return seed.NewOption(func(c seed.Seed) {
+			for _, child := range seeds {
+				set.Hidden().AddTo(child)
+				set.Query(q.Media(), set.Visible()).AddTo(child)
+				child.AddTo(c)
+			}
+		})
+	}
+
 	return seed.NewOption(func(c seed.Seed) {
 		clientside.Hook(condition, c)
 
