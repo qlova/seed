@@ -20,7 +20,7 @@ const (
 
 	//Orientation is applied with the bitwise ^ operator.
 	Orientation
-	Portrait            = Orientation | 1<<(6)
+	Portrait  SizeQuery = 1 << (6)
 	Landscape SizeQuery = 1 << (7)
 
 	//Screen size ranges.
@@ -73,11 +73,11 @@ func (q SizeQuery) Media() string {
 		l = true
 	}
 
-	if (q&Portrait != 0) == (q&Orientation != 0) {
+	if (q&Portrait != 0) != (q&Orientation != 0) {
 		p = true
 	}
 
-	if (q&Landscape != 0) == (q&Orientation != 0) {
+	if (q&Landscape != 0) != (q&Orientation != 0) {
 		l = true
 	}
 
