@@ -2,8 +2,6 @@
 package screen
 
 import (
-	"fmt"
-
 	"qlova.org/seed/client"
 	"qlova.org/seed/use/js"
 )
@@ -67,9 +65,6 @@ func Not(q SizeQuery) SizeQuery { return ^q }
 
 //Media returns the query as a CSS media query.
 func (q SizeQuery) Media() string {
-
-	fmt.Printf("p %v l %v o %v", q&Portrait, q&Landscape, q&Orientation)
-
 	var s string
 
 	var p, l bool
@@ -85,8 +80,6 @@ func (q SizeQuery) Media() string {
 	if (q&Landscape != 0) == (q&Orientation != 0) {
 		l = true
 	}
-
-	fmt.Println(p, l)
 
 	apply := func(portrait, landscape string) {
 
@@ -135,8 +128,6 @@ func (q SizeQuery) Media() string {
 			s += "(orientation:landscape)"
 		}
 	}
-
-	fmt.Println(s, q&Portrait, q&Landscape)
 
 	return s
 }
