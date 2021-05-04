@@ -14,7 +14,7 @@ body {
 	position: fixed;
 	user-select: none;
 	overflow: hidden;
-	align-items: center;
+	align-items: stretch;
 	line-height: 1;
 }
 `
