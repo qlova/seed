@@ -8,6 +8,7 @@ import (
 	"qlova.org/seed/use/html"
 
 	"github.com/gomarkdown/markdown"
+	htmlmd "github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
 	"github.com/microcosm-cc/bluemonday"
 )
@@ -31,7 +32,9 @@ func New(options ...seed.Option) seed.Seed {
 
 //Set sets the inner HTML of the seed to rendered and sanitized markdown.
 func Set(md string) seed.Option {
-	rendered := markdown.ToHTML([]byte(md), p, nil)
+	rendered := markdown.ToHTML([]byte(md), p, htmlmd.NewRenderer(htmlmd.RendererOptions{
+		Flags: htmlmd.CommonFlags,
+	}))
 	rendered = policy.SanitizeBytes(rendered)
 	return html.Set(string(rendered))
 }
