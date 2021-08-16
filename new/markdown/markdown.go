@@ -8,10 +8,14 @@ import (
 	"qlova.org/seed/use/html"
 
 	"github.com/gomarkdown/markdown"
+	"github.com/gomarkdown/markdown/parser"
 	"github.com/microcosm-cc/bluemonday"
 )
 
 var policy = bluemonday.UGCPolicy()
+
+var extensions = parser.CommonExtensions | parser.AutoHeadingIDs
+var p = parser.NewWithExtensions(extensions)
 
 func init() {
 	policy.AllowAttrs("style").OnElements("span", "p")
@@ -27,7 +31,7 @@ func New(options ...seed.Option) seed.Seed {
 
 //Set sets the inner HTML of the seed to rendered and sanitized markdown.
 func Set(md string) seed.Option {
-	rendered := markdown.ToHTML([]byte(md), nil, nil)
+	rendered := markdown.ToHTML([]byte(md), p, nil)
 	rendered = policy.SanitizeBytes(rendered)
 	return html.Set(string(rendered))
 }
