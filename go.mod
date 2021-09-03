@@ -14,5 +14,5 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	qlova.org/mirror v0.1.3-0.20210211122219-b3c1ea959516
 	qlova.org/should v1.0.2
-	qlova.tech/rgb v1.0.1
+	qlova.tech v0.0.0-20210605093230-284eec3f1021
 )
