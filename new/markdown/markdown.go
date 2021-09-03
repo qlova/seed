@@ -15,9 +15,6 @@ import (
 
 var policy = bluemonday.UGCPolicy()
 
-var extensions = parser.CommonExtensions | parser.AutoHeadingIDs
-var p = parser.NewWithExtensions(extensions)
-
 func init() {
 	policy.AllowAttrs("style").OnElements("span", "p")
 	policy.AllowStyles("color").Matching(regexp.MustCompile("(?i)^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$")).Globally()
@@ -32,6 +29,10 @@ func New(options ...seed.Option) seed.Seed {
 
 //Set sets the inner HTML of the seed to rendered and sanitized markdown.
 func Set(md string) seed.Option {
+
+	extensions := parser.Tables
+	p := parser.NewWithExtensions(extensions)
+
 	rendered := markdown.ToHTML([]byte(md), p, htmlmd.NewRenderer(htmlmd.RendererOptions{
 		Flags: htmlmd.CommonFlags,
 	}))
