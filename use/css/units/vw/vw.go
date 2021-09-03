@@ -1,4 +1,4 @@
-package vh
+package vw
 
 import "fmt"
 
@@ -11,10 +11,10 @@ func New(quantity float64) Unit {
 }
 
 func (u Unit) String() string {
-	return fmt.Sprintf("%fvh", u)
+	return fmt.Sprintf("%fvw", u)
 }
 
 //Measure implements unit.Unit
 func (u Unit) Measure() (quantity float64, reference string) {
-	return float64(u), "vh"
+	return float64(u), "vw"
 }
