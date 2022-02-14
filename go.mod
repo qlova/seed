@@ -4,9 +4,10 @@ go 1.13
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
+	github.com/chris-ramon/douceur v0.2.0 // indirect
 	github.com/gomarkdown/markdown v0.0.0-20200824053859-8c8b3816f167
 	github.com/gorilla/websocket v1.4.2
-	github.com/microcosm-cc/bluemonday v1.0.5
+	github.com/microcosm-cc/bluemonday v1.0.16
 	github.com/spf13/cast v1.3.1
 	github.com/stripe/stripe-go/v71 v71.40.0
 	github.com/tdewolff/minify v2.3.6+incompatible
