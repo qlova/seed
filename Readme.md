@@ -122,7 +122,7 @@ This example shows a quick glimpse on how powerful Qlovaseed is.
 
 ## Project folder structure
 
-For larger apps, it is a good idea to seperate the ui from the business logic. The recomended folder structure is:
+For larger apps, it is a good idea to seperate the ui from the business logic. The recommended folder structure is:
 
 ```
     domain (business logic)
